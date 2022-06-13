@@ -1,10 +1,14 @@
 #include <iostream>
+#include <spdlog/spdlog.h>
 
-using namespace std;
+void fun()
+{
+    std::cout << "hello cmake" << std::endl;
+}
 
 int main(int, char **)
 {
-    std::cout << "hello cmake" << std::endl;
-
+    SPDLOG_INFO("hello world");
+    
     return 0;
 }
