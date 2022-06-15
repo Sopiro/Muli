@@ -10,9 +10,11 @@ set(WINDOW_HEIGHT 720)
 
 project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
-    src/main.cpp src/common.h
+    src/main.cpp
+    src/common.h
     src/window.cpp src/window.h
     src/engine.cpp src/engine.h
+    src/game.cpp src/game.h
 )
 
 include(Dependency.cmake)

@@ -1,3 +1,6 @@
+#ifndef __WINDOW_H_
+#define __WINDOW_H_
+
 #include "common.h"
 
 class Window
@@ -9,10 +12,15 @@ public:
 
     bool shouldClose();
 
-    void pollEvents();
+    void beginFrame();
+
+    void endFrame();
 
     ~Window();
 private:
-    bool error;
     GLFWwindow* window;
+    static void onFramebufferSizeChange(GLFWwindow* window, int width, int height);
+    static void onKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
+
+#endif
