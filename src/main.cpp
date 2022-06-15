@@ -1,14 +1,13 @@
-#include <iostream>
-#include <spdlog/spdlog.h>
+#include "common.h"
+#include "engine.h"
 
-void fun()
+int main(int argc, char** argv)
 {
-    std::cout << "hello cmake" << std::endl;
-}
+	SPDLOG_INFO("Start program");
 
-int main(int, char **)
-{
-    SPDLOG_INFO("hello world");
-    
-    return 0;
+	Engine engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+
+	engine.run();
+
+	return 0;
 }
