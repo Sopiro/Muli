@@ -1,5 +1,4 @@
-#ifndef __WINDOW_H_
-#define __WINDOW_H_
+#pragma once
 
 #include "common.h"
 
@@ -9,11 +8,8 @@ public:
     Window(int width, int height, std::string title);
 
     bool errorOccurred();
-
     bool shouldClose();
-
     void beginFrame();
-
     void endFrame();
 
     ~Window();
@@ -22,5 +18,3 @@ private:
     static void onFramebufferSizeChange(GLFWwindow* window, int width, int height);
     static void onKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
-
-#endif

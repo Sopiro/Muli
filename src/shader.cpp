@@ -5,7 +5,10 @@ Shader::Shader(uint32_t _vertexShader, uint32_t _fragmentShader, uint32_t _shade
     fragmentShader{ std::move(_fragmentShader) },
     shaderProgram{ std::move(_shaderProgram) }
 {
-
+    colorLoc = glGetUniformLocation(shaderProgram, "color");
+    modelLoc = glGetUniformLocation(shaderProgram, "model");
+    viewLoc = glGetUniformLocation(shaderProgram, "view");
+    projLoc = glGetUniformLocation(shaderProgram, "proj");
 }
 
 Shader::~Shader()
@@ -77,10 +80,28 @@ std::unique_ptr<Shader> Shader::create(const char* vsCode, const char* fsCode)
 void Shader::setColor(glm::vec3 _color)
 {
     color = std::move(_color);
+    glUniform3fv(colorLoc, 1, &color.r);
+}
+
+void Shader::setModelMatrix(glm::mat4 _modelMatrix)
+{
+    modelMatrix = std::move(_modelMatrix);
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+}
+
+void Shader::setViewMatrix(glm::mat4 _viewMatrix)
+{
+    viewMatrix = std::move(_viewMatrix);
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+}
+
+void Shader::setProjectionMatrix(glm::mat4 _projMatrix)
+{
+    projMatrix = std::move(_projMatrix);
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projMatrix));
 }
 
 void Shader::use()
 {
-    glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, &color.r);
     glUseProgram(shaderProgram);
 }

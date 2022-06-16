@@ -1,5 +1,4 @@
-#ifndef __ENGINE_H_
-#define __ENGINE_H_
+#pragma once
 
 #include "common.h"
 #include "window.h"
@@ -23,5 +22,3 @@ private:
     Window window;
     std::unique_ptr<Game> game;
 };
-
-#endif

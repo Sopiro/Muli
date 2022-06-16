@@ -1,5 +1,4 @@
-#ifndef __GAME_H__
-#define __GAME_H__
+#pragma once
 
 #include "common.h"
 #include "shader.h"
@@ -14,10 +13,8 @@ public:
     void update(float dt);
     void render();
 
-    std::unique_ptr<Shader> t;
-    std::unique_ptr<Poly> p;
 private:
+    std::unique_ptr<Shader> s;
+    std::unique_ptr<Poly> p;
     float time{ 0.0f };
 };
-
-#endif

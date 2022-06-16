@@ -1,7 +1,8 @@
 #include "poly.h"
 
-Poly::Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices)
-    :vertices{ _vertices }, indices{ _indices }
+Poly::Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices) :
+    vertices{ _vertices },
+    indices{ _indices }
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

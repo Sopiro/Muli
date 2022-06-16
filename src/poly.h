@@ -1,5 +1,4 @@
-#ifndef __POLY_H__
-#define __POLY_H__
+#pragma once
 
 #include "common.h"
 
@@ -22,5 +21,3 @@ private:
     uint32_t VAO;
     uint32_t EBO;
 };
-
-#endif
