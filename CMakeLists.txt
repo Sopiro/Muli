@@ -15,6 +15,8 @@ add_executable(${PROJECT_NAME}
     src/window.cpp src/window.h
     src/engine.cpp src/engine.h
     src/game.cpp src/game.h
+    src/shader.cpp src/shader.h
+    src/poly.cpp src/poly.h
 )
 
 include(Dependency.cmake)
