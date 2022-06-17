@@ -33,7 +33,7 @@ Poly::~Poly()
     glDeleteBuffers(1, &VBO);
 }
 
-void Poly::draw()
+void Poly::Draw()
 {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

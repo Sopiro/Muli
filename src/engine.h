@@ -15,9 +15,9 @@ public:
     Engine(Engine&&) = delete;
     Engine& operator=(const Engine&) = delete;
 
-    void run();
-    void update(float dt);
-    void render();
+    void Run();
+    void Update(float dt);
+    void Render();
 private:
     Window window;
     std::unique_ptr<Game> game;

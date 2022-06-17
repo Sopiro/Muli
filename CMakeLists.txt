@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
     src/engine.cpp src/engine.h
     src/game.cpp src/game.h
     src/shader.cpp src/shader.h
+    src/myshader.cpp src/myshader.h
     src/poly.cpp src/poly.h
 )
 

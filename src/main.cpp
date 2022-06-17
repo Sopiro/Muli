@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 
 	Engine* engine = new Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 
-	engine->run();
+	engine->Run();
 
 	delete engine;
 

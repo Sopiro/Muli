@@ -37,17 +37,17 @@ Window::Window(int width, int height, std::string title)
     SPDLOG_INFO("OpenGL context version: {}", version);
 
     // Register some window callbacks
-    glfwSetFramebufferSizeCallback(window, onFramebufferSizeChange);
-    glfwSetKeyCallback(window, onKeyEvent);
+    glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
+    glfwSetKeyCallback(window, OnKeyEvent);
 }
 
-void Window::onFramebufferSizeChange(GLFWwindow* window, int width, int height)
+void Window::OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
 {
     // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
     glViewport(0, 0, width, height);
 }
 
-void Window::onKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     SPDLOG_INFO("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
         action == GLFW_PRESS ? "Pressed" :
@@ -64,17 +64,17 @@ void Window::onKeyEvent(GLFWwindow* window, int key, int scancode, int action, i
     }
 }
 
-bool Window::shouldClose()
+bool Window::ShouldClose()
 {
     return glfwWindowShouldClose(window);
 }
 
-void Window::beginFrame()
+void Window::BeginFrame()
 {
     glfwPollEvents();
 }
 
-void Window::endFrame()
+void Window::EndFrame()
 {
     glfwSwapBuffers(window);
 }

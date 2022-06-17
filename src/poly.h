@@ -11,7 +11,7 @@ public:
     Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices);
     ~Poly();
 
-    void draw();
+    void Draw();
 
 private:
     std::vector<glm::vec3> vertices;

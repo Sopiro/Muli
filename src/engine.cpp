@@ -11,7 +11,7 @@ Engine::~Engine()
     SPDLOG_INFO("Terminate program");
 }
 
-void Engine::run()
+void Engine::Run()
 {
     SPDLOG_INFO("Start main loop");
 
@@ -21,9 +21,9 @@ void Engine::run()
 
     float unprocessedTime = 0.0f;
 
-    while (!window.shouldClose())
+    while (!window.ShouldClose())
     {
-        window.beginFrame();
+        window.BeginFrame();
 
         auto currentTime = std::chrono::steady_clock::now();
         std::chrono::duration<float> duration = currentTime - lastTime;
@@ -34,12 +34,11 @@ void Engine::run()
 
         if (unprocessedTime > frameTime)
         {
-            update(unprocessedTime);
-            render();
-
-            window.endFrame();
+            Update(unprocessedTime);
+            Render();
 
             unprocessedTime = 0.0f;
+            window.EndFrame();
         }
         else
         {
@@ -48,15 +47,15 @@ void Engine::run()
     }
 }
 
-void Engine::update(float dt)
+void Engine::Update(float dt)
 {
-    game->update(dt);
+    game->Update(dt);
 }
 
-void Engine::render()
+void Engine::Render()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    game->render();
+    game->Render();
 }
