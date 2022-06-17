@@ -1,6 +1,6 @@
-#include "poly.h"
+#include "mesh.h"
 
-Poly::Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices) :
+Mesh::Mesh(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices) :
     vertices{ _vertices },
     indices{ _indices }
 {
@@ -27,13 +27,13 @@ Poly::Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>&
     glBindVertexArray(0);
 }
 
-Poly::~Poly()
+Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 }
 
-void Poly::Draw()
+void Mesh::Draw()
 {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

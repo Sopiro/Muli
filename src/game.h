@@ -3,7 +3,7 @@
 #include "common.h"
 #include "shader.h"
 #include "myshader.h"
-#include "poly.h"
+#include "mesh.h"
 
 class Game
 {
@@ -16,6 +16,6 @@ public:
 
 private:
     std::unique_ptr<MyShader> s;
-    std::unique_ptr<Poly> p;
+    std::unique_ptr<Mesh> m;
     float time{ 0.0f };
 };

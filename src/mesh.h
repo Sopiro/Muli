@@ -2,14 +2,14 @@
 
 #include "common.h"
 
-class Poly
+class Mesh
 {
 public:
-    Poly() = delete;
-    Poly(Poly& other) = delete;
+    Mesh() = delete;
+    Mesh(Mesh& other) = delete;
 
-    Poly(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices);
-    ~Poly();
+    Mesh(const std::vector<glm::vec3>& _vertices, const std::vector<uint32_t>& _indices);
+    ~Mesh();
 
     void Draw();
 

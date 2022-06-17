@@ -9,6 +9,7 @@ MyShader::MyShader() : Shader(
     // Vertex shader
     R"(
         #version 330 core
+
         layout (location = 0) in vec3 aPos;
 
         uniform mat4 view;
@@ -24,6 +25,7 @@ MyShader::MyShader() : Shader(
     // Fragment shader
     R"(
         #version 330 core
+        
         out vec4 fragColor;
 
         uniform vec3 color;

@@ -1,8 +1,60 @@
 #include "window.h"
 
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+void Window::OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
+{
+    // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
+    glViewport(0, 0, width, height);
+}
+
+void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+    // SPDLOG_INFO("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
+    //     action == GLFW_PRESS ? "Pressed" :
+    //     action == GLFW_RELEASE ? "Released" :
+    //     action == GLFW_REPEAT ? "Repeat" : "Unknown",
+    //     mods & GLFW_MOD_CONTROL ? "C" : "-",
+    //     mods & GLFW_MOD_SHIFT ? "S" : "-",
+    //     mods & GLFW_MOD_ALT ? "A" : "-"
+    // );
+
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+void Window::OnMouseButton(GLFWwindow* window, int button, int action, int modifier)
+{
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, modifier);
+}
+
+void Window::OnCharEvent(GLFWwindow* window, unsigned int ch)
+{
+    ImGui_ImplGlfw_CharCallback(window, ch);
+}
+
+void Window::OnCursorPos(GLFWwindow* window, double xpos, double ypos)
+{
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+}
+
+void Window::OnScroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+}
+
 Window::Window(int width, int height, std::string title)
 {
     SPDLOG_INFO("Initialize glfw");
+
+    glfwSetErrorCallback(glfw_error_callback);
 
     if (!glfwInit())
     {
@@ -25,6 +77,7 @@ Window::Window(int width, int height, std::string title)
     }
 
     glfwMakeContextCurrent(window);
+    // glfwSwapInterval(1); // Enable vsync
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -36,32 +89,24 @@ Window::Window(int width, int height, std::string title)
     auto version = glGetString(GL_VERSION);
     SPDLOG_INFO("OpenGL context version: {}", version);
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     // Register some window callbacks
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
     glfwSetKeyCallback(window, OnKeyEvent);
-}
-
-void Window::OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
-{
-    // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
-    glViewport(0, 0, width, height);
-}
-
-void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    SPDLOG_INFO("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
-        action == GLFW_PRESS ? "Pressed" :
-        action == GLFW_RELEASE ? "Released" :
-        action == GLFW_REPEAT ? "Repeat" : "Unknown",
-        mods & GLFW_MOD_CONTROL ? "C" : "-",
-        mods & GLFW_MOD_SHIFT ? "S" : "-",
-        mods & GLFW_MOD_ALT ? "A" : "-"
-    );
-
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
+    glfwSetCharCallback(window, OnCharEvent);
+    glfwSetCursorPosCallback(window, OnCursorPos);
+    glfwSetMouseButtonCallback(window, OnMouseButton);
+    glfwSetScrollCallback(window, OnScroll);
 }
 
 bool Window::ShouldClose()
@@ -72,14 +117,27 @@ bool Window::ShouldClose()
 void Window::BeginFrame()
 {
     glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 }
 
 void Window::EndFrame()
 {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
     glfwSwapBuffers(window);
 }
 
 Window::~Window()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
     glfwTerminate();
 }

@@ -17,7 +17,7 @@ add_executable(${PROJECT_NAME}
     src/game.cpp src/game.h
     src/shader.cpp src/shader.h
     src/myshader.cpp src/myshader.h
-    src/poly.cpp src/poly.h
+    src/mesh.cpp src/mesh.h
 )
 
 include(Dependency.cmake)

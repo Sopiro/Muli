@@ -23,8 +23,6 @@ void Engine::Run()
 
     while (!window.ShouldClose())
     {
-        window.BeginFrame();
-
         auto currentTime = std::chrono::steady_clock::now();
         std::chrono::duration<float> duration = currentTime - lastTime;
         float passedTime = duration.count();
@@ -34,6 +32,8 @@ void Engine::Run()
 
         if (unprocessedTime > frameTime)
         {
+            window.BeginFrame();
+
             Update(unprocessedTime);
             Render();
 
