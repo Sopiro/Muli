@@ -9,12 +9,14 @@ class Window
 {
 public:
     Window(int width, int height, std::string title);
+    ~Window();
 
     bool ShouldClose();
     void BeginFrame();
     void EndFrame();
 
-    ~Window();
+    static int Width;
+    static int Height;
 private:
     GLFWwindow* window;
 

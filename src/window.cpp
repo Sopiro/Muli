@@ -1,5 +1,8 @@
 #include "window.h"
 
+int Window::Width = 0;
+int Window::Height = 0;
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -8,6 +11,10 @@ static void glfw_error_callback(int error, const char* description)
 void Window::OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
 {
     // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
+
+    Window::Width = width;
+    Window::Height = height;
+
     glViewport(0, 0, width, height);
 }
 
@@ -68,6 +75,9 @@ Window::Window(int width, int height, std::string title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    Window::Width = width;
+    Window::Height = height;
+
     window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!window)
     {
@@ -98,12 +108,14 @@ Window::Window(int width, int height, std::string title)
     //ImGui::StyleColorsClassic();
 
     // Rounded corner style
-    ImGui::GetStyle().WindowRounding = 3.0f;
-    ImGui::GetStyle().ChildRounding = 3.0f;
-    ImGui::GetStyle().FrameRounding = 3.0f;
-    ImGui::GetStyle().GrabRounding = 3.0f;
-    ImGui::GetStyle().PopupRounding = 3.0f;
-    ImGui::GetStyle().ScrollbarRounding = 3.0f;
+    float rounding = 5.0f;
+    auto& style = ImGui::GetStyle();
+    style.WindowRounding = rounding;
+    style.ChildRounding = rounding;
+    style.FrameRounding = rounding;
+    style.GrabRounding = rounding;
+    style.PopupRounding = rounding;
+    style.ScrollbarRounding = rounding;
 
     ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -113,7 +125,7 @@ Window::Window(int width, int height, std::string title)
     config.OversampleH = 1;
     config.OversampleV = 1;
     config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 16.0f, &config);
+    io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 18.0f, &config);
     // io.Fonts->AddFontFromFileTTF("../../res/fonts/NotoSans-Regular.ttf", 16.0f, &config);
 
     // Register some window callbacks

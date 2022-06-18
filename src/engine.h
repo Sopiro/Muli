@@ -14,15 +14,16 @@ public:
     Engine(Engine&&) = delete;
     Engine& operator=(const Engine&) = delete;
 
-    void SetClearColor(glm::vec4 _clearColor);
     void SetFrameRate(uint32_t frameRate);
+    glm::ivec2 GetWindowSize();
 
     void Run();
     void Update(float dt);
     void Render();
+
+    glm::vec4 clearColor{ 0.45f, 0.55f, 0.60f, 1.0f };
 private:
     Window window;
     std::unique_ptr<Game> game;
     double frameTime{ 1.0f / 60.0f };
-    glm::vec4 clearColor{ 0.0f, 0.0f, 0.0f, 1.0f };
 };

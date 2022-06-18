@@ -6,7 +6,12 @@ Game::Game(Engine& _engine) :
 {
     s = MyShader::Create();
     s->Use();
-    s->SetProjectionMatrix(glm::ortho(-12.8f, 12.8f, -7.2f, 7.2f, 0.0f, 100.0f));
+
+    viewportSize = engine.GetWindowSize();
+    glm::vec2 windowSize = viewportSize;
+    windowSize /= 100.0f;
+
+    s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));
     s->SetViewMatrix(glm::translate(glm::mat4{ 1.0 }, glm::vec3(0, 0, -1)));
 
     m = std::unique_ptr<Mesh>(new Mesh(
@@ -28,26 +33,29 @@ void Game::Update(float dt)
 {
     time += dt;
 
-    static int f = 60;
-    static int counter = 0;
-    static glm::vec4 color{ 0.0f, 0.0f, 0.0f, 1.0f };
+    // Update projection matrix
+    glm::vec2 windowSize = engine.GetWindowSize();
+    if (viewportSize != windowSize)
+    {
+        UpdateProjectionMatrix();
+    }
 
     if (ImGui::Begin("Control panel"))
     {
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        // ImGui::Text("This is some useful text.");
 
+        static int f = 60;
         ImGui::SliderInt("Frame rate", &f, 30, 300);
         engine.SetFrameRate(f);
-
-        ImGui::ColorEdit4("Color edit", &color.r);
-        engine.SetClearColor(color);
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Separator();
+        ImGui::ColorEdit4("Background color", glm::value_ptr(engine.clearColor));
+        ImGui::Separator();
+        ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Separator();
+        if (ImGui::SliderFloat("Zoom", &zoom, 10, 300))
+        {
+            UpdateProjectionMatrix();
+        }
     }
     ImGui::End();
 }
@@ -56,7 +64,7 @@ void Game::Render()
 {
     s->Use();
     {
-        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(time, 0.0f, 0.0f));
+        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
         glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, glm::radians(time * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         s->SetModelMatrix(t * r);
@@ -64,6 +72,15 @@ void Game::Render()
 
         m->Draw();
     }
+}
+
+void Game::UpdateProjectionMatrix()
+{
+    glm::vec2 windowSize = engine.GetWindowSize();
+    viewportSize = windowSize;
+    windowSize /= zoom;
+
+    s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));
 }
 
 Game::~Game()

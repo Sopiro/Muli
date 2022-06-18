@@ -1,5 +1,10 @@
 #include "engine.h"
 
+glm::ivec2 Engine::GetWindowSize()
+{
+    return glm::ivec2{ Window::Width, Window::Height };
+}
+
 Engine::Engine(int width, int height, std::string title)
     :window(std::move(width), std::move(height), std::move(title))
 {
@@ -61,13 +66,9 @@ void Engine::Render()
 {
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
+    // glViewport(0, 0, Window::Width, Window::Height);
 
     game->Render();
-}
-
-void Engine::SetClearColor(glm::vec4 _clearColor)
-{
-    clearColor = std::move(_clearColor);
 }
 
 void Engine::SetFrameRate(uint32_t frameRate)
