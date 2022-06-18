@@ -3,7 +3,7 @@
 Engine::Engine(int width, int height, std::string title)
     :window(std::move(width), std::move(height), std::move(title))
 {
-    game = std::make_unique<Game>();
+    game = std::make_unique<Game>(*this);
 }
 
 Engine::~Engine()
@@ -16,33 +16,38 @@ void Engine::Run()
     SPDLOG_INFO("Start main loop");
 
     auto lastTime = std::chrono::steady_clock::now();
-
-    constexpr float frameTime = 1 / 60.0f;
-
-    float unprocessedTime = 0.0f;
+    double deltaTime = 0.0f;
+    double sleepAdjust = 1.0;
 
     while (!window.ShouldClose())
     {
         auto currentTime = std::chrono::steady_clock::now();
-        std::chrono::duration<float> duration = currentTime - lastTime;
-        float passedTime = duration.count();
+        std::chrono::duration<double> duration = currentTime - lastTime;
+        double passedTime = duration.count();
         lastTime = currentTime;
 
-        unprocessedTime += passedTime;
+        deltaTime += passedTime;
 
-        if (unprocessedTime > frameTime)
+        if (deltaTime > frameTime)
         {
             window.BeginFrame();
 
-            Update(unprocessedTime);
+            Update((float)deltaTime);
             Render();
 
-            unprocessedTime = 0.0f;
+            deltaTime = 0.0f;
             window.EndFrame();
         }
         else
         {
-            std::this_thread::sleep_for(std::chrono::duration<float>(frameTime - unprocessedTime));
+            // Dynamic sleep-time adjustment
+            double targetSleepTime = (frameTime - deltaTime) * sleepAdjust;
+
+            std::this_thread::sleep_for(std::chrono::duration<double>(targetSleepTime));
+
+            auto awakeTime = std::chrono::steady_clock::now();
+            double error = targetSleepTime / (awakeTime - currentTime).count();
+            sleepAdjust = 0.9 * sleepAdjust + 0.1 * error;
         }
     }
 }
@@ -54,8 +59,19 @@ void Engine::Update(float dt)
 
 void Engine::Render()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
     game->Render();
+}
+
+void Engine::SetClearColor(glm::vec4 _clearColor)
+{
+    clearColor = std::move(_clearColor);
+}
+
+void Engine::SetFrameRate(uint32_t frameRate)
+{
+    frameRate = std::clamp<int>(frameRate, 30, 300);
+    frameTime = 1.0 / frameRate;
 }

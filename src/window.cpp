@@ -97,8 +97,24 @@ Window::Window(int width, int height, std::string title)
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
 
+    // Rounded corner style
+    ImGui::GetStyle().WindowRounding = 3.0f;
+    ImGui::GetStyle().ChildRounding = 3.0f;
+    ImGui::GetStyle().FrameRounding = 3.0f;
+    ImGui::GetStyle().GrabRounding = 3.0f;
+    ImGui::GetStyle().PopupRounding = 3.0f;
+    ImGui::GetStyle().ScrollbarRounding = 3.0f;
+
     ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init("#version 330");
+
+    // Setup font
+    ImFontConfig config;
+    config.OversampleH = 1;
+    config.OversampleV = 1;
+    config.PixelSnapH = true;
+    io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 16.0f, &config);
+    // io.Fonts->AddFontFromFileTTF("../../res/fonts/NotoSans-Regular.ttf", 16.0f, &config);
 
     // Register some window callbacks
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);

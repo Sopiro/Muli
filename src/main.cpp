@@ -1,6 +1,17 @@
 #include "common.h"
 #include "engine.h"
 
+class A
+{
+public:
+	A(int a)
+	{
+		aa = a;
+	}
+private:
+	int aa;
+};
+
 int main(int argc, char** argv)
 {
 	SPDLOG_INFO("Start program");

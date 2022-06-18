@@ -1,6 +1,8 @@
 #include "game.h"
+#include "engine.h"
 
-Game::Game()
+Game::Game(Engine& _engine) :
+    engine{ _engine }
 {
     s = MyShader::Create();
     s->Use();
@@ -26,21 +28,19 @@ void Game::Update(float dt)
 {
     time += dt;
 
+    static int f = 60;
+    static int counter = 0;
+    static glm::vec4 color{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+    if (ImGui::Begin("Control panel"))
     {
-        static float f = 0.0f;
-        static float f2 = 0.0f;
-        static int counter = 0;
-
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
         ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
-        // ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::DragFloat("float", &f2, 1.0f, 0.0f, 100.0f);
+        ImGui::SliderInt("Frame rate", &f, 30, 300);
+        engine.SetFrameRate(f);
 
-        static glm::vec3 color{ 0.0f };
-
-        ImGui::ColorEdit3("Color edit", &color.r);
+        ImGui::ColorEdit4("Color edit", &color.r);
+        engine.SetClearColor(color);
 
         if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;
@@ -48,8 +48,8 @@ void Game::Update(float dt)
         ImGui::Text("counter = %d", counter);
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
     }
+    ImGui::End();
 }
 
 void Game::Render()

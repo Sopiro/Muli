@@ -5,16 +5,19 @@
 #include "myshader.h"
 #include "mesh.h"
 
+class Engine;
+
 class Game
 {
 public:
-    Game();
+    Game(Engine& engine);
     ~Game();
 
     void Update(float dt);
     void Render();
 
 private:
+    Engine& engine;
     std::unique_ptr<MyShader> s;
     std::unique_ptr<Mesh> m;
     float time{ 0.0f };
