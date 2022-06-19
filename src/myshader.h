@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MYSHADER_H__
+#define __MYSHADER_H__
 
 #include "common.h"
 #include "shader.h"
@@ -30,3 +31,5 @@ private:
     uint32_t modelLoc;
     glm::mat4 modelMatrix{ 1.0 };
 };
+
+#endif

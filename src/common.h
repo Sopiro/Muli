@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMMON_H__
+#define __COMMON_H__
 
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
@@ -13,3 +14,5 @@
 #include <memory>
 #include <chrono>
 #include <vector>
+
+#endif

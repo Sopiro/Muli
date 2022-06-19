@@ -40,18 +40,25 @@ void Game::Update(float dt)
         UpdateProjectionMatrix();
     }
 
-    if (ImGui::Begin("Control panel"))
+    if (ImGui::Begin("Control Panel"))
     {
         // ImGui::Text("This is some useful text.");
 
         static int f = 60;
-        ImGui::SliderInt("Frame rate", &f, 30, 300);
-        engine.SetFrameRate(f);
+        if (ImGui::SliderInt("Frame rate", &f, 30, 300))
+        {
+            engine.SetFrameRate(f);
+        }
         ImGui::Separator();
-        ImGui::ColorEdit4("Background color", glm::value_ptr(engine.clearColor));
-        ImGui::Separator();
+
         ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
         ImGui::Separator();
+
+        ImGui::ColorEdit4("Background color", glm::value_ptr(engine.clearColor));
+
+        ImGui::Separator();
+
         if (ImGui::SliderFloat("Zoom", &zoom, 10, 300))
         {
             UpdateProjectionMatrix();

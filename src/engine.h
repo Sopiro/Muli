@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ENGINE_H__
+#define __ENGINE_H__
 
 #include "common.h"
 #include "window.h"
@@ -27,3 +28,5 @@ private:
     std::unique_ptr<Game> game;
     double frameTime{ 1.0f / 60.0f };
 };
+
+#endif

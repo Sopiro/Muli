@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MESH_H__
+#define __MESH_H__
 
 #include "common.h"
 
@@ -21,3 +22,5 @@ private:
     uint32_t VAO;
     uint32_t EBO;
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __SHADER_H__
+#define __SHADER_H__
 
 #include "common.h"
 
@@ -13,3 +14,5 @@ protected:
     Shader(const char* vsCode, const char* fsCode);
     uint32_t shaderHandle{ 0 };
 };
+
+#endif

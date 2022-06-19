@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __WINDOW_H__
+#define __WINDOW_H__
 
 #include "common.h"
 
@@ -27,3 +28,5 @@ private:
     static void OnCursorPos(GLFWwindow* window, double xpos, double ypos);
     static void OnScroll(GLFWwindow* window, double xoffset, double yoffset);
 };
+
+#endif

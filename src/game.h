@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __GAME_H__
+#define __GAME_H__
 
 #include "common.h"
 #include "shader.h"
@@ -27,3 +28,5 @@ private:
     std::unique_ptr<Mesh> m;
     float time{ 0.0f };
 };
+
+#endif
