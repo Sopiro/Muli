@@ -65,6 +65,16 @@ void Game::Update(float dt)
         }
     }
     ImGui::End();
+
+    Entity e;
+    e.Translate({ 123, 456 });
+    e.Rotate(1);
+    e.Scale({ 2.0f, 2.0f });
+
+    SPDLOG_INFO(glm::to_string(e.LocalToGlobal() * glm::vec2(1, 2))); // -> 120.714722, 459.844147
+    SPDLOG_INFO(glm::to_string(e.GlobalToLocal() * e.LocalToGlobal() * glm::vec2(1, 2))); // -> 1, 2
+    SPDLOG_INFO("-");
+
 }
 
 void Game::Render()

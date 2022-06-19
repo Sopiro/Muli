@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "myshader.h"
 #include "mesh.h"
+#include "entity.h"
 
 class Engine;
 
