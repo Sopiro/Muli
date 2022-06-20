@@ -1,7 +1,6 @@
-# ExternalProject 관련 명령어 셋 추가
 include(ExternalProject)
 
-# Dependency 관련 변수 설정
+# Variables
 set(DEP_INSTALL_DIR ${PROJECT_BINARY_DIR}/install)
 set(DEP_INCLUDE_DIR ${DEP_INSTALL_DIR}/include)
 set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
@@ -18,7 +17,6 @@ ExternalProject_Add(
     TEST_COMMAND ""
 )
 
-# Dependency 리스트 및 라이브러리 파일 리스트 추가
 set(DEP_LIST ${DEP_LIST} dep_spdlog)
 set(DEP_LIBS ${DEP_LIBS} spdlog$<$<CONFIG:Debug>:d>)
 

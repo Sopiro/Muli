@@ -14,6 +14,7 @@ public:
     Engine(const Engine&) = delete;
     Engine(Engine&&) = delete;
     Engine& operator=(const Engine&) = delete;
+    Engine& operator=(const Engine&&) = delete;
 
     void SetFrameRate(uint32_t frameRate);
     glm::ivec2 GetWindowSize();

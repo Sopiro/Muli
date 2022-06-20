@@ -10,7 +10,10 @@ MyShader::MyShader() : Shader(
     R"(
         #version 330 core
 
-        layout (location = 0) in vec3 aPos;
+        layout (location = 0) in vec3 pos;
+        layout (location = 1) in vec2 _texCoord;
+
+        out vec2 texCoord;
 
         uniform mat4 view;
         uniform mat4 proj;
@@ -19,7 +22,9 @@ MyShader::MyShader() : Shader(
         void main()
         {
            mat4 mvp = proj * view * model;
-           gl_Position = mvp * vec4(aPos, 1.0);
+           gl_Position = mvp * vec4(pos, 1.0);
+
+           texCoord = _texCoord;
         }
     )",
     // Fragment shader
@@ -28,11 +33,19 @@ MyShader::MyShader() : Shader(
         
         out vec4 fragColor;
 
+        in vec2 texCoord;
+
         uniform vec3 color;
 
         void main()
         {
-           fragColor = vec4(color, 1.0f);
+            fragColor = vec4(color, 1.0f);
+
+            vec2 uv = texCoord - vec2(0.5f, 0.5f);
+
+            // Create outline
+            if(max(abs(uv.x), abs(uv.y)) > 0.48)
+                fragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
         }
     )"
 )

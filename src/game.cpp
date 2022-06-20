@@ -23,6 +23,13 @@ Game::Game(Engine& _engine) :
         }
         ,
         {
+            glm::vec2{1.0f, 1.0f},
+            glm::vec2{1.0f, 0.0f},
+            glm::vec2{0.0f, 0.0f},
+            glm::vec2{0.0f, 1.0f},
+        }
+        ,
+        {
             0, 1, 3,
             1, 2, 3,
         }
@@ -59,22 +66,12 @@ void Game::Update(float dt)
 
         ImGui::Separator();
 
-        if (ImGui::SliderFloat("Zoom", &zoom, 10, 300))
+        if (ImGui::SliderFloat("Zoom", &zoom, 10, 500))
         {
             UpdateProjectionMatrix();
         }
     }
     ImGui::End();
-
-    Entity e;
-    e.Translate({ 123, 456 });
-    e.Rotate(1);
-    e.Scale({ 2.0f, 2.0f });
-
-    SPDLOG_INFO(glm::to_string(e.LocalToGlobal() * glm::vec2(1, 2))); // -> 120.714722, 459.844147
-    SPDLOG_INFO(glm::to_string(e.GlobalToLocal() * e.LocalToGlobal() * glm::vec2(1, 2))); // -> 1, 2
-    SPDLOG_INFO("-");
-
 }
 
 void Game::Render()

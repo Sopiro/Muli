@@ -23,13 +23,13 @@ private:
     glm::vec3 color{ 0.0f };
 
     uint32_t viewLoc;
-    glm::mat4 viewMatrix{ 1.0 };
+    glm::mat4 viewMatrix{ 1.0f };
 
     uint32_t projLoc;
-    glm::mat4 projMatrix{ 1.0 };
+    glm::mat4 projMatrix{ 1.0f };
 
     uint32_t modelLoc;
-    glm::mat4 modelMatrix{ 1.0 };
+    glm::mat4 modelMatrix{ 1.0f };
 };
 
 #endif

@@ -15,9 +15,9 @@ public:
 
     void ResetTransform();
 
-    void Translate(glm::vec2 t);
-    void Rotate(float r);
-    void Scale(glm::vec2 s);
+    void Translate(const glm::vec2& t);
+    void Rotate(const float& r);
+    void Scale(const glm::vec2& s);
 
     // Returns local to global transform
     glm::mat3 LocalToGlobal();

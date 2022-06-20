@@ -19,18 +19,18 @@ void Entity::ResetTransform()
     scale.y = 1.0f;
 }
 
-void Entity::Translate(glm::vec2 t)
+void Entity::Translate(const glm::vec2& t)
 {
     position.x += t.x;
     position.y += t.y;
 }
 
-void Entity::Rotate(float r)
+void Entity::Rotate(const float& r)
 {
     rotation += r;
 }
 
-void Entity::Scale(glm::vec2 s)
+void Entity::Scale(const glm::vec2& s)
 {
     scale.x *= s.x;
     scale.y *= s.y;
