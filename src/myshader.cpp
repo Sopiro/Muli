@@ -1,5 +1,7 @@
 #include "myshader.h"    
 
+using namespace spe;
+
 std::unique_ptr<MyShader> MyShader::Create()
 {
     return std::unique_ptr<MyShader>(new MyShader);
@@ -50,10 +52,10 @@ MyShader::MyShader() : Shader(
     )"
 )
 {
-    colorLoc = glGetUniformLocation(shaderHandle, "color");
-    modelLoc = glGetUniformLocation(shaderHandle, "model");
-    viewLoc = glGetUniformLocation(shaderHandle, "view");
-    projLoc = glGetUniformLocation(shaderHandle, "proj");
+    uniformMap.insert({"color", glGetUniformLocation(shaderHandle, "color")});
+    uniformMap.insert({"model", glGetUniformLocation(shaderHandle, "model")});
+    uniformMap.insert({"view", glGetUniformLocation(shaderHandle, "view")});
+    uniformMap.insert({"proj", glGetUniformLocation(shaderHandle, "proj")});
 }
 
 MyShader::~MyShader()
@@ -63,23 +65,23 @@ MyShader::~MyShader()
 void MyShader::SetColor(glm::vec3 _color)
 {
     color = std::move(_color);
-    glUniform3fv(colorLoc, 1, &color.r);
+    glUniform3fv(uniformMap["color"], 1, &color.r);
 }
 
 void MyShader::SetModelMatrix(glm::mat4 _modelMatrix)
 {
     modelMatrix = std::move(_modelMatrix);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, glm::value_ptr(modelMatrix));
 }
 
 void MyShader::SetViewMatrix(glm::mat4 _viewMatrix)
 {
     viewMatrix = std::move(_viewMatrix);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, glm::value_ptr(viewMatrix));
 }
 
 void MyShader::SetProjectionMatrix(glm::mat4 _projMatrix)
 {
     projMatrix = std::move(_projMatrix);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projMatrix));
+    glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));
 }

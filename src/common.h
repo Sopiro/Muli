@@ -30,5 +30,12 @@ namespace glm
             m[0][1] * v.x + m[1][1] * v.y + m[2][1] * 1
         );
     }
+
+    template<typename T, qualifier Q>
+    GLM_FUNC_QUALIFIER float cross(vec<2, T, Q> const& v1, vec<2, T, Q> const& v2)
+    {
+        return v1.x * v2.y - v1.y * v2.x;
+    }
 }
+
 #endif

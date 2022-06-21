@@ -19,6 +19,11 @@ add_executable(${PROJECT_NAME}
     src/myshader.cpp src/myshader.h
     src/mesh.cpp src/mesh.h
     src/entity.cpp src/entity.h
+    src/rigidbody.cpp src/rigidbody.h
+    src/polygon.cpp src/polygon.h
+    src/circle.cpp src/circle.h
+    src/settings.h
+    src/util.cpp src/util.h
 )
 
 include(Dependency.cmake)

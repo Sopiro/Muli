@@ -1,6 +1,8 @@
 #include "game.h"
 #include "engine.h"
 
+using namespace spe;
+
 Game::Game(Engine& _engine) :
     engine{ _engine }
 {
@@ -34,6 +36,20 @@ Game::Game(Engine& _engine) :
             1, 2, 3,
         }
         ));
+
+    auto p = Polygon({
+            glm::vec2(0.5f,  0.5f),
+            glm::vec2(0.5f, -0.5f),
+            glm::vec2(-0.5f, -0.5f),
+            glm::vec2(-0.5f,  0.5f),
+        }
+    );
+
+    SPDLOG_INFO("{} {} {} {}", p.GetMass(), p.GetInverseMass(), p.GetInertia(), p.GetInverseInertia());
+
+    auto c = Circle(7);
+
+    SPDLOG_INFO("{} {} {} {}", c.GetMass(), c.GetInverseMass(), c.GetInertia(), c.GetInverseInertia());
 }
 
 void Game::Update(float dt)

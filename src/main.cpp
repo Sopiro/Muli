@@ -5,7 +5,7 @@ int main(int argc, char** argv)
 {
 	SPDLOG_INFO("Start program");
 
-	Engine* engine = new Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+	spe::Engine* engine = new spe::Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 
 	engine->Run();
 

@@ -1,5 +1,7 @@
 #include "shader.h"    
 
+using namespace spe;
+
 Shader::Shader(const char* vsCode, const char* fsCode)
 {
     // vertex shader

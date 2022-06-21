@@ -1,5 +1,7 @@
 #include "engine.h"
 
+using namespace spe;
+
 glm::ivec2 Engine::GetWindowSize()
 {
     return glm::ivec2{ Window::Width, Window::Height };

@@ -1,5 +1,7 @@
 #include "window.h"
 
+using namespace spe;
+
 int Window::Width = 0;
 int Window::Height = 0;
 

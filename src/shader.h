@@ -3,16 +3,21 @@
 
 #include "common.h"
 
-class Shader
+namespace spe
 {
-public:
-    virtual ~Shader();
+    class Shader
+    {
+    public:
+        virtual ~Shader();
 
-    void Use();
+        void Use();
 
-protected:
-    Shader(const char* vsCode, const char* fsCode);
-    uint32_t shaderHandle{ 0 };
-};
+    protected:
+        Shader(const char* vsCode, const char* fsCode);
+
+        std::unordered_map<std::string, uint32_t> uniformMap;
+        uint32_t shaderHandle{ 0 };
+    };
+}
 
 #endif

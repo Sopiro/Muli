@@ -1,5 +1,7 @@
 #include "entity.h"
 
+using namespace spe;
+
 Entity::Entity()
 {
 

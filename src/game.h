@@ -6,28 +6,34 @@
 #include "myshader.h"
 #include "mesh.h"
 #include "entity.h"
+#include "polygon.h"
+#include "circle.h"
 
-class Engine;
 
-class Game
+namespace spe
 {
-public:
-    Game(Engine& engine);
-    ~Game();
+    class Engine;
 
-    void Update(float dt);
-    void Render();
+    class Game
+    {
+    public:
+        Game(Engine& engine);
+        ~Game();
 
-    void UpdateProjectionMatrix();
+        void Update(float dt);
+        void Render();
 
-private:
-    glm::vec2 viewportSize{ 0.0f, 0.0f };
-    float zoom = 100.0f;
+        void UpdateProjectionMatrix();
 
-    Engine& engine;
-    std::unique_ptr<MyShader> s;
-    std::unique_ptr<Mesh> m;
-    float time{ 0.0f };
-};
+    private:
+        glm::vec2 viewportSize{ 0.0f, 0.0f };
+        float zoom = 100.0f;
+
+        Engine& engine;
+        std::unique_ptr<MyShader> s;
+        std::unique_ptr<Mesh> m;
+        float time{ 0.0f };
+    };
+}
 
 #endif
