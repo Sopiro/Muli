@@ -1,11 +1,11 @@
 #ifndef __POLYGON_H__
 #define __POLYGON_H__
 
-#include "../common.h"
 #include "rigidbody.h"
 
 namespace spe
 {
+    // Children: Box
     class Polygon : public RigidBody
     {
     public:
@@ -14,6 +14,10 @@ namespace spe
 
         virtual void SetDensity(float d) override;
         virtual void SetMass(float m) override;
+
+        virtual float GetArea() override final;
+
+        const std::vector<glm::vec2>& GetVertices();
 
     protected:
         std::vector<glm::vec2> vertices;

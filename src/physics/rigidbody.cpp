@@ -128,3 +128,8 @@ void RigidBody::SetTorque(float _torque)
 {
     torque = std::move(_torque);
 }
+
+Type RigidBody::GetType()
+{
+    return type;
+}

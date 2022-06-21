@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     src/physics/rigidbody.cpp src/physics/rigidbody.h
     src/physics/polygon.cpp src/physics/polygon.h
     src/physics/circle.cpp src/physics/circle.h
+    src/physics/box.cpp src/physics/box.h
     src/physics/settings.h
     src/physics/util.cpp src/physics/util.h
 )

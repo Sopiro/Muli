@@ -37,7 +37,9 @@ Game::Game(Engine& _engine) :
         }
         ));
 
-    auto p = Polygon({
+    auto p = Polygon
+    (
+        {
             glm::vec2(0.5f,  0.5f),
             glm::vec2(0.5f, -0.5f),
             glm::vec2(-0.5f, -0.5f),
@@ -50,6 +52,10 @@ Game::Game(Engine& _engine) :
     auto c = Circle(7);
 
     SPDLOG_INFO("{} {} {} {}", c.GetMass(), c.GetInverseMass(), c.GetInertia(), c.GetInverseInertia());
+
+    auto b = Box(1, 1);
+
+    SPDLOG_INFO("{} {} {} {}", b.GetMass(), b.GetInverseMass(), b.GetInertia(), b.GetInverseInertia());
 }
 
 void Game::Update(float dt)

@@ -18,11 +18,13 @@
 #include <memory>
 #include <chrono>
 #include <vector>
+#include <typeinfo>
 
 
 // Some useful operator overloading for glm containers
 namespace glm
 {
+    // 3x3 matrix * 2d vector multiplication
     template<typename T, qualifier Q>
     GLM_FUNC_QUALIFIER typename mat<2, 2, T, Q>::col_type operator*(mat<3, 3, T, Q> const& m, typename mat<2, 2, T, Q>::row_type const& v)
     {
@@ -33,6 +35,7 @@ namespace glm
         );
     }
 
+    // 2d vector cross function returing scalar
     template<typename T, qualifier Q>
     GLM_FUNC_QUALIFIER float cross(vec<2, T, Q> const& v1, vec<2, T, Q> const& v2)
     {

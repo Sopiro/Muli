@@ -5,20 +5,20 @@
 
 typedef glm::vec2 uv;
 
-float CalculateConvexPolygonInertia(const std::vector<glm::vec2>& vertices, float mass, float area);
+float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area);
 
-inline float CalculateBoxInertia(float width, float height, float mass)
+inline float calculate_box_inertia(float width, float height, float mass)
 {
     return (width * width + height * height) * mass / 12.0f;
 }
 
-inline float CalculateCircleInertia(float radius, float mass)
+inline float calculate_circle_inertia(float radius, float mass)
 {
     return mass * radius * radius / 2.0f;
 }
 
 // Project point P to line segment AB, calculate barycentric weights
-inline uv GetUV(glm::vec2 a, glm::vec2 b, glm::vec2 p)
+inline uv get_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
 {
     glm::vec2 dir = b - a;
     float len = glm::length(dir);
@@ -30,7 +30,7 @@ inline uv GetUV(glm::vec2 a, glm::vec2 b, glm::vec2 p)
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
-inline glm::vec2 LerpVector(glm::vec2 a, glm::vec2 b, uv uv)
+inline glm::vec2 lerp_vector(glm::vec2 a, glm::vec2 b, uv uv)
 {
     return { a.x * uv.x + b.x * uv.y, a.y * uv.x + b.y * uv.y };
 }

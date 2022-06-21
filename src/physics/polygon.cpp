@@ -37,7 +37,7 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, Type _type, bool _resetPositi
         density = _density;
         mass = _density * area;
         invMass = 1.0f / mass;
-        inertia = CalculateConvexPolygonInertia(vertices, mass, area);
+        inertia = calculate_convex_polygon_inertia(vertices, mass, area);
         invInertia = 1.0f / inertia;
     }
 
@@ -57,7 +57,7 @@ void Polygon::SetMass(float _mass)
     density = _mass / area;
     mass = _mass;
     invMass = 1.0f / mass;
-    inertia = CalculateConvexPolygonInertia(vertices, mass, area);
+    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
     invInertia = 1.0f / inertia;
 }
 
@@ -68,6 +68,16 @@ void Polygon::SetDensity(float _density)
     density = _density;
     mass = _density * area;
     invMass = 1.0f / mass;
-    inertia = CalculateConvexPolygonInertia(vertices, mass, area);
+    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
     invInertia = 1.0f / inertia;
+}
+
+float Polygon::GetArea()
+{
+    return area;
+}
+
+const std::vector<glm::vec2>& Polygon::GetVertices()
+{
+    return vertices;
 }

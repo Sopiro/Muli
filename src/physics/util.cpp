@@ -1,6 +1,6 @@
 #include "util.h"
 
-float CalculateConvexPolygonInertia(const std::vector<glm::vec2>& vertices, float mass, float area)
+float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area)
 {
     float inertia = 0;
 

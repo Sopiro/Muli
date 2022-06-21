@@ -1,7 +1,6 @@
 #ifndef __CIRCLE_H__
 #define __CIRCLE_H__
 
-#include "../common.h"
 #include "rigidbody.h"
 
 namespace spe
@@ -14,6 +13,9 @@ namespace spe
 
         virtual void SetMass(float m) override;
         virtual void SetDensity(float d) override;
+
+        float GetRadius();
+        virtual float GetArea() override final;
 
     protected:
         float radius;

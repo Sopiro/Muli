@@ -8,7 +8,7 @@
 #include "rendering/mesh.h"
 #include "physics/polygon.h"
 #include "physics/circle.h"
-
+#include "physics/box.h"
 
 namespace spe
 {
