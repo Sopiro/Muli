@@ -1,7 +1,7 @@
 #ifndef __POLYGON_H__
 #define __POLYGON_H__
 
-#include "common.h"
+#include "../common.h"
 #include "rigidbody.h"
 
 namespace spe

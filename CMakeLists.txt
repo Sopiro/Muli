@@ -15,15 +15,17 @@ add_executable(${PROJECT_NAME}
     src/window.cpp src/window.h
     src/engine.cpp src/engine.h
     src/game.cpp src/game.h
-    src/shader.cpp src/shader.h
-    src/myshader.cpp src/myshader.h
-    src/mesh.cpp src/mesh.h
     src/entity.cpp src/entity.h
-    src/rigidbody.cpp src/rigidbody.h
-    src/polygon.cpp src/polygon.h
-    src/circle.cpp src/circle.h
-    src/settings.h
-    src/util.cpp src/util.h
+
+    src/rendering/shader.cpp src/rendering/shader.h
+    src/rendering/myshader.cpp src/rendering/myshader.h
+    src/rendering/mesh.cpp src/rendering/mesh.h
+    
+    src/physics/rigidbody.cpp src/physics/rigidbody.h
+    src/physics/polygon.cpp src/physics/polygon.h
+    src/physics/circle.cpp src/physics/circle.h
+    src/physics/settings.h
+    src/physics/util.cpp src/physics/util.h
 )
 
 include(Dependency.cmake)

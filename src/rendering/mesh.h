@@ -1,7 +1,7 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
-#include "common.h"
+#include "../common.h"
 
 namespace spe
 {

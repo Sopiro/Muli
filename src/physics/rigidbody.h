@@ -1,10 +1,10 @@
 #ifndef __RIGIDBODY_H__
 #define __RIGIDBODY_H__
 
-#include "common.h"
-#include "entity.h"
-#include "settings.h"
+#include "../common.h"
+#include "../entity.h"
 #include "util.h"
+#include "settings.h"
 
 namespace spe
 {
@@ -52,22 +52,22 @@ namespace spe
         glm::vec2 linearVelocity{ 0.0f };           // m/s
         float angularVelocity{ 0.0f };              // rad/s
 
-        float density;                      // kg/m²
-        float mass;                         // kg
+        float density;                              // kg/m²
+        float mass;                                 // kg
         float invMass;
-        float inertia;                      // kg⋅m²
+        float inertia;                              // kg⋅m²
         float invInertia;
 
         float friction{ DEFAULT_FRICTION };
         float restitution{ DEFAULT_RESTITUTION };
-        float surfaceSpeed{ DEFAULT_SURFACESPEED };                 // m/s (Tangential speed)
+        float surfaceSpeed{ DEFAULT_SURFACESPEED }; // m/s (Tangential speed)
 
         Type type;
 
         int32_t id{ -1 };
         uint32_t islandID{ 0 };
-        std::vector<uint32_t> manifoldIDs;  // ids of contact manifold containing this body
-        std::vector<uint32_t> jointIDs;     // ids of the joint containing this body
+        std::vector<uint32_t> manifoldIDs;          // ids of contact manifold containing this body
+        std::vector<uint32_t> jointIDs;             // ids of the joint containing this body
         uint32_t resting{ 0 };
         bool sleeping{ false };
     };

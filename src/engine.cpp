@@ -22,6 +22,10 @@ void Engine::Run()
 {
     SPDLOG_INFO("Start main loop");
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+
     auto lastTime = std::chrono::steady_clock::now();
     double deltaTime = 0.0f;
     double sleepAdjust = 1.0;

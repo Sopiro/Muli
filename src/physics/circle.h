@@ -1,7 +1,7 @@
 #ifndef __CIRCLE_H__
 #define __CIRCLE_H__
 
-#include "common.h"
+#include "../common.h"
 #include "rigidbody.h"
 
 namespace spe

@@ -1,7 +1,7 @@
 #ifndef __MYSHADER_H__
 #define __MYSHADER_H__
 
-#include "common.h"
+#include "../common.h"
 #include "shader.h"
 
 namespace spe

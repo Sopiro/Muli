@@ -14,9 +14,9 @@ Circle::Circle(float _radius, Type _type, float _density) :
 
         density = _density;
         mass = _density * area;
-        invMass = 1.0 / mass;
+        invMass = 1.0f / mass;
         inertia = CalculateCircleInertia(radius, mass);
-        invInertia = 1.0 / inertia;
+        invInertia = 1.0f / inertia;
     }
 }
 
@@ -31,9 +31,9 @@ void Circle::SetMass(float _mass)
 
     density = _mass / area;
     mass = _mass;
-    invMass = 1.0 / mass;
+    invMass = 1.0f / mass;
     inertia = CalculateCircleInertia(radius, mass);
-    invInertia = 1.0 / inertia;
+    invInertia = 1.0f / inertia;
 }
 
 void Circle::SetDensity(float _density)
@@ -42,7 +42,7 @@ void Circle::SetDensity(float _density)
 
     density = _density;
     mass = density * area;
-    invMass = 1.0 / mass;
+    invMass = 1.0f / mass;
     inertia = CalculateCircleInertia(radius, mass);
-    invInertia = 1.0 / inertia;
+    invInertia = 1.0f / inertia;
 }

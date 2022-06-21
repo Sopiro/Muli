@@ -2,12 +2,12 @@
 #define __GAME_H__
 
 #include "common.h"
-#include "shader.h"
-#include "myshader.h"
-#include "mesh.h"
 #include "entity.h"
-#include "polygon.h"
-#include "circle.h"
+#include "rendering/shader.h"
+#include "rendering/myshader.h"
+#include "rendering/mesh.h"
+#include "physics/polygon.h"
+#include "physics/circle.h"
 
 
 namespace spe

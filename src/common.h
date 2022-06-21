@@ -9,6 +9,8 @@
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/random.hpp>
+#include <glm/gtx/norm.hpp>
 #include <imgui.h>
 
 // stds
