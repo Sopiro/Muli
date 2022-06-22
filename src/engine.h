@@ -1,5 +1,4 @@
-#ifndef __ENGINE_H__
-#define __ENGINE_H__
+#pragma once
 
 #include "common.h"
 #include "window.h"
@@ -32,5 +31,3 @@ namespace spe
         double frameTime{ 1.0f / 60.0f };
     };
 }
-
-#endif

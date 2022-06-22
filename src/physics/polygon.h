@@ -1,5 +1,4 @@
-#ifndef __POLYGON_H__
-#define __POLYGON_H__
+#pragma once
 
 #include "rigidbody.h"
 
@@ -24,4 +23,3 @@ namespace spe
         float area;
     };
 }
-#endif

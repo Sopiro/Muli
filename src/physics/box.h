@@ -1,5 +1,4 @@
-#ifndef __BOX_H__
-#define __BOX_H__
+#pragma once
 
 #include "polygon.h"
 
@@ -22,4 +21,3 @@ namespace spe
         float height;
     };
 }
-#endif

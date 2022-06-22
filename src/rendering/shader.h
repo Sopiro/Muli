@@ -1,5 +1,4 @@
-#ifndef __SHADER_H__
-#define __SHADER_H__
+#pragma once
 
 #include "../common.h"
 
@@ -19,5 +18,3 @@ namespace spe
         uint32_t shaderHandle{ 0 };
     };
 }
-
-#endif

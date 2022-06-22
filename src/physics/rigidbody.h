@@ -1,5 +1,4 @@
-#ifndef __RIGIDBODY_H__
-#define __RIGIDBODY_H__
+#pragma once
 
 #include "../common.h"
 #include "../entity.h"
@@ -87,5 +86,3 @@ namespace spe
         bool sleeping{ false };
     };
 }
-
-#endif

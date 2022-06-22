@@ -1,5 +1,4 @@
-#ifndef __MYSHADER_H__
-#define __MYSHADER_H__
+#pragma once
 
 #include "../common.h"
 #include "shader.h"
@@ -28,5 +27,3 @@ namespace spe
         glm::mat4 modelMatrix{ 1.0f };
     };
 }
-
-#endif

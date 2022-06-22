@@ -1,6 +1,6 @@
 include(ExternalProject)
 
-# Variables
+# variables
 set(DEP_INSTALL_DIR ${PROJECT_BINARY_DIR}/install)
 set(DEP_INCLUDE_DIR ${DEP_INSTALL_DIR}/include)
 set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
@@ -47,10 +47,10 @@ ExternalProject_Add(
     GIT_SHALLOW 1
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
+    TEST_COMMAND ""
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
     -DGLAD_INSTALL=ON
-    TEST_COMMAND ""
 )
 
 set(DEP_LIST ${DEP_LIST} dep_glad)

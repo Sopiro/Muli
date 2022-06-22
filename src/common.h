@@ -1,5 +1,4 @@
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#pragma once
 
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
@@ -42,5 +41,3 @@ namespace glm
         return v1.x * v2.y - v1.y * v2.x;
     }
 }
-
-#endif

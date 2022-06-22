@@ -1,5 +1,4 @@
-#ifndef __MESH_H__
-#define __MESH_H__
+#pragma once
 
 #include "../common.h"
 
@@ -29,5 +28,3 @@ namespace spe
         uint32_t EBO;
     };
 }
-
-#endif

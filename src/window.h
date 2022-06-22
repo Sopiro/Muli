@@ -1,5 +1,4 @@
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#pragma once
 
 #include "common.h"
 
@@ -31,4 +30,3 @@ namespace spe
         static void OnScroll(GLFWwindow* window, double xoffset, double yoffset);
     };
 }
-#endif

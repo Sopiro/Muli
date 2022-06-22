@@ -1,5 +1,4 @@
-#ifndef __CIRCLE_H__
-#define __CIRCLE_H__
+#pragma once
 
 #include "rigidbody.h"
 
@@ -22,5 +21,3 @@ namespace spe
         float area;
     };
 }
-
-#endif

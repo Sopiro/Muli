@@ -1,5 +1,4 @@
-#ifndef __GAME_H__
-#define __GAME_H__
+#pragma once
 
 #include "common.h"
 #include "entity.h"
@@ -35,5 +34,3 @@ namespace spe
         float time{ 0.0f };
     };
 }
-
-#endif

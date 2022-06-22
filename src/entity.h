@@ -1,5 +1,4 @@
-#ifndef __ENTITY_H__
-#define __ENTITY_H__
+#pragma once
 
 #include "common.h"
 
@@ -29,5 +28,3 @@ namespace spe
         glm::mat3 GlobalToLocal();
     };
 }
-
-#endif
