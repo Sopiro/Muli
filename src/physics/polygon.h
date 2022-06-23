@@ -17,6 +17,7 @@ namespace spe
         virtual float GetArea() override final;
 
         const std::vector<glm::vec2>& GetVertices();
+        size_t VertexCount();
 
     protected:
         std::vector<glm::vec2> vertices;

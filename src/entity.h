@@ -18,7 +18,7 @@ namespace spe
         void ResetTransform();
 
         void Translate(const glm::vec2& t);
-        void Rotate(const float& r);
+        void Rotate(float r);
         void Scale(const glm::vec2& s);
 
         // Returns local to global transform

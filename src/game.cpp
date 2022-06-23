@@ -49,13 +49,31 @@ Game::Game(Engine& _engine) :
 
     SPDLOG_INFO("{} {} {} {}", p.GetMass(), p.GetInverseMass(), p.GetInertia(), p.GetInverseInertia());
 
-    auto c = Circle(7);
+    auto c = Circle(1);
 
     SPDLOG_INFO("{} {} {} {}", c.GetMass(), c.GetInverseMass(), c.GetInertia(), c.GetInverseInertia());
 
     auto b = Box(1, 1);
 
     SPDLOG_INFO("{} {} {} {}", b.GetMass(), b.GetInverseMass(), b.GetInertia(), b.GetInverseInertia());
+
+    auto at = AABBTree();
+
+    auto k = at.Add(c);
+    at.Add(b);
+
+    for(int i = 0; i < 10; i++)
+    {
+        at.Add(Box(1, 1));
+    }
+
+    SPDLOG_INFO("manual remove");
+    at.Remove(k);
+
+    SPDLOG_INFO("collision pairs {}", at.GetCollisionPairs().size());
+    SPDLOG_INFO("Tree cost {}", at.GetTreeCost());
+
+    SPDLOG_INFO("--------");
 }
 
 void Game::Update(float dt)

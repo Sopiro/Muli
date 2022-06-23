@@ -18,6 +18,8 @@
 #include <chrono>
 #include <vector>
 #include <typeinfo>
+#include <queue>
+#include <set>
 
 
 // Some useful operator overloading for glm containers

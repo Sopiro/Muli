@@ -27,6 +27,8 @@ add_executable(${PROJECT_NAME}
     src/physics/box.cpp src/physics/box.h
     src/physics/settings.h
     src/physics/util.cpp src/physics/util.h
+    src/physics/aabb.cpp src/physics/aabb.h
+    src/physics/aabbtree.cpp src/physics/aabbtree.h
 )
 
 include(Dependency.cmake)

@@ -81,3 +81,8 @@ const std::vector<glm::vec2>& Polygon::GetVertices()
 {
     return vertices;
 }
+
+size_t Polygon::VertexCount()
+{
+    return vertices.size();
+}

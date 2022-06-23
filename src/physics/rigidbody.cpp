@@ -26,6 +26,16 @@ RigidBody::~RigidBody()
 
 }
 
+void RigidBody::SetNode(Node* _node)
+{
+    node = _node;
+}
+
+Node* RigidBody::GetNode()
+{
+    return node;
+}
+
 void RigidBody::Awake()
 {
     if (type == Static) return;

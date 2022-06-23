@@ -7,6 +7,8 @@
 
 namespace spe
 {
+    struct Node;
+
     enum Type : uint8_t
     {
         Static,
@@ -19,6 +21,9 @@ namespace spe
     public:
         RigidBody(Type _type);
         virtual ~RigidBody();
+
+        void SetNode(Node* _node);
+        Node* GetNode();
 
         virtual void SetDensity(float d) = 0;
         virtual void SetMass(float m) = 0;
@@ -84,5 +89,7 @@ namespace spe
 
         uint32_t resting{ 0 };
         bool sleeping{ false };
+
+        Node* node;
     };
 }

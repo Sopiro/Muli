@@ -8,6 +8,7 @@
 #include "physics/polygon.h"
 #include "physics/circle.h"
 #include "physics/box.h"
+#include "physics/aabbtree.h"
 
 namespace spe
 {

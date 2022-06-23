@@ -27,7 +27,7 @@ void Entity::Translate(const glm::vec2& t)
     position.y += t.y;
 }
 
-void Entity::Rotate(const float& r)
+void Entity::Rotate(float r)
 {
     rotation += r;
 }
