@@ -4,29 +4,46 @@
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include "input.h"
 
 namespace spe
 {
     class Window
     {
+        friend class Application;
+        friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
+
     public:
-        Window(int width, int height, std::string title);
+        static Window& Get();
+
+        Window(const Window&) = delete;
+        Window(Window&&) = delete;
+        Window& operator=(const Window&) = delete;
+        Window& operator=(const Window&&) = delete;
         ~Window();
+
+        void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
+
+        glm::ivec2 GetWindowSize();
+
+    private:
+        static Window* window;
+        Window(int width, int height, std::string title);
+
+        int width;
+        int height;
 
         bool ShouldClose();
         void BeginFrame();
         void EndFrame();
+        GLFWwindow* glfwWindow;
 
-        static int Width;
-        static int Height;
-    private:
-        GLFWwindow* window;
-
-        static void OnFramebufferSizeChange(GLFWwindow* window, int width, int height);
-        static void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
-        static void OnMouseButton(GLFWwindow* window, int button, int action, int modifier);
-        static void OnCharEvent(GLFWwindow* window, unsigned int ch);
-        static void OnCursorPos(GLFWwindow* window, double xpos, double ypos);
-        static void OnScroll(GLFWwindow* window, double xoffset, double yoffset);
+        std::function<void(int width, int height)> framebufferSizeChangeCallback = nullptr;
+        static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
+        static void OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
+        static void OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier);
+        static void OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch);
+        static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
+        static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
     };
 }

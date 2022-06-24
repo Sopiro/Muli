@@ -13,7 +13,8 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/common.h
     src/window.cpp src/window.h
-    src/engine.cpp src/engine.h
+    src/application.cpp src/application.h
+    src/input.cpp src/input.h
     src/game.cpp src/game.h
     src/entity.cpp src/entity.h
 

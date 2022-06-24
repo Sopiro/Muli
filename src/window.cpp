@@ -2,27 +2,39 @@
 
 using namespace spe;
 
-int Window::Width = 0;
-int Window::Height = 0;
+Window* Window::window = nullptr;
+
+Window& Window::Get()
+{
+    return *window;
+}
 
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void Window::OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
+void Window::SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback)
+{
+    framebufferSizeChangeCallback = callback;
+}
+
+void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height)
 {
     // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
 
-    Window::Width = width;
-    Window::Height = height;
+    window->width = width;
+    window->height = height;
 
-    glViewport(0, 0, width, height);
+    if (window->framebufferSizeChangeCallback != nullptr)
+    {
+        window->framebufferSizeChangeCallback(width, height);
+    }
 }
 
-void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Window::OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods)
 {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    ImGui_ImplGlfw_KeyCallback(glfwWindow, key, scancode, action, mods);
 
     // SPDLOG_INFO("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
     //     action == GLFW_PRESS ? "Pressed" :
@@ -33,34 +45,60 @@ void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, i
     //     mods & GLFW_MOD_ALT ? "A" : "-"
     // );
 
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (key < 0) return;
+
+    switch (action)
     {
-        glfwSetWindowShouldClose(window, true);
+    case GLFW_PRESS:
+        Input::currKeys[key] = true;
+        break;
+    case GLFW_RELEASE:
+        Input::currKeys[key] = false;
     }
 }
 
-void Window::OnMouseButton(GLFWwindow* window, int button, int action, int modifier)
+void Window::OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier)
 {
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, modifier);
+    ImGui_ImplGlfw_MouseButtonCallback(glfwWindow, button, action, modifier);
+
+    if (button < 0) return;
+
+    switch (action)
+    {
+    case GLFW_PRESS:
+        Input::currBtns[button] = true;
+        break;
+    case GLFW_RELEASE:
+        Input::currBtns[button] = false;
+    }
 }
 
-void Window::OnCharEvent(GLFWwindow* window, unsigned int ch)
+void Window::OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch)
 {
-    ImGui_ImplGlfw_CharCallback(window, ch);
+    ImGui_ImplGlfw_CharCallback(glfwWindow, ch);
 }
 
-void Window::OnCursorPos(GLFWwindow* window, double xpos, double ypos)
+void Window::OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos)
 {
-    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    ImGui_ImplGlfw_CursorPosCallback(glfwWindow, xpos, ypos);
+
+    Input::currMousePos.x = static_cast<float>(xpos);
+    Input::currMousePos.y = static_cast<float>(ypos);
 }
 
-void Window::OnScroll(GLFWwindow* window, double xoffset, double yoffset)
+void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset)
 {
-    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+    ImGui_ImplGlfw_ScrollCallback(glfwWindow, xoffset, yoffset);
+
+    Input::mouseScroll.x = static_cast<float>(xoffset);
+    Input::mouseScroll.y = static_cast<float>(yoffset);
 }
 
 Window::Window(int width, int height, std::string title)
 {
+    assert(window == nullptr);
+    window = this;
+
     SPDLOG_INFO("Initialize glfw");
 
     glfwSetErrorCallback(glfw_error_callback);
@@ -77,18 +115,18 @@ Window::Window(int width, int height, std::string title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Window::Width = width;
-    Window::Height = height;
+    Window::width = width;
+    Window::height = height;
 
-    window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    if (!window)
+    glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (!glfwWindow)
     {
         SPDLOG_ERROR("failed to create glfw window");
         glfwTerminate();
         exit(1);
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(glfwWindow);
     // glfwSwapInterval(1); // Enable vsync
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -119,7 +157,7 @@ Window::Window(int width, int height, std::string title)
     style.PopupRounding = rounding;
     style.ScrollbarRounding = rounding;
 
-    ImGui_ImplGlfw_InitForOpenGL(window, false);
+    ImGui_ImplGlfw_InitForOpenGL(glfwWindow, false);
     ImGui_ImplOpenGL3_Init("#version 330");
 
     // Setup font
@@ -131,21 +169,33 @@ Window::Window(int width, int height, std::string title)
     // io.Fonts->AddFontFromFileTTF("../../res/fonts/NotoSans-Regular.ttf", 16.0f, &config);
 
     // Register some window callbacks
-    glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
-    glfwSetKeyCallback(window, OnKeyEvent);
-    glfwSetCharCallback(window, OnCharEvent);
-    glfwSetCursorPosCallback(window, OnCursorPos);
-    glfwSetMouseButtonCallback(window, OnMouseButton);
-    glfwSetScrollCallback(window, OnScroll);
+    glfwSetFramebufferSizeCallback(glfwWindow, OnFramebufferSizeChange);
+    glfwSetKeyCallback(glfwWindow, OnKeyEvent);
+    glfwSetCharCallback(glfwWindow, OnCharEvent);
+    glfwSetCursorPosCallback(glfwWindow, OnCursorPos);
+    glfwSetMouseButtonCallback(glfwWindow, OnMouseButton);
+    glfwSetScrollCallback(glfwWindow, OnScroll);
+}
+
+Window::~Window()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(glfwWindow);
+    glfwTerminate();
 }
 
 bool Window::ShouldClose()
 {
-    return glfwWindowShouldClose(window);
+    return glfwWindowShouldClose(glfwWindow);
 }
 
 void Window::BeginFrame()
 {
+    Input::Update();
+
     glfwPollEvents();
 
     // Start the Dear ImGui frame
@@ -159,15 +209,10 @@ void Window::EndFrame()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(glfwWindow);
 }
 
-Window::~Window()
+glm::ivec2 Window::GetWindowSize()
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    return glm::ivec2{ width, height };
 }

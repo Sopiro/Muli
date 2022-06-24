@@ -7,12 +7,10 @@ Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
     aabb{ std::move(_aabb) },
     isLeaf{ std::move(_isLeaf) }
 {
-    SPDLOG_INFO("create node id:{} isLeaf:{}", id, isLeaf);
 }
 
 Node::~Node()
 {
-    SPDLOG_INFO("delete node id:{} isLeaf:{}", id, isLeaf);
 }
 
 AABBTree::AABBTree()

@@ -9,15 +9,16 @@
 #include "physics/circle.h"
 #include "physics/box.h"
 #include "physics/aabbtree.h"
+#include "input.h"
 
 namespace spe
 {
-    class Engine;
+    class Application;
 
     class Game
     {
     public:
-        Game(Engine& engine);
+        Game(Application& app);
         ~Game();
 
         void Update(float dt);
@@ -26,10 +27,9 @@ namespace spe
         void UpdateProjectionMatrix();
 
     private:
-        glm::vec2 viewportSize{ 0.0f, 0.0f };
         float zoom = 100.0f;
 
-        Engine& engine;
+        Application& app;
         std::unique_ptr<MyShader> s;
         std::unique_ptr<Mesh> m;
         float time{ 0.0f };

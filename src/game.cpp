@@ -1,20 +1,25 @@
 #include "game.h"
-#include "engine.h"
+#include "application.h"
 
 using namespace spe;
 
-Game::Game(Engine& _engine) :
-    engine{ _engine }
+Game::Game(Application& _app) :
+    app{ _app }
 {
     s = MyShader::Create();
     s->Use();
 
-    viewportSize = engine.GetWindowSize();
-    glm::vec2 windowSize = viewportSize;
-    windowSize /= 100.0f;
-
-    s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));
+    UpdateProjectionMatrix();
     s->SetViewMatrix(glm::translate(glm::mat4{ 1.0 }, glm::vec3(0, 0, -1)));
+
+    Window::Get().SetFramebufferSizeChangeCallback
+    (
+        [&](int width, int height) -> void
+        {
+            glViewport(0, 0, width, height);
+            UpdateProjectionMatrix();
+        }
+    );
 
     m = std::unique_ptr<Mesh>(new Mesh(
         {
@@ -62,7 +67,7 @@ Game::Game(Engine& _engine) :
     auto k = at.Add(c);
     at.Add(b);
 
-    for(int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         at.Add(Box(1, 1));
     }
@@ -80,10 +85,10 @@ void Game::Update(float dt)
 {
     time += dt;
 
-    // Update projection matrix
-    glm::vec2 windowSize = engine.GetWindowSize();
-    if (viewportSize != windowSize)
+    if (Input::GetMouseScroll().y != 0)
     {
+        zoom += Input::GetMouseScroll().y * 10;
+        zoom = glm::clamp<float>(zoom, 10, 500);
         UpdateProjectionMatrix();
     }
 
@@ -94,7 +99,7 @@ void Game::Update(float dt)
         static int f = 60;
         if (ImGui::SliderInt("Frame rate", &f, 30, 300))
         {
-            engine.SetFrameRate(f);
+            app.SetFrameRate(f);
         }
         ImGui::Separator();
 
@@ -102,13 +107,26 @@ void Game::Update(float dt)
 
         ImGui::Separator();
 
-        ImGui::ColorEdit4("Background color", glm::value_ptr(engine.clearColor));
+        ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
 
         ImGui::Separator();
 
         if (ImGui::SliderFloat("Zoom", &zoom, 10, 500))
         {
             UpdateProjectionMatrix();
+        }
+
+        ImGui::Separator();
+
+        static bool wireFrameDraw = false;
+        ImGui::Checkbox("Wire frame mode", &wireFrameDraw);
+        if (wireFrameDraw)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
     }
     ImGui::End();
@@ -130,8 +148,7 @@ void Game::Render()
 
 void Game::UpdateProjectionMatrix()
 {
-    glm::vec2 windowSize = engine.GetWindowSize();
-    viewportSize = windowSize;
+    glm::vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= zoom;
 
     s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));

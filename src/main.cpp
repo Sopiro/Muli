@@ -1,15 +1,15 @@
 #include "common.h"
-#include "engine.h"
+#include "application.h"
 
 int main(int argc, char** argv)
 {
 	SPDLOG_INFO("Start program");
 
-	spe::Engine* engine = new spe::Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+	spe::Application* app = spe::Application::Create(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 
-	engine->Run();
+	app->Run();
 
-	delete engine;
+	delete app;
 
 	return 0;
 }
