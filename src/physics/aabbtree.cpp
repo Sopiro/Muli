@@ -2,14 +2,10 @@
 
 using namespace spe;
 
-Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
+Node::Node(uint32_t _id, AABB&& _aabb, bool _isLeaf) :
     id{ std::move(_id) },
     aabb{ std::move(_aabb) },
     isLeaf{ std::move(_isLeaf) }
-{
-}
-
-Node::~Node()
 {
 }
 
@@ -25,23 +21,27 @@ AABBTree::~AABBTree()
 
 void AABBTree::Reset()
 {
-    nodeID = 0;
-    Traverse(
-        [](Node* node) -> void
+    Traverse
+    (
+        [](const Node* node) -> void
         {
             delete node;
         }
     );
+
+    nodeID = 0;
+    root = nullptr;
 }
 
-Node* AABBTree::Add(RigidBody& body)
+const Node* AABBTree::Add(RigidBody& body)
 {
     AABB aabb = createAABB(body, body.GetType() == Static ? 0.0f : aabbMargin);
 
-    Node* newNode = new Node(nodeID++, aabb, true);
+    Node* newNode = new Node(nodeID++, std::move(aabb), true);
+
     newNode->body = &body;
 
-    body.SetNode(newNode);
+    body.node = newNode;
 
     if (root == nullptr)
     {
@@ -140,10 +140,10 @@ Node* AABBTree::Add(RigidBody& body)
     return newNode;
 }
 
-void AABBTree::Remove(Node* node)
+void AABBTree::Remove(const Node* node)
 {
     Node* parent = node->parent;
-    node->body->SetNode(nullptr);
+    node->body->node = nullptr;
 
     if (parent != nullptr) // node is not root
     {
@@ -243,7 +243,6 @@ void AABBTree::Rotate(Node* node)
             sibling->parent = node;
 
             node->aabb = unionOf(sibling->aabb, node->child1->aabb);
-
             break;
         case 1:
             // Swap(sibling, node->child1);
@@ -274,6 +273,7 @@ void AABBTree::Rotate(Node* node)
             node->parent = sibling;
 
             sibling->aabb = unionOf(node->aabb, sibling->child2->aabb);
+            break;
         case 3:
             // Swap(node, sibling->child1);
 
@@ -288,6 +288,7 @@ void AABBTree::Rotate(Node* node)
             node->parent = sibling;
 
             sibling->aabb = unionOf(node->aabb, sibling->child1->aabb);
+            break;
         }
     }
 }
@@ -317,7 +318,7 @@ void AABBTree::Swap(Node* node1, Node* node2)
     node1->parent = parent2;
 }
 
-void AABBTree::Traverse(std::function<void(Node*)> callback)
+void AABBTree::Traverse(std::function<void(const Node*)> callback)
 {
     if (root == nullptr) return;
 
@@ -341,11 +342,13 @@ void AABBTree::Traverse(std::function<void(Node*)> callback)
     }
 }
 
-std::vector<std::pair<RigidBody*, RigidBody*>> AABBTree::GetCollisionPairs()
+std::vector<std::pair<const RigidBody*, const RigidBody*>> AABBTree::GetCollisionPairs()
 {
-    std::vector<std::pair<RigidBody*, RigidBody*>> pairs;
+    std::vector<std::pair<const RigidBody*, const RigidBody*>> pairs;
 
     if (root == nullptr) return pairs;
+
+    pairs.reserve(nodeID / 2 + 1);
 
     std::set<uint32_t> checked;
 
@@ -357,7 +360,7 @@ std::vector<std::pair<RigidBody*, RigidBody*>> AABBTree::GetCollisionPairs()
     return pairs;
 }
 
-void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::set<uint32_t>& checked)
+void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::set<uint32_t>& checked)
 {
     const uint32_t key = make_pair_natural(a->id, b->id);
 
@@ -369,7 +372,7 @@ void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*
     {
         if (detectCollisionAABB(a->aabb, b->aabb))
         {
-            pairs.emplace_back(std::pair(a->body, b->body));
+            pairs.emplace_back(a->body, b->body);
         }
     }
     else if (!a->isLeaf && !b->isLeaf)
@@ -407,9 +410,9 @@ void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*
     }
 }
 
-std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point)
+std::vector<const Node*> AABBTree::QueryPoint(const glm::vec2& point)
 {
-    std::vector<Node*> res;
+    std::vector<const Node*> res;
 
     if (root == nullptr) return res;
 
@@ -438,9 +441,9 @@ std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point)
     return res;
 }
 
-std::vector<Node*> AABBTree::QueryRegion(const AABB& region)
+std::vector<const Node*> AABBTree::QueryRegion(const AABB& region)
 {
-    std::vector<Node*> res;
+    std::vector<const Node*> res;
 
     if (root == nullptr) return res;
 
@@ -475,7 +478,7 @@ float AABBTree::GetTreeCost()
 
     Traverse
     (
-        [&res](Node* node) -> void
+        [&res](const Node* node) -> void
         {
             res += area(node->aabb);
         }

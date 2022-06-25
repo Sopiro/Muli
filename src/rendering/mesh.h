@@ -8,12 +8,13 @@ namespace spe
     {
     public:
         Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, std::vector<uint32_t> _indices);
-        ~Mesh();
-        Mesh(Mesh& other) = delete;
-        Mesh(const Mesh&) = delete;
-        Mesh(Mesh&&) = delete;
-        Mesh& operator=(const Mesh&) = delete;
-        Mesh& operator=(Mesh&&) = delete;
+        ~Mesh() noexcept;
+        
+        Mesh(const Mesh&) noexcept = delete;
+        Mesh& operator=(const Mesh&) noexcept = delete;
+        
+        Mesh(Mesh&&) noexcept = default;
+        Mesh& operator=(Mesh&&) noexcept = default;
 
         void Draw();
 

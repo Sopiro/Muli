@@ -45,11 +45,6 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, Type _type, bool _resetPositi
         Translate(centerOfMass);
 }
 
-Polygon::~Polygon()
-{
-
-}
-
 void Polygon::SetMass(float _mass)
 {
     assert(_mass > 0);

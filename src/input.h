@@ -6,11 +6,13 @@ namespace spe
 {
     class Window;
 
-    class Input
+    class Input final
     {
         friend class Window;
 
     public:
+        Input() = delete;
+
         inline static void Init()
         {
             lastKeys.fill(false);
@@ -28,8 +30,7 @@ namespace spe
             mouseAcceleration = currMousePos - lastMousePos;
             lastMousePos = currMousePos;
 
-            mouseScroll.x = 0;
-            mouseScroll.y = 0;
+            glm::clear(mouseScroll);
         }
 
         inline static bool IsKeyDown(int key)
@@ -61,9 +62,7 @@ namespace spe
         {
             return mouseScroll;
         }
-
     private:
-        Input();
 
         static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
         static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
@@ -76,8 +75,5 @@ namespace spe
         static glm::vec2 mouseAcceleration;
 
         static glm::vec2 mouseScroll;
-
-        // static glm::vec2 currMousePos;
-        // static glm::vec2 lastMousePos;
     };
 }

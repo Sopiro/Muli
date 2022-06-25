@@ -6,16 +6,18 @@
 
 namespace spe
 {
-    class Application
+    class Application final
     {
     public:
         static Application* Create(int width, int height, std::string title);
 
-        Application(const Application&) = delete;
-        Application(Application&&) = delete;
-        Application& operator=(const Application&) = delete;
-        Application& operator=(const Application&&) = delete;
-        ~Application();
+        ~Application() noexcept;
+        
+        Application(const Application&) noexcept = delete;
+        Application& operator=(const Application&) noexcept = delete;
+
+        Application(Application&&) noexcept = delete;
+        Application& operator=(Application&&) noexcept = delete;
 
         void SetFrameRate(uint32_t frameRate);
 

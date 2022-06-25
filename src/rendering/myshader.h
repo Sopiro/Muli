@@ -5,11 +5,10 @@
 
 namespace spe
 {
-    class MyShader : public Shader
+    class MyShader final : public Shader
     {
     public:
         static std::unique_ptr<MyShader> MyShader::Create();
-        virtual ~MyShader();
 
         void SetColor(glm::vec3 _color);
         void SetViewMatrix(glm::mat4 _viewMatrix);
@@ -20,7 +19,6 @@ namespace spe
         MyShader();
 
         // uniforms 
-
         glm::vec3 color{ 0.0f };
         glm::mat4 viewMatrix{ 1.0f };
         glm::mat4 projMatrix{ 1.0f };

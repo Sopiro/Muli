@@ -58,10 +58,6 @@ MyShader::MyShader() : Shader(
     uniformMap.insert({"proj", glGetUniformLocation(shaderHandle, "proj")});
 }
 
-MyShader::~MyShader()
-{
-}
-
 void MyShader::SetColor(glm::vec3 _color)
 {
     color = std::move(_color);

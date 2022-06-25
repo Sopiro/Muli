@@ -7,13 +7,19 @@ namespace spe
     class Entity
     {
     public:
-        glm::vec2 position{ 0.0f };
-        float rotation{ 0.0f };
-        glm::vec2 scale{ 1.0f };
+        glm::vec2 position;
+        float rotation;
+        glm::vec2 scale;
 
-        Entity();
-        Entity(const Entity& other) = delete;
-        virtual ~Entity();
+        Entity(glm::vec2 _position = glm::vec2{ 0.0f }, float _rotation = 0.0f, glm::vec2 _scale = glm::vec2{ 1.0f });
+        virtual ~Entity() noexcept = default;
+
+        // Non-copyable object
+        Entity(const Entity&) noexcept = delete;
+        Entity& operator=(const Entity&) noexcept = delete;
+        
+        Entity(Entity&&) noexcept = default;
+        Entity& operator=(Entity&&) noexcept = default;
 
         void ResetTransform();
 

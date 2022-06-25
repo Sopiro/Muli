@@ -1,4 +1,5 @@
-#include "common.h"
+#pragma warning(disable:4819)
+
 #include "application.h"
 
 int main(int argc, char** argv)

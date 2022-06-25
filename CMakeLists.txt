@@ -21,7 +21,7 @@ add_executable(${PROJECT_NAME}
     src/rendering/shader.cpp src/rendering/shader.h
     src/rendering/myshader.cpp src/rendering/myshader.h
     src/rendering/mesh.cpp src/rendering/mesh.h
-    
+
     src/physics/rigidbody.cpp src/physics/rigidbody.h
     src/physics/polygon.cpp src/physics/polygon.h
     src/physics/circle.cpp src/physics/circle.h
@@ -30,6 +30,8 @@ add_executable(${PROJECT_NAME}
     src/physics/util.cpp src/physics/util.h
     src/physics/aabb.cpp src/physics/aabb.h
     src/physics/aabbtree.cpp src/physics/aabbtree.h
+
+    src/camera.cpp src/camera.h
 )
 
 include(Dependency.cmake)

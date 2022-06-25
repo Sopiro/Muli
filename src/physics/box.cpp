@@ -10,11 +10,6 @@ Box::Box(float _width, float _height, Type _type, float _density) :
 
 }
 
-Box::~Box()
-{
-
-}
-
 float Box::GetWidth()
 {
     return width;

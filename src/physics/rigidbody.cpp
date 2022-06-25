@@ -21,17 +21,7 @@ RigidBody::RigidBody(Type _type) :
     }
 }
 
-RigidBody::~RigidBody()
-{
-
-}
-
-void RigidBody::SetNode(Node* _node)
-{
-    node = _node;
-}
-
-Node* RigidBody::GetNode()
+const Node* RigidBody::GetNode()
 {
     return node;
 }

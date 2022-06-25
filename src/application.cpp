@@ -13,8 +13,8 @@ Application* Application::Create(int width, int height, std::string title)
     return app;
 }
 
-Application::Application(int width, int height, std::string title)
-    :window(std::move(width), std::move(height), std::move(title))
+Application::Application(int width, int height, std::string title) :
+    window(std::move(width), std::move(height), std::move(title))
 {
     Input::Init();
     game = std::make_unique<Game>(*this);

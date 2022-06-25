@@ -42,4 +42,12 @@ namespace glm
     {
         return v1.x * v2.y - v1.y * v2.x;
     }
+
+    // clear vec2
+    template<typename T, qualifier Q>
+    GLM_FUNC_QUALIFIER void clear(vec<2, T, Q>& v, float value = 0.0f)
+    {
+        v.x = value;
+        v.y = value;
+    }
 }

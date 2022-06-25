@@ -7,7 +7,13 @@ namespace spe
     class Shader
     {
     public:
-        virtual ~Shader();
+        virtual ~Shader() noexcept;
+
+        Shader(const Shader&) noexcept = delete;
+        Shader& operator=(const Shader&) noexcept = delete;
+        
+        Shader(Shader&&) noexcept = default;
+        Shader& operator=(Shader&&) noexcept = default;
 
         void Use();
 

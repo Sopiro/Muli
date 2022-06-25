@@ -15,11 +15,16 @@ namespace spe
 {
     class Application;
 
-    class Game
+    class Game final
     {
     public:
         Game(Application& app);
-        ~Game();
+        ~Game() noexcept = default;
+
+        Game(const Game&) noexcept = delete;
+        Game(Game&&) noexcept = delete;
+        Game& operator=(const Game&) noexcept = delete;
+        Game& operator=(Game&&) noexcept = delete;
 
         void Update(float dt);
         void Render();

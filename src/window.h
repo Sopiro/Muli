@@ -8,7 +8,7 @@
 
 namespace spe
 {
-    class Window
+    class Window final
     {
         friend class Application;
         friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
@@ -16,11 +16,13 @@ namespace spe
     public:
         static Window& Get();
 
-        Window(const Window&) = delete;
-        Window(Window&&) = delete;
-        Window& operator=(const Window&) = delete;
-        Window& operator=(const Window&&) = delete;
-        ~Window();
+        ~Window() noexcept;
+
+        Window(const Window&) noexcept = delete;
+        Window& operator=(const Window&) noexcept = delete;
+
+        Window(Window&&) noexcept = delete;
+        Window& operator=(const Window&&) noexcept = delete;
 
         void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
 

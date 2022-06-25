@@ -9,11 +9,6 @@ AABB::AABB(glm::vec2 _min, glm::vec2 _max) :
     fix(*this);
 }
 
-AABB::~AABB()
-{
-
-}
-
 AABB spe::createAABB(RigidBody& body, float margin)
 {
     auto& bodyType = typeid(body);

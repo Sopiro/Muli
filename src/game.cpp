@@ -153,8 +153,3 @@ void Game::UpdateProjectionMatrix()
 
     s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));
 }
-
-Game::~Game()
-{
-
-}

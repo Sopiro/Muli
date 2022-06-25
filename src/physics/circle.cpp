@@ -20,11 +20,6 @@ Circle::Circle(float _radius, Type _type, float _density) :
     }
 }
 
-Circle::~Circle()
-{
-
-}
-
 void Circle::SetMass(float _mass)
 {
     assert(_mass > 0);

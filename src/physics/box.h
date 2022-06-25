@@ -8,7 +8,6 @@ namespace spe
     {
     public:
         Box(float _width, float _height, Type _type = Dynamic, float _density = DEFAULT_DENSITY);
-        virtual ~Box();
 
         virtual void SetMass(float _mass) override;
         virtual void SetDensity(float _density) override;

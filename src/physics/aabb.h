@@ -10,9 +10,14 @@ namespace spe
 {
     struct AABB
     {
-    public:
         AABB(glm::vec2 _min, glm::vec2 _max);
-        ~AABB();
+        ~AABB() noexcept = default;
+
+        AABB(const AABB&) noexcept = delete;
+        AABB& operator=(const AABB&) noexcept = delete;
+        
+        AABB(AABB&&) noexcept = default;
+        AABB& operator=(AABB&&) noexcept = default;
 
         glm::vec2 min;
         glm::vec2 max;

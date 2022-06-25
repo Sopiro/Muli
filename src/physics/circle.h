@@ -8,7 +8,6 @@ namespace spe
     {
     public:
         Circle(float radius, Type _type = Dynamic, float _density = DEFAULT_DENSITY);
-        virtual ~Circle();
 
         virtual void SetMass(float m) override;
         virtual void SetDensity(float d) override;

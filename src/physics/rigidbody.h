@@ -18,12 +18,12 @@ namespace spe
     // Children: Polygon, Circle
     class RigidBody : public Entity
     {
+        friend class AABBTree;
+
     public:
         RigidBody(Type _type);
-        virtual ~RigidBody();
 
-        void SetNode(Node* _node);
-        Node* GetNode();
+        const Node* GetNode();
 
         virtual void SetDensity(float d) = 0;
         virtual void SetMass(float m) = 0;
@@ -62,21 +62,21 @@ namespace spe
 
     protected:
         // Center of mass in local space = (0, 0)
-        glm::vec2 force{ 0.0f };                    // N
-        float torque{ 0.0f };                       // N⋅m
+        glm::vec2 force{ 0.0f };                        // N
+        float torque{ 0.0f };                           // N⋅m
 
-        glm::vec2 linearVelocity{ 0.0f };           // m/s
-        float angularVelocity{ 0.0f };              // rad/s
+        glm::vec2 linearVelocity{ 0.0f };               // m/s
+        float angularVelocity{ 0.0f };                  // rad/s
 
-        float density;                              // kg/m²
-        float mass;                                 // kg
+        float density;                                  // kg/m²
+        float mass;                                     // kg
         float invMass;
-        float inertia;                              // kg⋅m²
+        float inertia;                                  // kg⋅m²
         float invInertia;
 
         float friction{ DEFAULT_FRICTION };
         float restitution{ DEFAULT_RESTITUTION };
-        float surfaceSpeed{ DEFAULT_SURFACESPEED }; // m/s (Tangential speed)
+        float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
 
         Type type;
 
@@ -84,12 +84,12 @@ namespace spe
         int32_t id{ -1 };
         uint32_t islandID{ 0 };
 
-        std::vector<uint32_t> manifoldIDs;          // ids of contact manifold containing this body
-        std::vector<uint32_t> jointIDs;             // ids of the joint containing this body
+        std::vector<uint32_t> manifoldIDs{};            // ids of contact manifold containing this body
+        std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
 
         uint32_t resting{ 0 };
         bool sleeping{ false };
 
-        Node* node;
+        Node* node{ nullptr };
     };
 }
