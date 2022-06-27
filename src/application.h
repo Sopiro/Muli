@@ -12,7 +12,7 @@ namespace spe
         static Application* Create(int width, int height, std::string title);
 
         ~Application() noexcept;
-        
+
         Application(const Application&) noexcept = delete;
         Application& operator=(const Application&) noexcept = delete;
 

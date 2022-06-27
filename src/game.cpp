@@ -6,6 +6,7 @@ using namespace spe;
 Game::Game(Application& _app) :
     app{ _app }
 {
+    // Set up shader parameters
     s = MyShader::Create();
     s->Use();
 
@@ -21,64 +22,8 @@ Game::Game(Application& _app) :
         }
     );
 
-    m = std::unique_ptr<Mesh>(new Mesh(
-        {
-            glm::vec3(0.5f,  0.5f, 0.0f),
-            glm::vec3(0.5f, -0.5f, 0.0f),
-            glm::vec3(-0.5f, -0.5f, 0.0f),
-            glm::vec3(-0.5f,  0.5f, 0.0f),
-        }
-        ,
-        {
-            glm::vec2{1.0f, 1.0f},
-            glm::vec2{1.0f, 0.0f},
-            glm::vec2{0.0f, 0.0f},
-            glm::vec2{0.0f, 1.0f},
-        }
-        ,
-        {
-            0, 1, 3,
-            1, 2, 3,
-        }
-        ));
-
-    auto p = Polygon
-    (
-        {
-            glm::vec2(0.5f,  0.5f),
-            glm::vec2(0.5f, -0.5f),
-            glm::vec2(-0.5f, -0.5f),
-            glm::vec2(-0.5f,  0.5f),
-        }
-    );
-
-    SPDLOG_INFO("{} {} {} {}", p.GetMass(), p.GetInverseMass(), p.GetInertia(), p.GetInverseInertia());
-
-    auto c = Circle(1);
-
-    SPDLOG_INFO("{} {} {} {}", c.GetMass(), c.GetInverseMass(), c.GetInertia(), c.GetInverseInertia());
-
-    auto b = Box(1, 1);
-
-    SPDLOG_INFO("{} {} {} {}", b.GetMass(), b.GetInverseMass(), b.GetInertia(), b.GetInverseInertia());
-
-    auto at = AABBTree();
-
-    auto k = at.Add(c);
-    at.Add(b);
-
-    for (int i = 0; i < 10; i++)
-    {
-        at.Add(Box(1, 1));
-    }
-
-    SPDLOG_INFO("manual remove");
-    at.Remove(k);
-
-    SPDLOG_INFO("collision pairs {}", at.GetCollisionPairs().size());
-    SPDLOG_INFO("Tree cost {}", at.GetTreeCost());
-
-    SPDLOG_INFO("--------");
+    // meshes.push_back(generate_mesh_from_rigidbody(create_regular_polygon(2, 7)));
+    meshes.push_back(generate_mesh_from_rigidbody(create_random_convex_body(2)));
 }
 
 void Game::Update(float dt)
@@ -137,12 +82,15 @@ void Game::Render()
     s->Use();
     {
         glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, glm::radians(time * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, glm::radians(0.0f * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         s->SetModelMatrix(t * r);
-        s->SetColor({ glm::sin(time * 2) * 0.5f + 1.0f, glm::cos(time * 3) * 0.5f + 1.0f, glm::sin(time * 1.5) * 0.5f + 1.0f });
+        s->SetColor({ 1, 1, 1 });
 
-        m->Draw();
+        for (size_t i = 0; i < meshes.size(); i++)
+        {
+            meshes[i].Draw();
+        }
     }
 }
 

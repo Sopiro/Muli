@@ -40,10 +40,26 @@ Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, 
 
 Mesh::~Mesh()
 {
+    if (moved) return;
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBOv);
     glDeleteBuffers(1, &VBOt);
     glDeleteBuffers(1, &EBO);
+}
+
+Mesh::Mesh(Mesh&& _m) noexcept
+{
+    _m.moved = true;
+
+    vertices = std::move(_m.vertices);
+    texCoords = std::move(_m.texCoords);
+    indices = std::move(_m.indices);
+
+    VAO = _m.VAO;
+    VBOv = _m.VBOv;
+    VBOt = _m.VBOt;
+    EBO = _m.EBO;
 }
 
 void Mesh::Draw()

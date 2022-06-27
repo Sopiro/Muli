@@ -41,13 +41,8 @@ MyShader::MyShader() : Shader(
 
         void main()
         {
+            vec2 uv = texCoord;
             fragColor = vec4(color, 1.0f);
-
-            vec2 uv = texCoord - vec2(0.5f, 0.5f);
-
-            // Create outline
-            if(max(abs(uv.x), abs(uv.y)) > 0.48)
-                fragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
         }
     )"
 )

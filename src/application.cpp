@@ -31,11 +31,10 @@ void Application::Run()
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
 
     auto lastTime = std::chrono::steady_clock::now();
     double deltaTime = 0.0f;
-    double sleepAdjust = 1.0;
 
     while (!window.ShouldClose())
     {
@@ -58,14 +57,7 @@ void Application::Run()
         }
         else
         {
-            // Dynamic sleep-time adjustment
-            double targetSleepTime = (frameTime - deltaTime) * sleepAdjust;
-
-            std::this_thread::sleep_for(std::chrono::duration<double>(targetSleepTime));
-
-            auto awakeTime = std::chrono::steady_clock::now();
-            double error = targetSleepTime / (awakeTime - currentTime).count();
-            sleepAdjust = 0.9 * sleepAdjust + 0.1 * error;
+            std::this_thread::yield();
         }
     }
 }

@@ -32,11 +32,11 @@ namespace spe
         void UpdateProjectionMatrix();
 
     private:
-        float zoom = 100.0f;
-
         Application& app;
+        
+        std::vector<Mesh> meshes;
         std::unique_ptr<MyShader> s;
-        std::unique_ptr<Mesh> m;
         float time{ 0.0f };
+        float zoom = 100.0f;
     };
 }

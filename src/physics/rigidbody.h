@@ -2,7 +2,6 @@
 
 #include "../common.h"
 #include "../entity.h"
-#include "util.h"
 #include "settings.h"
 
 namespace spe

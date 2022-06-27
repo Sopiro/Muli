@@ -1,11 +1,16 @@
 #pragma once
 
 #include "../common.h"
+#include "../rendering/mesh.h"
+#include "rigidbody.h"
+#include "settings.h"
 
 typedef glm::vec2 uv;
 
 namespace spe
 {
+    class Polygon;
+
     float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area);
 
     inline float calculate_box_inertia(float width, float height, float mass)
@@ -72,4 +77,12 @@ namespace spe
     {
         return (a + b) / 2.0f;
     }
+
+    Polygon create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
+
+    Polygon create_regular_polygon(size_t radius, uint32_t num_vertices = 0, uint32_t initial_angle = 0, float density = DEFAULT_DENSITY);
+
+    Mesh generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count = 16);
+
+    std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices);
 }

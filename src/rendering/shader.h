@@ -12,8 +12,8 @@ namespace spe
         Shader(const Shader&) noexcept = delete;
         Shader& operator=(const Shader&) noexcept = delete;
         
-        Shader(Shader&&) noexcept = default;
-        Shader& operator=(Shader&&) noexcept = default;
+        Shader(Shader&&) noexcept = delete;
+        Shader& operator=(Shader&&) noexcept = delete;
 
         void Use();
 

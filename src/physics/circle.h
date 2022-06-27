@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.h"
 #include "rigidbody.h"
 
 namespace spe

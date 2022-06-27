@@ -13,12 +13,14 @@ namespace spe
         Mesh(const Mesh&) noexcept = delete;
         Mesh& operator=(const Mesh&) noexcept = delete;
         
-        Mesh(Mesh&&) noexcept = default;
-        Mesh& operator=(Mesh&&) noexcept = default;
+        Mesh(Mesh&&) noexcept;
+        Mesh& operator=(Mesh&&) noexcept = delete;
 
         void Draw();
 
     private:
+        bool moved = false; 
+
         std::vector<glm::vec3> vertices;
         std::vector<glm::vec2> texCoords;
         std::vector<uint32_t> indices;
