@@ -41,7 +41,8 @@ MyShader::MyShader() : Shader(
 
         void main()
         {
-            vec2 uv = texCoord;
+            vec2 uv = texCoord; // barycentric coordinate
+            
             fragColor = vec4(color, 1.0f);
         }
     )"

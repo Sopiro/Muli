@@ -34,6 +34,8 @@ namespace spe
     private:
         Application& app;
         
+        bool drawOutlineOnly = false;
+
         std::vector<Mesh> meshes;
         std::unique_ptr<MyShader> s;
         float time{ 0.0f };

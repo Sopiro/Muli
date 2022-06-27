@@ -63,16 +63,7 @@ void Game::Update(float dt)
 
         ImGui::Separator();
 
-        static bool wireFrameDraw = false;
-        ImGui::Checkbox("Wire frame mode", &wireFrameDraw);
-        if (wireFrameDraw)
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        else
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
+        ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
     }
     ImGui::End();
 }
@@ -85,11 +76,17 @@ void Game::Render()
         glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, glm::radians(0.0f * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         s->SetModelMatrix(t * r);
-        s->SetColor({ 1, 1, 1 });
 
         for (size_t i = 0; i < meshes.size(); i++)
         {
-            meshes[i].Draw();
+            if (!drawOutlineOnly)
+            {
+                s->SetColor({ 1, 1, 1 });
+                meshes[i].Draw(GL_TRIANGLES);
+            }
+            glLineWidth(2.0f);
+            s->SetColor({ 0, 0, 0 });
+            meshes[i].Draw(GL_LINE_LOOP);
         }
     }
 }

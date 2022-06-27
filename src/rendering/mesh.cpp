@@ -10,7 +10,8 @@ Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBOv);
     glGenBuffers(1, &VBOt);
-    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &EBOt);
+    glGenBuffers(1, &EBOl);
 
     // For better performance, merge vertices and texCoords vectors and define a shader vertex layout with only one VBO.
     glBindVertexArray(VAO);
@@ -31,11 +32,19 @@ Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, 
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        // indices
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
     }
     glBindVertexArray(0);
+
+    // indices for triangle
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    std::vector<uint32_t> indices_l(vertices.size());
+    std::iota(indices_l.begin(), indices_l.end(), 0);
+
+    // indices for outline
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_l.size(), indices_l.data(), GL_STATIC_DRAW);
 }
 
 Mesh::~Mesh()
@@ -45,7 +54,8 @@ Mesh::~Mesh()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBOv);
     glDeleteBuffers(1, &VBOt);
-    glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &EBOt);
+    glDeleteBuffers(1, &EBOl);
 }
 
 Mesh::Mesh(Mesh&& _m) noexcept
@@ -59,11 +69,28 @@ Mesh::Mesh(Mesh&& _m) noexcept
     VAO = _m.VAO;
     VBOv = _m.VBOv;
     VBOt = _m.VBOt;
-    EBO = _m.EBO;
+    EBOt = _m.EBOt;
+    EBOl = _m.EBOl;
 }
 
-void Mesh::Draw()
+void Mesh::Draw(GLenum drawMode)
 {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    switch (drawMode)
+    {
+    case GL_TRIANGLES:
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
+        glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
+        break;
+
+    case GL_LINE_LOOP:
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
+        glDrawElements(drawMode, vertices.size(), GL_UNSIGNED_INT, 0);
+        break;
+
+    default:
+        SPDLOG_ERROR("Not a support draw mode");
+        break;
+    }
 }

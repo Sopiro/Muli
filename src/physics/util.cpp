@@ -95,7 +95,6 @@ spe::Polygon spe::create_regular_polygon(size_t radius, uint32_t num_vertices, u
     return Polygon(vertices, Dynamic, true, density);
 }
 
-
 Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count)
 {
     auto& bodyType = typeid(body);

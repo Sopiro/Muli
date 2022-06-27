@@ -20,6 +20,8 @@
 #include <typeinfo>
 #include <queue>
 #include <set>
+#include <numeric>
+#include <algorithm>
 
 
 // Some useful operator overloading for glm containers
