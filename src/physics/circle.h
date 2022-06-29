@@ -8,7 +8,7 @@ namespace spe
     class Circle : public RigidBody
     {
     public:
-        Circle(float radius, Type _type = Dynamic, float _density = DEFAULT_DENSITY);
+        Circle(float radius, BodyType _type = Dynamic, float _density = DEFAULT_DENSITY);
 
         virtual void SetMass(float m) override;
         virtual void SetDensity(float d) override;

@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
     src/input.cpp src/input.h
     src/game.cpp src/game.h
     src/entity.cpp src/entity.h
+    src/camera.cpp src/camera.h
 
     src/rendering/shader.cpp src/rendering/shader.h
     src/rendering/myshader.cpp src/rendering/myshader.h
@@ -30,8 +31,10 @@ add_executable(${PROJECT_NAME}
     src/physics/util.cpp src/physics/util.h
     src/physics/aabb.cpp src/physics/aabb.h
     src/physics/aabbtree.cpp src/physics/aabbtree.h
-
-    src/camera.cpp src/camera.h
+    src/physics/detection.cpp src/physics/detection.h
+    src/physics/simplex.cpp src/physics/simplex.h
+    src/physics/polytope.cpp src/physics/polytope.h
+    src/physics/edge.cpp src/physics/edge.h
 )
 
 include(Dependency.cmake)

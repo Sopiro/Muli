@@ -2,7 +2,7 @@
 
 using namespace spe;
 
-RigidBody::RigidBody(Type _type) :
+RigidBody::RigidBody(BodyType _type) :
     Entity(),
     type{ std::move(_type) }
 {
@@ -19,6 +19,59 @@ RigidBody::RigidBody(Type _type) :
     {
         // This part is implemented by children.
     }
+}
+
+RigidBody::~RigidBody()
+{
+    if (moved) return;
+}
+
+RigidBody::RigidBody(RigidBody&& _other) noexcept
+{
+    *this = (RigidBody&&)_other;
+}
+
+RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
+{
+    moved = true;
+
+    //private member
+    id = _other.id;
+    islandID = _other.islandID;
+
+    manifoldIDs = std::move(_other.manifoldIDs);
+    jointIDs = std::move(_other.jointIDs);
+
+    resting = _other.resting;
+    sleeping = _other.sleeping;
+
+    node = _other.node;
+    mesh = _other.mesh;
+    _other.node = nullptr;
+    _other.mesh = nullptr;
+
+    //protected member
+    force = _other.force;
+    torque = _other.torque;
+
+    linearVelocity = _other.linearVelocity;
+    angularVelocity = _other.angularVelocity;
+
+    density = _other.density;
+    mass = _other.mass;
+    invMass = _other.invMass;
+    inertia = _other.inertia;
+    invInertia = _other.invInertia;
+
+    friction = _other.friction;
+    restitution = _other.restitution;
+    surfaceSpeed = _other.surfaceSpeed;
+
+    type = _other.type;
+
+    Entity::operator=(std::move(_other));
+
+    return *this;
 }
 
 const Node* RigidBody::GetNode()
@@ -129,7 +182,7 @@ void RigidBody::SetTorque(float _torque)
     torque = std::move(_torque);
 }
 
-Type RigidBody::GetType()
+BodyType RigidBody::GetType()
 {
     return type;
 }

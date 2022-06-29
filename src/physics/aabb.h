@@ -47,14 +47,6 @@ namespace spe
         return AABB{ min, max };
     }
 
-    inline AABB* newUnionOf(const AABB* b1, const AABB* b2)
-    {
-        glm::vec2 min = glm::min(b1->min, b2->min);
-        glm::vec2 max = glm::max(b1->max, b2->max);
-
-        return new AABB{ min, max };
-    }
-
     inline bool testPointInside(const AABB& aabb, const glm::vec2& point)
     {
         if (aabb.min.x > point.x || aabb.max.x < point.x) return false;

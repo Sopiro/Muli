@@ -1,5 +1,6 @@
 #include "game.h"
 #include "application.h"
+#include "physics/detection.h"
 
 using namespace spe;
 
@@ -24,6 +25,25 @@ Game::Game(Application& _app) :
 
     // meshes.push_back(generate_mesh_from_rigidbody(create_regular_polygon(2, 7)));
     meshes.push_back(generate_mesh_from_rigidbody(create_random_convex_body(2)));
+
+    Box b1{ 1, 1 };
+    Box b2{ 1, 1 };
+    b1.Rotate(0.1f);
+    b1.Translate({ 0.4, 0.4 });
+
+    auto res = detect_collision(b1, b2);
+
+    SPDLOG_INFO("------------------");
+    if (res)
+    {
+        SPDLOG_INFO(glm::to_string(res->contactNormal));
+        SPDLOG_INFO(res->penetrationDepth);
+        for (size_t i = 0; i < res->contantPoints.size(); i++)
+        {
+            SPDLOG_INFO("contact point {}: {}", i, glm::to_string(res->contantPoints[i].point));
+        }
+        SPDLOG_INFO(res->featureFlipped);
+    }
 }
 
 void Game::Update(float dt)
@@ -36,6 +56,9 @@ void Game::Update(float dt)
         zoom = glm::clamp<float>(zoom, 10, 500);
         UpdateProjectionMatrix();
     }
+
+    ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 400, 200 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -84,7 +107,7 @@ void Game::Render()
                 s->SetColor({ 1, 1, 1 });
                 meshes[i].Draw(GL_TRIANGLES);
             }
-            glLineWidth(2.0f);
+            glLineWidth(1.5f);
             s->SetColor({ 0, 0, 0 });
             meshes[i].Draw(GL_LINE_LOOP);
         }

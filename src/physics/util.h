@@ -5,7 +5,11 @@
 #include "rigidbody.h"
 #include "settings.h"
 
-typedef glm::vec2 uv;
+struct uv
+{
+    float u;
+    float v;
+};
 
 namespace spe
 {
@@ -38,7 +42,7 @@ namespace spe
     // Linearly combine(interpolate) the vector using weights u, v
     inline glm::vec2 lerp_vector(glm::vec2 a, glm::vec2 b, uv uv)
     {
-        return { a.x * uv.x + b.x * uv.y, a.y * uv.x + b.y * uv.y };
+        return { a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
     }
 
     // Cantor pairing function, ((N, N) -> N) mapping function
@@ -80,7 +84,7 @@ namespace spe
 
     Polygon create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
 
-    Polygon create_regular_polygon(size_t radius, uint32_t num_vertices = 0, uint32_t initial_angle = 0, float density = DEFAULT_DENSITY);
+    Polygon create_regular_polygon(size_t radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
 
     Mesh generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count = 16);
 

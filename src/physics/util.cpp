@@ -69,7 +69,7 @@ spe::Polygon spe::create_random_convex_body(float radius, uint32_t num_vertices,
     return Polygon(vertices, Dynamic, true, density);
 }
 
-spe::Polygon spe::create_regular_polygon(size_t radius, uint32_t num_vertices, uint32_t initial_angle, float density)
+spe::Polygon spe::create_regular_polygon(size_t radius, uint32_t num_vertices, float initial_angle, float density)
 {
     if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
 
@@ -101,7 +101,7 @@ Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_
 
     if (bodyType == typeid(Circle))
     {
-        Circle& c = dynamic_cast<Circle&>(body);
+        Circle& c = static_cast<Circle&>(body);
 
         float radius = c.GetRadius();
 
@@ -128,7 +128,7 @@ Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_
     }
     else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
     {
-        Polygon& p = dynamic_cast<Polygon&>(body);
+        Polygon& p = static_cast<Polygon&>(body);
 
         auto& vertices2 = p.GetVertices();
 

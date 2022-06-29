@@ -3,12 +3,13 @@
 #include "../common.h"
 #include "../entity.h"
 #include "settings.h"
+#include "../rendering/mesh.h"
 
 namespace spe
 {
     struct Node;
 
-    enum Type : uint8_t
+    enum BodyType : uint8_t
     {
         Static,
         Dynamic,
@@ -20,7 +21,14 @@ namespace spe
         friend class AABBTree;
 
     public:
-        RigidBody(Type _type);
+        RigidBody(BodyType _type);
+        ~RigidBody() noexcept;
+
+        RigidBody(RigidBody&) = delete;
+        RigidBody& operator=(RigidBody&) = delete;
+
+        RigidBody(RigidBody&& _other) noexcept;
+        RigidBody& operator=(RigidBody&& _other) noexcept;
 
         const Node* GetNode();
 
@@ -57,7 +65,7 @@ namespace spe
         float GetTorque();
         void SetTorque(float _torque);
 
-        Type GetType();
+        BodyType GetType();
 
     protected:
         // Center of mass in local space = (0, 0)
@@ -77,9 +85,11 @@ namespace spe
         float restitution{ DEFAULT_RESTITUTION };
         float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
 
-        Type type;
+        BodyType type;
 
     private:
+        bool moved{ false };
+
         int32_t id{ -1 };
         uint32_t islandID{ 0 };
 
@@ -90,5 +100,6 @@ namespace spe
         bool sleeping{ false };
 
         Node* node{ nullptr };
+        Mesh* mesh{ nullptr };
     };
 }

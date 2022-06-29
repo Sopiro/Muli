@@ -2,7 +2,7 @@
 
 using namespace spe;
 
-Circle::Circle(float _radius, Type _type, float _density) :
+Circle::Circle(float _radius, BodyType _type, float _density) :
     RigidBody(std::move(_type)),
     radius{ std::move(_radius) }
 {

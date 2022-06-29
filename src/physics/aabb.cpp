@@ -15,7 +15,7 @@ AABB spe::createAABB(RigidBody& body, float margin)
 
     if (bodyType == typeid(Circle))
     {
-        Circle& c = dynamic_cast<Circle&>(body);
+        Circle& c = static_cast<Circle&>(body);
 
         float radius = c.GetRadius();
 
@@ -27,7 +27,7 @@ AABB spe::createAABB(RigidBody& body, float margin)
     }
     else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
     {
-        Polygon& p = dynamic_cast<Polygon&>(body);
+        Polygon& p = static_cast<Polygon&>(body);
 
         auto localToGlobal = p.LocalToGlobal();
 
