@@ -82,11 +82,11 @@ namespace spe
         return (a + b) / 2.0f;
     }
 
-    Polygon create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
+    Polygon* create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
 
-    Polygon create_regular_polygon(size_t radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
+    Polygon* create_regular_polygon(size_t radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
 
-    Mesh generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count = 16);
+    std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count = 16);
 
     std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices);
 }

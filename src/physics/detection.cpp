@@ -16,9 +16,9 @@ namespace spe
     };
 
     // Returns the fardest vertex in the 'dir' direction
-    static SupportResult support(RigidBody& b, glm::vec2 dir)
+    static SupportResult support(RigidBody* b, glm::vec2 dir)
     {
-        auto& type = typeid(b);
+        auto& type = typeid(*b);
 
         dir = glm::normalize(dir);
 
@@ -26,8 +26,8 @@ namespace spe
         {
             int32_t idx = 0;
 
-            Polygon& p = static_cast<Polygon&>(b);
-            const std::vector<glm::vec2>& vertices = p.GetVertices();
+            Polygon* p = static_cast<Polygon*>(b);
+            const std::vector<glm::vec2>& vertices = p->GetVertices();
             float maxValue = glm::dot(dir, vertices[idx]);
 
             for (int32_t i = 1; i < vertices.size(); i++)
@@ -45,9 +45,9 @@ namespace spe
         }
         else if (type == typeid(Circle))
         {
-            Circle& c = static_cast<Circle&>(b);
+            Circle* c = static_cast<Circle*>(b);
 
-            return { dir * c.GetRadius(), -1 };
+            return { dir * c->GetRadius(), -1 };
         }
         else
         {
@@ -61,16 +61,16 @@ namespace spe
     * Minkowski Difference : A ⊖ B = {Pa - Pb| Pa ∈ A, Pb ∈ B}
     * CSO stands for Configuration Space Object
     */
-    static glm::vec2 cso_support(RigidBody& b1, RigidBody& b2, glm::vec2 dir)
+    static glm::vec2 cso_support(RigidBody* b1, RigidBody* b2, glm::vec2 dir)
     {
-        const glm::vec2 localDirP1 = glm::mul(b1.GlobalToLocal(), dir, 0);
-        const glm::vec2 localDirP2 = glm::mul(b2.GlobalToLocal(), -dir, 0);
+        const glm::vec2 localDirP1 = glm::mul(b1->GlobalToLocal(), dir, 0);
+        const glm::vec2 localDirP2 = glm::mul(b2->GlobalToLocal(), -dir, 0);
 
         glm::vec2 supportP1 = support(b1, localDirP1).vertex;
         glm::vec2 supportP2 = support(b2, localDirP2).vertex;
 
-        supportP1 = b1.LocalToGlobal() * supportP1;
-        supportP2 = b2.LocalToGlobal() * supportP2;
+        supportP1 = b1->LocalToGlobal() * supportP1;
+        supportP2 = b2->LocalToGlobal() * supportP2;
 
         return supportP1 - supportP2;
     }
@@ -81,7 +81,7 @@ namespace spe
         Simplex simplex;
     };
 
-    static GJKResult gjk(RigidBody& b1, RigidBody& b2)
+    static GJKResult gjk(RigidBody* b1, RigidBody* b2)
     {
         constexpr glm::vec2 origin{ 0.0f };
         glm::vec2 dir{ 1.0f, 0.0f }; // Random initial direction
@@ -139,7 +139,7 @@ namespace spe
         glm::vec2 contactNormal;
     };
 
-    static EPAResult epa(RigidBody& b1, RigidBody& b2, Simplex& gjkResult)
+    static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
     {
         Polytope polytope{ gjkResult };
 
@@ -167,17 +167,17 @@ namespace spe
         return { closestEdge.distance, closestEdge.normal };
     }
 
-    static Edge find_farthest_edge(RigidBody& b, const glm::vec2& dir)
+    static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
     {
-        glm::vec2 localDir = glm::mul(b.GlobalToLocal(), dir, 0);
+        glm::vec2 localDir = glm::mul(b->GlobalToLocal(), dir, 0);
         SupportResult farthest = support(b, localDir);
 
         glm::vec2 curr = farthest.vertex;
         int32_t idx = farthest.index;
 
-        glm::mat3 localToGlobal = b.LocalToGlobal();
+        glm::mat3 localToGlobal = b->LocalToGlobal();
 
-        auto& typeID = typeid(b);
+        auto& typeID = typeid(*b);
         if (typeID == typeid(Circle))
         {
             curr = localToGlobal * curr;
@@ -187,10 +187,10 @@ namespace spe
         }
         else if (typeID == typeid(Polygon) || typeID == typeid(Box))
         {
-            Polygon& p = static_cast<Polygon&>(b);
+            Polygon* p = static_cast<Polygon*>(b);
 
-            const std::vector<glm::vec2>& vertices = p.GetVertices();
-            size_t vertexCount = p.VertexCount();
+            const std::vector<glm::vec2>& vertices = p->GetVertices();
+            size_t vertexCount = p->VertexCount();
 
             const glm::vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
             const glm::vec2& next = vertices[(idx + 1) % vertexCount];
@@ -210,6 +210,7 @@ namespace spe
         }
         else
         {
+            SPDLOG_INFO("here");
             throw std::exception("Not a supported shape");
         }
     }
@@ -249,7 +250,7 @@ namespace spe
         }
     }
 
-    static std::vector<ContactPoint> find_contact_points(const glm::vec2& n, RigidBody& a, RigidBody& b)
+    static std::vector<ContactPoint> find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b)
     {
         Edge edgeA = find_farthest_edge(a, n);
         Edge edgeB = find_farthest_edge(b, -n);
@@ -288,15 +289,15 @@ namespace spe
         return contactPoints;
     }
 
-    std::optional<ContactManifold> spe::detect_collision(RigidBody& a, RigidBody& b)
+    std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
     {
         ContactManifold res{};
 
         // Circle vs. Circle collision
         if (typeid(a) == typeid(Circle) && typeid(b) == typeid(Circle))
         {
-            float d = glm::distance2(a.position, b.position);
-            float r2 = static_cast<Circle&>(a).GetRadius() + static_cast<Circle&>(b).GetRadius();
+            float d = glm::distance2(a->position, b->position);
+            float r2 = static_cast<Circle*>(a)->GetRadius() + static_cast<Circle*>(b)->GetRadius();
 
             if (d > r2 * r2)
             {
@@ -306,18 +307,18 @@ namespace spe
             {
                 d = glm::sqrt(d);
 
-                res.bodyA = &a;
-                res.bodyB = &b;
-                res.contactNormal = glm::normalize(b.position - a.position);
-                res.contantPoints.push_back({ a.position + (res.contactNormal * static_cast<Circle&>(a).GetRadius()), -1 });
+                res.bodyA = a;
+                res.bodyB = b;
+                res.contactNormal = glm::normalize(b->position - a->position);
+                res.contantPoints.push_back({ a->position + (res.contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 });
                 res.penetrationDepth = r2 - d;
                 res.featureFlipped = false;
 
                 if (glm::dot(res.contactNormal, glm::vec2{ 0, -1 }) < 0)
                 {
                     res.contactNormal *= -1;
-                    res.bodyA = &b;
-                    res.bodyB = &a;
+                    res.bodyA = b;
+                    res.bodyB = a;
                     res.featureFlipped = true;
                 }
 
@@ -364,8 +365,8 @@ namespace spe
 
             EPAResult epaResult = epa(a, b, gjkResult.simplex);
 
-            res.bodyA = &a;
-            res.bodyB = &b;
+            res.bodyA = a;
+            res.bodyB = b;
             res.contactNormal = epaResult.contactNormal;
             res.penetrationDepth = epaResult.penetrationDepth;
             res.featureFlipped = false;
@@ -373,8 +374,8 @@ namespace spe
             // Apply axis weight to improve coherence
             if (glm::dot(epaResult.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0)
             {
-                res.bodyA = &b;
-                res.bodyB = &a;
+                res.bodyA = b;
+                res.bodyB = a;
                 res.contactNormal *= -1;
                 res.featureFlipped = true;
             }

@@ -15,7 +15,7 @@ namespace spe
 
         Node(const Node&) noexcept = delete;
         Node& operator=(const Node&) noexcept = delete;
-        
+
         Node(Node&&) noexcept = default;
         Node& operator=(Node&&) noexcept = default;
 
@@ -44,7 +44,7 @@ namespace spe
 
         void Reset();
 
-        const Node* Add(RigidBody& body);
+        const Node* Add(RigidBody* body);
         void Remove(const Node* node);
 
         // BFS tree traversal
@@ -58,12 +58,13 @@ namespace spe
         float GetTreeCost();
     private:
         uint32_t nodeID = 0;
+        std::vector<Node*> nodes{};
 
         Node* root = nullptr;
         float aabbMargin = 0.05f;
 
         void Rotate(Node* node);
         void Swap(Node* node1, Node* node2);
-        void CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::set<uint32_t>& checked);
+        void CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked);
     };
 }

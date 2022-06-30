@@ -1,13 +1,13 @@
-#include "myshader.h"    
+#include "rigidbody_shader.h"    
 
 using namespace spe;
 
-std::unique_ptr<MyShader> MyShader::Create()
+std::unique_ptr<RigidBodyShader> RigidBodyShader::Create()
 {
-    return std::unique_ptr<MyShader>(new MyShader);
+    return std::unique_ptr<RigidBodyShader>(new RigidBodyShader);
 }
 
-MyShader::MyShader() : Shader(
+RigidBodyShader::RigidBodyShader() : Shader(
     // Vertex shader
     R"(
         #version 330 core
@@ -54,25 +54,25 @@ MyShader::MyShader() : Shader(
     uniformMap.insert({"proj", glGetUniformLocation(shaderHandle, "proj")});
 }
 
-void MyShader::SetColor(glm::vec3 _color)
+void RigidBodyShader::SetColor(glm::vec3 _color)
 {
     color = std::move(_color);
     glUniform3fv(uniformMap["color"], 1, &color.r);
 }
 
-void MyShader::SetModelMatrix(glm::mat4 _modelMatrix)
+void RigidBodyShader::SetModelMatrix(glm::mat4 _modelMatrix)
 {
     modelMatrix = std::move(_modelMatrix);
     glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, glm::value_ptr(modelMatrix));
 }
 
-void MyShader::SetViewMatrix(glm::mat4 _viewMatrix)
+void RigidBodyShader::SetViewMatrix(glm::mat4 _viewMatrix)
 {
     viewMatrix = std::move(_viewMatrix);
     glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, glm::value_ptr(viewMatrix));
 }
 
-void MyShader::SetProjectionMatrix(glm::mat4 _projMatrix)
+void RigidBodyShader::SetProjectionMatrix(glm::mat4 _projMatrix)
 {
     projMatrix = std::move(_projMatrix);
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));

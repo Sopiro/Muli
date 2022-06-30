@@ -24,8 +24,8 @@ namespace spe
         RigidBody(BodyType _type);
         ~RigidBody() noexcept;
 
-        RigidBody(RigidBody&) = delete;
-        RigidBody& operator=(RigidBody&) = delete;
+        RigidBody(const RigidBody&) = delete;
+        RigidBody& operator=(const RigidBody&) = delete;
 
         RigidBody(RigidBody&& _other) noexcept;
         RigidBody& operator=(RigidBody&& _other) noexcept;
@@ -100,6 +100,5 @@ namespace spe
         bool sleeping{ false };
 
         Node* node{ nullptr };
-        Mesh* mesh{ nullptr };
     };
 }

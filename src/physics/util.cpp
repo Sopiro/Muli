@@ -40,7 +40,7 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
     return inertia;
 }
 
-spe::Polygon spe::create_random_convex_body(float radius, uint32_t num_vertices, float density)
+spe::Polygon* spe::create_random_convex_body(float radius, uint32_t num_vertices, float density)
 {
     if (num_vertices < 3)
         num_vertices = glm::linearRand<uint32_t>(3, 8);
@@ -66,10 +66,10 @@ spe::Polygon spe::create_random_convex_body(float radius, uint32_t num_vertices,
         vertices.push_back(corner);
     }
 
-    return Polygon(vertices, Dynamic, true, density);
+    return new Polygon(vertices, Dynamic, true, density);
 }
 
-spe::Polygon spe::create_regular_polygon(size_t radius, uint32_t num_vertices, float initial_angle, float density)
+spe::Polygon* spe::create_regular_polygon(size_t radius, uint32_t num_vertices, float initial_angle, float density)
 {
     if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
 
@@ -92,10 +92,10 @@ spe::Polygon spe::create_regular_polygon(size_t radius, uint32_t num_vertices, f
         vertices.push_back(corner);
     }
 
-    return Polygon(vertices, Dynamic, true, density);
+    return new Polygon(vertices, Dynamic, true, density);
 }
 
-Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count)
+std::unique_ptr<Mesh> spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count)
 {
     auto& bodyType = typeid(body);
 
@@ -124,7 +124,7 @@ Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_
 
         std::vector<uint32_t> indices = triangulate(texCoords);
 
-        return Mesh{ vertices, texCoords, indices };
+        return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
     else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
     {
@@ -142,7 +142,7 @@ Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_
 
         std::vector<uint32_t> indices = triangulate(vertices2);
 
-        return Mesh{ vertices3, vertices2, indices };
+        return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
     else
     {
@@ -150,7 +150,7 @@ Mesh spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_
     }
 }
 
-inline static uint32_t get_next(std::set<uint32_t>& done, uint32_t i, uint32_t count, uint32_t step = 1)
+inline static uint32_t get_next(std::unordered_set<uint32_t>& done, uint32_t i, uint32_t count, uint32_t step = 1)
 {
     uint32_t i1 = (i + step) % count;
 
@@ -170,7 +170,7 @@ std::vector<uint32_t> spe::triangulate(const std::vector<glm::vec2>& vertices)
 
     indices.reserve((count - 2) * 3);
 
-    std::set<uint32_t> done;
+    std::unordered_set<uint32_t> done;
 
     uint32_t prev = count;
     uint32_t i0 = 0;

@@ -28,12 +28,14 @@ RigidBody::~RigidBody()
 
 RigidBody::RigidBody(RigidBody&& _other) noexcept
 {
-    *this = (RigidBody&&)_other;
+    *this = std::move(_other);
 }
 
 RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
 {
-    moved = true;
+    if (this == &_other) return *this;
+    
+    _other.moved = true;
 
     //private member
     id = _other.id;
@@ -46,9 +48,7 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     sleeping = _other.sleeping;
 
     node = _other.node;
-    mesh = _other.mesh;
     _other.node = nullptr;
-    _other.mesh = nullptr;
 
     //protected member
     force = _other.force;

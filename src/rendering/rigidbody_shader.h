@@ -5,10 +5,12 @@
 
 namespace spe
 {
-    class MyShader final : public Shader
+    class RigidBodyShader final : public Shader
     {
+        friend class RigidBodyRenderer;
+
     public:
-        static std::unique_ptr<MyShader> MyShader::Create();
+        static std::unique_ptr<RigidBodyShader> RigidBodyShader::Create();
 
         void SetColor(glm::vec3 _color);
         void SetViewMatrix(glm::mat4 _viewMatrix);
@@ -16,7 +18,7 @@ namespace spe
         void SetModelMatrix(glm::mat4 _modelMatrix);
 
     private:
-        MyShader();
+        RigidBodyShader();
 
         // uniforms 
         glm::vec3 color{ 0.0f };

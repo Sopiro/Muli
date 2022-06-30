@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Variables
-set(PROJECT_NAME cpphysics)
+set(PROJECT_NAME spe)
 set(CMAKE_CXX_STANDARD 17)
 
 set(WINDOW_TITLE "Physics engine")
@@ -11,30 +11,31 @@ set(WINDOW_HEIGHT 720)
 project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/common.h
-    src/window.cpp src/window.h
-    src/application.cpp src/application.h
-    src/input.cpp src/input.h
-    src/game.cpp src/game.h
-    src/entity.cpp src/entity.h
-    src/camera.cpp src/camera.h
+    src/window.cpp
+    src/application.cpp
+    src/input.cpp
+    src/game.cpp
+    src/entity.cpp
+    src/camera.cpp
 
-    src/rendering/shader.cpp src/rendering/shader.h
-    src/rendering/myshader.cpp src/rendering/myshader.h
-    src/rendering/mesh.cpp src/rendering/mesh.h
+    src/rendering/rigidbody_renderer.cpp
+    src/rendering/shader.cpp
+    src/rendering/rigidbody_shader.cpp
+    src/rendering/mesh.cpp
 
-    src/physics/rigidbody.cpp src/physics/rigidbody.h
-    src/physics/polygon.cpp src/physics/polygon.h
-    src/physics/circle.cpp src/physics/circle.h
-    src/physics/box.cpp src/physics/box.h
-    src/physics/settings.h
-    src/physics/util.cpp src/physics/util.h
-    src/physics/aabb.cpp src/physics/aabb.h
-    src/physics/aabbtree.cpp src/physics/aabbtree.h
-    src/physics/detection.cpp src/physics/detection.h
-    src/physics/simplex.cpp src/physics/simplex.h
-    src/physics/polytope.cpp src/physics/polytope.h
-    src/physics/edge.cpp src/physics/edge.h
+    src/physics/rigidbody.cpp
+    src/physics/polygon.cpp
+    src/physics/circle.cpp
+    src/physics/box.cpp
+    src/physics/util.cpp
+    src/physics/aabb.cpp
+    src/physics/aabbtree.cpp
+    src/physics/detection.cpp
+    src/physics/simplex.cpp
+    src/physics/polytope.cpp
+    src/physics/edge.cpp
+
+    src/physics/world.cpp
 )
 
 include(Dependency.cmake)

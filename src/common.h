@@ -19,12 +19,12 @@
 #include <vector>
 #include <typeinfo>
 #include <queue>
-#include <set>
+#include <unordered_set>
+#include <unordered_map>
 #include <numeric>
 #include <algorithm>
 #include <limits>
 #include <optional>
-
 
 // Some useful operator overloading for glm containers
 namespace glm

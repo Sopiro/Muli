@@ -7,11 +7,12 @@ Node::Node(uint32_t _id, AABB&& _aabb, bool _isLeaf) :
     aabb{ std::move(_aabb) },
     isLeaf{ std::move(_isLeaf) }
 {
+
 }
 
 AABBTree::AABBTree()
 {
-
+    nodes.reserve(100);
 }
 
 AABBTree::~AABBTree()
@@ -21,27 +22,23 @@ AABBTree::~AABBTree()
 
 void AABBTree::Reset()
 {
-    Traverse
-    (
-        [](const Node* node) -> void
-        {
-            delete node;
-        }
-    );
-
     nodeID = 0;
     root = nullptr;
+
+    for (Node* n : nodes)
+        delete n;
 }
 
-const Node* AABBTree::Add(RigidBody& body)
+const Node* AABBTree::Add(RigidBody* body)
 {
-    AABB aabb = createAABB(body, body.GetType() == Static ? 0.0f : aabbMargin);
+    AABB aabb = createAABB(*body, body->GetType() == Static ? 0.0f : aabbMargin);
 
     Node* newNode = new Node(nodeID++, std::move(aabb), true);
+    nodes.push_back(newNode);
 
-    newNode->body = &body;
+    newNode->body = body;
 
-    body.node = newNode;
+    body->node = newNode;
 
     if (root == nullptr)
     {
@@ -95,6 +92,8 @@ const Node* AABBTree::Add(RigidBody& body)
         // Create a new parent
         Node* oldParent = bestSibling->parent;
         Node* newParent = new Node(nodeID++, unionOf(aabb, bestSibling->aabb), false);
+        nodes.push_back(newParent);
+
         newParent->parent = oldParent;
 
         if (oldParent != nullptr)
@@ -322,12 +321,12 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback)
 {
     if (root == nullptr) return;
 
-    std::queue<Node*> q;
+    std::queue<const Node*> q;
     q.push(root);
 
     while (q.size() != 0)
     {
-        Node* current = q.front();
+        const Node* current = q.front();
         q.pop();
 
         if (current == nullptr) break;
@@ -350,7 +349,7 @@ std::vector<std::pair<const RigidBody*, const RigidBody*>> AABBTree::GetCollisio
 
     pairs.reserve(nodeID / 2 + 1);
 
-    std::set<uint32_t> checked;
+    std::unordered_set<uint32_t> checked;
 
     if (!root->isLeaf)
     {
@@ -360,7 +359,7 @@ std::vector<std::pair<const RigidBody*, const RigidBody*>> AABBTree::GetCollisio
     return pairs;
 }
 
-void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::set<uint32_t>& checked)
+void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked)
 {
     const uint32_t key = make_pair_natural(a->id, b->id);
 

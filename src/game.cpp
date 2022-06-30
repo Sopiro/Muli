@@ -7,13 +7,9 @@ using namespace spe;
 Game::Game(Application& _app) :
     app{ _app }
 {
-    // Set up shader parameters
-    s = MyShader::Create();
-    s->Use();
+    glm::vec2 windowSize = Window::Get().GetWindowSize();
 
     UpdateProjectionMatrix();
-    s->SetViewMatrix(glm::translate(glm::mat4{ 1.0 }, glm::vec3(0, 0, -1)));
-
     Window::Get().SetFramebufferSizeChangeCallback
     (
         [&](int width, int height) -> void
@@ -23,26 +19,21 @@ Game::Game(Application& _app) :
         }
     );
 
-    // meshes.push_back(generate_mesh_from_rigidbody(create_regular_polygon(2, 7)));
-    meshes.push_back(generate_mesh_from_rigidbody(create_random_convex_body(2)));
+    camera.position = glm::vec2{ 0, 0 };
+    camera.scale = glm::vec2{ 1, 1 };
+    renderer.SetViewMatrix(camera.CameraTransform());
 
-    Box b1{ 1, 1 };
-    Box b2{ 1, 1 };
-    b1.Rotate(0.1f);
-    b1.Translate({ 0.4, 0.4 });
+    bodies.push_back(new Box{ .5f, .5f });
 
-    auto res = detect_collision(b1, b2);
+    world.Register(bodies);
+    renderer.Register(bodies);
+}
 
-    SPDLOG_INFO("------------------");
-    if (res)
+Game::~Game() noexcept
+{
+    for (RigidBody* body : bodies)
     {
-        SPDLOG_INFO(glm::to_string(res->contactNormal));
-        SPDLOG_INFO(res->penetrationDepth);
-        for (size_t i = 0; i < res->contantPoints.size(); i++)
-        {
-            SPDLOG_INFO("contact point {}: {}", i, glm::to_string(res->contantPoints[i].point));
-        }
-        SPDLOG_INFO(res->featureFlipped);
+        delete body;
     }
 }
 
@@ -50,11 +41,27 @@ void Game::Update(float dt)
 {
     time += dt;
 
+    HandleInput();
+    world.Update(1.0f / dt);
+}
+
+void Game::HandleInput()
+{
+    glm::vec2 mpos = renderer.Pick();
+
+    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        RigidBody* b = create_random_convex_body(1.0f);
+        b->position = mpos;
+
+        bodies.push_back(b);
+
+        world.Register(b);
+        renderer.Register(b);
+    }
+
     if (Input::GetMouseScroll().y != 0)
     {
-        zoom += Input::GetMouseScroll().y * 10;
-        zoom = glm::clamp<float>(zoom, 10, 500);
-        UpdateProjectionMatrix();
     }
 
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
@@ -77,12 +84,11 @@ void Game::Update(float dt)
 
         ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
 
-        ImGui::Separator();
-
-        if (ImGui::SliderFloat("Zoom", &zoom, 10, 500))
-        {
-            UpdateProjectionMatrix();
-        }
+        // ImGui::Separator();
+        // if (ImGui::SliderFloat("Zoom", &zoom, 10, 500))
+        // {
+        //     UpdateProjectionMatrix();
+        // }
 
         ImGui::Separator();
 
@@ -93,31 +99,13 @@ void Game::Update(float dt)
 
 void Game::Render()
 {
-    s->Use();
-    {
-        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, glm::radians(0.0f * 90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        s->SetModelMatrix(t * r);
-
-        for (size_t i = 0; i < meshes.size(); i++)
-        {
-            if (!drawOutlineOnly)
-            {
-                s->SetColor({ 1, 1, 1 });
-                meshes[i].Draw(GL_TRIANGLES);
-            }
-            glLineWidth(1.5f);
-            s->SetColor({ 0, 0, 0 });
-            meshes[i].Draw(GL_LINE_LOOP);
-        }
-    }
+    renderer.Render();
 }
 
 void Game::UpdateProjectionMatrix()
 {
     glm::vec2 windowSize = Window::Get().GetWindowSize();
-    windowSize /= zoom;
+    windowSize /= 100.0f;
 
-    s->SetProjectionMatrix(glm::ortho(-windowSize.x, windowSize.x, -windowSize.y, windowSize.y, 0.0f, 100.0f));
+    renderer.SetProjectionMatrix(glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f));
 }

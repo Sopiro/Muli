@@ -22,6 +22,6 @@ namespace spe
         bool featureFlipped;
     };
 
-    std::optional<ContactManifold> detect_collision(RigidBody& a, RigidBody& b);
+    std::optional<ContactManifold> detect_collision(RigidBody* a, RigidBody* b);
     bool test_point_inside(RigidBody& body, const glm::vec2& point);
 }

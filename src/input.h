@@ -48,6 +48,21 @@ namespace spe
             return !currKeys[key] && lastKeys[key];
         }
 
+        inline static bool IsMouseDown(int button)
+        {
+            return currBtns[button];
+        }
+
+        inline static bool IsMousePressed(int button)
+        {
+            return currBtns[button] && !lastBtns[button];
+        }
+
+        inline static bool IsMouseReleased(int button)
+        {
+            return !currBtns[button] && lastBtns[button];
+        }
+
         inline static glm::vec2 GetMousePosition()
         {
             return currMousePos;
