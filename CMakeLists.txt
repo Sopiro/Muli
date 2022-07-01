@@ -18,10 +18,12 @@ add_executable(${PROJECT_NAME}
     src/entity.cpp
     src/camera.cpp
 
-    src/rendering/rigidbody_renderer.cpp
     src/rendering/shader.cpp
     src/rendering/rigidbody_shader.cpp
+    src/rendering/rigidbody_renderer.cpp
     src/rendering/mesh.cpp
+    src/rendering/dynamic_shader.cpp
+    src/rendering/dynamic_renderer.cpp
 
     src/physics/rigidbody.cpp
     src/physics/polygon.cpp

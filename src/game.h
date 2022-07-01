@@ -3,6 +3,7 @@
 #include "common.h"
 #include "entity.h"
 #include "rendering/rigidbody_renderer.h"
+#include "rendering/dynamic_renderer.h"
 #include "physics/polygon.h"
 #include "physics/circle.h"
 #include "physics/box.h"
@@ -36,13 +37,16 @@ namespace spe
     private:
         Application& app;
 
-        bool drawOutlineOnly = false;
-
         std::set<RigidBody*> bodies{};
-        Camera camera{};
         World world{};
-        RigidBodyRenderer renderer{};
+        Camera camera{};
+        RigidBodyRenderer rRenderer{};
+        DynamicRenderer dRenderer{};
 
         float time{ 0.0f };
+        glm::vec2 mpos{ 0.0f };
+
+        bool drawOutlineOnly = false;
+        bool showBVH = false;
     };
 }

@@ -309,7 +309,7 @@ void AABBTree::Swap(Node* node1, Node* node2)
     node1->parent = parent2;
 }
 
-void AABBTree::Traverse(std::function<void(const Node*)> callback)
+void AABBTree::Traverse(std::function<void(const Node*)> callback) const
 {
     if (root == nullptr) return;
 
@@ -399,7 +399,7 @@ void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<const Rigi
     }
 }
 
-std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point)
+std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point) const
 {
     std::vector<Node*> res;
 
@@ -430,7 +430,7 @@ std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point)
     return res;
 }
 
-std::vector<Node*> AABBTree::QueryRegion(const AABB& region)
+std::vector<Node*> AABBTree::QueryRegion(const AABB& region) const
 {
     std::vector<Node*> res;
 
@@ -461,7 +461,7 @@ std::vector<Node*> AABBTree::QueryRegion(const AABB& region)
     return res;
 }
 
-float AABBTree::GetTreeCost()
+float AABBTree::GetTreeCost() const
 {
     float res = 0;
 

@@ -48,14 +48,14 @@ namespace spe
         void Remove(RigidBody* body);
 
         // BFS tree traversal
-        void Traverse(std::function<void(const Node*)> callback);
+        void Traverse(std::function<void(const Node*)> callback) const;
 
         std::vector<std::pair<const RigidBody*, const RigidBody*>> GetCollisionPairs();
 
-        std::vector<Node*> QueryPoint(const glm::vec2& point);
-        std::vector<Node*> QueryRegion(const AABB& region);
+        std::vector<Node*> QueryPoint(const glm::vec2& point) const;
+        std::vector<Node*> QueryRegion(const AABB& region)  const;
 
-        float GetTreeCost();
+        float GetTreeCost() const;
     private:
         uint32_t nodeID = 0;
 

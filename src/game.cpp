@@ -27,7 +27,7 @@ Game::Game(Application& _app) :
     bodies.insert(b);
 
     world.Register(b);
-    renderer.Register(b);
+    rRenderer.Register(b);
 }
 
 Game::~Game() noexcept
@@ -48,75 +48,78 @@ void Game::Update(float dt)
 
 void Game::HandleInput()
 {
-    glm::vec2 mpos = renderer.Pick(Input::GetMousePosition());
-
-    if (Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
-        RigidBody* b = create_random_convex_body(1.0f);
-        b->position = mpos;
+        mpos = rRenderer.Pick(Input::GetMousePosition());
 
-        bodies.insert(b);
-        world.Register(b);
-        renderer.Register(b);
-    }
-
-    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-    {
-        auto q = world.QueryPoint(mpos);
-
-        world.Unregister(q);
-        renderer.Unregister(q);
-
-        for (auto b : q)
+        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            auto it = std::find(bodies.begin(), bodies.end(), b);
-            bodies.erase(it);
+            RigidBody* b = new Box(1, 1);
+            b->position = mpos;
 
-            delete b;
-        }
-    }
-
-    if (Input::GetMouseScroll().y != 0)
-    {
-        camera.scale += -Input::GetMouseScroll().y * 0.1f;
-
-        camera.scale = glm::clamp(camera.scale, glm::vec2{ 0.1f }, glm::vec2{ FLT_MAX });
-    }
-
-    // Camera moving
-    {
-        static bool cameraMove = false;
-        static glm::vec2 cursorStart;
-        static glm::vec2 cameraPosStart;
-
-        if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-        {
-            cameraMove = true;
-            cursorStart = Input::GetMousePosition();
-            cameraPosStart = camera.position;
-        }
-        else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
-        {
-            cameraMove = false;
+            bodies.insert(b);
+            world.Register(b);
+            rRenderer.Register(b);
         }
 
-        if (cameraMove)
+        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            glm::vec2 dist = Input::GetMousePosition() - cursorStart;
-            dist.x *= 0.01f * -camera.scale.x;
-            dist.y *= 0.01f * camera.scale.y;
-            camera.position = cameraPosStart + dist;
+            auto q = world.QueryPoint(mpos);
+
+            world.Unregister(q);
+            rRenderer.Unregister(q);
+
+            for (auto b : q)
+            {
+                auto it = std::find(bodies.begin(), bodies.end(), b);
+                bodies.erase(it);
+
+                delete b;
+            }
+        }
+
+        if (Input::GetMouseScroll().y != 0)
+        {
+            camera.scale += -Input::GetMouseScroll().y * 0.1f;
+
+            camera.scale = glm::clamp(camera.scale, glm::vec2{ 0.1f }, glm::vec2{ FLT_MAX });
+        }
+
+        // Camera moving
+        {
+            static bool cameraMove = false;
+            static glm::vec2 cursorStart;
+            static glm::vec2 cameraPosStart;
+
+            if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+            {
+                cameraMove = true;
+                cursorStart = Input::GetMousePosition();
+                cameraPosStart = camera.position;
+            }
+            else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
+            {
+                cameraMove = false;
+            }
+
+            if (cameraMove)
+            {
+                glm::vec2 dist = Input::GetMousePosition() - cursorStart;
+                dist.x *= 0.01f * -camera.scale.x;
+                dist.y *= 0.01f * camera.scale.y;
+                camera.position = cameraPosStart + dist;
+            }
         }
     }
 
     // ImGui Window
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
-    ImGui::SetNextWindowSize({ 400, 200 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 400, 250 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
         static int f = 144;
-        if (ImGui::SliderInt("Frame rate", &f, 30, 300))
+        if (ImGui::SliderInt("Frame rate", &f, 10, 300))
         {
             app.SetFrameRate(f);
         }
@@ -131,6 +134,7 @@ void Game::HandleInput()
         ImGui::Separator();
 
         ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
+        ImGui::Checkbox("Show BVH", &showBVH);
 
         ImGui::Separator();
         ImGui::Text("Body count: %d", bodies.size());
@@ -140,9 +144,30 @@ void Game::HandleInput()
 
 void Game::Render()
 {
-    renderer.SetViewMatrix(camera.CameraTransform());
-    renderer.SetDrawOutlined(drawOutlineOnly);
-    renderer.Render();
+    rRenderer.SetViewMatrix(camera.CameraTransform());
+    rRenderer.SetDrawOutlined(drawOutlineOnly);
+    rRenderer.Render();
+
+    if (showBVH)
+    {
+        const AABBTree& tree = world.GetBVH();
+        std::vector<glm::vec2> v{};
+        tree.Traverse([&](const Node* n)->void
+            {
+                v.push_back(n->aabb.min);
+                v.push_back({ n->aabb.max.x, n->aabb.min.y });
+                v.push_back({ n->aabb.max.x, n->aabb.min.y });
+                v.push_back(n->aabb.max);
+                v.push_back(n->aabb.max);
+                v.push_back({ n->aabb.min.x, n->aabb.max.y });
+                v.push_back({ n->aabb.min.x, n->aabb.max.y });
+                v.push_back(n->aabb.min);
+            });
+
+        glLineWidth(1.0f);
+        dRenderer.SetViewMatrix(camera.CameraTransform());
+        dRenderer.Draw(v, GL_LINES);
+    }
 }
 
 void Game::UpdateProjectionMatrix()
@@ -150,5 +175,7 @@ void Game::UpdateProjectionMatrix()
     glm::vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= 100.0f;
 
-    renderer.SetProjectionMatrix(glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f));
+    glm::mat4 projMatrix = glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
+    rRenderer.SetProjectionMatrix(projMatrix);
+    dRenderer.SetProjectionMatrix(projMatrix);
 }

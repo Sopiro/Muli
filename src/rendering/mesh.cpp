@@ -31,7 +31,6 @@ Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, 
         glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     }
     glBindVertexArray(0);
 
@@ -93,4 +92,5 @@ void Mesh::Draw(GLenum drawMode)
         SPDLOG_ERROR("Not a support draw mode");
         break;
     }
+    glBindVertexArray(0);
 }

@@ -1,6 +1,5 @@
 #include "rigidbody_renderer.h"
 #include "../physics/util.h"
-#include "../input.h"
 #include "../window.h"
 
 using namespace spe;
@@ -76,11 +75,13 @@ void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
 
 void RigidBodyRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
 {
+    shader->Use();
     shader->SetProjectionMatrix(std::move(_projMatrix));
 }
 
 void RigidBodyRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
 {
+    shader->Use();
     shader->SetViewMatrix(std::move(_viewMatrix));
 }
 
