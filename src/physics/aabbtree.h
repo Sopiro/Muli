@@ -45,15 +45,15 @@ namespace spe
         void Reset();
 
         const Node* Add(RigidBody* body);
-        void Remove(const Node* node);
+        void Remove(RigidBody* body);
 
         // BFS tree traversal
         void Traverse(std::function<void(const Node*)> callback);
 
         std::vector<std::pair<const RigidBody*, const RigidBody*>> GetCollisionPairs();
 
-        std::vector<const Node*> QueryPoint(const glm::vec2& point);
-        std::vector<const Node*> QueryRegion(const AABB& region);
+        std::vector<Node*> QueryPoint(const glm::vec2& point);
+        std::vector<Node*> QueryRegion(const AABB& region);
 
         float GetTreeCost();
     private:

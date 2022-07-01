@@ -39,7 +39,7 @@ namespace spe
         aabb.max = newMax;
     }
 
-    inline AABB unionOf(const AABB& b1, const AABB& b2)
+    inline AABB union_of(const AABB& b1, const AABB& b2)
     {
         glm::vec2 min = glm::min(b1.min, b2.min);
         glm::vec2 max = glm::max(b1.max, b2.max);
@@ -47,7 +47,7 @@ namespace spe
         return AABB{ min, max };
     }
 
-    inline bool testPointInside(const AABB& aabb, const glm::vec2& point)
+    inline bool test_point_inside_AABB(const AABB& aabb, const glm::vec2& point)
     {
         if (aabb.min.x > point.x || aabb.max.x < point.x) return false;
         if (aabb.min.y > point.y || aabb.max.y < point.y) return false;
@@ -55,7 +55,7 @@ namespace spe
         return true;
     }
 
-    inline bool detectCollisionAABB(const AABB& a, const AABB& b)
+    inline bool detect_collision_AABB(const AABB& a, const AABB& b)
     {
         if (a.min.x > b.max.x || a.max.x < b.min.x) return false;
         if (a.min.y > b.max.y || a.max.y < b.min.y) return false;
@@ -63,12 +63,13 @@ namespace spe
         return true;
     }
 
-    inline bool containsAABB(const AABB& container, const AABB& testee)
+    inline bool contains_AABB(const AABB& container, const AABB& testee)
     {
         return container.min.x <= testee.min.x
             && container.min.y <= testee.min.y
             && container.max.x >= testee.max.x
             && container.max.y >= testee.max.y;
     }
-    AABB createAABB(RigidBody& body, float margin = 0.0f);
+    
+    AABB create_AABB(RigidBody& body, float margin = 0.0f);
 }

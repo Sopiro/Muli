@@ -22,8 +22,11 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        shader->SetColor({ 1, 1, 1 });
-        mesh->Draw(GL_TRIANGLES);
+        if (!drawOutlineOnly)
+        {
+            shader->SetColor({ 1, 1, 1 });
+            mesh->Draw(GL_TRIANGLES);
+        }
 
         glLineWidth(1.5f);
         shader->SetColor({ 0, 0, 0 });
@@ -44,9 +47,31 @@ void RigidBodyRenderer::Register(const std::vector<RigidBody*>& bodies)
     }
 }
 
-void RigidBodyRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
+void RigidBodyRenderer::Unregister(RigidBody* body)
 {
-    shader->SetViewMatrix(std::move(_viewMatrix));
+    size_t idx = bodiesAndMeshes.size();
+
+    for (size_t i = 0; i < bodiesAndMeshes.size(); i++)
+    {
+        if (bodiesAndMeshes[i].first == body)
+        {
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx < bodiesAndMeshes.size())
+    {
+        bodiesAndMeshes.erase(bodiesAndMeshes.begin() + idx);
+    }
+}
+
+void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
+{
+    for (size_t i = 0; i < bodies.size(); i++)
+    {
+        Unregister(bodies[i]);
+    }
 }
 
 void RigidBodyRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
@@ -54,24 +79,34 @@ void RigidBodyRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
     shader->SetProjectionMatrix(std::move(_projMatrix));
 }
 
+void RigidBodyRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
+{
+    shader->SetViewMatrix(std::move(_viewMatrix));
+}
+
 // Viewport space -> NDC -> world spcae
-glm::vec2 RigidBodyRenderer::Pick()
+glm::vec2 RigidBodyRenderer::Pick(const glm::vec2& screenPos)
 {
     // Viewport space
-    glm::vec2 pos = Input::GetMousePosition();
+    glm::vec2 worldPos = screenPos;
     glm::vec2 windowSize = Window::Get().GetWindowSize();
 
-    pos.y = windowSize.y - pos.y - 1;
-    pos.x /= windowSize.x;
-    pos.y /= windowSize.y;
-    pos -= 0.5f;
-    pos *= 2.0f;
+    worldPos.y = windowSize.y - worldPos.y - 1;
+    worldPos.x /= windowSize.x;
+    worldPos.y /= windowSize.y;
+    worldPos -= 0.5f;
+    worldPos *= 2.0f;
     // NDC (-1 ~ 1)
 
     glm::mat4 invVP = glm::inverse(shader->projMatrix * shader->viewMatrix);
 
     // World space
-    glm::vec4 invPos = invVP * glm::vec4{ pos, 0, 1 };
+    glm::vec4 invPos = invVP * glm::vec4{ worldPos, 0, 1 };
 
     return { invPos.x, invPos.y };
+}
+
+void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
+{
+    drawOutlineOnly = std::move(_drawOutlineOnly);
 }

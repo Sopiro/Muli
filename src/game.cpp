@@ -21,12 +21,13 @@ Game::Game(Application& _app) :
 
     camera.position = glm::vec2{ 0, 0 };
     camera.scale = glm::vec2{ 1, 1 };
-    renderer.SetViewMatrix(camera.CameraTransform());
 
-    bodies.push_back(new Box{ .5f, .5f });
+    RigidBody* b = new Box{ .5f, .5f };
 
-    world.Register(bodies);
-    renderer.Register(bodies);
+    bodies.insert(b);
+
+    world.Register(b);
+    renderer.Register(b);
 }
 
 Game::~Game() noexcept
@@ -47,31 +48,74 @@ void Game::Update(float dt)
 
 void Game::HandleInput()
 {
-    glm::vec2 mpos = renderer.Pick();
+    glm::vec2 mpos = renderer.Pick(Input::GetMousePosition());
 
-    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
     {
         RigidBody* b = create_random_convex_body(1.0f);
         b->position = mpos;
 
-        bodies.push_back(b);
-
+        bodies.insert(b);
         world.Register(b);
         renderer.Register(b);
     }
 
-    if (Input::GetMouseScroll().y != 0)
+    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
+        auto q = world.QueryPoint(mpos);
+
+        world.Unregister(q);
+        renderer.Unregister(q);
+
+        for (auto b : q)
+        {
+            auto it = std::find(bodies.begin(), bodies.end(), b);
+            bodies.erase(it);
+
+            delete b;
+        }
     }
 
+    if (Input::GetMouseScroll().y != 0)
+    {
+        camera.scale += -Input::GetMouseScroll().y * 0.1f;
+
+        camera.scale = glm::clamp(camera.scale, glm::vec2{ 0.1f }, glm::vec2{ FLT_MAX });
+    }
+
+    // Camera moving
+    {
+        static bool cameraMove = false;
+        static glm::vec2 cursorStart;
+        static glm::vec2 cameraPosStart;
+
+        if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            cameraMove = true;
+            cursorStart = Input::GetMousePosition();
+            cameraPosStart = camera.position;
+        }
+        else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            cameraMove = false;
+        }
+
+        if (cameraMove)
+        {
+            glm::vec2 dist = Input::GetMousePosition() - cursorStart;
+            dist.x *= 0.01f * -camera.scale.x;
+            dist.y *= 0.01f * camera.scale.y;
+            camera.position = cameraPosStart + dist;
+        }
+    }
+
+    // ImGui Window
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
     ImGui::SetNextWindowSize({ 400, 200 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
-        // ImGui::Text("This is some useful text.");
-
-        static int f = 60;
+        static int f = 144;
         if (ImGui::SliderInt("Frame rate", &f, 30, 300))
         {
             app.SetFrameRate(f);
@@ -84,21 +128,20 @@ void Game::HandleInput()
 
         ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
 
-        // ImGui::Separator();
-        // if (ImGui::SliderFloat("Zoom", &zoom, 10, 500))
-        // {
-        //     UpdateProjectionMatrix();
-        // }
-
         ImGui::Separator();
 
         ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
+
+        ImGui::Separator();
+        ImGui::Text("Body count: %d", bodies.size());
     }
     ImGui::End();
 }
 
 void Game::Render()
 {
+    renderer.SetViewMatrix(camera.CameraTransform());
+    renderer.SetDrawOutlined(drawOutlineOnly);
     renderer.Render();
 }
 

@@ -390,20 +390,20 @@ namespace spe
         }
     }
 
-    bool test_point_inside(RigidBody& body, const glm::vec2& point)
+    bool test_point_inside(RigidBody* body, const glm::vec2& point)
     {
-        glm::vec2 localP = body.GlobalToLocal() * point;
+        glm::vec2 localP = body->GlobalToLocal() * point;
 
-        auto& type = typeid(body);
+        auto& type = typeid(*body);
 
         if (type == typeid(Circle))
         {
-            return glm::length(localP) <= static_cast<Circle&>(body).GetRadius();
+            return glm::length(localP) <= static_cast<Circle*>(body)->GetRadius();
         }
         else if (type == typeid(Box) || type == typeid(Polygon))
         {
-            Polygon& p = static_cast<Polygon&>(body);
-            const std::vector<glm::vec2>& vertices = p.GetVertices();
+            Polygon* p = static_cast<Polygon*>(body);
+            const std::vector<glm::vec2>& vertices = p->GetVertices();
 
             float dir = glm::cross(vertices[0] - localP, vertices[1] - localP);
 

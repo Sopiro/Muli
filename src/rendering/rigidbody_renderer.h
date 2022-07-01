@@ -7,22 +7,26 @@
 
 namespace spe
 {
-    class RigidBodyRenderer : public Renderer
+    class RigidBodyRenderer final : public Renderer
     {
         friend class RigidBodyShader;
 
     public:
         RigidBodyRenderer();
 
-        void SetViewMatrix(glm::mat4 _viewMatrix);
         void SetProjectionMatrix(glm::mat4 _projMatrix);
+        void SetViewMatrix(glm::mat4 _viewMatrix);
 
         virtual void Render() override;
 
         void Register(RigidBody* body);
         void Register(const std::vector<RigidBody*>& bodies);
+        void Unregister(RigidBody* body);
+        void Unregister(const std::vector<RigidBody*>& bodies);
 
-        glm::vec2 Pick();
+        glm::vec2 Pick(const glm::vec2& screenPos);
+
+        void SetDrawOutlined(bool drawOutlineOnly);
 
     private:
         // All registered rigid bodies
@@ -31,5 +35,7 @@ namespace spe
 
         glm::mat4 viewMatrix;
         glm::mat4 projMatrix;
+
+        bool drawOutlineOnly;
     };
 }

@@ -38,7 +38,7 @@ namespace spe
 
         bool drawOutlineOnly = false;
 
-        std::vector<RigidBody*> bodies{};
+        std::set<RigidBody*> bodies{};
         Camera camera{};
         World world{};
         RigidBodyRenderer renderer{};

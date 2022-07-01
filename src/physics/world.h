@@ -24,7 +24,11 @@ namespace spe
 
         void Register(RigidBody* body);
         void Register(const std::vector<RigidBody*>& bodies);
+        void Unregister(RigidBody* body);
+        void Unregister(const std::vector<RigidBody*>& bodies);
 
+        std::vector<RigidBody*> QueryPoint(const glm::vec2& point);
+        // std::vector<RigidBody*> QueryRegion(const AABB& region);
     private:
         uint32_t uid{ 0 };
 

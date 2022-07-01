@@ -23,5 +23,5 @@ namespace spe
     };
 
     std::optional<ContactManifold> detect_collision(RigidBody* a, RigidBody* b);
-    bool test_point_inside(RigidBody& body, const glm::vec2& point);
+    bool test_point_inside(RigidBody* body, const glm::vec2& point);
 }
