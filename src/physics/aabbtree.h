@@ -58,7 +58,6 @@ namespace spe
         float GetTreeCost();
     private:
         uint32_t nodeID = 0;
-        std::vector<Node*> nodes{};
 
         Node* root = nullptr;
         float aabbMargin = 0.05f;

@@ -12,7 +12,6 @@ Node::Node(uint32_t _id, AABB&& _aabb, bool _isLeaf) :
 
 AABBTree::AABBTree()
 {
-    nodes.reserve(100);
 }
 
 AABBTree::~AABBTree()
@@ -22,11 +21,16 @@ AABBTree::~AABBTree()
 
 void AABBTree::Reset()
 {
+    Traverse
+    (
+        [&](const Node* n) -> void
+        {
+            delete n;
+        }
+    );
+
     nodeID = 0;
     root = nullptr;
-
-    for (Node* n : nodes)
-        delete n;
 }
 
 const Node* AABBTree::Add(RigidBody* body)
@@ -34,10 +38,7 @@ const Node* AABBTree::Add(RigidBody* body)
     AABB aabb = createAABB(*body, body->GetType() == Static ? 0.0f : aabbMargin);
 
     Node* newNode = new Node(nodeID++, std::move(aabb), true);
-    nodes.push_back(newNode);
-
     newNode->body = body;
-
     body->node = newNode;
 
     if (root == nullptr)
@@ -62,7 +63,6 @@ const Node* AABBTree::Add(RigidBody* body)
             float inheritedCost = 0.0f;
 
             Node* ancestor = current->parent;
-
             while (ancestor != nullptr)
             {
                 inheritedCost += area(unionOf(current->aabb, aabb)) - area(ancestor->aabb);
@@ -92,8 +92,6 @@ const Node* AABBTree::Add(RigidBody* body)
         // Create a new parent
         Node* oldParent = bestSibling->parent;
         Node* newParent = new Node(nodeID++, unionOf(aabb, bestSibling->aabb), false);
-        nodes.push_back(newParent);
-
         newParent->parent = oldParent;
 
         if (oldParent != nullptr)
@@ -215,8 +213,8 @@ void AABBTree::Rotate(Node* node)
         count += 2;
     }
 
-    uint8_t bestDiffIndex = 0;
-    for (int i = 1; i < count; i++)
+    size_t bestDiffIndex = 0;
+    for (size_t i = 1; i < count; i++)
     {
         if (costDiffs[i] < costDiffs[bestDiffIndex])
             bestDiffIndex = i;
@@ -228,9 +226,7 @@ void AABBTree::Rotate(Node* node)
 
         switch (bestDiffIndex)
         {
-        case 0:
-            // Swap(sibling, node->child2);
-
+        case 0: // Swap(sibling, node->child2);
             if (parent->child1 == sibling)
                 parent->child1 = node->child2;
             else
@@ -243,9 +239,7 @@ void AABBTree::Rotate(Node* node)
 
             node->aabb = unionOf(sibling->aabb, node->child1->aabb);
             break;
-        case 1:
-            // Swap(sibling, node->child1);
-
+        case 1: // Swap(sibling, node->child1);
             if (parent->child1 == sibling)
                 parent->child1 = node->child1;
             else
@@ -258,13 +252,11 @@ void AABBTree::Rotate(Node* node)
 
             node->aabb = unionOf(sibling->aabb, node->child2->aabb);
             break;
-        case 2:
-            // Swap(node, sibling->child2);
-
+        case 2: // Swap(node, sibling->child2);
             if (parent->child1 == node)
-                parent->child1 = node->child2;
+                parent->child1 = sibling->child2;
             else
-                parent->child2 = node->child2;
+                parent->child2 = sibling->child2;
 
             sibling->child2->parent = parent;
 
@@ -273,13 +265,11 @@ void AABBTree::Rotate(Node* node)
 
             sibling->aabb = unionOf(node->aabb, sibling->child2->aabb);
             break;
-        case 3:
-            // Swap(node, sibling->child1);
-
+        case 3: // Swap(node, sibling->child1);
             if (parent->child1 == node)
-                parent->child1 = node->child1;
+                parent->child1 = sibling->child1;
             else
-                parent->child2 = node->child1;
+                parent->child2 = sibling->child1;
 
             sibling->child1->parent = parent;
 
@@ -328,8 +318,6 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback)
     {
         const Node* current = q.front();
         q.pop();
-
-        if (current == nullptr) break;
 
         if (!current->isLeaf)
         {
@@ -430,7 +418,7 @@ std::vector<const Node*> AABBTree::QueryPoint(const glm::vec2& point)
         {
             res.push_back(current);
         }
-        if (current->isLeaf)
+        else
         {
             q.push(current->child1);
             q.push(current->child2);
@@ -461,7 +449,7 @@ std::vector<const Node*> AABBTree::QueryRegion(const AABB& region)
         {
             res.push_back(current);
         }
-        if (current->isLeaf)
+        else
         {
             q.push(current->child1);
             q.push(current->child2);
