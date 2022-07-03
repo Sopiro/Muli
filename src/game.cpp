@@ -22,7 +22,8 @@ Game::Game(Application& _app) :
     camera.position = glm::vec2{ 0, 0 };
     camera.scale = glm::vec2{ 1, 1 };
 
-    RigidBody* b = new Box{ .5f, .5f };
+    RigidBody* b = new Box{ 100.0f, 0.4f, Static };
+    b->position.y = -3.6f;
 
     bodies.insert(b);
 
@@ -54,7 +55,7 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = new Box(1, 1);
+            RigidBody* b = new Box(0.5f, 0.5f);
             b->position = mpos;
 
             bodies.insert(b);

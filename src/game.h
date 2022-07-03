@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "rendering/rigidbody_renderer.h"
 #include "rendering/dynamic_renderer.h"
+#include "physics/rigidbody.h"
 #include "physics/polygon.h"
 #include "physics/circle.h"
 #include "physics/box.h"

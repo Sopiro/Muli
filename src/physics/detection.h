@@ -16,7 +16,7 @@ namespace spe
         RigidBody* bodyA;
         RigidBody* bodyB;
 
-        std::vector<ContactPoint> contantPoints;
+        std::vector<ContactPoint> contactPoints;
         float penetrationDepth;
         glm::vec2 contactNormal;
         bool featureFlipped;

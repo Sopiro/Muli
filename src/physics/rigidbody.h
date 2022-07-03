@@ -18,7 +18,9 @@ namespace spe
     // Children: Polygon, Circle
     class RigidBody : public Entity
     {
+        friend class World;
         friend class AABBTree;
+        friend class ContactSolver;
 
     public:
         RigidBody(BodyType _type);

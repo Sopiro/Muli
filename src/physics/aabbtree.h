@@ -37,9 +37,9 @@ namespace spe
         ~AABBTree() noexcept;
 
         AABBTree(const AABBTree&) noexcept = delete;
-        AABBTree(AABBTree&&) noexcept = delete;
-
         AABBTree& operator=(const AABBTree&) noexcept = delete;
+
+        AABBTree(AABBTree&&) noexcept = delete;
         AABBTree& operator=(AABBTree&&) noexcept = delete;
 
         void Reset();
@@ -50,7 +50,7 @@ namespace spe
         // BFS tree traversal
         void Traverse(std::function<void(const Node*)> callback) const;
 
-        std::vector<std::pair<const RigidBody*, const RigidBody*>> GetCollisionPairs();
+        std::vector<std::pair<RigidBody*, RigidBody*>> GetCollisionPairs();
 
         std::vector<Node*> QueryPoint(const glm::vec2& point) const;
         std::vector<Node*> QueryRegion(const AABB& region)  const;
@@ -64,6 +64,6 @@ namespace spe
 
         void Rotate(Node* node);
         void Swap(Node* node1, Node* node2);
-        void CheckCollision(Node* a, Node* b, std::vector<std::pair<const RigidBody*, const RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked);
+        void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked);
     };
 }

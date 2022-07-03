@@ -9,13 +9,122 @@ World::World()
 
 World::~World() noexcept
 {
+    for (size_t i = 0; i < contactConstraints.size(); i++)
+    {
+        delete contactConstraints[i];
+    }
 }
 
 void World::Update(float inv_dt)
 {
-    for (RigidBody* b : bodies)
+    spdlog::stopwatch sw;
+
+    std::vector<ContactConstraint*> newContactConstraints{};
+    std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
+    newContactConstraints.reserve(100);
+    newContactConstraintMap.reserve(100);
+
+    spdlog::info("1. Elapsed {:.9}", sw);
+
+    for (size_t i = 0; i < bodies.size(); i++)
     {
+        RigidBody* b = bodies[i];
+        b->manifoldIDs.clear();
+        if (b->type != Static)
+            b->linearVelocity.y -= 10.0f * DT;
+
+        // if (b->sleeping) continue;
+
+        Node* node = b->node;
+        AABB tightAABB = create_AABB(*b, 0.0f);
+
+        if (contains_AABB(node->aabb, tightAABB)) continue;
+
+        tree.Remove(b);
+        tree.Add(b);
     }
+
+    spdlog::info("2. Elapsed {:.9}", sw);
+
+    // Broad Phase
+    // Retrieve a list of collider pairs that are potentially colliding
+    std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
+
+    for (size_t i = 0; i < pairs.size(); i++)
+    {
+        std::pair<RigidBody*, RigidBody*> pair = pairs[i];
+        RigidBody* a = pair.first;
+        RigidBody* b = pair.second;
+
+        // Improve coherence
+        if (a->id > b->id)
+        {
+            a = pair.second;
+            b = pair.first;
+        }
+
+        if (a->type == Static && b->type == Static)
+            continue;
+
+        uint32_t key = make_pair_natural(a->id, b->id);
+        if (passTestSet.find(key) != passTestSet.end()) continue;
+
+        // Narrow Phase
+        // Execute more accurate and expensive collision detection
+        std::optional<ContactManifold> newManifold = detect_collision(a, b);
+        if (!newManifold.has_value()) continue;
+
+        ContactConstraint* cc = new ContactConstraint(std::move(newManifold.value()));
+        newContactConstraints.push_back(cc);
+
+        a->manifoldIDs.push_back(key);
+        b->manifoldIDs.push_back(key);
+
+        auto it = contactConstraintMap.find(key);
+        if (WARM_START && (it != contactConstraintMap.end()))
+        {
+            ContactConstraint* oldCC = it->second;
+            cc->TryWarmStart(*oldCC);
+        }
+
+        newContactConstraintMap.insert({ key, cc });
+    }
+
+    spdlog::info("3. Elapsed {:.9}", sw);
+
+    contactConstraintMap = std::move(newContactConstraintMap);
+
+    for (size_t i = 0; i < contactConstraints.size(); i++)
+    {
+        delete contactConstraints[i];
+    }
+
+    contactConstraints = std::move(newContactConstraints);
+
+    for (size_t i = 0; i < contactConstraints.size(); i++)
+    {
+        contactConstraints[i]->Prepare();
+    }
+
+    for (size_t i = 0; i < 5; i++)
+    {
+        for (size_t j = 0; j < contactConstraints.size(); j++)
+        {
+            contactConstraints[j]->Solve();
+        }
+    }
+
+    for (size_t i = 0; i < bodies.size(); i++)
+    {
+        RigidBody* b = bodies[i];
+
+        if (b->type == Static) continue;
+
+        b->position += b->linearVelocity * DT;
+        b->rotation += b->angularVelocity * DT;
+    }
+
+    spdlog::info("4. Elapsed {:.9}", sw);
 }
 
 void World::Reset()
@@ -26,6 +135,7 @@ void World::Reset()
 
 void World::Register(RigidBody* body)
 {
+    body->id = uid++;
     bodies.push_back(body);
     tree.Add(body);
 }

@@ -25,6 +25,8 @@ add_executable(${PROJECT_NAME}
     src/rendering/dynamic_shader.cpp
     src/rendering/dynamic_renderer.cpp
 
+    src/physics/world.cpp
+
     src/physics/rigidbody.cpp
     src/physics/polygon.cpp
     src/physics/circle.cpp
@@ -37,7 +39,9 @@ add_executable(${PROJECT_NAME}
     src/physics/polytope.cpp
     src/physics/edge.cpp
 
-    src/physics/world.cpp
+    src/physics/constraint.cpp
+    src/physics/contact_constraint.cpp
+    src/physics/contact_solver.cpp
 )
 
 include(Dependency.cmake)

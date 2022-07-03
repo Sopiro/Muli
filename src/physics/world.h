@@ -4,6 +4,7 @@
 #include "aabbtree.h"
 #include "detection.h"
 #include "rigidbody.h"
+#include "contact_constraint.h"
 
 namespace spe
 {
@@ -40,9 +41,8 @@ namespace spe
         std::vector<RigidBody*> bodies{};
 
         // Constraints to be solved
-        std::vector<ContactManifold> manifolds{};
-
-        std::unordered_map<int32_t, ContactManifold*> manioldMap{};
+        std::vector<ContactConstraint*> contactConstraints{};
+        std::unordered_map<int32_t, ContactConstraint*> contactConstraintMap{};
         std::unordered_set<int32_t> passTestSet{};
     };
 }

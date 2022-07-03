@@ -86,7 +86,7 @@ namespace spe
         constexpr glm::vec2 origin{ 0.0f };
         glm::vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
-        bool collide;
+        bool collide = false;
         Simplex simplex{};
 
         glm::vec2 supportPoint = cso_support(b1, b2, dir);
@@ -310,7 +310,7 @@ namespace spe
                 res.bodyA = a;
                 res.bodyB = b;
                 res.contactNormal = glm::normalize(b->position - a->position);
-                res.contantPoints.push_back({ a->position + (res.contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 });
+                res.contactPoints.push_back({ a->position + (res.contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 });
                 res.penetrationDepth = r2 - d;
                 res.featureFlipped = false;
 
@@ -384,7 +384,7 @@ namespace spe
             res.contactNormal.x = glm::round((res.contactNormal.x / EPA_TOLERANCE)) * EPA_TOLERANCE;
             res.contactNormal.y = glm::round((res.contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
 
-            res.contantPoints = find_contact_points(epaResult.contactNormal, a, b);
+            res.contactPoints = find_contact_points(epaResult.contactNormal, a, b);
 
             return res;
         }
