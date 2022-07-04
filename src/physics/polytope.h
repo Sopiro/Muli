@@ -19,8 +19,9 @@ namespace spe
 
         Polytope(const Simplex& simplex);
 
-        ClosestEdgeInfo GetClosestEdge();
-        inline size_t Count()
+        ClosestEdgeInfo GetClosestEdge() const;
+
+        inline size_t Count() const
         {
             return vertices.size();
         }

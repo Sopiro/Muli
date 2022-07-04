@@ -13,8 +13,8 @@ namespace spe
         virtual void SetMass(float _mass) override;
         virtual void SetDensity(float _density) override;
 
-        float GetWidth();
-        float GetHeight();
+        float GetWidth() const;
+        float GetHeight() const;
 
     protected:
         float width;

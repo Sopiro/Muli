@@ -23,7 +23,7 @@ namespace spe
 
         void Run();
 
-        glm::vec4 clearColor{ 0.45f, 0.55f, 0.60f, 1.0f };
+        glm::vec4 clearColor{ 0x96 / 255.0f, 0xaa / 255.0f, 0xb4 / 255.0f, 1.0f };
     private:
         static Application* app;
 

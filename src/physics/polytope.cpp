@@ -11,7 +11,7 @@ Polytope::Polytope(const Simplex& simplex) :
     vertices.push_back(simplex.vertices[2]);
 }
 
-ClosestEdgeInfo Polytope::GetClosestEdge()
+ClosestEdgeInfo Polytope::GetClosestEdge() const
 {
     size_t minIndex = 0;
     float minDistance = FLT_MAX;

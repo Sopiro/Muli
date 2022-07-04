@@ -8,10 +8,26 @@
 
 namespace spe
 {
+    // Simulation settings
+    struct Settings
+    {
+        float DT = 1.0f / 60.0f;
+        float INV_DT = 60.0f;
+        glm::vec2 GRAVITY = glm::vec2{ 0.0f, -10.0f };
+        bool IMPULSE_ACCUMULATION = true;
+        bool WARM_STARTING = true;
+        bool POSITION_CORRECTION = true;
+        float POSITION_CORRECTION_BETA = 0.2f;
+        float PENETRATION_SLOP = 0.005f;
+        float RESTITUTION_SLOP = 0.5f;
+        bool APPLY_WARM_STARTING_THRESHOLD = true;
+        float WARM_STARTING_THRESHOLD = 0.005f * 0.005f;
+    };
+
     class World final
     {
     public:
-        World();
+        World(const Settings& simulationSettings);
         ~World() noexcept;
 
         World(const World&) noexcept = delete;
@@ -20,7 +36,7 @@ namespace spe
         World(World&&) noexcept = delete;
         World& operator=(World&&) noexcept = delete;
 
-        void Update(float inv_dt);
+        void Update();
         void Reset();
 
         void Register(RigidBody* body);
@@ -33,8 +49,9 @@ namespace spe
 
         const std::vector<RigidBody*>& GetBodies() const;
         const AABBTree& GetBVH() const;
-        const std::vector<ContactConstraint*>& GetContactConstraints() const;
+        const std::vector<std::unique_ptr<ContactConstraint>>& GetContactConstraints() const;
     private:
+        const Settings& settings;
         uint32_t uid{ 0 };
 
         // Dynamic AABB Tree for broad phase collision detection
@@ -43,7 +60,7 @@ namespace spe
         std::vector<RigidBody*> bodies{};
 
         // Constraints to be solved
-        std::vector<ContactConstraint*> contactConstraints{};
+        std::vector<std::unique_ptr<ContactConstraint>> contactConstraints{};
         std::unordered_map<int32_t, ContactConstraint*> contactConstraintMap{};
         std::unordered_set<int32_t> passTestSet{};
     };

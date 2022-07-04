@@ -1,22 +1,15 @@
 #pragma once
 
+// Default body settings
 #define DEFAULT_DENSITY 12.5f
 #define DEFAULT_FRICTION 0.7f
 #define DEFAULT_RESTITUTION 0.0f
 #define DEFAULT_SURFACESPEED 0.0f
+
+// Collision detection settings
 #define GJK_MAX_ITERATION 20
 #define GJK_TOLERANCE 1e-13f
 #define EPA_MAX_ITERATION 20
 #define EPA_TOLERANCE 1e-9f
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
-#define WARM_START true
-#define POSITION_CORRECTION_BETA 0.2f
-#define POSITION_CORRECTION true
-#define DT 1.0f / 60.0f
-#define INV_DT 60.0f
-#define PENETRATION_SLOP 0.005f
-#define RESTITUTION_SLOP 0.5f
-#define IMPULSE_ACCUMULATION true
-#define APPLY_WARM_STARTING_THRESHOLD true
-#define WARM_STARTING_THRESHOLD 0.005f * 0.005f

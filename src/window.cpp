@@ -187,12 +187,12 @@ Window::~Window()
 	glfwTerminate();
 }
 
-bool Window::ShouldClose()
+bool Window::ShouldClose() const
 {
 	return glfwWindowShouldClose(glfwWindow);
 }
 
-void Window::BeginFrame()
+void Window::BeginFrame() const
 {
 	Input::Update();
 
@@ -204,7 +204,7 @@ void Window::BeginFrame()
 	ImGui::NewFrame();
 }
 
-void Window::EndFrame()
+void Window::EndFrame() const
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -212,7 +212,7 @@ void Window::EndFrame()
 	glfwSwapBuffers(glfwWindow);
 }
 
-glm::ivec2 Window::GetWindowSize()
+glm::ivec2 Window::GetWindowSize() const
 {
 	return glm::ivec2{ width, height };
 }

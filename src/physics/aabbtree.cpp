@@ -331,7 +331,7 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
     }
 }
 
-std::vector<std::pair<RigidBody*, RigidBody*>> AABBTree::GetCollisionPairs()
+std::vector<std::pair<RigidBody*, RigidBody*>> AABBTree::GetCollisionPairs() const
 {
     std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
 
@@ -349,7 +349,7 @@ std::vector<std::pair<RigidBody*, RigidBody*>> AABBTree::GetCollisionPairs()
     return pairs;
 }
 
-void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked)
+void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked) const
 {
     const uint32_t key = make_pair_natural(a->id, b->id);
 

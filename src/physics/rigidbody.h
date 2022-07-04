@@ -32,42 +32,42 @@ namespace spe
         RigidBody(RigidBody&& _other) noexcept;
         RigidBody& operator=(RigidBody&& _other) noexcept;
 
-        const Node* GetNode();
+        const Node* GetNode() const;
 
         virtual void SetDensity(float d) = 0;
         virtual void SetMass(float m) = 0;
-        virtual float GetArea() = 0;
+        virtual float GetArea() const = 0;
 
         void Awake();
 
-        float GetDensity();
-        float GetMass();
-        float GetInverseMass();
-        float GetInertia();
-        float GetInverseInertia();
+        float GetDensity() const;
+        float GetMass() const;
+        float GetInverseMass() const;
+        float GetInertia() const;
+        float GetInverseInertia() const;
 
-        float GetFriction();
+        float GetFriction() const;
         void SetFriction(float _friction);
 
-        float GetRestitution();
+        float GetRestitution() const;
         void SetRestitution(float _restitution);
 
-        float GetSurfaceSpeed();
+        float GetSurfaceSpeed() const;
         void SetSurfaceSpeed(float _surfaceSpeed);
 
-        glm::vec2 GetLinearVelocity();
+        glm::vec2 GetLinearVelocity() const;
         void SetLinearVelocity(glm::vec2 _linearVelocity);
 
-        float GetAngularVelocity();
+        float GetAngularVelocity() const;
         void SetAngularVelocity(float _angularVelocity);
 
-        glm::vec2 GetForce();
+        glm::vec2 GetForce() const;
         void SetForce(glm::vec2 _force);
 
-        float GetTorque();
+        float GetTorque() const;
         void SetTorque(float _torque);
 
-        BodyType GetType();
+        BodyType GetType() const;
 
     protected:
         // Center of mass in local space = (0, 0)

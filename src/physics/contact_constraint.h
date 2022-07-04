@@ -1,12 +1,14 @@
 #pragma once
 
 #include "../common.h"
-#include "detection.h"
 #include "constraint.h"
+#include "detection.h"
 #include "contact_solver.h"
 
 namespace spe
 {
+    struct Settings;
+
     struct ContactInfo
     {
         const RigidBody* other;
@@ -30,7 +32,7 @@ namespace spe
         friend class ContactSolver;
 
     public:
-        ContactConstraint(const ContactManifold& manifold);
+        ContactConstraint(const ContactManifold& manifold, const Settings& _settings);
 
         virtual void Prepare() override;
         virtual void Solve() override;
@@ -41,6 +43,8 @@ namespace spe
         ContactInfo GetContactInfo() const;
 
     private:
+        const Settings& settings;
+
         std::vector<ContactPoint> contactPoints;
         float penetrationDepth;
         glm::vec2 contactNormal;

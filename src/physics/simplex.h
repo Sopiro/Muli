@@ -20,7 +20,7 @@ namespace spe
             vertices.reserve(3);
         }
 
-        inline size_t Count()
+        inline size_t Count() const
         {
             return vertices.size();
         }
@@ -38,7 +38,7 @@ namespace spe
             vertices.push_back(vertex);
         }
 
-        inline bool ContainsVertex(const glm::vec2& vertex)
+        inline bool ContainsVertex(const glm::vec2& vertex) const
         {
             for (size_t i = 0; i < vertices.size(); i++)
             {
@@ -63,6 +63,6 @@ namespace spe
         }
 
         // Returns the closest point to the input q
-        ClosestResult GetClosest(const glm::vec2& q);
+        ClosestResult GetClosest(const glm::vec2& q) const;
     };
 }

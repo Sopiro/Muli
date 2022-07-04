@@ -19,6 +19,8 @@ Game::Game(Application& _app) :
         }
     );
 
+    world = std::unique_ptr<World>(new World(settings));
+
     camera.position = glm::vec2{ 0, 3.6 };
     camera.scale = glm::vec2{ 1, 1 };
 
@@ -48,8 +50,11 @@ void Game::Update(float dt)
 {
     time += dt;
 
+    settings.DT = dt;
+    settings.INV_DT = 1.0f / dt;
+
     HandleInput();
-    world.Update(1.0f / dt);
+    world->Update();
 }
 
 void Game::HandleInput()
@@ -65,9 +70,9 @@ void Game::HandleInput()
                 delete body;
             }
             bodies.clear();
-            world.Reset();
+            world->Reset();
             rRenderer.Clear();
-            
+
             RigidBody* b = new Box{ 12.8f * 5.0f, 0.4f, Static };
             AddBody(b);
         }
@@ -82,9 +87,9 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            auto q = world.QueryPoint(mpos);
+            auto q = world->QueryPoint(mpos);
 
-            world.Unregister(q);
+            world->Unregister(q);
             rRenderer.Unregister(q);
 
             for (auto b : q)
@@ -153,6 +158,7 @@ void Game::HandleInput()
 
         ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
         ImGui::Checkbox("Show BVH", &showBVH);
+        ImGui::Checkbox("Show Contact point", &showCP);
 
         ImGui::Separator();
         ImGui::Text("Body count: %d", bodies.size());
@@ -169,7 +175,7 @@ void Game::Render()
     dRenderer.SetViewMatrix(camera.CameraTransform());
     if (showBVH)
     {
-        const AABBTree& tree = world.GetBVH();
+        const AABBTree& tree = world->GetBVH();
         std::vector<glm::vec2> v{};
         tree.Traverse([&](const Node* n)->void
             {
@@ -187,20 +193,23 @@ void Game::Render()
         dRenderer.Draw(v, GL_LINES);
     }
 
-    auto& cc = world.GetContactConstraints();
-    std::vector<glm::vec2> v{};
-    v.reserve(cc.size());
-
-    for (size_t i = 0; i < cc.size(); i++)
+    if (showCP)
     {
-        auto ci = cc[i]->GetContactInfo();
-        for (size_t j = 0; j < ci.numContacts; j++)
+        auto& cc = world->GetContactConstraints();
+        std::vector<glm::vec2> v{};
+        v.reserve(cc.size());
+
+        for (size_t i = 0; i < cc.size(); i++)
         {
-            v.push_back(ci.contactPoints[j].point);
+            auto ci = cc[i]->GetContactInfo();
+            for (size_t j = 0; j < ci.numContacts; j++)
+            {
+                v.push_back(ci.contactPoints[j].point);
+            }
         }
+        glPointSize(5.0f);
+        dRenderer.Draw(v, GL_POINTS);
     }
-    glPointSize(5.0f);
-    dRenderer.Draw(v, GL_POINTS);
 }
 
 void Game::UpdateProjectionMatrix()
@@ -216,6 +225,6 @@ void Game::UpdateProjectionMatrix()
 void Game::AddBody(RigidBody* b)
 {
     bodies.insert(b);
-    world.Register(b);
+    world->Register(b);
     rRenderer.Register(b);
 }

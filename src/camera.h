@@ -10,8 +10,6 @@ namespace spe
     public:
         Camera();
 
-        glm::mat4 CameraTransform();
-
-    private:
+        glm::mat4 CameraTransform() const;
     };
 }

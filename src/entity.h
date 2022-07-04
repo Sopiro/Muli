@@ -22,15 +22,14 @@ namespace spe
         Entity& operator=(Entity&&) noexcept = default;
 
         void ResetTransform();
-
         void Translate(const glm::vec2& t);
         void Rotate(float r);
         void Scale(const glm::vec2& s);
 
         // Returns local to global transform
-        glm::mat3 LocalToGlobal();
+        glm::mat3 LocalToGlobal() const;
 
         // Returns global to local transform
-        glm::mat3 GlobalToLocal();
+        glm::mat3 GlobalToLocal() const;
     };
 }

@@ -36,12 +36,12 @@ void Entity::Scale(const glm::vec2& s)
     scale.y *= s.y;
 }
 
-glm::mat3 Entity::LocalToGlobal()
+glm::mat3 Entity::LocalToGlobal() const
 {
     return glm::scale(glm::rotate(glm::translate(glm::mat3{ 1.0f }, position), rotation), scale);
 }
 
-glm::mat3 Entity::GlobalToLocal()
+glm::mat3 Entity::GlobalToLocal() const
 {
     return glm::translate(glm::rotate(glm::scale(glm::mat3{ 1.0f }, 1.0f / scale), -rotation), -position);
 }

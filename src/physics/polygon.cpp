@@ -67,17 +67,17 @@ void Polygon::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-float Polygon::GetArea()
+float Polygon::GetArea() const
 {
     return area;
 }
 
-const std::vector<glm::vec2>& Polygon::GetVertices()
+const std::vector<glm::vec2>& Polygon::GetVertices() const
 {
     return vertices;
 }
 
-size_t Polygon::VertexCount()
+size_t Polygon::VertexCount() const
 {
     return vertices.size();
 }

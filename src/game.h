@@ -38,8 +38,10 @@ namespace spe
     private:
         Application& app;
 
+        Settings settings{};
+        std::unique_ptr<World> world;
+
         std::set<RigidBody*> bodies{};
-        World world{};
         Camera camera{};
         RigidBodyRenderer rRenderer{};
         DynamicRenderer dRenderer{};
@@ -49,6 +51,7 @@ namespace spe
 
         bool drawOutlineOnly = false;
         bool showBVH = false;
+        bool showCP = false;
 
         void AddBody(RigidBody* b);
     };

@@ -74,7 +74,7 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     return *this;
 }
 
-const Node* RigidBody::GetNode()
+const Node* RigidBody::GetNode() const
 {
     return node;
 }
@@ -87,32 +87,32 @@ void RigidBody::Awake()
     sleeping = false;
 }
 
-float RigidBody::GetDensity()
+float RigidBody::GetDensity() const
 {
     return density;
 }
 
-float RigidBody::GetMass()
+float RigidBody::GetMass() const
 {
     return mass;
 }
 
-float RigidBody::GetInverseMass()
+float RigidBody::GetInverseMass() const
 {
     return invMass;
 }
 
-float RigidBody::GetInertia()
+float RigidBody::GetInertia() const
 {
     return inertia;
 }
 
-float RigidBody::GetInverseInertia()
+float RigidBody::GetInverseInertia() const
 {
     return invInertia;
 }
 
-float RigidBody::GetFriction()
+float RigidBody::GetFriction() const
 {
     return friction;
 }
@@ -122,7 +122,7 @@ void RigidBody::SetFriction(float _friction)
     friction = std::move(_friction);
 }
 
-float RigidBody::GetRestitution()
+float RigidBody::GetRestitution() const
 {
     return restitution;
 }
@@ -132,7 +132,7 @@ void RigidBody::SetRestitution(float _restitution)
     restitution = std::move(_restitution);
 }
 
-float RigidBody::GetSurfaceSpeed()
+float RigidBody::GetSurfaceSpeed() const
 {
     return surfaceSpeed;
 }
@@ -142,7 +142,7 @@ void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
     surfaceSpeed = std::move(_surfaceSpeed);
 }
 
-glm::vec2 RigidBody::GetLinearVelocity()
+glm::vec2 RigidBody::GetLinearVelocity() const
 {
     return linearVelocity;
 }
@@ -152,7 +152,7 @@ void RigidBody::SetLinearVelocity(glm::vec2 _linearVelocity)
     linearVelocity = std::move(_linearVelocity);
 }
 
-float RigidBody::GetAngularVelocity()
+float RigidBody::GetAngularVelocity() const
 {
     return angularVelocity;
 }
@@ -162,7 +162,7 @@ void RigidBody::SetAngularVelocity(float _angularVelocity)
     angularVelocity = std::move(_angularVelocity);
 }
 
-glm::vec2 RigidBody::GetForce()
+glm::vec2 RigidBody::GetForce() const
 {
     return force;
 }
@@ -172,7 +172,7 @@ void RigidBody::SetForce(glm::vec2 _force)
     force = std::move(_force);
 }
 
-float RigidBody::GetTorque()
+float RigidBody::GetTorque() const
 {
     return torque;
 }
@@ -182,7 +182,7 @@ void RigidBody::SetTorque(float _torque)
     torque = std::move(_torque);
 }
 
-BodyType RigidBody::GetType()
+BodyType RigidBody::GetType() const
 {
     return type;
 }

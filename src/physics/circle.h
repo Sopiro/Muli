@@ -13,8 +13,8 @@ namespace spe
         virtual void SetMass(float m) override;
         virtual void SetDensity(float d) override;
 
-        float GetRadius();
-        virtual float GetArea() override final;
+        float GetRadius() const;
+        virtual float GetArea() const override final;
 
     protected:
         float radius;

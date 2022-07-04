@@ -42,12 +42,12 @@ void Circle::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-float Circle::GetRadius()
+float Circle::GetRadius() const
 {
     return radius;
 }
 
-float Circle::GetArea()
+float Circle::GetArea() const
 {
     return area;
 }

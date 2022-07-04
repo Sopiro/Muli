@@ -1,5 +1,5 @@
 #include "contact_solver.h"
-#include "settings.h"
+#include "world.h"
 
 using namespace spe;
 
@@ -7,7 +7,7 @@ ContactSolver::ContactSolver(ContactConstraint& _cc, const glm::vec2& _contactPo
     cc{ _cc },
     contactPoint{ _contactPoint }
 {
-    beta = POSITION_CORRECTION_BETA;
+    beta = cc.settings.POSITION_CORRECTION_BETA;
     restitution = cc.bodyA->restitution * cc.bodyB->restitution;
     friction = cc.bodyA->friction * cc.bodyB->friction;
 }
@@ -37,10 +37,10 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
 
         float normalVelocity = glm::dot(cc.contactNormal, relativeVelocity);
 
-        if (POSITION_CORRECTION)
-            bias = -(beta * INV_DT) * glm::max(cc.penetrationDepth - PENETRATION_SLOP, 0.0f);
+        if (cc.settings.POSITION_CORRECTION)
+            bias = -(beta * cc.settings.INV_DT) * glm::max(cc.penetrationDepth - cc.settings.PENETRATION_SLOP, 0.0f);
 
-        bias += restitution * glm::min(normalVelocity + RESTITUTION_SLOP, 0.0f);
+        bias += restitution * glm::min(normalVelocity + cc.settings.RESTITUTION_SLOP, 0.0f);
     }
     else
     {
@@ -57,7 +57,7 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
 
     effectiveMass = k > 0.0f ? 1.0f / k : 0.0f;
 
-    if (WARM_START) ApplyImpulse(impulseSum);
+    if (cc.settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
 
 void ContactSolver::Solve(const ContactSolver* normalContact)
@@ -72,15 +72,6 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
         + glm::dot(jacobian.vb, cc.bodyB->linearVelocity)
         + jacobian.wb * cc.bodyB->angularVelocity;
 
-    if(contactType == Tangent)
-    {
-        // SPDLOG_INFO(glm::dot(jacobian.va, cc.bodyA->linearVelocity));
-        // SPDLOG_INFO(jacobian.wa * cc.bodyA->angularVelocity);
-        // SPDLOG_INFO(glm::dot(jacobian.vb, cc.bodyB->linearVelocity));
-        // SPDLOG_INFO(jacobian.wb * cc.bodyB->angularVelocity);
-        // SPDLOG_INFO(jacobian.wa);
-        // SPDLOG_INFO(" ");
-    }
 
     float lambda = effectiveMass * -(jv + bias);
 
@@ -88,21 +79,21 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     switch (contactType)
     {
     case Normal:
-        if (IMPULSE_ACCUMULATION)
+        if (cc.settings.IMPULSE_ACCUMULATION)
             impulseSum = glm::max(0.0f, impulseSum + lambda);
         else
             impulseSum = glm::max(0.0f, lambda);
         break;
     case Tangent:
         float maxFriction = friction * normalContact->impulseSum;
-        if (IMPULSE_ACCUMULATION)
+        if (cc.settings.IMPULSE_ACCUMULATION)
             impulseSum = glm::clamp(impulseSum + lambda, -maxFriction, maxFriction);
         else
             impulseSum = glm::clamp(lambda, -maxFriction, maxFriction);
         break;
     }
 
-    if (IMPULSE_ACCUMULATION)
+    if (cc.settings.IMPULSE_ACCUMULATION)
         lambda = impulseSum - oldImpulseSum;
     else
         lambda = impulseSum;

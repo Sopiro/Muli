@@ -2,24 +2,19 @@
 
 using namespace spe;
 
-World::World()
+World::World(const Settings& simulationSettings) :
+    settings{ simulationSettings }
 {
-    bodies.reserve(100);
+    bodies.reserve(256);
 }
 
 World::~World() noexcept
 {
-    for (size_t i = 0; i < contactConstraints.size(); i++)
-    {
-        delete contactConstraints[i];
-    }
 }
 
-void World::Update(float inv_dt)
+void World::Update()
 {
-    // spdlog::stopwatch sw;
-
-    std::vector<ContactConstraint*> newContactConstraints{};
+    std::vector<std::unique_ptr<ContactConstraint>> newContactConstraints{};
     std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
     newContactConstraints.reserve(contactConstraints.size());
     newContactConstraintMap.reserve(newContactConstraintMap.size());
@@ -29,7 +24,7 @@ void World::Update(float inv_dt)
         RigidBody* b = bodies[i];
         b->manifoldIDs.clear();
         if (b->type != Static)
-            b->linearVelocity.y -= 10.0f * DT;
+            b->linearVelocity += settings.GRAVITY * settings.DT;
 
         if (b->sleeping) continue;
 
@@ -44,8 +39,8 @@ void World::Update(float inv_dt)
 
     // Broad Phase
     // Retrieve a list of collider pairs that are potentially colliding
-    std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
     // std::vector<std::pair<RigidBody*, RigidBody*>> pairs = get_collision_pair_n2(bodies);
+    std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
 
     for (size_t i = 0; i < pairs.size(); i++)
     {
@@ -71,29 +66,22 @@ void World::Update(float inv_dt)
         std::optional<ContactManifold> newManifold = detect_collision(a, b);
         if (!newManifold.has_value()) continue;
 
-        ContactConstraint* cc = new ContactConstraint(std::move(newManifold.value()));
-        newContactConstraints.push_back(cc);
+        ContactConstraint* cc = new ContactConstraint(std::move(newManifold.value()), settings);
+        newContactConstraints.emplace_back(cc);
+        newContactConstraintMap.insert({ key, cc });
 
         a->manifoldIDs.push_back(key);
         b->manifoldIDs.push_back(key);
 
         auto it = contactConstraintMap.find(key);
-        if (WARM_START && (it != contactConstraintMap.end()))
+        if (settings.WARM_STARTING && (it != contactConstraintMap.end()))
         {
             ContactConstraint* oldCC = it->second;
             cc->TryWarmStart(*oldCC);
         }
-
-        newContactConstraintMap.insert({ key, cc });
     }
 
     contactConstraintMap = std::move(newContactConstraintMap);
-
-    for (size_t i = 0; i < contactConstraints.size(); i++)
-    {
-        delete contactConstraints[i];
-    }
-
     contactConstraints = std::move(newContactConstraints);
 
     for (size_t i = 0; i < contactConstraints.size(); i++)
@@ -120,11 +108,9 @@ void World::Update(float inv_dt)
             continue;
         }
 
-        b->position += b->linearVelocity * DT;
-        b->rotation += b->angularVelocity * DT;
+        b->position += b->linearVelocity * settings.DT;
+        b->rotation += b->angularVelocity * settings.DT;
     }
-
-    // spdlog::info("Elapsed {}", sw);
 }
 
 void World::Reset()
@@ -218,7 +204,7 @@ const AABBTree& World::GetBVH() const
     return tree;
 }
 
-const std::vector<ContactConstraint*>& World::GetContactConstraints() const
+const std::vector<std::unique_ptr<ContactConstraint>>& World::GetContactConstraints() const
 {
     return contactConstraints;
 }

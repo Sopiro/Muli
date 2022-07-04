@@ -14,10 +14,10 @@ namespace spe
         virtual void SetDensity(float d) override;
         virtual void SetMass(float m) override;
 
-        virtual float GetArea() override final;
+        virtual float GetArea() const override final;
 
-        const std::vector<glm::vec2>& GetVertices();
-        size_t VertexCount();
+        const std::vector<glm::vec2>& GetVertices() const;
+        size_t VertexCount() const;
 
     protected:
         std::vector<glm::vec2> vertices;

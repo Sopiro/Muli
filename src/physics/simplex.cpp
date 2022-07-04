@@ -4,7 +4,7 @@
 using namespace spe;
 
 // Returns the closest point to the input q
-ClosestResult Simplex::GetClosest(const glm::vec2& q)
+ClosestResult Simplex::GetClosest(const glm::vec2& q) const
 {
     std::vector<uint32_t> contributors{};
     contributors.reserve(3);
