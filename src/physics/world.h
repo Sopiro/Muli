@@ -22,6 +22,7 @@ namespace spe
         float RESTITUTION_SLOP = 0.5f;
         bool APPLY_WARM_STARTING_THRESHOLD = true;
         float WARM_STARTING_THRESHOLD = 0.005f * 0.005f;
+        bool BLOCK_SOLVE = true;
     };
 
     class World final

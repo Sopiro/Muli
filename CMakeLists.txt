@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
     src/physics/constraint.cpp
     src/physics/contact_constraint.cpp
     src/physics/contact_solver.cpp
+    src/physics/block_solver.cpp
 )
 
 include(Dependency.cmake)

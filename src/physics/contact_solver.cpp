@@ -1,5 +1,6 @@
 #include "contact_solver.h"
 #include "world.h"
+#include "contact_constraint.h"
 
 using namespace spe;
 
@@ -106,9 +107,9 @@ void ContactSolver::ApplyImpulse(float lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    cc.bodyA->linearVelocity = cc.bodyA->linearVelocity + jacobian.va * (cc.bodyA->invMass * lambda);
-    cc.bodyA->angularVelocity = cc.bodyA->angularVelocity + cc.bodyA->invInertia * jacobian.wa * lambda;
-    cc.bodyB->linearVelocity = cc.bodyB->linearVelocity + jacobian.vb * (cc.bodyB->invMass * lambda);
-    cc.bodyB->angularVelocity = cc.bodyB->angularVelocity + cc.bodyB->invInertia * jacobian.wb * lambda;
+    cc.bodyA->linearVelocity += jacobian.va * (cc.bodyA->invMass * lambda);
+    cc.bodyA->angularVelocity += cc.bodyA->invInertia * jacobian.wa * lambda;
+    cc.bodyB->linearVelocity += jacobian.vb * (cc.bodyB->invMass * lambda);
+    cc.bodyB->angularVelocity += cc.bodyB->invInertia * jacobian.wb * lambda;
 }
 

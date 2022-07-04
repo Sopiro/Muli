@@ -24,7 +24,10 @@ ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Sett
         tangentContacts.emplace_back(*this, contactPoints[i].point);
     }
 
-    // Block solver
+    if (numContacts == 2 && settings.BLOCK_SOLVE)
+    {
+        blockSolver = std::unique_ptr<BlockSolver>(new BlockSolver(*this));
+    }
 }
 
 void ContactConstraint::Prepare()
@@ -33,6 +36,11 @@ void ContactConstraint::Prepare()
     {
         normalContacts[i].Prepare(contactNormal, Normal);
         tangentContacts[i].Prepare(contactTangent, Tangent);
+    }
+
+    if (numContacts == 2 && settings.BLOCK_SOLVE)
+    {
+        blockSolver->Prepare();
     }
 }
 
@@ -44,9 +52,16 @@ void ContactConstraint::Solve()
         tangentContacts[i].Solve(&normalContacts[i]);
     }
 
-    for (size_t i = 0; i < numContacts; i++)
+    if (numContacts == 1 || !settings.BLOCK_SOLVE)
     {
-        normalContacts[i].Solve();
+        for (size_t i = 0; i < numContacts; i++)
+        {
+            normalContacts[i].Solve();
+        }
+    }
+    else // Solve two contact constraint in one shot using block solver
+    {
+        blockSolver->Solve();
     }
 }
 

@@ -4,6 +4,7 @@
 #include "constraint.h"
 #include "detection.h"
 #include "contact_solver.h"
+#include "block_solver.h"
 
 namespace spe
 {
@@ -30,6 +31,7 @@ namespace spe
     class ContactConstraint : public Constraint
     {
         friend class ContactSolver;
+        friend class BlockSolver;
 
     public:
         ContactConstraint(const ContactManifold& manifold, const Settings& _settings);
@@ -55,5 +57,6 @@ namespace spe
         // Solvers
         std::vector<ContactSolver> normalContacts{};
         std::vector<ContactSolver> tangentContacts{};
+        std::unique_ptr<BlockSolver> blockSolver;
     };
 }

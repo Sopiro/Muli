@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../common.h"
-#include "contact_constraint.h"
 
 namespace spe
 {
@@ -24,6 +23,7 @@ namespace spe
     class ContactSolver
     {
         friend class ContactConstraint;
+        friend class BlockSolver;
 
     public:
         ContactSolver(ContactConstraint& _cc, const glm::vec2& _contactPoint);

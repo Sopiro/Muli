@@ -21,6 +21,7 @@ namespace spe
         friend class World;
         friend class AABBTree;
         friend class ContactSolver;
+        friend class BlockSolver;
 
     public:
         RigidBody(BodyType _type);

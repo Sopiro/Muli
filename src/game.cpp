@@ -79,7 +79,7 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = create_random_convex_body(0.5f);
+            RigidBody* b = new Box(0.5f, 0.5f);
             b->position = mpos;
 
             AddBody(b);
