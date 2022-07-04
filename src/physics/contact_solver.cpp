@@ -8,8 +8,8 @@ ContactSolver::ContactSolver(ContactConstraint& _cc, const glm::vec2& _contactPo
     contactPoint{ _contactPoint }
 {
     beta = POSITION_CORRECTION_BETA;
-    restitution = cc.bodyA->GetRestitution() * cc.bodyB->GetRestitution();
-    friction = cc.bodyA->GetFriction() * cc.bodyB->GetFriction();
+    restitution = cc.bodyA->restitution * cc.bodyB->restitution;
+    friction = cc.bodyA->friction * cc.bodyB->friction;
 }
 
 void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
@@ -20,8 +20,8 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
 
     contactType = _contactType;
 
-    rb = contactPoint - cc.bodyB->position;
     ra = contactPoint - cc.bodyA->position;
+    rb = contactPoint - cc.bodyB->position;
 
     jacobian.va = -dir;
     jacobian.wa = glm::cross(-ra, dir);
@@ -70,7 +70,17 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     float jv = glm::dot(jacobian.va, cc.bodyA->linearVelocity)
         + jacobian.wa * cc.bodyA->angularVelocity
         + glm::dot(jacobian.vb, cc.bodyB->linearVelocity)
-        + jacobian.wa * cc.bodyB->angularVelocity;
+        + jacobian.wb * cc.bodyB->angularVelocity;
+
+    if(contactType == Tangent)
+    {
+        // SPDLOG_INFO(glm::dot(jacobian.va, cc.bodyA->linearVelocity));
+        // SPDLOG_INFO(jacobian.wa * cc.bodyA->angularVelocity);
+        // SPDLOG_INFO(glm::dot(jacobian.vb, cc.bodyB->linearVelocity));
+        // SPDLOG_INFO(jacobian.wb * cc.bodyB->angularVelocity);
+        // SPDLOG_INFO(jacobian.wa);
+        // SPDLOG_INFO(" ");
+    }
 
     float lambda = effectiveMass * -(jv + bias);
 

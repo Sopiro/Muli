@@ -49,5 +49,7 @@ namespace spe
 
         bool drawOutlineOnly = false;
         bool showBVH = false;
+
+        void AddBody(RigidBody* b);
     };
 }

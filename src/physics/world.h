@@ -31,7 +31,9 @@ namespace spe
         std::vector<RigidBody*> QueryPoint(const glm::vec2& point) const;
         std::vector<RigidBody*> QueryRegion(const AABB& region) const;
 
+        const std::vector<RigidBody*>& GetBodies() const;
         const AABBTree& GetBVH() const;
+        const std::vector<ContactConstraint*>& GetContactConstraints() const;
     private:
         uint32_t uid{ 0 };
 

@@ -13,12 +13,11 @@ namespace spe
     class Simplex
     {
     public:
-        std::vector<glm::vec2> vertices;
+        std::vector<glm::vec2> vertices{};
 
-        Simplex() :
-            vertices{}
+        Simplex()
         {
-
+            vertices.reserve(3);
         }
 
         inline size_t Count()

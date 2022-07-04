@@ -6,27 +6,26 @@ using namespace spe;
 // Returns the closest point to the input q
 ClosestResult Simplex::GetClosest(const glm::vec2& q)
 {
-    std::vector<uint32_t> contributors;
+    std::vector<uint32_t> contributors{};
+    contributors.reserve(3);
 
     switch (vertices.size())
     {
     case 1: // 0-Simplex: Point
     {
-        contributors.push_back(1);
         contributors.push_back(0);
 
         return { vertices[0], contributors };
     }
     case 2: // 1-Simplex: Line segment
     {
-        const glm::vec2& a = vertices[0];
-        const glm::vec2& b = vertices[1];
+        const glm::vec2 a = vertices[0];
+        const glm::vec2 b = vertices[1];
         const uv w = get_uv(a, b, q);
 
         if (w.v <= 0)
         {
             contributors.push_back(0);
-
             return { a, contributors };
         }
         else if (w.v >= 1)
@@ -44,9 +43,9 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q)
     }
     case 3: // 2-Simplex: Triangle
     {
-        const glm::vec2& a = vertices[0];
-        const glm::vec2& b = vertices[1];
-        const glm::vec2& c = vertices[2];
+        const glm::vec2 a = vertices[0];
+        const glm::vec2 b = vertices[1];
+        const glm::vec2 c = vertices[2];
 
         const uv wab = get_uv(a, b, q);
         const uv wbc = get_uv(b, c, q);
@@ -78,7 +77,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q)
 
         if (wab.u > 0 && wab.v > 0 && w * area <= 0) // On the AB edge
         {
-            if (area != 0)
+            if (area != 0.0f)
             {
                 contributors.push_back(0);
                 contributors.push_back(1);
@@ -94,7 +93,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q)
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
         {
-            if (area != 0)
+            if (area != 0.0f)
             {
                 contributors.push_back(1);
                 contributors.push_back(2);
@@ -108,9 +107,9 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q)
 
             return { lerp_vector(b, c, wbc), contributors };
         }
-        else if (wca.u > 0 && wca.u > 0 && v * area <= 0) // On the CA edge
+        else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
         {
-            if (area != 0)
+            if (area != 0.0f)
             {
                 contributors.push_back(2);
                 contributors.push_back(0);

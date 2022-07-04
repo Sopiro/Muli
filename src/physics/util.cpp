@@ -1,6 +1,7 @@
 #include "util.h"
 #include "box.h"
 #include "circle.h"
+#include "aabb.h"
 
 using namespace spe;
 
@@ -45,31 +46,28 @@ spe::Polygon* spe::create_random_convex_body(float radius, uint32_t num_vertices
     if (num_vertices < 3)
         num_vertices = glm::linearRand<uint32_t>(3, 8);
 
-    std::vector<float> angles;
+    std::vector<float> angles{};
     angles.reserve(num_vertices);
 
     for (size_t i = 0; i < num_vertices; i++)
     {
-        angles.emplace_back(glm::linearRand<float>(0, 1) * glm::pi<float>() * 2.0f);
+        angles.push_back(glm::linearRand<float>(0.0f, 1.0f) * glm::pi<float>() * 2.0f);
     }
 
     std::sort(angles.begin(), angles.end());
 
-    std::vector<glm::vec2> vertices;
+    std::vector<glm::vec2> vertices{};
     vertices.reserve(num_vertices);
 
     for (size_t i = 0; i < num_vertices; i++)
     {
-        glm::vec2 corner = glm::vec2{ glm::cos(angles[i]), glm::sin(angles[i]) };
-        corner *= radius;
-
-        vertices.push_back(corner);
+        vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
     }
 
     return new Polygon(vertices, Dynamic, true, density);
 }
 
-spe::Polygon* spe::create_regular_polygon(size_t radius, uint32_t num_vertices, float initial_angle, float density)
+spe::Polygon* spe::create_regular_polygon(float radius, uint32_t num_vertices, float initial_angle, float density)
 {
     if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
 
@@ -116,7 +114,7 @@ std::unique_ptr<Mesh> spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_
             float currentAngle = angle * i;
 
             glm::vec3 corner = glm::vec3{ glm::cos(currentAngle), glm::sin(currentAngle), 0.0f };
-            corner *= radius * glm::sqrt(2);
+            corner *= radius;
 
             vertices.push_back(corner);
             texCoords.emplace_back(corner.x, corner.y);
@@ -191,4 +189,29 @@ std::vector<uint32_t> spe::triangulate(const std::vector<glm::vec2>& vertices)
     }
 
     return indices;
+}
+
+std::vector<std::pair<RigidBody*, RigidBody*>> spe::get_collision_pair_n2(const std::vector<RigidBody*>& bodies)
+{
+    std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
+
+    size_t numBodies = bodies.size();
+
+    pairs.reserve(numBodies / 2 + 1);
+
+    for (size_t i = 0; i < numBodies; i++)
+    {
+        RigidBody* a = bodies[i];
+        for (size_t j = 0; j < numBodies; j++)
+        {
+            RigidBody* b = bodies[j];
+
+            if (detect_collision_AABB(create_AABB(a), create_AABB(b)))
+            {
+                pairs.emplace_back(a, b);
+            }
+        }
+    }
+
+    return pairs;
 }

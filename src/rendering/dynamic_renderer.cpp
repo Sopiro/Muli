@@ -26,9 +26,10 @@ DynamicRenderer::~DynamicRenderer()
 
 void DynamicRenderer::Render() {}
 
-void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode)
+void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode, glm::vec3 color)
 {
     shader->Use();
+    shader->SetColor(std::move(color));
     shader->SetModelMatrix(glm::mat4{ 1.0f });
 
     glBindVertexArray(VAO);

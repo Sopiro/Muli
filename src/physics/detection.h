@@ -9,6 +9,11 @@ namespace spe
     {
         glm::vec2 point;
         int32_t id;
+
+        ContactPoint(glm::vec2 _point, int32_t _id) :
+            point{ _point },
+            id{ _id }
+        {}
     };
 
     struct ContactManifold

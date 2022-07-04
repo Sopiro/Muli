@@ -18,7 +18,7 @@ namespace spe
         void SetViewMatrix(glm::mat4 _viewMatrix);
 
         virtual void Render() override;
-        void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode = GL_LINE_LOOP);
+        void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode = GL_LINE_LOOP, glm::vec3 color = { 0.0f, 0.0f, 0.0f });
 
     private:
         // All registered rigid bodies

@@ -18,22 +18,20 @@ namespace spe
     // Returns the fardest vertex in the 'dir' direction
     static SupportResult support(RigidBody* b, glm::vec2 dir)
     {
-        auto& type = typeid(*b);
-
         dir = glm::normalize(dir);
 
+        auto& type = typeid(*b);
         if (type == typeid(Polygon) || type == typeid(Box))
         {
-            int32_t idx = 0;
-
             Polygon* p = static_cast<Polygon*>(b);
             const std::vector<glm::vec2>& vertices = p->GetVertices();
+
+            int32_t idx = 0;
             float maxValue = glm::dot(dir, vertices[idx]);
 
             for (int32_t i = 1; i < vertices.size(); i++)
             {
                 float value = glm::dot(dir, vertices[i]);
-
                 if (value > maxValue)
                 {
                     idx = i;
@@ -66,11 +64,8 @@ namespace spe
         const glm::vec2 localDirP1 = glm::mul(b1->GlobalToLocal(), dir, 0);
         const glm::vec2 localDirP2 = glm::mul(b2->GlobalToLocal(), -dir, 0);
 
-        glm::vec2 supportP1 = support(b1, localDirP1).vertex;
-        glm::vec2 supportP2 = support(b2, localDirP2).vertex;
-
-        supportP1 = b1->LocalToGlobal() * supportP1;
-        supportP2 = b2->LocalToGlobal() * supportP2;
+        const glm::vec2 supportP1 = b1->LocalToGlobal() * support(b1, localDirP1).vertex;
+        const glm::vec2 supportP2 = b2->LocalToGlobal() * support(b2, localDirP2).vertex;
 
         return supportP1 - supportP2;
     }
@@ -143,19 +138,18 @@ namespace spe
     {
         Polytope polytope{ gjkResult };
 
-        ClosestEdgeInfo closestEdge{ 0, std::numeric_limits<float>::max(), glm::vec2{0.0f} };
+        ClosestEdgeInfo closestEdge{ 0, FLT_MAX, glm::vec2{0.0f} };
 
         for (size_t i = 0; i < EPA_MAX_ITERATION; i++)
         {
             closestEdge = polytope.GetClosestEdge();
-            glm::vec2 supportPoint = cso_support(b1, b2, closestEdge.normal);
-            float newDistance = glm::dot(closestEdge.normal, supportPoint);
+            const glm::vec2 supportPoint = cso_support(b1, b2, closestEdge.normal);
+            const float newDistance = glm::dot(closestEdge.normal, supportPoint);
 
             if (glm::abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
             {
                 // Insert the support vertex so that it expands our polytope
-                auto it = polytope.vertices.begin();
-                polytope.vertices.insert(it + closestEdge.index + 1, supportPoint);
+                polytope.vertices.insert(polytope.vertices.begin() + closestEdge.index + 1, supportPoint);
             }
             else
             {
@@ -169,19 +163,19 @@ namespace spe
 
     static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
     {
-        glm::vec2 localDir = glm::mul(b->GlobalToLocal(), dir, 0);
-        SupportResult farthest = support(b, localDir);
+        const glm::vec2 localDir = glm::mul(b->GlobalToLocal(), dir, 0);
+        const SupportResult farthest = support(b, localDir);
 
         glm::vec2 curr = farthest.vertex;
         int32_t idx = farthest.index;
 
-        glm::mat3 localToGlobal = b->LocalToGlobal();
+        const glm::mat3 localToGlobal = b->LocalToGlobal();
 
         auto& typeID = typeid(*b);
         if (typeID == typeid(Circle))
         {
             curr = localToGlobal * curr;
-            glm::vec2 tangent = glm::cross(1, dir) * TANGENT_MIN_LENGTH;
+            const glm::vec2 tangent = glm::cross(1.0f, dir) * TANGENT_MIN_LENGTH;
 
             return Edge{ curr, curr + tangent };
         }
@@ -190,62 +184,59 @@ namespace spe
             Polygon* p = static_cast<Polygon*>(b);
 
             const std::vector<glm::vec2>& vertices = p->GetVertices();
-            size_t vertexCount = p->VertexCount();
+            int32_t vertexCount = static_cast<int32_t>(p->VertexCount());
 
             const glm::vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
             const glm::vec2& next = vertices[(idx + 1) % vertexCount];
 
-            glm::vec2 e1 = glm::normalize(curr - prev);
-            glm::vec2 e2 = glm::normalize(curr - next);
+            const glm::vec2 e1 = glm::normalize(curr - prev);
+            const glm::vec2 e2 = glm::normalize(curr - next);
 
-            bool w = glm::abs(glm::dot(e1, localDir)) <= glm::abs(glm::dot(e2, localDir));
+            const bool w = glm::abs(glm::dot(e1, localDir)) <= glm::abs(glm::dot(e2, localDir));
 
             curr = localToGlobal * curr;
 
-            int32_t vc = static_cast<int32_t>(vertexCount);
-
             return w ?
-                Edge{ localToGlobal * prev, curr, (idx - 1 + vc) % vc, idx } :
-                Edge{ curr, localToGlobal * next, idx, (idx + 1) % vc };
+                Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx } :
+                Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
         }
         else
         {
-            SPDLOG_INFO("here");
             throw std::exception("Not a supported shape");
         }
     }
 
-    static void clip_edge(Edge& edge, const glm::vec2& p, const glm::vec2& dir, bool remove = false)
+    static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool remove = false)
     {
-        float d1 = glm::dot(edge.p1 - p, dir);
-        float d2 = glm::dot(edge.p2 - p, dir);
+        const float d1 = glm::dot(edge->p1 - p, dir);
+        const float d2 = glm::dot(edge->p2 - p, dir);
 
         if (d1 >= 0 && d2 >= 0) return;
 
-        float per = glm::abs(d1) + glm::abs(d2);
+        const float per = glm::abs(d1) + glm::abs(d2);
 
         if (d1 < 0)
         {
             if (remove)
             {
-                edge.p1 = edge.p2;
-                edge.id1 = edge.id2;
+                edge->p1 = edge->p2;
+                edge->id1 = edge->id2;
             }
             else
             {
-                edge.p1 = edge.p1 + ((edge.p2 - edge.p1) * (-d1 / per));
+                edge->p1 = edge->p1 + (edge->p2 - edge->p1) * (-d1 / per);
             }
         }
         else if (d2 < 0)
         {
             if (remove)
             {
-                edge.p2 = edge.p1;
-                edge.id2 = edge.id1;
+                edge->p2 = edge->p1;
+                edge->id2 = edge->id1;
             }
             else
             {
-                edge.p2 = edge.p2 + ((edge.p1 - edge.p2) * (-d2 / per));
+                edge->p2 = edge->p2 + (edge->p1 - edge->p2) * (-d2 / per);
             }
         }
     }
@@ -269,21 +260,21 @@ namespace spe
             flip = true;
         }
 
-        clip_edge(*inc, ref->p1, ref->dir);
-        clip_edge(*inc, ref->p2, -(ref->dir));
-        clip_edge(*inc, ref->p1, flip ? n : -n, true);
+        clip_edge(inc, ref->p1, ref->dir);
+        clip_edge(inc, ref->p2, -(ref->dir));
+        clip_edge(inc, ref->p1, flip ? n : -n, true);
 
         std::vector<ContactPoint> contactPoints{};
 
         // If two points are closer than threshold, merge them into one point
         if (inc->Length() <= CONTACT_MERGE_THRESHOLD)
         {
-            contactPoints.push_back({ inc->p1, inc->id1 });
+            contactPoints.emplace_back(inc->p1, inc->id1);
         }
         else
         {
-            contactPoints.push_back({ inc->p1, inc->id1 });
-            contactPoints.push_back({ inc->p2, inc->id2 });
+            contactPoints.emplace_back(inc->p1, inc->id1);
+            contactPoints.emplace_back(inc->p2, inc->id2);
         }
 
         return contactPoints;
@@ -294,10 +285,10 @@ namespace spe
         ContactManifold res{};
 
         // Circle vs. Circle collision
-        if (typeid(a) == typeid(Circle) && typeid(b) == typeid(Circle))
+        if (typeid(*a) == typeid(Circle) && typeid(*b) == typeid(Circle))
         {
             float d = glm::distance2(a->position, b->position);
-            float r2 = static_cast<Circle*>(a)->GetRadius() + static_cast<Circle*>(b)->GetRadius();
+            const float r2 = static_cast<Circle*>(a)->GetRadius() + static_cast<Circle*>(b)->GetRadius();
 
             if (d > r2 * r2)
             {
@@ -314,11 +305,11 @@ namespace spe
                 res.penetrationDepth = r2 - d;
                 res.featureFlipped = false;
 
-                if (glm::dot(res.contactNormal, glm::vec2{ 0, -1 }) < 0)
+                if (glm::dot(res.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
                 {
-                    res.contactNormal *= -1;
                     res.bodyA = b;
                     res.bodyB = a;
+                    res.contactNormal *= -1;
                     res.featureFlipped = true;
                 }
 
@@ -341,13 +332,13 @@ namespace spe
             {
             case 1:
             {
-                glm::vec2& v = simplex.vertices[0];
+                const glm::vec2& v = simplex.vertices[0];
                 glm::vec2 randomSupport = cso_support(a, b, glm::vec2{ 1, 0 });
 
                 if (randomSupport == v)
                     randomSupport = cso_support(a, b, glm::vec2{ -1, 0 });
 
-                simplex.AddVertex(v);
+                simplex.AddVertex(randomSupport);
             }
             case 2:
             {
@@ -372,7 +363,7 @@ namespace spe
             res.featureFlipped = false;
 
             // Apply axis weight to improve coherence
-            if (glm::dot(epaResult.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0)
+            if (glm::dot(epaResult.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
             {
                 res.bodyA = b;
                 res.bodyB = a;
@@ -384,7 +375,7 @@ namespace spe
             res.contactNormal.x = glm::round((res.contactNormal.x / EPA_TOLERANCE)) * EPA_TOLERANCE;
             res.contactNormal.y = glm::round((res.contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
 
-            res.contactPoints = find_contact_points(epaResult.contactNormal, a, b);
+            res.contactPoints = find_contact_points(res.contactNormal, res.bodyA, res.bodyB);
 
             return res;
         }

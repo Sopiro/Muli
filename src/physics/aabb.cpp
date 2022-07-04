@@ -6,36 +6,36 @@ AABB::AABB(glm::vec2 _min, glm::vec2 _max) :
     min{ std::move(_min) },
     max{ std::move(_max) }
 {
-    fix(*this);
+    //fix(*this);
 }
 
-AABB spe::create_AABB(RigidBody& body, float margin)
+AABB spe::create_AABB(RigidBody* body, float margin)
 {
-    auto& bodyType = typeid(body);
+    auto& bodyType = typeid(*body);
 
     if (bodyType == typeid(Circle))
     {
-        Circle& c = static_cast<Circle&>(body);
+        Circle* c = static_cast<Circle*>(body);
 
-        float radius = c.GetRadius();
+        float radius = c->GetRadius();
 
         return AABB
         {
-            glm::vec2(body.position.x - radius - margin, body.position.y - radius - margin),
-            glm::vec2(body.position.x + radius + margin, body.position.y + radius + margin)
+            glm::vec2(body->position.x - radius - margin, body->position.y - radius - margin),
+            glm::vec2(body->position.x + radius + margin, body->position.y + radius + margin)
         };
     }
     else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
     {
-        Polygon& p = static_cast<Polygon&>(body);
+        Polygon* p = static_cast<Polygon*>(body);
 
-        auto localToGlobal = p.LocalToGlobal();
+        glm::mat3 localToGlobal = p->LocalToGlobal();
+        const std::vector<glm::vec2>& vertices = p->GetVertices();
 
-        auto& vertices = p.GetVertices();
+        AABB res{ localToGlobal * vertices[0], localToGlobal * vertices[1] };
+        fix(res);
 
-        AABB res(localToGlobal * vertices[0], localToGlobal * vertices[1]);
-
-        for (int i = 1; i < p.VertexCount(); i++)
+        for (size_t i = 1; i < p->VertexCount(); i++)
         {
             glm::vec2 gv = localToGlobal * vertices[i];
 

@@ -81,3 +81,22 @@ void ContactConstraint::TryWarmStart(const ContactConstraint& oldCC)
         }
     }
 }
+
+ContactInfo ContactConstraint::GetContactInfo() const
+{
+    float impulse = 0.0f;
+
+    for (size_t i = 0; i < numContacts; i++)
+    {
+        impulse += normalContacts[i].impulseSum;
+    }
+
+    return ContactInfo
+    {
+        featureFlipped ? bodyB : bodyA,
+        numContacts,
+        featureFlipped ? -contactNormal : contactNormal,
+        contactPoints,
+        impulse
+    };
+}

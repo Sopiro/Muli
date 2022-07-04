@@ -84,9 +84,11 @@ namespace spe
 
     Polygon* create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
 
-    Polygon* create_regular_polygon(size_t radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
+    Polygon* create_regular_polygon(float radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
 
     std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count = 16);
 
     std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices);
+
+    std::vector<std::pair<RigidBody*, RigidBody*>> get_collision_pair_n2(const std::vector<RigidBody*>& bodies);
 }

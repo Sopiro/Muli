@@ -7,18 +7,38 @@
 
 namespace spe
 {
+    struct ContactInfo
+    {
+        const RigidBody* other;
+        const size_t numContacts;
+        const glm::vec2 contactDir;
+        const std::vector<ContactPoint> contactPoints;
+        const float impulse;
+
+        ContactInfo(RigidBody* _other, size_t _numContacts, glm::vec2 _contactDir, std::vector<ContactPoint> _contactPoints, float _impulse) :
+            other{ _other },
+            numContacts{ _numContacts },
+            contactDir{ _contactDir },
+            contactPoints{ _contactPoints },
+            impulse{ _impulse }
+        {
+        }
+    };
+
     class ContactConstraint : public Constraint
     {
         friend class ContactSolver;
 
     public:
         ContactConstraint(const ContactManifold& manifold);
-        
+
         virtual void Prepare() override;
         virtual void Solve() override;
         void TryWarmStart(const ContactConstraint& oldCC);
 
         bool persistent{ false };
+
+        ContactInfo GetContactInfo() const;
 
     private:
         std::vector<ContactPoint> contactPoints;

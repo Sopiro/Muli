@@ -17,14 +17,12 @@ World::~World() noexcept
 
 void World::Update(float inv_dt)
 {
-    spdlog::stopwatch sw;
+    // spdlog::stopwatch sw;
 
     std::vector<ContactConstraint*> newContactConstraints{};
     std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
-    newContactConstraints.reserve(100);
-    newContactConstraintMap.reserve(100);
-
-    spdlog::info("1. Elapsed {:.9}", sw);
+    newContactConstraints.reserve(contactConstraints.size());
+    newContactConstraintMap.reserve(newContactConstraintMap.size());
 
     for (size_t i = 0; i < bodies.size(); i++)
     {
@@ -33,10 +31,10 @@ void World::Update(float inv_dt)
         if (b->type != Static)
             b->linearVelocity.y -= 10.0f * DT;
 
-        // if (b->sleeping) continue;
+        if (b->sleeping) continue;
 
         Node* node = b->node;
-        AABB tightAABB = create_AABB(*b, 0.0f);
+        AABB tightAABB = create_AABB(b, 0.0f);
 
         if (contains_AABB(node->aabb, tightAABB)) continue;
 
@@ -44,11 +42,10 @@ void World::Update(float inv_dt)
         tree.Add(b);
     }
 
-    spdlog::info("2. Elapsed {:.9}", sw);
-
     // Broad Phase
     // Retrieve a list of collider pairs that are potentially colliding
     std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
+    // std::vector<std::pair<RigidBody*, RigidBody*>> pairs = get_collision_pair_n2(bodies);
 
     for (size_t i = 0; i < pairs.size(); i++)
     {
@@ -90,8 +87,6 @@ void World::Update(float inv_dt)
         newContactConstraintMap.insert({ key, cc });
     }
 
-    spdlog::info("3. Elapsed {:.9}", sw);
-
     contactConstraintMap = std::move(newContactConstraintMap);
 
     for (size_t i = 0; i < contactConstraints.size(); i++)
@@ -106,7 +101,7 @@ void World::Update(float inv_dt)
         contactConstraints[i]->Prepare();
     }
 
-    for (size_t i = 0; i < 5; i++)
+    for (size_t i = 0; i < 10; i++)
     {
         for (size_t j = 0; j < contactConstraints.size(); j++)
         {
@@ -118,13 +113,18 @@ void World::Update(float inv_dt)
     {
         RigidBody* b = bodies[i];
 
-        if (b->type == Static) continue;
+        if (b->type == Static)
+        {
+            glm::clear(b->linearVelocity);
+            b->rotation = 0.0f;
+            continue;
+        }
 
         b->position += b->linearVelocity * DT;
         b->rotation += b->angularVelocity * DT;
     }
 
-    spdlog::info("4. Elapsed {:.9}", sw);
+    // spdlog::info("Elapsed {}", sw);
 }
 
 void World::Reset()
@@ -208,7 +208,17 @@ std::vector<RigidBody*> World::QueryRegion(const AABB& region) const
     return res;
 }
 
+const std::vector<RigidBody*>& World::GetBodies() const
+{
+    return bodies;
+}
+
 const AABBTree& World::GetBVH() const
 {
     return tree;
+}
+
+const std::vector<ContactConstraint*>& World::GetContactConstraints() const
+{
+    return contactConstraints;
 }

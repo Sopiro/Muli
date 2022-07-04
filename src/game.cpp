@@ -19,16 +19,21 @@ Game::Game(Application& _app) :
         }
     );
 
-    camera.position = glm::vec2{ 0, 0 };
+    camera.position = glm::vec2{ 0, 3.6 };
     camera.scale = glm::vec2{ 1, 1 };
 
-    RigidBody* b = new Box{ 100.0f, 0.4f, Static };
-    b->position.y = -3.6f;
+    RigidBody* b = new Box{ 12.8f * 5.0f, 0.4f, Static };
+    AddBody(b);
+    // RigidBody* b = new Circle(1, Static);
+    // AddBody(b);
 
-    bodies.insert(b);
+    for (size_t i = 0; i < 10; i++)
+    {
+        auto c = new Circle(0.5);
+        c->position.y = 3 + i + 0.1f * i;
 
-    world.Register(b);
-    rRenderer.Register(b);
+        AddBody(c);
+    }
 }
 
 Game::~Game() noexcept
@@ -53,14 +58,26 @@ void Game::HandleInput()
     {
         mpos = rRenderer.Pick(Input::GetMousePosition());
 
+        if (Input::IsKeyPressed(GLFW_KEY_C))
+        {
+            for (RigidBody* body : bodies)
+            {
+                delete body;
+            }
+            bodies.clear();
+            world.Reset();
+            rRenderer.Clear();
+            
+            RigidBody* b = new Box{ 12.8f * 5.0f, 0.4f, Static };
+            AddBody(b);
+        }
+
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = new Box(0.5f, 0.5f);
+            RigidBody* b = create_random_convex_body(0.5f);
             b->position = mpos;
 
-            bodies.insert(b);
-            world.Register(b);
-            rRenderer.Register(b);
+            AddBody(b);
         }
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
@@ -149,6 +166,7 @@ void Game::Render()
     rRenderer.SetDrawOutlined(drawOutlineOnly);
     rRenderer.Render();
 
+    dRenderer.SetViewMatrix(camera.CameraTransform());
     if (showBVH)
     {
         const AABBTree& tree = world.GetBVH();
@@ -166,9 +184,23 @@ void Game::Render()
             });
 
         glLineWidth(1.0f);
-        dRenderer.SetViewMatrix(camera.CameraTransform());
         dRenderer.Draw(v, GL_LINES);
     }
+
+    auto& cc = world.GetContactConstraints();
+    std::vector<glm::vec2> v{};
+    v.reserve(cc.size());
+
+    for (size_t i = 0; i < cc.size(); i++)
+    {
+        auto ci = cc[i]->GetContactInfo();
+        for (size_t j = 0; j < ci.numContacts; j++)
+        {
+            v.push_back(ci.contactPoints[j].point);
+        }
+    }
+    glPointSize(5.0f);
+    dRenderer.Draw(v, GL_POINTS);
 }
 
 void Game::UpdateProjectionMatrix()
@@ -179,4 +211,11 @@ void Game::UpdateProjectionMatrix()
     glm::mat4 projMatrix = glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
     rRenderer.SetProjectionMatrix(projMatrix);
     dRenderer.SetProjectionMatrix(projMatrix);
+}
+
+void Game::AddBody(RigidBody* b)
+{
+    bodies.insert(b);
+    world.Register(b);
+    rRenderer.Register(b);
 }

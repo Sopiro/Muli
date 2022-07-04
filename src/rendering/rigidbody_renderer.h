@@ -28,6 +28,8 @@ namespace spe
 
         void SetDrawOutlined(bool drawOutlineOnly);
 
+        void Clear();
+
     private:
         // All registered rigid bodies
         std::unique_ptr<RigidBodyShader> shader{};

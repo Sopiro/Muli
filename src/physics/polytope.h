@@ -18,8 +18,8 @@ namespace spe
         std::vector<glm::vec2> vertices;
 
         Polytope(const Simplex& simplex);
-        ClosestEdgeInfo GetClosestEdge();
 
+        ClosestEdgeInfo GetClosestEdge();
         inline size_t Count()
         {
             return vertices.size();

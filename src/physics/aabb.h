@@ -71,5 +71,5 @@ namespace spe
             && container.max.y >= testee.max.y;
     }
     
-    AABB create_AABB(RigidBody& body, float margin = 0.0f);
+    AABB create_AABB(RigidBody* body, float margin = 0.0f);
 }

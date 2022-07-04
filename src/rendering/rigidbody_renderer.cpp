@@ -111,3 +111,8 @@ void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
 {
     drawOutlineOnly = std::move(_drawOutlineOnly);
 }
+
+void RigidBodyRenderer::Clear()
+{
+    bodiesAndMeshes.clear();
+}

@@ -165,7 +165,7 @@ Window::Window(int width, int height, std::string title)
 	config.OversampleH = 1;
 	config.OversampleV = 1;
 	config.PixelSnapH = true;
-	io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 18.0f, &config);
+	//io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 18.0f, &config);
 	// io.Fonts->AddFontFromFileTTF("../../res/fonts/NotoSans-Regular.ttf", 16.0f, &config);
 
 	// Register some window callbacks

@@ -35,7 +35,7 @@ void AABBTree::Reset()
 
 const Node* AABBTree::Add(RigidBody* body)
 {
-    AABB aabb = create_AABB(*body, body->GetType() == Static ? 0.0f : aabbMargin);
+    AABB aabb = create_AABB(body, body->GetType() == Static ? 0.0f : aabbMargin);
 
     Node* newNode = new Node(nodeID++, std::move(aabb), true);
     newNode->body = body;

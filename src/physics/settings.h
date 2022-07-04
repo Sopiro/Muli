@@ -13,8 +13,8 @@
 #define WARM_START true
 #define POSITION_CORRECTION_BETA 0.2f
 #define POSITION_CORRECTION true
-#define DT 1.0f / 144.0f
-#define INV_DT 144.0f
+#define DT 1.0f / 60.0f
+#define INV_DT 60.0f
 #define PENETRATION_SLOP 0.005f
 #define RESTITUTION_SLOP 0.5f
 #define IMPULSE_ACCUMULATION true
