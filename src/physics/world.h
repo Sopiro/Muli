@@ -28,7 +28,7 @@ namespace spe
         float REST_ANGULAR_TOLERANCE = (0.5f * glm::pi<float>() / 180.0f) * (0.5f * glm::pi<float>() / 180.0f);
         bool APPLY_GRAVITY = true;
         bool SLEEPING_ENABLED = true;
-        float SLEEPING_TRESHOLD = 1.0f;
+        float SLEEPING_TRESHOLD = 0.5f;
     };
 
     class World final

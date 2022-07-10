@@ -23,7 +23,26 @@ void RigidBodyRenderer::Render()
 
         if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == Static)
         {
-            shader->SetColor({ 1, 1, 1 });
+            glm::vec3 color{ 1.0f };
+
+            if (body->GetType() == Dynamic)
+            {
+                int32_t id = body->GetIslandID();
+
+                int32_t hStride = 17;
+                int32_t sStride = 5;
+                int32_t lStride = 3;
+                int32_t period = static_cast<int32_t>(glm::trunc(360 / hStride));
+                int32_t cycle = static_cast<int32_t>(glm::trunc(id / period));
+
+                float h = (((id - 1) * hStride) % 360 ) / 360.0f;
+                float s = (100 - (cycle * sStride) % 21) / 100.0f;
+                float l = (75 - (cycle * lStride) % 17) / 100.0f;
+
+                color = hsl2rgb(h, s, l);
+            }
+
+            shader->SetColor({ color.r, color.g, color.b });
             mesh->Draw(GL_TRIANGLES);
         }
 

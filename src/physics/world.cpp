@@ -179,6 +179,15 @@ void World::Unregister(RigidBody* body)
 
 	if (it != bodies.end())
 	{
+		for(size_t i = 0; i < body->manifoldIDs.size(); i++)
+		{
+			int32_t key = body->manifoldIDs[i];
+			ContactConstraint* cc = contactConstraintMap[key];
+
+			RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
+			other->Awake();
+		}
+
 		bodies.erase(it);
 		tree.Remove(body);
 	}

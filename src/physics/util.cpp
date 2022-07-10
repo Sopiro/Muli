@@ -122,6 +122,9 @@ std::unique_ptr<Mesh> spe::generate_mesh_from_rigidbody(RigidBody& body, uint32_
 
         std::vector<uint32_t> indices = triangulate(texCoords);
 
+        vertices.push_back(glm::vec3(vertices[0]));
+        vertices.push_back(glm::vec3{ 0.0f });
+
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
     else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
