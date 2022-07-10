@@ -30,6 +30,9 @@
 #include <limits>
 #include <optional>
 
+//openMP
+#include <omp.h>
+
 // Some useful operator overloading for glm containers
 namespace glm
 {

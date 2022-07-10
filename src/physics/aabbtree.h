@@ -27,7 +27,7 @@ namespace spe
         AABB aabb;
         RigidBody* body = nullptr;
     private:
-        Node(uint32_t _id, AABB&& _aabb, bool _isLeaf);
+        Node(uint32_t _id, AABB _aabb, bool _isLeaf);
     };
 
     class AABBTree
@@ -56,6 +56,8 @@ namespace spe
         std::vector<Node*> QueryRegion(const AABB& region)  const;
 
         float GetTreeCost() const;
+        float GetMarginSize() const;
+        
     private:
         uint32_t nodeID = 0;
 

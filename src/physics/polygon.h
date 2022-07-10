@@ -14,6 +14,7 @@ namespace spe
         virtual void SetDensity(float d) override;
         virtual void SetMass(float m) override;
 
+        float GetRadius() const;
         virtual float GetArea() const override final;
 
         const std::vector<glm::vec2>& GetVertices() const;
@@ -22,5 +23,6 @@ namespace spe
     protected:
         std::vector<glm::vec2> vertices;
         float area;
+        float radius;
     };
 }

@@ -34,7 +34,7 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
 RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
 {
     if (this == &_other) return *this;
-    
+
     _other.moved = true;
 
     //private member
@@ -83,7 +83,7 @@ void RigidBody::Awake()
 {
     if (type == Static) return;
 
-    resting = 0;
+    resting = 0.0f;
     sleeping = false;
 }
 
@@ -185,4 +185,9 @@ void RigidBody::SetTorque(float _torque)
 BodyType RigidBody::GetType() const
 {
     return type;
+}
+
+bool RigidBody::IsSleeping() const
+{
+    return sleeping;
 }

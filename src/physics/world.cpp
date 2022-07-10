@@ -1,210 +1,259 @@
 #include "world.h"
+#include "island.h"
 
 using namespace spe;
 
 World::World(const Settings& simulationSettings) :
-    settings{ simulationSettings }
+	settings{ simulationSettings }
 {
-    bodies.reserve(256);
+	bodies.reserve(256);
 }
 
 World::~World() noexcept
 {
 }
 
-void World::Update()
+void World::Update(float dt)
 {
-    std::vector<std::unique_ptr<ContactConstraint>> newContactConstraints{};
-    std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
-    newContactConstraints.reserve(contactConstraints.size());
-    newContactConstraintMap.reserve(newContactConstraintMap.size());
+	std::vector<std::unique_ptr<ContactConstraint>> newContactConstraints{};
+	std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
+	newContactConstraints.reserve(contactConstraints.size());
+	newContactConstraintMap.reserve(newContactConstraintMap.size());
 
-    for (size_t i = 0; i < bodies.size(); i++)
-    {
-        RigidBody* b = bodies[i];
-        b->manifoldIDs.clear();
-        if (b->type != Static)
-            b->linearVelocity += settings.GRAVITY * settings.DT;
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		RigidBody* b = bodies[i];
+		b->manifoldIDs.clear();
 
-        if (b->sleeping) continue;
+		if (b->sleeping) continue;
 
-        Node* node = b->node;
-        AABB tightAABB = create_AABB(b, 0.0f);
+		Node* node = b->node;
+		AABB tightAABB = create_AABB(b, 0.0f);
 
-        if (contains_AABB(node->aabb, tightAABB)) continue;
+		if (contains_AABB(node->aabb, tightAABB)) continue;
 
-        tree.Remove(b);
-        tree.Add(b);
-    }
+		tree.Remove(b);
+		tree.Add(b);
+	}
 
-    // Broad Phase
-    // Retrieve a list of collider pairs that are potentially colliding
-    // std::vector<std::pair<RigidBody*, RigidBody*>> pairs = get_collision_pair_n2(bodies);
-    std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
+	// Broad Phase
+	// Retrieve a list of collider pairs that are potentially colliding
+	// std::vector<std::pair<RigidBody*, RigidBody*>> pairs = get_collision_pair_n2(bodies);
+	std::vector<std::pair<RigidBody*, RigidBody*>> pairs = tree.GetCollisionPairs();
 
-    for (size_t i = 0; i < pairs.size(); i++)
-    {
-        std::pair<RigidBody*, RigidBody*> pair = pairs[i];
-        RigidBody* a = pair.first;
-        RigidBody* b = pair.second;
+	for (size_t i = 0; i < pairs.size(); i++)
+	{
+		std::pair<RigidBody*, RigidBody*> pair = pairs[i];
+		RigidBody* a = pair.first;
+		RigidBody* b = pair.second;
 
-        // Improve coherence
-        if (a->id > b->id)
-        {
-            a = pair.second;
-            b = pair.first;
-        }
+		// Improve coherence
+		if (a->id > b->id)
+		{
+			a = pair.second;
+			b = pair.first;
+		}
 
-        if (a->type == Static && b->type == Static)
-            continue;
+		if (a->type == Static && b->type == Static)
+			continue;
 
-        uint32_t key = make_pair_natural(a->id, b->id);
-        if (passTestSet.find(key) != passTestSet.end()) continue;
+		uint32_t key = make_pair_natural(a->id, b->id);
+		if (passTestSet.find(key) != passTestSet.end()) continue;
 
-        // Narrow Phase
-        // Execute more accurate and expensive collision detection
-        std::optional<ContactManifold> newManifold = detect_collision(a, b);
-        if (!newManifold.has_value()) continue;
+		// Narrow Phase
+		// Execute more accurate and expensive collision detection
+		std::optional<ContactManifold> newManifold = detect_collision(a, b);
+		if (!newManifold.has_value()) continue;
 
-        ContactConstraint* cc = new ContactConstraint(std::move(newManifold.value()), settings);
-        newContactConstraints.emplace_back(cc);
-        newContactConstraintMap.insert({ key, cc });
+		ContactConstraint* cc = new ContactConstraint(std::move(newManifold.value()), settings);
+		newContactConstraints.emplace_back(cc);
+		newContactConstraintMap.insert({ key, cc });
 
-        a->manifoldIDs.push_back(key);
-        b->manifoldIDs.push_back(key);
+		a->manifoldIDs.push_back(key);
+		b->manifoldIDs.push_back(key);
 
-        auto it = contactConstraintMap.find(key);
-        if (settings.WARM_STARTING && (it != contactConstraintMap.end()))
-        {
-            ContactConstraint* oldCC = it->second;
-            cc->TryWarmStart(*oldCC);
-        }
-    }
+		auto it = contactConstraintMap.find(key);
+		if (settings.WARM_STARTING && (it != contactConstraintMap.end()))
+		{
+			ContactConstraint* oldCC = it->second;
+			cc->TryWarmStart(*oldCC);
+		}
+	}
 
-    contactConstraintMap = std::move(newContactConstraintMap);
-    contactConstraints = std::move(newContactConstraints);
+	contactConstraintMap = std::move(newContactConstraintMap);
+	contactConstraints = std::move(newContactConstraints);
 
-    for (size_t i = 0; i < contactConstraints.size(); i++)
-    {
-        contactConstraints[i]->Prepare();
-    }
+	// Build the constraint island
+	Island island{ *this };
+	int32_t restingBodies = 0;
+	int32_t islandID = 0;
+	sleepingIslands = 0;
+	sleepingBodies = 0;
 
-    for (size_t i = 0; i < 10; i++)
-    {
-        for (size_t j = 0; j < contactConstraints.size(); j++)
-        {
-            contactConstraints[j]->Solve();
-        }
-    }
+	std::unordered_set<int32_t> visited{};
+	std::stack<RigidBody*> stack;
 
-    for (size_t i = 0; i < bodies.size(); i++)
-    {
-        RigidBody* b = bodies[i];
+	// Perform a DFS(Depth First Search) on the constraint graph
+	// After building island, each island can be solved in parallel because they are independent of each other
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		RigidBody* b = bodies[i];
 
-        if (b->type == Static)
-        {
-            glm::clear(b->linearVelocity);
-            b->rotation = 0.0f;
-            continue;
-        }
+		if (b->type == Static || (visited.find(b->id) != visited.end()))
+			continue;
 
-        b->position += b->linearVelocity * settings.DT;
-        b->rotation += b->angularVelocity * settings.DT;
-    }
+		stack = std::stack<RigidBody*>();
+		stack.push(b);
+
+		islandID++;
+		while (stack.size() > 0)
+		{
+			RigidBody* t = stack.top();
+			stack.pop();
+
+			if (t->type == Static || (visited.find(t->id) != visited.end()))
+				continue;
+
+			visited.insert(t->id);
+			t->islandID = islandID;
+			island.bodies.push_back(t);
+
+			for (size_t c = 0; c < t->manifoldIDs.size(); c++)
+			{
+				int32_t key = t->manifoldIDs[c];
+				ContactConstraint* cc = contactConstraintMap[key];
+
+				RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
+
+				if (visited.find(other->id) != visited.end())
+					continue;
+
+				island.ccs.push_back(cc);
+				stack.push(other);
+			}
+
+			if (t->resting > settings.SLEEPING_TRESHOLD)
+				restingBodies++;
+		}
+
+		island.sleeping = settings.SLEEPING_ENABLED && (restingBodies == island.bodies.size());
+
+		if (island.sleeping)
+		{
+			sleepingBodies += island.bodies.size();
+			sleepingIslands++;
+		}
+
+		island.Solve(dt);
+		island.Clear();
+		restingBodies = 0;
+	}
+
+	numIslands = islandID;
 }
 
 void World::Reset()
 {
-    tree.Reset();
-    bodies.clear();
+	tree.Reset();
+	bodies.clear();
 }
 
 void World::Register(RigidBody* body)
 {
-    body->id = uid++;
-    bodies.push_back(body);
-    tree.Add(body);
+	body->id = uid++;
+	bodies.push_back(body);
+	tree.Add(body);
 }
 
 void World::Register(const std::vector<RigidBody*>& bodies)
 {
-    for (auto b : bodies)
-    {
-        Register(b);
-    }
+	for (auto b : bodies)
+	{
+		Register(b);
+	}
 }
 
 void World::Unregister(RigidBody* body)
 {
-    auto it = std::find(bodies.begin(), bodies.end(), body);
+	auto it = std::find(bodies.begin(), bodies.end(), body);
 
-    if (it != bodies.end())
-    {
-        bodies.erase(it);
-        tree.Remove(body);
-    }
+	if (it != bodies.end())
+	{
+		bodies.erase(it);
+		tree.Remove(body);
+	}
 }
 
 void World::Unregister(const std::vector<RigidBody*>& bodies)
 {
-    for (size_t i = 0; i < bodies.size(); i++)
-    {
-        Unregister(bodies[i]);
-    }
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		Unregister(bodies[i]);
+	}
 }
 
 std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
 {
-    std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = tree.QueryPoint(point);
+	std::vector<RigidBody*> res;
+	std::vector<Node*> nodes = tree.QueryPoint(point);
 
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        RigidBody* body = nodes[i]->body;
+	for (size_t i = 0; i < nodes.size(); i++)
+	{
+		RigidBody* body = nodes[i]->body;
 
-        if (test_point_inside(body, point))
-        {
-            res.push_back(body);
-        }
-    }
+		if (test_point_inside(body, point))
+		{
+			res.push_back(body);
+		}
+	}
 
-    return res;
+	return res;
 }
 
 std::vector<RigidBody*> World::QueryRegion(const AABB& region) const
 {
-    std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = tree.QueryRegion(region);
+	std::vector<RigidBody*> res;
+	std::vector<Node*> nodes = tree.QueryRegion(region);
 
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        RigidBody* body = nodes[i]->body;
+	for (size_t i = 0; i < nodes.size(); i++)
+	{
+		RigidBody* body = nodes[i]->body;
 
-        float w = region.max.x - region.min.x;
-        float h = region.max.y - region.min.y;
+		float w = region.max.x - region.min.x;
+		float h = region.max.y - region.min.y;
 
-        Polygon t{ {region.min, {region.max.x, region.min.y}, region.max, {region.min.x, region.max.y}}, Dynamic, false };
+		Polygon t{ {region.min, {region.max.x, region.min.y}, region.max, {region.min.x, region.max.y}}, Dynamic, false };
 
-        if (detect_collision(body, &t))
-        {
-            res.push_back(body);
-        }
-    }
+		if (detect_collision(body, &t))
+		{
+			res.push_back(body);
+		}
+	}
 
-    return res;
+	return res;
 }
 
 const std::vector<RigidBody*>& World::GetBodies() const
 {
-    return bodies;
+	return bodies;
+}
+
+const size_t World::GetSleepingBodyCount() const
+{
+	return sleepingBodies;
+}
+
+const size_t World::GetSleepingIslandCount() const
+{
+	return sleepingIslands;
 }
 
 const AABBTree& World::GetBVH() const
 {
-    return tree;
+	return tree;
 }
 
 const std::vector<std::unique_ptr<ContactConstraint>>& World::GetContactConstraints() const
 {
-    return contactConstraints;
+	return contactConstraints;
 }

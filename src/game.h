@@ -49,6 +49,8 @@ namespace spe
         float time{ 0.0f };
         glm::vec2 mpos{ 0.0f };
 
+        bool pause = false;
+        bool step = false;
         bool drawOutlineOnly = false;
         bool showBVH = false;
         bool showCP = false;

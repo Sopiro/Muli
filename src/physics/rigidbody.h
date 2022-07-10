@@ -22,6 +22,7 @@ namespace spe
         friend class AABBTree;
         friend class ContactSolver;
         friend class BlockSolver;
+        friend class Island;
 
     public:
         RigidBody(BodyType _type);
@@ -70,6 +71,8 @@ namespace spe
 
         BodyType GetType() const;
 
+        bool IsSleeping() const;
+
     protected:
         // Center of mass in local space = (0, 0)
         glm::vec2 force{ 0.0f };                        // N
@@ -94,12 +97,12 @@ namespace spe
         bool moved{ false };
 
         int32_t id{ -1 };
-        uint32_t islandID{ 0 };
+        int32_t islandID{ 0 };
 
-        std::vector<uint32_t> manifoldIDs{};            // ids of contact manifold containing this body
-        std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
+        std::vector<int32_t> manifoldIDs{};            // ids of contact manifold containing this body
+        std::vector<int32_t> jointIDs{};               // ids of the joint containing this body
 
-        uint32_t resting{ 0 };
+        float resting{ 0.0f };
         bool sleeping{ false };
 
         Node* node{ nullptr };

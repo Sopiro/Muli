@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.9)
 
 # Variables
 set(PROJECT_NAME spe)
@@ -9,6 +9,11 @@ set(WINDOW_WIDTH 1280)
 set(WINDOW_HEIGHT 720)
 
 project(${PROJECT_NAME})
+
+find_package(OpenMP)
+
+add_compile_options(-openmp:llvm)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/window.cpp
@@ -43,9 +48,14 @@ add_executable(${PROJECT_NAME}
     src/physics/contact_constraint.cpp
     src/physics/contact_solver.cpp
     src/physics/block_solver.cpp
+    src/physics/island.cpp
 )
 
 include(Dependency.cmake)
+
+if(OpenMP_CXX_FOUND)
+  target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${DEP_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PUBLIC ${DEP_LIB_DIR})

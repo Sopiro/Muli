@@ -21,7 +21,7 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        if (!drawOutlineOnly)
+        if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == Static)
         {
             shader->SetColor({ 1, 1, 1 });
             mesh->Draw(GL_TRIANGLES);

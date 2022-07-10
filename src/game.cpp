@@ -50,11 +50,20 @@ void Game::Update(float dt)
 {
     time += dt;
 
-    settings.DT = dt;
-    settings.INV_DT = 1.0f / dt;
-
     HandleInput();
-    world->Update();
+
+    if (pause)
+    {
+        if (step)
+        {
+            step = false;
+            world->Update(dt);
+        }
+    }
+    else
+    {
+        world->Update(dt);
+    }
 }
 
 void Game::HandleInput()
@@ -103,8 +112,7 @@ void Game::HandleInput()
 
         if (Input::GetMouseScroll().y != 0)
         {
-            camera.scale += -Input::GetMouseScroll().y * 0.1f;
-
+            camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1 : 1.0f / 1.1f;
             camera.scale = glm::clamp(camera.scale, glm::vec2{ 0.1f }, glm::vec2{ FLT_MAX });
         }
 
@@ -137,10 +145,31 @@ void Game::HandleInput()
 
     // ImGui Window
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
-    ImGui::SetNextWindowSize({ 400, 250 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 400, 260 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
+        // Simulation buttons
+        {
+            ImGui::BeginDisabled(pause);
+            if (ImGui::Button("Pause")) pause = true;
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            ImGui::BeginDisabled(!pause);
+            ImGui::PushButtonRepeat(true);
+            if (ImGui::Button("Step")) step = true;
+            ImGui::PopButtonRepeat();
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            ImGui::BeginDisabled(!pause);
+            if (ImGui::Button("Start")) pause = false;
+            ImGui::EndDisabled();
+        }
+
         static int f = 144;
         if (ImGui::SliderInt("Frame rate", &f, 10, 300))
         {
@@ -159,9 +188,11 @@ void Game::HandleInput()
         ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
         ImGui::Checkbox("Show BVH", &showBVH);
         ImGui::Checkbox("Show Contact point", &showCP);
+        ImGui::SliderInt("Solve iteration", &settings.SOLVE_ITERATION, 1, 50);
 
         ImGui::Separator();
-        ImGui::Text("Body count: %d", bodies.size());
+        ImGui::Text("Bodies: %d", bodies.size());
+        ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
     }
     ImGui::End();
 }

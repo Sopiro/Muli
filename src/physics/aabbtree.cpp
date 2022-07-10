@@ -2,7 +2,7 @@
 
 using namespace spe;
 
-Node::Node(uint32_t _id, AABB&& _aabb, bool _isLeaf) :
+Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
     id{ std::move(_id) },
     aabb{ std::move(_aabb) },
     isLeaf{ std::move(_isLeaf) }
@@ -474,4 +474,9 @@ float AABBTree::GetTreeCost() const
     );
 
     return res;
+}
+
+float AABBTree::GetMarginSize() const
+{
+    return aabbMargin;
 }
