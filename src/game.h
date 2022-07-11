@@ -33,15 +33,13 @@ namespace spe
         void HandleInput();
         void Render();
 
-        void UpdateProjectionMatrix();
-
     private:
         Application& app;
 
         Settings settings{};
         std::unique_ptr<World> world;
 
-        std::set<RigidBody*> bodies{};
+        std::vector<RigidBody*> bodies{};
         Camera camera{};
         RigidBodyRenderer rRenderer{};
         DynamicRenderer dRenderer{};
@@ -55,6 +53,11 @@ namespace spe
         bool showBVH = false;
         bool showCP = false;
 
-        void AddBody(RigidBody* b);
+        void AddBody(std::vector<RigidBody*> bodies);
+        void AddBody(RigidBody* body);
+        void RemoveBody(std::vector<RigidBody*> bodies);
+        void RemoveBody(RigidBody* body);
+        
+        void UpdateProjectionMatrix();
     };
 }

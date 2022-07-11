@@ -64,7 +64,7 @@ namespace glm
     template<typename T, qualifier Q>
     GLM_FUNC_QUALIFIER vec<2, T, Q> cross(float s, vec<2, T, Q> const& v)
     {
-        return typename vec<2, T, Q>{ -s * v.y, s* v.x };
+        return typename vec<2, T, Q>{ -s * v.y, s * v.x };
     }
 
     // clear vec2

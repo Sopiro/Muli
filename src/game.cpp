@@ -24,7 +24,7 @@ Game::Game(Application& _app) :
     camera.position = glm::vec2{ 0, 3.6 };
     camera.scale = glm::vec2{ 1, 1 };
 
-    RigidBody* b = new Box{ 12.8f * 5.0f, 0.4f, Static };
+    RigidBody* b = new Box{ 12.8f * 10.0f, 0.4f, Static };
     AddBody(b);
     // RigidBody* b = new Circle(1, Static);
     // AddBody(b);
@@ -72,6 +72,16 @@ void Game::HandleInput()
     {
         mpos = rRenderer.Pick(Input::GetMousePosition());
 
+        if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+        {
+            pause = !pause;
+        }
+
+        if (Input::IsKeyDown(GLFW_KEY_RIGHT))
+        {
+            step = true;
+        }
+
         if (Input::IsKeyPressed(GLFW_KEY_C))
         {
             for (RigidBody* body : bodies)
@@ -96,18 +106,9 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            auto q = world->QueryPoint(mpos);
+            std::vector<RigidBody*> q = world->QueryPoint(mpos);
 
-            world->Unregister(q);
-            rRenderer.Unregister(q);
-
-            for (auto b : q)
-            {
-                auto it = std::find(bodies.begin(), bodies.end(), b);
-                bodies.erase(it);
-
-                delete b;
-            }
+            RemoveBody(q);
         }
 
         if (Input::GetMouseScroll().y != 0)
@@ -253,9 +254,32 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::AddBody(RigidBody* b)
+void Game::AddBody(std::vector<RigidBody*> bodies)
 {
-    bodies.insert(b);
-    world->Register(b);
-    rRenderer.Register(b);
+    for (size_t i = 0; i < bodies.size(); i++)
+        AddBody(bodies[i]);
+}
+
+void Game::AddBody(RigidBody* body)
+{
+    bodies.push_back(body);
+    world->Register(body);
+    rRenderer.Register(body);
+}
+
+void Game::RemoveBody(std::vector<RigidBody*> bodies)
+{
+    for (size_t i = 0; i < bodies.size(); i++)
+        RemoveBody(bodies[i]);
+}
+
+void Game::RemoveBody(RigidBody* body)
+{
+    world->Unregister(body);
+    rRenderer.Unregister(body);
+
+    auto it = std::find(bodies.begin(), bodies.end(), body);
+    bodies.erase(it);
+
+    delete body;
 }

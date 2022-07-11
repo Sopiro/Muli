@@ -24,7 +24,7 @@ namespace spe
         float WARM_STARTING_THRESHOLD = 0.005f * 0.005f;
         bool BLOCK_SOLVE = true;
         int32_t SOLVE_ITERATION = 10;
-        float REST_LINEAR_TOLERANCE = 0.005f * 0.005f;
+        float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
         float REST_ANGULAR_TOLERANCE = (0.5f * glm::pi<float>() / 180.0f) * (0.5f * glm::pi<float>() / 180.0f);
         bool APPLY_GRAVITY = true;
         bool SLEEPING_ENABLED = true;
