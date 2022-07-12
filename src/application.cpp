@@ -18,6 +18,7 @@ Application::Application(int width, int height, std::string title) :
 {
     Input::Init();
     game = std::make_unique<Game>(*this);
+    frameTime = 1.0 / window.GetRefreshRate();
 }
 
 Application::~Application()

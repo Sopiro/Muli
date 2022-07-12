@@ -8,7 +8,7 @@
 
 // Collision detection settings
 #define GJK_MAX_ITERATION 20
-#define GJK_TOLERANCE 1e-13f
+#define GJK_TOLERANCE 1e-17f
 #define EPA_MAX_ITERATION 20
 #define EPA_TOLERANCE 1e-13f
 #define TANGENT_MIN_LENGTH 0.01f

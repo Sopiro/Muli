@@ -49,6 +49,7 @@ add_executable(${PROJECT_NAME}
     src/physics/contact_solver.cpp
     src/physics/block_solver.cpp
     src/physics/island.cpp
+    src/physics/joint.cpp
 )
 
 include(Dependency.cmake)

@@ -175,6 +175,8 @@ Window::Window(int width, int height, std::string title)
 	glfwSetCursorPosCallback(glfwWindow, OnCursorPos);
 	glfwSetMouseButtonCallback(glfwWindow, OnMouseButton);
 	glfwSetScrollCallback(glfwWindow, OnScroll);
+
+	refreshRate = glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
 }
 
 Window::~Window()
@@ -215,4 +217,9 @@ void Window::EndFrame() const
 glm::ivec2 Window::GetWindowSize() const
 {
 	return glm::ivec2{ width, height };
+}
+
+int32_t Window::GetRefreshRate() const
+{
+	return refreshRate;
 }

@@ -11,8 +11,8 @@ namespace spe
     // Simulation settings
     struct Settings
     {
-        float DT = 1.0f / 144.0f;
-        float INV_DT = 144.0f;
+        float DT = 1.0f / 60.0f;
+        float INV_DT = 60.0f;
         glm::vec2 GRAVITY = glm::vec2{ 0.0f, -10.0f };
         bool IMPULSE_ACCUMULATION = true;
         bool WARM_STARTING = true;

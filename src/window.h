@@ -27,6 +27,7 @@ namespace spe
         void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
 
         glm::ivec2 GetWindowSize() const;
+        int32_t GetRefreshRate() const;
 
     private:
         static Window* window;
@@ -34,6 +35,7 @@ namespace spe
 
         int width;
         int height;
+        int32_t refreshRate;
 
         bool ShouldClose() const;
         void BeginFrame() const;

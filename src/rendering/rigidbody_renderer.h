@@ -28,7 +28,7 @@ namespace spe
 
         void SetDrawOutlined(bool drawOutlineOnly);
 
-        void Clear();
+        void Reset();
 
     private:
         // All registered rigid bodies

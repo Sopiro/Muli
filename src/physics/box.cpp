@@ -10,6 +10,12 @@ Box::Box(float _width, float _height, BodyType _type, float _density) :
 
 }
 
+Box::Box(float _width, BodyType _type, float _density) :
+    Box{ _width, _width, _type, _density }
+{
+
+}
+
 float Box::GetWidth() const
 {
     return width;

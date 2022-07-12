@@ -33,6 +33,11 @@ namespace spe
         void HandleInput();
         void Render();
 
+        void AddBody(std::vector<RigidBody*> bodies);
+        void AddBody(RigidBody* body);
+        void RemoveBody(std::vector<RigidBody*> bodies);
+        void RemoveBody(RigidBody* body);
+
     private:
         Application& app;
 
@@ -44,7 +49,7 @@ namespace spe
         RigidBodyRenderer rRenderer{};
         DynamicRenderer dRenderer{};
 
-        float time{ 0.0f };
+        float time = 0.0f;
         glm::vec2 mpos{ 0.0f };
 
         bool pause = false;
@@ -53,11 +58,12 @@ namespace spe
         bool showBVH = false;
         bool showCP = false;
 
-        void AddBody(std::vector<RigidBody*> bodies);
-        void AddBody(RigidBody* body);
-        void RemoveBody(std::vector<RigidBody*> bodies);
-        void RemoveBody(RigidBody* body);
-        
+        std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> demos;
+        size_t currentDemo;
+        std::string demoTitle;
+
         void UpdateProjectionMatrix();
+        void InitSimulation(size_t demo);
+        void Reset();
     };
 }

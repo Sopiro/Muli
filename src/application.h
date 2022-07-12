@@ -33,6 +33,6 @@ namespace spe
 
         Window window;
         std::unique_ptr<Game> game;
-        double frameTime{ 1.0f / 144.0f };
+        double frameTime;
     };
 }
