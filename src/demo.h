@@ -34,7 +34,6 @@ namespace spe
         for (size_t i = 0; i < 20; i++)
         {
             RigidBody* b = new Box{ size };
-            // let b = Util.createRegularPolygon(size / 2, 6);
             b->position = glm::vec2{ glm::linearRand(-error, error), start + i * (size + gap) };
             game.AddBody(b);
         }

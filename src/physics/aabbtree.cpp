@@ -44,94 +44,87 @@ const Node* AABBTree::Add(RigidBody* body)
     if (root == nullptr)
     {
         root = newNode;
+        return newNode;
     }
-    else
+
+    // Find the best sibling for the new leaf
+    Node* bestSibling = root;
+    float bestCost = area(union_of(root->aabb, aabb));
+
+    std::queue<std::pair<Node*, float>> q;
+    q.emplace(root, 0.0f);
+
+    while (q.size() != 0)
     {
-        // Find the best sibling for the new leaf
-        Node* bestSibling = root;
-        float bestCost = area(union_of(root->aabb, aabb));
+        Node* current = q.front().first;
+        float inheritedCost = q.front().second;
+        q.pop();
 
-        std::queue<Node*> q;
-        q.push(root);
+        AABB combined = union_of(current->aabb, aabb);
+        float directCost = area(combined);
 
-        while (q.size() != 0)
+        float costForCurrent = directCost + inheritedCost;
+        if (costForCurrent < bestCost)
         {
-            Node* current = q.front();
-            q.pop();
-
-            float directCost = area(union_of(current->aabb, aabb));
-            float inheritedCost = 0.0f;
-
-            Node* ancestor = current->parent;
-            while (ancestor != nullptr)
-            {
-                inheritedCost += area(union_of(current->aabb, aabb)) - area(ancestor->aabb);
-                ancestor = ancestor->parent;
-            }
-
-            float costForCurrent = directCost + inheritedCost;
-
-            if (costForCurrent < bestCost)
-            {
-                bestCost = costForCurrent;
-                bestSibling = current;
-            }
-
-            float lowerBoundCost = area(aabb) + (area(union_of(current->aabb, aabb)) - area(current->aabb)) + inheritedCost;
-
-            if (lowerBoundCost < bestCost)
-            {
-                if (!current->isLeaf)
-                {
-                    q.push(current->child1);
-                    q.push(current->child2);
-                }
-            }
+            bestCost = costForCurrent;
+            bestSibling = current;
         }
 
-        // Create a new parent
-        Node* oldParent = bestSibling->parent;
-        Node* newParent = new Node(nodeID++, union_of(aabb, bestSibling->aabb), false);
-        newParent->parent = oldParent;
+        inheritedCost += directCost - area(current->aabb);
 
-        if (oldParent != nullptr)
+        float lowerBoundCost = area(aabb) + inheritedCost;
+        if (lowerBoundCost < bestCost)
         {
-            if (oldParent->child1 == bestSibling)
+            if (!current->isLeaf)
             {
-                oldParent->child1 = newParent;
+                q.emplace(current->child1, inheritedCost);
+                q.emplace(current->child2, inheritedCost);
             }
-            else
-            {
-                oldParent->child2 = newParent;
-            }
+        }
+    }
 
-            newParent->child1 = bestSibling;
-            newParent->child2 = newNode;
-            bestSibling->parent = newParent;
-            newNode->parent = newParent;
+    // Create a new parent
+    Node* oldParent = bestSibling->parent;
+    Node* newParent = new Node(nodeID++, union_of(aabb, bestSibling->aabb), false);
+    newParent->parent = oldParent;
+
+    if (oldParent != nullptr)
+    {
+        if (oldParent->child1 == bestSibling)
+        {
+            oldParent->child1 = newParent;
         }
         else
         {
-            newParent->child1 = bestSibling;
-            newParent->child2 = newNode;
-            bestSibling->parent = newParent;
-            newNode->parent = newParent;
-            root = newParent;
+            oldParent->child2 = newParent;
         }
 
-        // Walk back up the tree refitting ancestors' AABB and applying rotations
-        Node* ancestor = newNode->parent;
-        while (ancestor != nullptr)
-        {
-            Node* child1 = ancestor->child1;
-            Node* child2 = ancestor->child2;
+        newParent->child1 = bestSibling;
+        newParent->child2 = newNode;
+        bestSibling->parent = newParent;
+        newNode->parent = newParent;
+    }
+    else
+    {
+        newParent->child1 = bestSibling;
+        newParent->child2 = newNode;
+        bestSibling->parent = newParent;
+        newNode->parent = newParent;
+        root = newParent;
+    }
 
-            ancestor->aabb = union_of(child1->aabb, child2->aabb);
+    // Walk back up the tree refitting ancestors' AABB and applying rotations
+    Node* ancestor = newNode->parent;
+    while (ancestor != nullptr)
+    {
+        Node* child1 = ancestor->child1;
+        Node* child2 = ancestor->child2;
 
-            Rotate(ancestor);
+        ancestor->aabb = union_of(child1->aabb, child2->aabb);
 
-            ancestor = ancestor->parent;
-        }
+        Rotate(ancestor);
+
+        ancestor = ancestor->parent;
     }
 
     return newNode;
@@ -199,7 +192,7 @@ void AABBTree::Rotate(Node* node)
     Node* parent = node->parent;
     Node* sibling = parent->child1 == node ? parent->child2 : parent->child1;
 
-    uint8_t count = 2;
+    size_t count = 2;
     std::array<float, 4> costDiffs;
     float nodeArea = area(node->aabb);
 
@@ -463,17 +456,17 @@ std::vector<Node*> AABBTree::QueryRegion(const AABB& region) const
 
 float AABBTree::GetTreeCost() const
 {
-    float res = 0;
+    float cost = 0.0f;
 
     Traverse
     (
-        [&res](const Node* node) -> void
+        [&](const Node* node) -> void
         {
-            res += area(node->aabb);
+            cost += area(node->aabb);
         }
     );
 
-    return res;
+    return cost;
 }
 
 float AABBTree::GetMarginSize() const

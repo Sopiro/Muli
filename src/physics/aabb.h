@@ -15,7 +15,7 @@ namespace spe
 
         AABB(const AABB&) noexcept = delete;
         AABB& operator=(const AABB&) noexcept = delete;
-        
+
         AABB(AABB&&) noexcept = default;
         AABB& operator=(AABB&&) noexcept = default;
 
@@ -26,6 +26,12 @@ namespace spe
     inline float area(const AABB& aabb)
     {
         return (aabb.max.x - aabb.min.x) * (aabb.max.y - aabb.min.y);
+    }
+
+    inline float perimeter(const AABB& aabb)
+    {
+        glm::vec2 w = aabb.max - aabb.min;
+        return 2.0f * (w.x + w.y);
     }
 
     inline void fix(AABB& aabb)
@@ -70,6 +76,6 @@ namespace spe
             && container.max.x >= testee.max.x
             && container.max.y >= testee.max.y;
     }
-    
+
     AABB create_AABB(RigidBody* body, float margin = 0.0f);
 }

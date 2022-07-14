@@ -25,11 +25,7 @@ Game::Game(Application& _app) :
 
     world = std::unique_ptr<World>(new World(settings));
 
-    // Init demos
-    {
-        demos = get_demos();
-    }
-
+    demos = get_demos();
     InitSimulation(0);
 }
 
@@ -134,7 +130,7 @@ void Game::HandleInput()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
-    ImGui::SetNextWindowSize({ 400, 320 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 400, 360 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -179,9 +175,12 @@ void Game::HandleInput()
 
                 ImGui::Separator();
 
+                ImGui::Checkbox("Camera reset", &resetCamera);
                 ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
                 ImGui::Checkbox("Show BVH", &showBVH);
                 ImGui::Checkbox("Show Contact point", &showCP);
+                ImGui::Separator();
+                ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY);
                 ImGui::SliderInt("Solve iteration", &settings.SOLVE_ITERATION, 1, 50);
 
                 ImGui::Separator();
@@ -321,8 +320,11 @@ void Game::RemoveBody(RigidBody* body)
 void Game::InitSimulation(size_t demo)
 {
     time = 0;
-    camera.position = glm::vec2{ 0, 3.6 };
-    camera.scale = glm::vec2{ 1, 1 };
+    if(resetCamera)
+    {
+        camera.position = glm::vec2{ 0, 3.6 };
+        camera.scale = glm::vec2{ 1, 1 };
+    }
 
     Reset();
 

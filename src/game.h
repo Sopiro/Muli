@@ -57,6 +57,7 @@ namespace spe
         bool drawOutlineOnly = false;
         bool showBVH = false;
         bool showCP = false;
+        bool resetCamera = true;
 
         std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> demos;
         size_t currentDemo;
