@@ -1,4 +1,4 @@
-#include "circle.h"
+#include "spe/physics/circle.h"
 
 using namespace spe;
 

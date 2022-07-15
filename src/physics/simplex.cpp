@@ -1,5 +1,5 @@
-#include "simplex.h"
-#include "util.h"
+#include "spe/physics/simplex.h"
+#include "spe/physics/util.h"
 
 using namespace spe;
 

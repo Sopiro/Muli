@@ -1,4 +1,4 @@
-#include "rigidbody.h"
+#include "spe/physics/rigidbody.h"
 
 using namespace spe;
 

@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "spe/entity.h"
 
 using namespace spe;
 

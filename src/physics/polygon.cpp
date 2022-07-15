@@ -1,4 +1,4 @@
-#include "polygon.h"
+#include "spe/physics/polygon.h"
 
 using namespace spe;
 

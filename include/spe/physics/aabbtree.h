@@ -11,6 +11,18 @@ namespace spe
         friend class AABBTree;
 
     public:
+        uint32_t id;
+        AABB aabb;
+        bool isLeaf;
+
+        Node* parent = nullptr;
+        Node* child1 = nullptr;
+        Node* child2 = nullptr;
+
+        RigidBody* body = nullptr;
+
+    private:
+        Node(uint32_t _id, AABB _aabb, bool _isLeaf);
         ~Node() noexcept = default;
 
         Node(const Node&) noexcept = delete;
@@ -18,16 +30,6 @@ namespace spe
 
         Node(Node&&) noexcept = default;
         Node& operator=(Node&&) noexcept = default;
-
-        uint32_t id;
-        Node* parent = nullptr;
-        Node* child1 = nullptr;
-        Node* child2 = nullptr;
-        bool isLeaf;
-        AABB aabb;
-        RigidBody* body = nullptr;
-    private:
-        Node(uint32_t _id, AABB _aabb, bool _isLeaf);
     };
 
     class AABBTree
@@ -64,7 +66,6 @@ namespace spe
         Node* root = nullptr;
         float aabbMargin = 0.05f;
 
-        inline float SurfaceArea(const AABB& aabb) const;
         void Rotate(Node* node);
         void Swap(Node* node1, Node* node2);
         void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked) const;

@@ -10,57 +10,9 @@ set(WINDOW_HEIGHT 720)
 
 project(${PROJECT_NAME})
 
-find_package(OpenMP)
-
-add_compile_options(-openmp:llvm)
-
-add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/window.cpp
-    src/application.cpp
-    src/input.cpp
-    src/game.cpp
-    src/entity.cpp
-    src/camera.cpp
-
-    src/rendering/shader.cpp
-    src/rendering/rigidbody_shader.cpp
-    src/rendering/rigidbody_renderer.cpp
-    src/rendering/mesh.cpp
-    src/rendering/dynamic_shader.cpp
-    src/rendering/dynamic_renderer.cpp
-
-    src/physics/world.cpp
-
-    src/physics/rigidbody.cpp
-    src/physics/polygon.cpp
-    src/physics/circle.cpp
-    src/physics/box.cpp
-    src/physics/util.cpp
-    src/physics/aabb.cpp
-    src/physics/aabbtree.cpp
-    src/physics/detection.cpp
-    src/physics/simplex.cpp
-    src/physics/polytope.cpp
-    src/physics/edge.cpp
-
-    src/physics/constraint.cpp
-    src/physics/contact_constraint.cpp
-    src/physics/contact_solver.cpp
-    src/physics/block_solver.cpp
-    src/physics/island.cpp
-    src/physics/joint.cpp
-)
-
 include(Dependency.cmake)
 
-if(OpenMP_CXX_FOUND)
-  target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
-endif()
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${DEP_INCLUDE_DIR})
-target_link_directories(${PROJECT_NAME} PUBLIC ${DEP_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${DEP_LIBS})
+add_subdirectory(src)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC
     WINDOW_TITLE="${WINDOW_TITLE}"

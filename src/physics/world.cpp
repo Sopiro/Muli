@@ -1,5 +1,5 @@
-#include "world.h"
-#include "island.h"
+#include "spe/physics/world.h"
+#include "spe/physics/island.h"
 
 using namespace spe;
 

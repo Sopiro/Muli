@@ -1,6 +1,6 @@
-#include "contact_solver.h"
-#include "world.h"
-#include "contact_constraint.h"
+#include "spe/physics/contact_solver.h"
+#include "spe/physics/world.h"
+#include "spe/physics/contact_constraint.h"
 
 using namespace spe;
 

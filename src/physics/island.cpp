@@ -1,4 +1,4 @@
-#include "island.h"
+#include "spe/physics/island.h"
 
 using namespace spe;
 

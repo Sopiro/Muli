@@ -1,5 +1,5 @@
-#include "block_solver.h"
-#include "contact_constraint.h"
+#include "spe/physics/block_solver.h"
+#include "spe/physics/contact_constraint.h"
 
 using namespace spe;
 

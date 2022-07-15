@@ -74,7 +74,7 @@ ExternalProject_Add(
 set(DEP_LIST ${DEP_LIST} dep_glm)
 
 # imgui
-add_library(imgui
+add_library(dep_imgui
     extern/imgui/imgui_draw.cpp
     extern/imgui/imgui_tables.cpp
     extern/imgui/imgui_widgets.cpp
@@ -83,9 +83,10 @@ add_library(imgui
     extern/imgui/imgui_impl_opengl3.cpp
     extern/imgui/imgui_demo.cpp
 )
-set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui)
-set(DEP_LIST ${DEP_LIST} imgui)
-set(DEP_LIBS ${DEP_LIBS} imgui)
 
-target_include_directories(imgui PRIVATE ${DEP_INCLUDE_DIR})
-add_dependencies(imgui ${DEP_LIST})
+set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/extern/imgui)
+set(DEP_LIST ${DEP_LIST} dep_imgui)
+set(DEP_LIBS ${DEP_LIBS} dep_imgui)
+
+target_include_directories(dep_imgui PRIVATE ${DEP_INCLUDE_DIR})
+add_dependencies(dep_imgui ${DEP_LIST})

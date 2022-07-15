@@ -1,7 +1,7 @@
-#include "game.h"
-#include "application.h"
-#include "physics/detection.h"
-#include "demo.h"
+#include "spe/game.h"
+#include "spe/application.h"
+#include "spe/physics/detection.h"
+#include "spe/demo.h"
 
 using namespace spe;
 

@@ -1,5 +1,5 @@
-#include "contact_constraint.h"
-#include "world.h"
+#include "spe/physics/contact_constraint.h"
+#include "spe/physics/world.h"
 
 using namespace spe;
 

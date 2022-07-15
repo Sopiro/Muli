@@ -1,6 +1,6 @@
-#include "rigidbody_renderer.h"
-#include "../physics/util.h"
-#include "../window.h"
+#include "spe/rendering/rigidbody_renderer.h"
+#include "spe/physics/util.h"
+#include "spe/window.h"
 
 using namespace spe;
 

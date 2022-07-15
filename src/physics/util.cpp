@@ -1,7 +1,7 @@
-#include "util.h"
-#include "box.h"
-#include "circle.h"
-#include "aabb.h"
+#include "spe/physics/util.h"
+#include "spe/physics/box.h"
+#include "spe/physics/circle.h"
+#include "spe/physics/aabb.h"
 
 using namespace spe;
 

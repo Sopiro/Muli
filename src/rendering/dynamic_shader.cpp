@@ -1,4 +1,4 @@
-#include "dynamic_shader.h"    
+#include "spe/rendering/dynamic_shader.h"    
 
 using namespace spe;
 

@@ -1,4 +1,4 @@
-#include "rigidbody_shader.h"    
+#include "spe/rendering/rigidbody_shader.h"    
 
 using namespace spe;
 

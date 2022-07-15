@@ -15,6 +15,7 @@ namespace spe
 
         void Prepare();
         void Solve();
+        
     private:
         ContactConstraint& cc;
 

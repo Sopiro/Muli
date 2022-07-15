@@ -1,4 +1,4 @@
-#include "application.h"
+#include "spe/application.h"
 
 using namespace spe;
 

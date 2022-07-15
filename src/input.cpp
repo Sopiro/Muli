@@ -1,4 +1,4 @@
-#include "input.h"
+#include "spe/input.h"
 
 using namespace spe;
 

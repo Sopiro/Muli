@@ -1,4 +1,4 @@
-#include "window.h"
+#include "spe/window.h"
 
 using namespace spe;
 

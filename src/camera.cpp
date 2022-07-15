@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "spe/camera.h"
 
 using namespace spe;
 

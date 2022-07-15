@@ -1,4 +1,4 @@
-#include "shader.h"    
+#include "spe/rendering/shader.h"    
 
 using namespace spe;
 

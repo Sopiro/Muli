@@ -4,7 +4,7 @@
 #include <crtdbg.h>
 #endif
 
-#include "application.h"
+#include "spe/application.h"
 
 int main(int argc, char** argv)
 {

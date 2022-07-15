@@ -1,11 +1,11 @@
-#include "aabbtree.h"
+#include "spe/physics/aabbtree.h"
 
 using namespace spe;
 
 Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
-    id{ std::move(_id) },
+    id{ _id },
     aabb{ std::move(_aabb) },
-    isLeaf{ std::move(_isLeaf) }
+    isLeaf{ _isLeaf }
 {
 
 }
