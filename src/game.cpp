@@ -260,13 +260,13 @@ void Game::Render()
 
     if (showCP)
     {
-        auto& cc = world->GetContactConstraints();
+        const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
         std::vector<glm::vec2> v{};
         v.reserve(cc.size());
 
         for (size_t i = 0; i < cc.size(); i++)
         {
-            auto ci = cc[i]->GetContactInfo();
+            auto ci = cc[i].GetContactInfo();
             for (size_t j = 0; j < ci.numContacts; j++)
             {
                 v.push_back(ci.contactPoints[j].point);

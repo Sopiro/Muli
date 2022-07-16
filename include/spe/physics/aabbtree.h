@@ -52,7 +52,7 @@ namespace spe
         // BFS tree traversal
         void Traverse(std::function<void(const Node*)> callback) const;
 
-        std::vector<std::pair<RigidBody*, RigidBody*>> GetCollisionPairs() const;
+        void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
         std::vector<Node*> QueryPoint(const glm::vec2& point) const;
         std::vector<Node*> QueryRegion(const AABB& region)  const;

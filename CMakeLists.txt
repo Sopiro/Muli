@@ -14,6 +14,7 @@ include(Dependency.cmake)
 
 add_subdirectory(src)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4819")
 target_compile_definitions(${PROJECT_NAME} PUBLIC
     WINDOW_TITLE="${WINDOW_TITLE}"
     WINDOW_WIDTH=${WINDOW_WIDTH}

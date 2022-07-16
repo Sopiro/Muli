@@ -60,7 +60,7 @@ namespace spe
         const size_t GetSleepingBodyCount() const;
         const size_t GetSleepingIslandCount() const;
         const AABBTree& GetBVH() const;
-        const std::vector<std::unique_ptr<ContactConstraint>>& GetContactConstraints() const;
+        const std::vector<ContactConstraint>& GetContactConstraints() const;
 
     private:
         const Settings& settings;
@@ -70,10 +70,14 @@ namespace spe
         AABBTree tree{};
         // All registered rigid bodies
         std::vector<RigidBody*> bodies{};
+        std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
 
         // Constraints to be solved
-        std::vector<std::unique_ptr<ContactConstraint>> contactConstraints{};
+        std::vector<ContactConstraint> contactConstraints{};
         std::unordered_map<int32_t, ContactConstraint*> contactConstraintMap{};
+        std::vector<ContactConstraint> newContactConstraints{};
+        std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
+        
         std::unordered_set<int32_t> passTestSet{};
 
         bool forceIntegration = false;
