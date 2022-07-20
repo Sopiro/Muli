@@ -80,12 +80,12 @@ void Mesh::Draw(GLenum drawMode)
     {
     case GL_TRIANGLES:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-        glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(drawMode, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     case GL_LINE_LOOP:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-        glDrawElements(drawMode, vertices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(drawMode, static_cast<GLsizei>(vertices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     default:

@@ -36,9 +36,9 @@ void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMo
     {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 2, vertices.data(), GL_DYNAMIC_DRAW);
-        glDrawArrays(drawMode, 0, vertices.size());
+        glDrawArrays(drawMode, 0, static_cast<GLsizei>(vertices.size()));
     }
-    glBindVertexArray((GLsizei)0);
+    glBindVertexArray(static_cast<GLsizei>(0));
 }
 
 void DynamicRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
