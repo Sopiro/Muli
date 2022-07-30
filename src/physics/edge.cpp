@@ -1,7 +1,7 @@
 #include "spe/physics/edge.h"
 
-using namespace spe;
-
+namespace spe
+{
 
 Edge::Edge(glm::vec2 _p1, glm::vec2 _p2, int32_t _id1, int32_t _id2) :
     p1{ std::move(_p1) },
@@ -17,4 +17,6 @@ Edge::Edge(glm::vec2 _p1, glm::vec2 _p2, int32_t _id1, int32_t _id2) :
     {
         dir = glm::normalize(p2 - p1);
     }
+}
+
 }

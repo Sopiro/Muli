@@ -3,7 +3,8 @@
 #include "spe/physics/detection.h"
 #include "spe/demo.h"
 
-using namespace spe;
+namespace spe
+{
 
 Game::Game(Application& _app) :
     app{ _app }
@@ -31,10 +32,6 @@ Game::Game(Application& _app) :
 
 Game::~Game() noexcept
 {
-    for (RigidBody* body : bodies)
-    {
-        delete body;
-    }
 }
 
 void Game::Update(float dt)
@@ -185,7 +182,7 @@ void Game::HandleInput()
 
                 ImGui::Separator();
                 ImGui::Text(demos[currentDemo].first.data());
-                ImGui::Text("Bodies: %d", bodies.size());
+                ImGui::Text("Bodies: %d", world->GetBodies().size());
                 ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
                 ImGui::EndTabItem();
             }
@@ -295,7 +292,6 @@ void Game::AddBody(std::vector<RigidBody*> bodies)
 
 void Game::AddBody(RigidBody* body)
 {
-    bodies.push_back(body);
     world->Register(body);
     rRenderer.Register(body);
 }
@@ -310,17 +306,12 @@ void Game::RemoveBody(RigidBody* body)
 {
     world->Unregister(body);
     rRenderer.Unregister(body);
-
-    auto it = std::find(bodies.begin(), bodies.end(), body);
-    bodies.erase(it);
-
-    delete body;
 }
 
 void Game::InitSimulation(size_t demo)
 {
     time = 0;
-    if(resetCamera)
+    if (resetCamera)
     {
         camera.position = glm::vec2{ 0, 3.6 };
         camera.scale = glm::vec2{ 1, 1 };
@@ -335,8 +326,8 @@ void Game::InitSimulation(size_t demo)
 
 void Game::Reset()
 {
-    for (RigidBody* body : bodies) delete body;
-    bodies.clear();
     world->Reset();
     rRenderer.Reset();
+}
+
 }

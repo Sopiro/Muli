@@ -2,7 +2,8 @@
 #include "spe/physics/world.h"
 #include "spe/physics/contact_constraint.h"
 
-using namespace spe;
+namespace spe
+{
 
 ContactSolver::ContactSolver(ContactConstraint& _cc, const glm::vec2& _contactPoint) :
     cc{ _cc },
@@ -113,3 +114,4 @@ void ContactSolver::ApplyImpulse(float lambda)
     cc.bodyB->angularVelocity += cc.bodyB->invInertia * jacobian.wb * lambda;
 }
 
+}

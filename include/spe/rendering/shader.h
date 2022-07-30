@@ -4,23 +4,23 @@
 
 namespace spe
 {
-    class Shader
-    {
-    public:
-        virtual ~Shader() noexcept;
+class Shader
+{
+public:
+    virtual ~Shader() noexcept;
 
-        Shader(const Shader&) noexcept = delete;
-        Shader& operator=(const Shader&) noexcept = delete;
-        
-        Shader(Shader&&) noexcept = delete;
-        Shader& operator=(Shader&&) noexcept = delete;
+    Shader(const Shader&) noexcept = delete;
+    Shader& operator=(const Shader&) noexcept = delete;
 
-        void Use();
+    Shader(Shader&&) noexcept = delete;
+    Shader& operator=(Shader&&) noexcept = delete;
 
-    protected:
-        Shader(const char* vsCode, const char* fsCode);
+    void Use();
 
-        std::unordered_map<std::string, uint32_t> uniformMap;
-        uint32_t shaderHandle{ 0 };
-    };
+protected:
+    Shader(const char* vsCode, const char* fsCode);
+
+    std::unordered_map<std::string, uint32_t> uniformMap;
+    uint32_t shaderHandle{ 0 };
+};
 }

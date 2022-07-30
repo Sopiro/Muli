@@ -1,6 +1,7 @@
 #include "spe/physics/polygon.h"
 
-using namespace spe;
+namespace spe
+{
 
 Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPosition, float _density) :
     RigidBody(std::move(_type)),
@@ -86,4 +87,6 @@ const std::vector<glm::vec2>& Polygon::GetVertices() const
 size_t Polygon::VertexCount() const
 {
     return vertices.size();
+}
+
 }

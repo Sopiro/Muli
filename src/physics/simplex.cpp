@@ -1,7 +1,8 @@
 #include "spe/physics/simplex.h"
 #include "spe/physics/util.h"
 
-using namespace spe;
+namespace spe
+{
 
 // Returns the closest point to the input q
 ClosestResult Simplex::GetClosest(const glm::vec2& q) const
@@ -133,4 +134,6 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
         throw std::exception("Simplex constains vertices more than 3");
     }
     };
+}
+
 }

@@ -7,107 +7,107 @@
 
 namespace spe
 {
-    struct Node;
+struct Node;
 
-    enum BodyType : uint8_t
-    {
-        Static,
-        Dynamic,
-    };
+enum BodyType : uint8_t
+{
+    Static,
+    Dynamic,
+};
 
-    // Children: Polygon, Circle
-    class RigidBody : public Entity
-    {
-        friend class World;
-        friend class AABBTree;
-        friend class ContactSolver;
-        friend class BlockSolver;
-        friend class Island;
+// Children: Polygon, Circle
+class RigidBody : public Entity
+{
+    friend class World;
+    friend class AABBTree;
+    friend class ContactSolver;
+    friend class BlockSolver;
+    friend class Island;
 
-    public:
-        RigidBody(BodyType _type);
-        ~RigidBody() noexcept;
+public:
+    RigidBody(BodyType _type);
+    ~RigidBody() noexcept;
 
-        RigidBody(const RigidBody&) = delete;
-        RigidBody& operator=(const RigidBody&) = delete;
+    RigidBody(const RigidBody&) = delete;
+    RigidBody& operator=(const RigidBody&) = delete;
 
-        RigidBody(RigidBody&& _other) noexcept;
-        RigidBody& operator=(RigidBody&& _other) noexcept;
+    RigidBody(RigidBody&& _other) noexcept;
+    RigidBody& operator=(RigidBody&& _other) noexcept;
 
-        const Node* GetNode() const;
+    const Node* GetNode() const;
 
-        virtual void SetDensity(float d) = 0;
-        virtual void SetMass(float m) = 0;
-        virtual float GetArea() const = 0;
+    virtual void SetDensity(float d) = 0;
+    virtual void SetMass(float m) = 0;
+    virtual float GetArea() const = 0;
 
-        void Awake();
+    void Awake();
 
-        float GetDensity() const;
-        float GetMass() const;
-        float GetInverseMass() const;
-        float GetInertia() const;
-        float GetInverseInertia() const;
+    float GetDensity() const;
+    float GetMass() const;
+    float GetInverseMass() const;
+    float GetInertia() const;
+    float GetInverseInertia() const;
 
-        float GetFriction() const;
-        void SetFriction(float _friction);
+    float GetFriction() const;
+    void SetFriction(float _friction);
 
-        float GetRestitution() const;
-        void SetRestitution(float _restitution);
+    float GetRestitution() const;
+    void SetRestitution(float _restitution);
 
-        float GetSurfaceSpeed() const;
-        void SetSurfaceSpeed(float _surfaceSpeed);
+    float GetSurfaceSpeed() const;
+    void SetSurfaceSpeed(float _surfaceSpeed);
 
-        glm::vec2 GetLinearVelocity() const;
-        void SetLinearVelocity(glm::vec2 _linearVelocity);
+    glm::vec2 GetLinearVelocity() const;
+    void SetLinearVelocity(glm::vec2 _linearVelocity);
 
-        float GetAngularVelocity() const;
-        void SetAngularVelocity(float _angularVelocity);
+    float GetAngularVelocity() const;
+    void SetAngularVelocity(float _angularVelocity);
 
-        glm::vec2 GetForce() const;
-        void SetForce(glm::vec2 _force);
+    glm::vec2 GetForce() const;
+    void SetForce(glm::vec2 _force);
 
-        float GetTorque() const;
-        void SetTorque(float _torque);
+    float GetTorque() const;
+    void SetTorque(float _torque);
 
-        BodyType GetType() const;
+    BodyType GetType() const;
 
-        bool IsSleeping() const;
+    bool IsSleeping() const;
 
-        int32_t GetID() const;
-        int32_t GetIslandID() const;
+    int32_t GetID() const;
+    int32_t GetIslandID() const;
 
-    protected:
-        // Center of mass in local space = (0, 0)
-        glm::vec2 force{ 0.0f };                        // N
-        float torque{ 0.0f };                           // N⋅m
+protected:
+    // Center of mass in local space = (0, 0)
+    glm::vec2 force{ 0.0f };                        // N
+    float torque{ 0.0f };                           // N⋅m
 
-        glm::vec2 linearVelocity{ 0.0f };               // m/s
-        float angularVelocity{ 0.0f };                  // rad/s
+    glm::vec2 linearVelocity{ 0.0f };               // m/s
+    float angularVelocity{ 0.0f };                  // rad/s
 
-        float density;                                  // kg/m²
-        float mass;                                     // kg
-        float invMass;
-        float inertia;                                  // kg⋅m²
-        float invInertia;
+    float density;                                  // kg/m²
+    float mass;                                     // kg
+    float invMass;
+    float inertia;                                  // kg⋅m²
+    float invInertia;
 
-        float friction{ DEFAULT_FRICTION };
-        float restitution{ DEFAULT_RESTITUTION };
-        float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
+    float friction{ DEFAULT_FRICTION };
+    float restitution{ DEFAULT_RESTITUTION };
+    float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
 
-        BodyType type;
+    BodyType type;
 
-    private:
-        bool moved{ false };
+private:
+    bool moved{ false };
 
-        int32_t id{ -1 };
-        int32_t islandID{ 0 };
+    int32_t id{ -1 };
+    int32_t islandID{ 0 };
 
-        std::vector<int32_t> manifoldIDs{};            // ids of contact manifold containing this body
-        std::vector<int32_t> jointIDs{};               // ids of the joint containing this body
+    std::vector<int32_t> manifoldIDs{};            // ids of contact manifold containing this body
+    std::vector<int32_t> jointIDs{};               // ids of the joint containing this body
 
-        float resting{ 0.0f };
-        bool sleeping{ false };
+    float resting{ 0.0f };
+    bool sleeping{ false };
 
-        Node* node{ nullptr };
-    };
+    Node* node{ nullptr };
+};
 }

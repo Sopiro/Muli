@@ -1,6 +1,7 @@
 #include "spe/rendering/shader.h"    
 
-using namespace spe;
+namespace spe
+{
 
 Shader::Shader(const char* vsCode, const char* fsCode)
 {
@@ -67,4 +68,6 @@ Shader::~Shader()
 void Shader::Use()
 {
     glUseProgram(shaderHandle);
+}
+
 }

@@ -1,7 +1,8 @@
 #include "spe/physics/world.h"
 #include "spe/physics/island.h"
 
-using namespace spe;
+namespace spe
+{
 
 World::World(const Settings& simulationSettings) :
 	settings{ simulationSettings }
@@ -11,6 +12,10 @@ World::World(const Settings& simulationSettings) :
 
 World::~World() noexcept
 {
+	for (RigidBody* body : bodies)
+	{
+		delete body;
+	}
 }
 
 void World::Update(float dt)
@@ -201,6 +206,8 @@ void World::Unregister(RigidBody* body)
 
 		bodies.erase(it);
 		tree.Remove(body);
+
+		delete body;
 	}
 }
 
@@ -276,4 +283,27 @@ const AABBTree& World::GetBVH() const
 const std::vector<ContactConstraint>& World::GetContactConstraints() const
 {
 	return contactConstraints;
+}
+
+Box* World::CreateBox(float width, float height, BodyType type, float density)
+{
+	Box* b = new Box(width, height, type, density);
+	Register(b);
+	return b;
+}
+
+Circle* World::CreateCircle(float radius, BodyType type, float density)
+{
+	Circle* c = new Circle(radius, type, density);
+	Register(c);
+	return c;
+}
+
+spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, BodyType type, bool resetPosition, float density)
+{
+	Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
+	Register(p);
+	return p;
+}
+
 }

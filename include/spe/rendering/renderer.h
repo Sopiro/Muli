@@ -6,18 +6,18 @@
 
 namespace spe
 {
-    class Renderer
-    {
-    public:
-        Renderer() = default;
-        virtual ~Renderer() noexcept = default;
+class Renderer
+{
+public:
+    Renderer() = default;
+    virtual ~Renderer() noexcept = default;
 
-        Renderer(const Renderer&) noexcept = delete;
-        Renderer& operator=(const Renderer&) noexcept = delete;
+    Renderer(const Renderer&) noexcept = delete;
+    Renderer& operator=(const Renderer&) noexcept = delete;
 
-        Renderer(Renderer&&) noexcept = delete;
-        Renderer& operator=(Renderer&&) noexcept = delete;
+    Renderer(Renderer&&) noexcept = delete;
+    Renderer& operator=(Renderer&&) noexcept = delete;
 
-        virtual void Render() = 0;
-    };
+    virtual void Render() = 0;
+};
 }

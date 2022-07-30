@@ -1,6 +1,7 @@
 #include "spe/entity.h"
 
-using namespace spe;
+namespace spe
+{
 
 Entity::Entity(glm::vec2 _position, float _rotation, glm::vec2 _scale) :
     position{ std::move(_position) },
@@ -44,4 +45,6 @@ glm::mat3 Entity::LocalToGlobal() const
 glm::mat3 Entity::GlobalToLocal() const
 {
     return glm::translate(glm::rotate(glm::scale(glm::mat3{ 1.0f }, 1.0f / scale), -rotation), -position);
+}
+
 }

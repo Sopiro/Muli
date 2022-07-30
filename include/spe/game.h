@@ -15,56 +15,55 @@
 
 namespace spe
 {
-    class Application;
+class Application;
 
-    class Game final
-    {
-    public:
-        Game(Application& app);
-        ~Game() noexcept;
+class Game final
+{
+public:
+    Game(Application& app);
+    ~Game() noexcept;
 
-        Game(const Game&) noexcept = delete;
-        Game& operator=(const Game&) noexcept = delete;
+    Game(const Game&) noexcept = delete;
+    Game& operator=(const Game&) noexcept = delete;
 
-        Game(Game&&) noexcept = delete;
-        Game& operator=(Game&&) noexcept = delete;
+    Game(Game&&) noexcept = delete;
+    Game& operator=(Game&&) noexcept = delete;
 
-        void Update(float dt);
-        void HandleInput();
-        void Render();
+    void Update(float dt);
+    void HandleInput();
+    void Render();
 
-        void AddBody(std::vector<RigidBody*> bodies);
-        void AddBody(RigidBody* body);
-        void RemoveBody(std::vector<RigidBody*> bodies);
-        void RemoveBody(RigidBody* body);
+    void AddBody(std::vector<RigidBody*> bodies);
+    void AddBody(RigidBody* body);
+    void RemoveBody(std::vector<RigidBody*> bodies);
+    void RemoveBody(RigidBody* body);
 
-    private:
-        Application& app;
+private:
+    Application& app;
 
-        Settings settings{};
-        std::unique_ptr<World> world;
+    Settings settings{};
+    std::unique_ptr<World> world;
 
-        std::vector<RigidBody*> bodies{};
-        Camera camera{};
-        RigidBodyRenderer rRenderer{};
-        DynamicRenderer dRenderer{};
+    Camera camera{};
+    RigidBodyRenderer rRenderer{};
+    DynamicRenderer dRenderer{};
 
-        float time = 0.0f;
-        glm::vec2 mpos{ 0.0f };
+    float time = 0.0f;
+    glm::vec2 mpos{ 0.0f };
 
-        bool pause = false;
-        bool step = false;
-        bool drawOutlineOnly = false;
-        bool showBVH = false;
-        bool showCP = false;
-        bool resetCamera = true;
+    bool pause = false;
+    bool step = false;
+    bool drawOutlineOnly = false;
+    bool showBVH = false;
+    bool showCP = false;
+    bool resetCamera = true;
 
-        std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> demos;
-        size_t currentDemo;
-        std::string demoTitle;
+    std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> demos;
+    size_t currentDemo;
+    std::string demoTitle;
 
-        void UpdateProjectionMatrix();
-        void InitSimulation(size_t demo);
-        void Reset();
-    };
+    void UpdateProjectionMatrix();
+    void InitSimulation(size_t demo);
+    void Reset();
+};
 }

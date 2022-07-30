@@ -3,7 +3,8 @@
 #include "spe/physics/circle.h"
 #include "spe/physics/aabb.h"
 
-using namespace spe;
+namespace spe
+{
 
 float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area)
 {
@@ -217,4 +218,6 @@ std::vector<std::pair<RigidBody*, RigidBody*>> spe::get_collision_pair_n2(const 
     }
 
     return pairs;
+}
+
 }

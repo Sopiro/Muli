@@ -1,6 +1,7 @@
 #include "spe/physics/island.h"
 
-using namespace spe;
+namespace spe
+{
 
 Island::Island(World& _world) :
     world{ _world }
@@ -93,6 +94,9 @@ void Island::Solve(float dt)
 
         b->position += b->linearVelocity * world.settings.DT;
         b->rotation += b->angularVelocity * world.settings.DT;
+
+        if(!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
+            world.Unregister(b);
     }
 }
 
@@ -101,4 +105,6 @@ void Island::Clear()
     bodies.clear();
     ccs.clear();
     sleeping = false;
+}
+
 }

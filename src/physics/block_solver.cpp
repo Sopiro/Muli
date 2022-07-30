@@ -1,7 +1,8 @@
 #include "spe/physics/block_solver.h"
 #include "spe/physics/contact_constraint.h"
 
-using namespace spe;
+namespace spe
+{
 
 BlockSolver::BlockSolver(ContactConstraint& _cc) :
     cc{ _cc }
@@ -188,4 +189,6 @@ void BlockSolver::ApplyImpulse(const glm::vec2& lambda)
     cc.bodyA->angularVelocity += cc.bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
     cc.bodyB->linearVelocity += j1->vb * (cc.bodyB->invMass * (lambda.x + lambda.y));
     cc.bodyB->angularVelocity += cc.bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
+}
+
 }

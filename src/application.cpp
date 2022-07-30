@@ -1,6 +1,7 @@
 #include "spe/application.h"
 
-using namespace spe;
+namespace spe
+{
 
 Application* Application::app = nullptr;
 
@@ -81,4 +82,6 @@ void Application::SetFrameRate(uint32_t frameRate)
 {
     frameRate = std::clamp<int>(frameRate, 30, 300);
     frameTime = 1.0 / frameRate;
+}
+
 }

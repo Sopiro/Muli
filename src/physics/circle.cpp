@@ -1,6 +1,7 @@
 #include "spe/physics/circle.h"
 
-using namespace spe;
+namespace spe
+{
 
 Circle::Circle(float _radius, BodyType _type, float _density) :
     RigidBody(std::move(_type)),
@@ -50,4 +51,6 @@ float Circle::GetRadius() const
 float Circle::GetArea() const
 {
     return area;
+}
+
 }

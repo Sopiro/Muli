@@ -1,6 +1,7 @@
 #include "spe/physics/polytope.h"
 
-using namespace spe;
+namespace spe
+{
 
 Polytope::Polytope(const Simplex& simplex) :
     vertices{}
@@ -44,4 +45,6 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
     }
 
     return { minIndex, minDistance, minNormal };
+}
+
 }

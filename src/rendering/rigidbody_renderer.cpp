@@ -2,7 +2,8 @@
 #include "spe/physics/util.h"
 #include "spe/window.h"
 
-using namespace spe;
+namespace spe
+{
 
 RigidBodyRenderer::RigidBodyRenderer()
 {
@@ -14,8 +15,11 @@ void RigidBodyRenderer::Render()
 {
     shader->Use();
 
-    for (const auto& [body, mesh] : bodiesAndMeshes)
+    for (size_t i = 0; i < bodiesAndMeshes.size(); i++)
     {
+        RigidBody* body = bodiesAndMeshes[i].first;
+        std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;
+
         glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(body->position, 0.0f));
         glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, body->rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -35,7 +39,7 @@ void RigidBodyRenderer::Render()
                 int32_t period = static_cast<int32_t>(glm::trunc(360 / hStride));
                 int32_t cycle = static_cast<int32_t>(glm::trunc(id / period));
 
-                float h = (((id - 1) * hStride) % 360 ) / 360.0f;
+                float h = (((id - 1) * hStride) % 360) / 360.0f;
                 float s = (100 - (cycle * sStride) % 21) / 100.0f;
                 float l = (75 - (cycle * lStride) % 17) / 100.0f;
 
@@ -134,4 +138,6 @@ void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
 void RigidBodyRenderer::Reset()
 {
     bodiesAndMeshes.clear();
+}
+
 }

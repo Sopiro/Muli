@@ -1,6 +1,7 @@
 #include "spe/physics/aabb.h"
 
-using namespace spe;
+namespace spe
+{
 
 AABB::AABB(glm::vec2 _min, glm::vec2 _max) :
     min{ std::move(_min) },
@@ -60,4 +61,6 @@ AABB spe::create_AABB(RigidBody* body, float margin)
     {
         throw std::exception("Not a supported shape");
     }
+}
+
 }

@@ -1,6 +1,7 @@
 #include "spe/input.h"
 
-using namespace spe;
+namespace spe
+{
 
 std::array<bool, GLFW_KEY_LAST + 1> Input::lastKeys{};
 std::array<bool, GLFW_KEY_LAST + 1> Input::currKeys{};
@@ -13,3 +14,5 @@ glm::vec2 Input::lastMousePos{ 0.0f };
 glm::vec2 Input::mouseAcceleration{ 0.0f };
 
 glm::vec2 Input::mouseScroll{ 0.0f };
+
+}

@@ -1,6 +1,7 @@
 #include "spe/rendering/dynamic_renderer.h"
 
-using namespace spe;
+namespace spe
+{
 
 DynamicRenderer::DynamicRenderer()
 {
@@ -51,4 +52,6 @@ void DynamicRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
 {
     shader->Use();
     shader->SetViewMatrix(std::move(_viewMatrix));
+}
+
 }

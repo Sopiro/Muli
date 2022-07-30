@@ -1,7 +1,8 @@
 #include "spe/physics/contact_constraint.h"
 #include "spe/physics/world.h"
 
-using namespace spe;
+namespace spe
+{
 
 ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Settings& _settings) :
     Constraint(manifold.bodyA, manifold.bodyB),
@@ -116,4 +117,6 @@ ContactInfo ContactConstraint::GetContactInfo() const
         contactPoints,
         impulse
     };
+}
+
 }

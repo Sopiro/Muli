@@ -5,10 +5,10 @@
 
 namespace spe
 {
-    class Joint : Constraint
-    {
-    public:
+class Joint : Constraint
+{
+public:
 
-    private:
-    };
+private:
+};
 }

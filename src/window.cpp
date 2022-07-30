@@ -1,7 +1,7 @@
 #include "spe/window.h"
 
-using namespace spe;
-
+namespace spe
+{
 Window* Window::window = nullptr;
 
 Window& Window::Get()
@@ -222,4 +222,6 @@ glm::ivec2 Window::GetWindowSize() const
 int32_t Window::GetRefreshRate() const
 {
 	return refreshRate;
+}
+
 }

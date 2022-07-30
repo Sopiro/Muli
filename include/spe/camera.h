@@ -5,11 +5,11 @@
 
 namespace spe
 {
-    class Camera : public Entity
-    {
-    public:
-        Camera();
+class Camera : public Entity
+{
+public:
+    Camera();
 
-        glm::mat4 CameraTransform() const;
-    };
+    glm::mat4 CameraTransform() const;
+};
 }

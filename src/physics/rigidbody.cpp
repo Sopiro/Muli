@@ -1,6 +1,7 @@
 #include "spe/physics/rigidbody.h"
 
-using namespace spe;
+namespace spe
+{
 
 RigidBody::RigidBody(BodyType _type) :
     Entity(),
@@ -200,4 +201,6 @@ int32_t RigidBody::GetID() const
 int32_t RigidBody::GetIslandID() const
 {
     return islandID;
+}
+
 }

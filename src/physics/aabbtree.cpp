@@ -1,6 +1,7 @@
 #include "spe/physics/aabbtree.h"
 
-using namespace spe;
+namespace spe
+{
 
 Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
     id{ _id },
@@ -466,4 +467,6 @@ float AABBTree::GetTreeCost() const
 float AABBTree::GetMarginSize() const
 {
     return aabbMargin;
+}
+
 }

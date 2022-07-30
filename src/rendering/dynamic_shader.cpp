@@ -1,6 +1,7 @@
 #include "spe/rendering/dynamic_shader.h"    
 
-using namespace spe;
+namespace spe
+{
 
 std::unique_ptr<DynamicShader> DynamicShader::Create()
 {
@@ -67,4 +68,6 @@ void DynamicShader::SetProjectionMatrix(glm::mat4 _projMatrix)
 {
     projMatrix = std::move(_projMatrix);
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));
+}
+
 }

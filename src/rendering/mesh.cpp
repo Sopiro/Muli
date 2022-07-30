@@ -1,6 +1,7 @@
 #include "spe/rendering/mesh.h"
 
-using namespace spe;
+namespace spe
+{
 
 Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, std::vector<uint32_t> _indices) :
     vertices{ std::move(_vertices) },
@@ -93,4 +94,6 @@ void Mesh::Draw(GLenum drawMode)
         break;
     }
     glBindVertexArray(0);
+}
+
 }

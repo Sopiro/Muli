@@ -1,6 +1,7 @@
 #include "spe/physics/box.h"
 
-using namespace spe;
+namespace spe
+{
 
 Box::Box(float _width, float _height, BodyType _type, float _density) :
     Polygon{ {{0, 0}, {_width, 0}, {_width, _height}, {0, _height}}, std::move(_type), true, std::move(_density) },
@@ -48,4 +49,6 @@ void Box::SetDensity(float _density)
     invMass = 1.0f / mass;
     inertia = calculate_box_inertia(width, height, mass);
     invInertia = 1.0f / inertia;
+}
+
 }
