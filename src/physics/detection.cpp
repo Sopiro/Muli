@@ -1,11 +1,11 @@
-#include "spe/physics/detection.h"
-#include "spe/physics/rigidbody.h"
-#include "spe/physics/polygon.h"
-#include "spe/physics/box.h"
-#include "spe/physics/circle.h"
-#include "spe/physics/simplex.h"
-#include "spe/physics/polytope.h"
-#include "spe/physics/edge.h"
+#include "spe/detection.h"
+#include "spe/rigidbody.h"
+#include "spe/polygon.h"
+#include "spe/box.h"
+#include "spe/circle.h"
+#include "spe/simplex.h"
+#include "spe/polytope.h"
+#include "spe/edge.h"
 
 namespace spe
 {

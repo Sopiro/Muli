@@ -1,4 +1,4 @@
-#include "spe/physics/joint.h"
+#include "spe/joint.h"
 
 namespace spe
 {

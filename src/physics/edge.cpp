@@ -1,4 +1,4 @@
-#include "spe/physics/edge.h"
+#include "spe/edge.h"
 
 namespace spe
 {

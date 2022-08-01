@@ -1,6 +1,6 @@
-#include "spe/physics/contact_solver.h"
-#include "spe/physics/world.h"
-#include "spe/physics/contact_constraint.h"
+#include "spe/contact_solver.h"
+#include "spe/world.h"
+#include "spe/contact_constraint.h"
 
 namespace spe
 {

@@ -1,4 +1,4 @@
-#include "spe/physics/polytope.h"
+#include "spe/polytope.h"
 
 namespace spe
 {

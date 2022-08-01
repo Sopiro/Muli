@@ -8,7 +8,6 @@ Entity::Entity(glm::vec2 _position, float _rotation, glm::vec2 _scale) :
     rotation{ std::move(_rotation) },
     scale{ std::move(_scale) }
 {
-
 }
 
 void Entity::ResetTransform()

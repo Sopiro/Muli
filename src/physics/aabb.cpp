@@ -1,4 +1,4 @@
-#include "spe/physics/aabb.h"
+#include "spe/aabb.h"
 
 namespace spe
 {

@@ -1,4 +1,4 @@
-#include "spe/physics/aabbtree.h"
+#include "spe/aabbtree.h"
 
 namespace spe
 {

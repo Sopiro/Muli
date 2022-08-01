@@ -1,4 +1,4 @@
-#include "spe/physics/constraint.h"
+#include "spe/constraint.h"
 
 namespace spe
 {

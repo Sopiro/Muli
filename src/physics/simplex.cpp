@@ -1,5 +1,5 @@
-#include "spe/physics/simplex.h"
-#include "spe/physics/util.h"
+#include "spe/simplex.h"
+#include "spe/util.h"
 
 namespace spe
 {

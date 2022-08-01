@@ -1,4 +1,4 @@
-#include "spe/physics/box.h"
+#include "spe/box.h"
 
 namespace spe
 {

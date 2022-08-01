@@ -1,18 +1,5 @@
 set(SOURCE_FILES
-    main.cpp
-    window.cpp
-    application.cpp
-    input.cpp
-    game.cpp
     entity.cpp
-    camera.cpp
-
-    rendering/shader.cpp
-    rendering/rigidbody_shader.cpp
-    rendering/rigidbody_renderer.cpp
-    rendering/mesh.cpp
-    rendering/dynamic_shader.cpp
-    rendering/dynamic_renderer.cpp
 
     physics/world.cpp
 
@@ -36,8 +23,14 @@ set(SOURCE_FILES
     physics/joint.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_library(spe ${SOURCE_FILES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${DEP_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
-target_link_directories(${PROJECT_NAME} PUBLIC ${DEP_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${DEP_LIBS})
+target_include_directories(spe PUBLIC
+    ${DEP_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+target_link_directories(spe PUBLIC ${DEP_LIB_DIR})
+target_link_libraries(spe PUBLIC ${DEP_LIBS})
+
+add_dependencies(spe ${DEP_LIST})
