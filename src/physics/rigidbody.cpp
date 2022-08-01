@@ -25,6 +25,8 @@ RigidBody::RigidBody(BodyType _type) :
 RigidBody::~RigidBody()
 {
     if (moved) return;
+
+    if (OnDestroy != nullptr) OnDestroy(this);
 }
 
 RigidBody::RigidBody(RigidBody&& _other) noexcept

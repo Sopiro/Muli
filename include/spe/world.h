@@ -54,6 +54,7 @@ public:
     void Unregister(RigidBody* body);
     void Unregister(const std::vector<RigidBody*>& bodies);
 
+    Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(std::vector<glm::vec2> vertices, BodyType type = Dynamic, bool resetPosition = true, float density = DEFAULT_DENSITY);

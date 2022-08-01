@@ -1,28 +1,24 @@
 #pragma once
 
 #include "common.h"
-#include "game.h"
 
 namespace spe
 {
-static void demo1(Game& game, Settings& settings)
+static void demo1(World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = new Box{ 12.8f * 10.0f, 0.4f, Static };
-    game.AddBody(ground);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, Static);
 
-    RigidBody* box = new Box{ 0.4f };
+    RigidBody* box = world.CreateBox(0.4f);
     box->position = { 0.0f, 5.0f };
     box->SetAngularVelocity(glm::linearRand(-12.0f, 12.0f));
-    game.AddBody(box);
 }
 
-static void demo2(Game& game, Settings& settings)
+static void demo2(World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = new Box{ 12.8f * 10.0f, 0.4f, Static };
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, Static);
     ground->SetRestitution(0.45f);
-    game.AddBody(ground);
 
     float start = 0.5f;
     float size = 0.3f;
@@ -33,18 +29,16 @@ static void demo2(Game& game, Settings& settings)
 
     for (size_t i = 0; i < 20; i++)
     {
-        RigidBody* b = new Box{ size };
+        RigidBody* b = world.CreateBox(size);
         b->position = glm::vec2{ glm::linearRand(-error, error), start + i * (size + gap) };
-        game.AddBody(b);
     }
 }
 
-static void demo3(Game& game, Settings& settings)
+static void demo3(World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = new Box{ 12.8f * 10.0f, 0.4f, Static };
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, Static);
     ground->SetRestitution(0.45f);
-    game.AddBody(ground);
 
     int32_t rows = 15;
     float boxSize = 0.35f;
@@ -57,14 +51,13 @@ static void demo3(Game& game, Settings& settings)
     {
         for (size_t x = 0; x < rows - y; x++)
         {
-            RigidBody* b = new Box{ boxSize };
+            RigidBody* b = world.CreateBox(boxSize);
             b->position = glm::vec2{ xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap) };
-            game.AddBody(b);
         }
     }
 }
 
-std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> get_demos()
+std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
 

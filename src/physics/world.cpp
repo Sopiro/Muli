@@ -285,6 +285,11 @@ const std::vector<ContactConstraint>& World::GetContactConstraints() const
 	return contactConstraints;
 }
 
+Box* World::CreateBox(float size, BodyType type, float density)
+{
+	return CreateBox(size, size, type, density);
+}
+
 Box* World::CreateBox(float width, float height, BodyType type, float density)
 {
 	Box* b = new Box(width, height, type, density);

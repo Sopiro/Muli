@@ -26,11 +26,6 @@ public:
     void HandleInput();
     void Render();
 
-    void AddBody(std::vector<RigidBody*> bodies);
-    void AddBody(RigidBody* body);
-    void RemoveBody(std::vector<RigidBody*> bodies);
-    void RemoveBody(RigidBody* body);
-
 private:
     Application& app;
 
@@ -51,7 +46,7 @@ private:
     bool showCP = false;
     bool resetCamera = true;
 
-    std::vector<std::pair<std::string, std::function<void(Game&, Settings&)>>> demos;
+    std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> demos;
     size_t currentDemo;
     std::string demoTitle;
 

@@ -75,6 +75,9 @@ public:
     int32_t GetID() const;
     int32_t GetIslandID() const;
 
+    // Callbacks
+    std::function<void(RigidBody*)> OnDestroy = nullptr;
+
 protected:
     // Center of mass in local space = (0, 0)
     glm::vec2 force{ 0.0f };                        // N

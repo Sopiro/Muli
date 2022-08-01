@@ -77,17 +77,21 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = new Box(0.5f, 0.5f);
+            RigidBody* b = world->CreateBox(0.5f);
             b->position = mpos;
+            rRenderer.Register(b);
 
-            AddBody(b);
+            b->OnDestroy = [&](RigidBody* me) -> void
+            {
+                rRenderer.Unregister(me);
+            };
         }
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
             std::vector<RigidBody*> q = world->QueryPoint(mpos);
 
-            RemoveBody(q);
+            world->Unregister(q);
         }
 
         if (Input::GetMouseScroll().y != 0)
@@ -284,30 +288,6 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::AddBody(std::vector<RigidBody*> bodies)
-{
-    for (size_t i = 0; i < bodies.size(); i++)
-        AddBody(bodies[i]);
-}
-
-void Game::AddBody(RigidBody* body)
-{
-    world->Register(body);
-    rRenderer.Register(body);
-}
-
-void Game::RemoveBody(std::vector<RigidBody*> bodies)
-{
-    for (size_t i = 0; i < bodies.size(); i++)
-        RemoveBody(bodies[i]);
-}
-
-void Game::RemoveBody(RigidBody* body)
-{
-    world->Unregister(body);
-    rRenderer.Unregister(body);
-}
-
 void Game::InitSimulation(size_t demo)
 {
     time = 0;
@@ -321,7 +301,17 @@ void Game::InitSimulation(size_t demo)
 
     currentDemo = demo;
     demoTitle = demos[currentDemo].first;
-    demos[currentDemo].second(*this, settings);
+    demos[currentDemo].second(*world, settings);
+
+    for (RigidBody* b : world->GetBodies())
+    {
+        rRenderer.Register(b);
+
+        b->OnDestroy = [&](RigidBody* me)-> void
+        {
+            rRenderer.Unregister(me);
+        };
+    }
 }
 
 void Game::Reset()
