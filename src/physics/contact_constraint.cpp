@@ -5,8 +5,7 @@ namespace spe
 {
 
 ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Settings& _settings) :
-    Constraint(manifold.bodyA, manifold.bodyB),
-    settings{ _settings }
+    Constraint(manifold.bodyA, manifold.bodyB, _settings)
 {
     contactPoints = manifold.contactPoints;
     penetrationDepth = manifold.penetrationDepth;

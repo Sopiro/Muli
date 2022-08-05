@@ -71,6 +71,8 @@ void Island::Solve(float dt)
     {
         for (size_t i = 0; i < ccs.size(); i++)
             ccs[i]->Prepare();
+        for (size_t i = 0; i < js.size(); i++)
+            js[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
@@ -79,6 +81,8 @@ void Island::Solve(float dt)
         {
             for (size_t j = 0; j < ccs.size(); j++)
                 ccs[j]->Solve();
+            for (size_t j = 0; j < js.size(); j++)
+                js[j]->Solve();
         }
     }
 
@@ -95,8 +99,8 @@ void Island::Solve(float dt)
         b->position += b->linearVelocity * world.settings.DT;
         b->rotation += b->angularVelocity * world.settings.DT;
 
-        if(!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
-            world.Unregister(b);
+        if (!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
+            world.Remove(b);
     }
 }
 
@@ -104,6 +108,8 @@ void Island::Clear()
 {
     bodies.clear();
     ccs.clear();
+    js.clear();
+    
     sleeping = false;
 }
 

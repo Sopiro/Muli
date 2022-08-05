@@ -21,6 +21,7 @@ set(SOURCE_FILES
     physics/block_solver.cpp
     physics/island.cpp
     physics/joint.cpp
+    physics/grab_joint.cpp
 )
 
 add_library(spe ${SOURCE_FILES})

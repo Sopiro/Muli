@@ -5,13 +5,12 @@
 
 namespace spe
 {
+    struct Settings;
+    
 class Constraint
 {
 public:
-    RigidBody* bodyA;
-    RigidBody* bodyB;
-
-    Constraint(RigidBody* _bodyA, RigidBody* _bodyB);
+    Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings);
     virtual ~Constraint() noexcept = default;
 
     Constraint(const Constraint&) noexcept = delete;
@@ -46,7 +45,14 @@ public:
     */
     virtual void Solve() = 0;
 
+    RigidBody* GetBodyA() const;
+    RigidBody* GetBodyB() const;
+
 protected:
+    RigidBody* bodyA;
+    RigidBody* bodyB;
+    const Settings& settings;
+
     float beta{ 0.0f };
     float gamma{ 0.0f };
 };

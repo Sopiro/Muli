@@ -12,6 +12,7 @@
 #include "polygon.h"
 
 #include "joint.h"
+#include "grab_joint.h"
 
 #include "aabb.h"
 #include "aabbtree.h"

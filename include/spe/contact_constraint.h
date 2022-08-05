@@ -8,8 +8,6 @@
 
 namespace spe
 {
-struct Settings;
-
 struct ContactInfo
 {
     const RigidBody* other;
@@ -30,6 +28,7 @@ struct ContactInfo
 
 class ContactConstraint : public Constraint
 {
+    friend class World;
     friend class ContactSolver;
     friend class BlockSolver;
 
@@ -45,8 +44,6 @@ public:
     ContactInfo GetContactInfo() const;
 
 private:
-    const Settings& settings;
-
     std::vector<ContactPoint> contactPoints;
     float penetrationDepth;
     glm::vec2 contactNormal;

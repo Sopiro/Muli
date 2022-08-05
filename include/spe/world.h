@@ -5,6 +5,7 @@
 #include "detection.h"
 #include "rigidbody.h"
 #include "contact_constraint.h"
+#include "grab_joint.h"
 
 namespace spe
 {
@@ -49,15 +50,19 @@ public:
     void Update(float dt);
     void Reset();
 
-    void Register(RigidBody* body);
-    void Register(const std::vector<RigidBody*>& bodies);
-    void Unregister(RigidBody* body);
-    void Unregister(const std::vector<RigidBody*>& bodies);
+    void Add(RigidBody* body);
+    void Add(const std::vector<RigidBody*>& bodies);
+    bool Remove(RigidBody* body);
+    bool Remove(const std::vector<RigidBody*>& bodies);
+    bool Remove(Joint* joint);
+    bool Remove(const std::vector<Joint*>& joints);
 
     Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(std::vector<glm::vec2> vertices, BodyType type = Dynamic, bool resetPosition = true, float density = DEFAULT_DENSITY);
+
+    GrabJoint* CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency = 0.8f, float dampingRatio = 0.6f, float jointMass = -1.0f);
 
     std::vector<RigidBody*> QueryPoint(const glm::vec2& point) const;
     std::vector<RigidBody*> QueryRegion(const AABB& region) const;
@@ -67,6 +72,10 @@ public:
     const size_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
     const std::vector<ContactConstraint>& GetContactConstraints() const;
+
+    const std::vector<Joint*>& GetJoints() const;
+
+    void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
 
 private:
     const Settings& settings;
@@ -78,13 +87,16 @@ private:
     std::vector<RigidBody*> bodies{};
     std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
 
+    std::unordered_set<int32_t> passTestSet{};
+
     // Constraints to be solved
     std::vector<ContactConstraint> contactConstraints{};
     std::unordered_map<int32_t, ContactConstraint*> contactConstraintMap{};
     std::vector<ContactConstraint> newContactConstraints{};
     std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
 
-    std::unordered_set<int32_t> passTestSet{};
+    std::vector<Joint*> joints{};
+    std::unordered_map<int32_t, Joint*> jointMap{};
 
     bool forceIntegration = false;
     int32_t numIslands = 0;

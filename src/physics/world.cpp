@@ -16,6 +16,11 @@ World::~World() noexcept
 	{
 		delete body;
 	}
+
+	for (Joint* joint : joints)
+	{
+		delete joint;
+	}
 }
 
 void World::Update(float dt)
@@ -140,6 +145,26 @@ void World::Update(float dt)
 				stack.push(other);
 			}
 
+			for (size_t j = 0; j < t->jointIDs.size(); j++)
+			{
+				int32_t key = t->jointIDs[j];
+				Joint* joint = jointMap[key];
+
+				RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
+
+				if (joint->bodyA == joint->bodyB)
+				{
+					island.js.push_back(joint);
+					t->Awake();
+				}
+
+				if (visited.find(other->id) != visited.end())
+					continue;
+
+				island.js.push_back(joint);
+				stack.push(other);
+			}
+
 			if (t->resting > settings.SLEEPING_TRESHOLD)
 				restingBodies++;
 		}
@@ -171,52 +196,113 @@ void World::Reset()
 	contactConstraintMap.clear();
 	newContactConstraints.clear();
 	newContactConstraintMap.clear();
+
+	joints.clear();
+	jointMap.clear();
+
 	passTestSet.clear();
 }
 
-void World::Register(RigidBody* body)
+void World::Add(RigidBody* body)
 {
 	body->id = uid++;
 	bodies.push_back(body);
 	tree.Add(body);
 }
 
-void World::Register(const std::vector<RigidBody*>& bodies)
+void World::Add(const std::vector<RigidBody*>& bodies)
 {
 	for (auto b : bodies)
 	{
-		Register(b);
+		Add(b);
 	}
 }
 
-void World::Unregister(RigidBody* body)
+bool World::Remove(RigidBody* body)
 {
 	auto it = std::find(bodies.begin(), bodies.end(), body);
+	if (it == bodies.end()) return false;
 
-	if (it != bodies.end())
+	for (size_t i = 0; i < body->manifoldIDs.size(); i++)
 	{
-		for (size_t i = 0; i < body->manifoldIDs.size(); i++)
-		{
-			int32_t key = body->manifoldIDs[i];
-			ContactConstraint* cc = contactConstraintMap[key];
+		int32_t key = body->manifoldIDs[i];
+		ContactConstraint* cc = contactConstraintMap[key];
 
-			RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
-			other->Awake();
-		}
-
-		bodies.erase(it);
-		tree.Remove(body);
-
-		delete body;
+		RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
+		other->Awake();
 	}
+
+	for (size_t i = 0; i < body->jointIDs.size(); i++)
+	{
+		int32_t key = body->jointIDs[i];
+		Joint* joint = jointMap[key];
+
+		Remove(joint);
+	}
+
+	bodies.erase(it);
+	tree.Remove(body);
+
+	delete body;
+	return true;
 }
 
-void World::Unregister(const std::vector<RigidBody*>& bodies)
+bool World::Remove(const std::vector<RigidBody*>& bodies)
 {
+	bool res = true;
+
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
-		Unregister(bodies[i]);
+		res &= Remove(bodies[i]);
 	}
+
+	return res;
+}
+
+bool World::Remove(Joint* joint)
+{
+	if (std::find(joints.begin(), joints.end(), joint) == joints.end()) return false;
+
+	auto it = std::find(joint->bodyA->jointIDs.begin(), joint->bodyA->jointIDs.end(), joint->id);
+	if (it != joint->bodyA->jointIDs.end())
+	{
+		std::iter_swap(it, joint->bodyA->jointIDs.end() - 1);
+		joint->bodyA->jointIDs.pop_back();
+	}
+	joint->bodyA->Awake();
+
+	it = std::find(joint->bodyB->jointIDs.begin(), joint->bodyB->jointIDs.end(), joint->id);
+	if (it != joint->bodyB->jointIDs.end())
+	{
+		std::iter_swap(it, joint->bodyB->jointIDs.end() - 1);
+		joint->bodyB->jointIDs.pop_back();
+	}
+	joint->bodyB->Awake();
+
+	jointMap.erase(joint->id);
+	RemovePassTestPair(joint->bodyA, joint->bodyB);
+
+	auto jit = std::find(joints.begin(), joints.end(), joint);
+	if (jit != joints.end())
+	{
+		std::iter_swap(jit, joints.end() - 1);
+		joints.pop_back();
+	}
+
+	delete joint;
+	return true;
+}
+
+bool World::Remove(const std::vector<Joint*>& joints)
+{
+	bool res = true;
+
+	for (size_t i = 0; i < joints.size(); i++)
+	{
+		res &= Remove(joints[i]);
+	}
+
+	return res;
 }
 
 std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
@@ -285,6 +371,11 @@ const std::vector<ContactConstraint>& World::GetContactConstraints() const
 	return contactConstraints;
 }
 
+const std::vector<Joint*>& World::GetJoints() const
+{
+	return joints;
+}
+
 Box* World::CreateBox(float size, BodyType type, float density)
 {
 	return CreateBox(size, size, type, density);
@@ -293,22 +384,44 @@ Box* World::CreateBox(float size, BodyType type, float density)
 Box* World::CreateBox(float width, float height, BodyType type, float density)
 {
 	Box* b = new Box(width, height, type, density);
-	Register(b);
+	Add(b);
 	return b;
 }
 
 Circle* World::CreateCircle(float radius, BodyType type, float density)
 {
 	Circle* c = new Circle(radius, type, density);
-	Register(c);
+	Add(c);
 	return c;
 }
 
 spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, BodyType type, bool resetPosition, float density)
 {
 	Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
-	Register(p);
+	Add(p);
 	return p;
+}
+
+GrabJoint* World::CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency, float dampingRatio, float jointMass)
+{
+	if (body->id < 0)
+		throw std::exception("You should register the rigid bodies before registering the joint");
+
+	GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
+	gj->id = uid++;
+
+	joints.push_back(gj);
+	gj->bodyA->jointIDs.push_back(gj->id);
+
+	jointMap.insert({ gj->id, gj });
+
+	return gj;
+}
+
+void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)
+{
+	passTestSet.erase(make_pair_natural(bodyA->id, bodyB->id));
+	passTestSet.erase(make_pair_natural(bodyB->id, bodyA->id));
 }
 
 }

@@ -77,21 +77,44 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = world->CreateBox(0.5f);
-            b->position = mpos;
-            rRenderer.Register(b);
+            auto q = world->QueryPoint(mpos);
 
-            b->OnDestroy = [&](RigidBody* me) -> void
+            if (q.size() != 0)
             {
-                rRenderer.Unregister(me);
-            };
+                gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f);
+            }
+            else
+            {
+                RigidBody* b = world->CreateBox(0.5f);
+                b->position = mpos;
+                rRenderer.Register(b);
+
+                b->OnDestroy = [&](RigidBody* me) -> void
+                {
+                    rRenderer.Unregister(me);
+                };
+            }
+        }
+
+        if (gj != nullptr)
+        {
+            gj->SetTarget(mpos);
+        }
+
+        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            if (gj != nullptr)
+            {
+                world->Remove(gj);
+                gj = nullptr;
+            }
         }
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
             std::vector<RigidBody*> q = world->QueryPoint(mpos);
 
-            world->Unregister(q);
+            world->Remove(q);
         }
 
         if (Input::GetMouseScroll().y != 0)
@@ -238,44 +261,66 @@ void Game::Render()
     rRenderer.SetDrawOutlined(drawOutlineOnly);
     rRenderer.Render();
 
-    dRenderer.SetViewMatrix(camera.CameraTransform());
+    points.clear();
+    lines.clear();
+
+    const std::vector<Joint*>& joints = world->GetJoints();
+    for (size_t i = 0; i < joints.size(); i++)
+    {
+        Joint* j = joints[i];
+
+        if (typeid(*j) == typeid(GrabJoint))
+        {
+            RigidBody* ba = j->GetBodyA();
+
+            glPointSize(5.0f);
+
+            GrabJoint* gj = static_cast<GrabJoint*>(j);
+
+            const glm::vec2& anchor = j->GetBodyA()->LocalToGlobal() * gj->GetLocalAnchor();
+            points.push_back(anchor);
+            points.push_back(gj->GetTarget());
+
+            lines.push_back(anchor);
+            lines.push_back(gj->GetTarget());
+        }
+    }
+
     if (showBVH)
     {
         const AABBTree& tree = world->GetBVH();
-        std::vector<glm::vec2> v{};
         tree.Traverse([&](const Node* n)->void
             {
-                v.push_back(n->aabb.min);
-                v.push_back({ n->aabb.max.x, n->aabb.min.y });
-                v.push_back({ n->aabb.max.x, n->aabb.min.y });
-                v.push_back(n->aabb.max);
-                v.push_back(n->aabb.max);
-                v.push_back({ n->aabb.min.x, n->aabb.max.y });
-                v.push_back({ n->aabb.min.x, n->aabb.max.y });
-                v.push_back(n->aabb.min);
+                lines.push_back(n->aabb.min);
+                lines.push_back({ n->aabb.max.x, n->aabb.min.y });
+                lines.push_back({ n->aabb.max.x, n->aabb.min.y });
+                lines.push_back(n->aabb.max);
+                lines.push_back(n->aabb.max);
+                lines.push_back({ n->aabb.min.x, n->aabb.max.y });
+                lines.push_back({ n->aabb.min.x, n->aabb.max.y });
+                lines.push_back(n->aabb.min);
             });
-
-        glLineWidth(1.0f);
-        dRenderer.Draw(v, GL_LINES);
     }
 
     if (showCP)
     {
         const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
-        std::vector<glm::vec2> v{};
-        v.reserve(cc.size());
 
         for (size_t i = 0; i < cc.size(); i++)
         {
             auto ci = cc[i].GetContactInfo();
             for (size_t j = 0; j < ci.numContacts; j++)
             {
-                v.push_back(ci.contactPoints[j].point);
+                points.push_back(ci.contactPoints[j].point);
             }
         }
-        glPointSize(5.0f);
-        dRenderer.Draw(v, GL_POINTS);
     }
+
+    dRenderer.SetViewMatrix(camera.CameraTransform());
+    glPointSize(5.0f);
+    dRenderer.Draw(points, GL_POINTS);
+    glLineWidth(1.0f);
+    dRenderer.Draw(lines, GL_LINES);
 }
 
 void Game::UpdateProjectionMatrix()
