@@ -74,8 +74,8 @@ public:
 
     bool IsSleeping() const;
 
-    int32_t GetID() const;
-    int32_t GetIslandID() const;
+    uint32_t GetID() const;
+    uint32_t GetIslandID() const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
@@ -103,11 +103,12 @@ protected:
 private:
     bool moved{ false };
 
-    int32_t id{ -1 };
-    int32_t islandID{ 0 };
+    World* world{ nullptr };
+    uint32_t id{ 0 };
+    uint32_t islandID{ 0 };
 
-    std::vector<int32_t> manifoldIDs{};            // ids of contact manifold containing this body
-    std::vector<int32_t> jointIDs{};               // ids of the joint containing this body
+    std::vector<uint32_t> manifoldIDs{};            // ids of contact manifold containing this body
+    std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
 
     float resting{ 0.0f };
     bool sleeping{ false };

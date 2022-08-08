@@ -195,12 +195,12 @@ bool RigidBody::IsSleeping() const
     return sleeping;
 }
 
-int32_t RigidBody::GetID() const
+uint32_t RigidBody::GetID() const
 {
     return id;
 }
 
-int32_t RigidBody::GetIslandID() const
+uint32_t RigidBody::GetIslandID() const
 {
     return islandID;
 }

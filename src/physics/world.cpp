@@ -98,12 +98,12 @@ void World::Update(float dt)
 
 	// Build the constraint island
 	Island island{ *this };
-	int32_t restingBodies = 0;
-	int32_t islandID = 0;
+	uint32_t restingBodies = 0;
+	uint32_t islandID = 0;
 	sleepingIslands = 0;
 	sleepingBodies = 0;
 
-	std::unordered_set<int32_t> visited{};
+	std::unordered_set<uint32_t> visited{};
 	std::stack<RigidBody*> stack;
 
 	// Perform a DFS(Depth First Search) on the constraint graph
@@ -133,7 +133,7 @@ void World::Update(float dt)
 
 			for (size_t c = 0; c < t->manifoldIDs.size(); c++)
 			{
-				int32_t key = t->manifoldIDs[c];
+				uint32_t key = t->manifoldIDs[c];
 				ContactConstraint* cc = contactConstraintMap[key];
 
 				RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
@@ -147,7 +147,7 @@ void World::Update(float dt)
 
 			for (size_t j = 0; j < t->jointIDs.size(); j++)
 			{
-				int32_t key = t->jointIDs[j];
+				uint32_t key = t->jointIDs[j];
 				Joint* joint = jointMap[key];
 
 				RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
@@ -205,7 +205,11 @@ void World::Reset()
 
 void World::Add(RigidBody* body)
 {
-	body->id = uid++;
+	if (body->world != nullptr)
+		throw std::exception("This body is already registered.");
+
+	body->world = this;
+	body->id = ++uid;
 	bodies.push_back(body);
 	tree.Add(body);
 }
@@ -218,14 +222,14 @@ void World::Add(const std::vector<RigidBody*>& bodies)
 	}
 }
 
-bool World::Remove(RigidBody* body)
+void World::Remove(RigidBody* body)
 {
 	auto it = std::find(bodies.begin(), bodies.end(), body);
-	if (it == bodies.end()) return false;
+	if (it == bodies.end()) throw std::exception("This body is not registered in this world.");;
 
 	for (size_t i = 0; i < body->manifoldIDs.size(); i++)
 	{
-		int32_t key = body->manifoldIDs[i];
+		uint32_t key = body->manifoldIDs[i];
 		ContactConstraint* cc = contactConstraintMap[key];
 
 		RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
@@ -234,7 +238,7 @@ bool World::Remove(RigidBody* body)
 
 	for (size_t i = 0; i < body->jointIDs.size(); i++)
 	{
-		int32_t key = body->jointIDs[i];
+		uint32_t key = body->jointIDs[i];
 		Joint* joint = jointMap[key];
 
 		Remove(joint);
@@ -244,24 +248,20 @@ bool World::Remove(RigidBody* body)
 	tree.Remove(body);
 
 	delete body;
-	return true;
 }
 
-bool World::Remove(const std::vector<RigidBody*>& bodies)
+void World::Remove(const std::vector<RigidBody*>& bodies)
 {
-	bool res = true;
-
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
-		res &= Remove(bodies[i]);
+		Remove(bodies[i]);
 	}
-
-	return res;
 }
 
-bool World::Remove(Joint* joint)
+void World::Remove(Joint* joint)
 {
-	if (std::find(joints.begin(), joints.end(), joint) == joints.end()) return false;
+	if (std::find(joints.begin(), joints.end(), joint) == joints.end())
+		throw std::exception("This joint is not registered in this world.");;
 
 	auto it = std::find(joint->bodyA->jointIDs.begin(), joint->bodyA->jointIDs.end(), joint->id);
 	if (it != joint->bodyA->jointIDs.end())
@@ -290,19 +290,14 @@ bool World::Remove(Joint* joint)
 	}
 
 	delete joint;
-	return true;
 }
 
-bool World::Remove(const std::vector<Joint*>& joints)
+void World::Remove(const std::vector<Joint*>& joints)
 {
-	bool res = true;
-
 	for (size_t i = 0; i < joints.size(); i++)
 	{
-		res &= Remove(joints[i]);
+		Remove(joints[i]);
 	}
-
-	return res;
 }
 
 std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
@@ -404,11 +399,11 @@ spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, BodyType typ
 
 GrabJoint* World::CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency, float dampingRatio, float jointMass)
 {
-	if (body->id < 0)
+	if (body->world != this)
 		throw std::exception("You should register the rigid bodies before registering the joint");
 
 	GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
-	gj->id = uid++;
+	gj->id = ++uid;
 
 	joints.push_back(gj);
 	gj->bodyA->jointIDs.push_back(gj->id);
@@ -416,6 +411,12 @@ GrabJoint* World::CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 t
 	jointMap.insert({ gj->id, gj });
 
 	return gj;
+}
+
+void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
+{
+	passTestSet.insert(make_pair_natural(bodyA->id, bodyB->id));
+	passTestSet.insert(make_pair_natural(bodyB->id, bodyA->id));
 }
 
 void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)

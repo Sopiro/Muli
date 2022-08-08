@@ -14,23 +14,31 @@ struct Settings
 {
     float DT = 1.0f / 60.0f;
     float INV_DT = 60.0f;
+
+    bool APPLY_GRAVITY = true;
     glm::vec2 GRAVITY = glm::vec2{ 0.0f, -10.0f };
+
     bool IMPULSE_ACCUMULATION = true;
     bool WARM_STARTING = true;
+    bool APPLY_WARM_STARTING_THRESHOLD = true;
+    float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - glm::epsilon<float>();
+
     bool POSITION_CORRECTION = true;
     float POSITION_CORRECTION_BETA = 0.2f;
+
     float PENETRATION_SLOP = 0.005f;
     float RESTITUTION_SLOP = 0.5f;
-    bool APPLY_WARM_STARTING_THRESHOLD = true;
-    float WARM_STARTING_THRESHOLD = 0.005f * 0.005f;
+
     bool BLOCK_SOLVE = true;
     int32_t SOLVE_ITERATION = 10;
+
     float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
     float REST_ANGULAR_TOLERANCE = (0.5f * glm::pi<float>() / 180.0f) * (0.5f * glm::pi<float>() / 180.0f);
-    bool APPLY_GRAVITY = true;
+
     bool SLEEPING_ENABLED = true;
     float SLEEPING_TRESHOLD = 0.5f;
-    AABB VALID_REGION{ glm::vec2{-FLT_MAX, -10},glm::vec2{FLT_MAX, FLT_MAX} };
+
+    AABB VALID_REGION{ glm::vec2{-FLT_MAX, -10.0f},glm::vec2{FLT_MAX, FLT_MAX} };
 };
 
 class World final
@@ -52,10 +60,10 @@ public:
 
     void Add(RigidBody* body);
     void Add(const std::vector<RigidBody*>& bodies);
-    bool Remove(RigidBody* body);
-    bool Remove(const std::vector<RigidBody*>& bodies);
-    bool Remove(Joint* joint);
-    bool Remove(const std::vector<Joint*>& joints);
+    void Remove(RigidBody* body);
+    void Remove(const std::vector<RigidBody*>& bodies);
+    void Remove(Joint* joint);
+    void Remove(const std::vector<Joint*>& joints);
 
     Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
@@ -75,6 +83,7 @@ public:
 
     const std::vector<Joint*>& GetJoints() const;
 
+    void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
     void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
 
 private:
@@ -87,19 +96,19 @@ private:
     std::vector<RigidBody*> bodies{};
     std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
 
-    std::unordered_set<int32_t> passTestSet{};
+    std::unordered_set<uint32_t> passTestSet{};
 
     // Constraints to be solved
     std::vector<ContactConstraint> contactConstraints{};
-    std::unordered_map<int32_t, ContactConstraint*> contactConstraintMap{};
+    std::unordered_map<uint32_t, ContactConstraint*> contactConstraintMap{};
     std::vector<ContactConstraint> newContactConstraints{};
-    std::unordered_map<int32_t, ContactConstraint*> newContactConstraintMap{};
+    std::unordered_map<uint32_t, ContactConstraint*> newContactConstraintMap{};
 
     std::vector<Joint*> joints{};
-    std::unordered_map<int32_t, Joint*> jointMap{};
+    std::unordered_map<uint32_t, Joint*> jointMap{};
 
     bool forceIntegration = false;
-    int32_t numIslands = 0;
+    uint32_t numIslands = 0;
     size_t sleepingIslands = 0;
     size_t sleepingBodies = 0;
 };
