@@ -13,6 +13,7 @@
 
 #include "joint.h"
 #include "grab_joint.h"
+#include "revolute_joint.h"
 
 #include "aabb.h"
 #include "aabbtree.h"

@@ -271,18 +271,32 @@ void Game::Render()
 
         if (typeid(*j) == typeid(GrabJoint))
         {
-            RigidBody* ba = j->GetBodyA();
-
-            glPointSize(5.0f);
-
+            RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
 
-            const glm::vec2& anchor = j->GetBodyA()->LocalToGlobal() * gj->GetLocalAnchor();
+            const glm::vec2& anchor = b->LocalToGlobal() * gj->GetLocalAnchor();
             points.push_back(anchor);
             points.push_back(gj->GetTarget());
 
             lines.push_back(anchor);
             lines.push_back(gj->GetTarget());
+        }
+        else if(typeid(*j) == typeid(RevoluteJoint))
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
+
+            const glm::vec2& anchorA = ba->LocalToGlobal() * rj->GetLocalAnchorA();
+            const glm::vec2& anchorB = bb->LocalToGlobal() * rj->GetLocalAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(anchorB);
+
+            lines.push_back(anchorA);
+            lines.push_back(ba->position);
+            lines.push_back(anchorB);
+            lines.push_back(bb->position);
         }
     }
 

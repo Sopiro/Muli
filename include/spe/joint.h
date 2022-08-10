@@ -62,7 +62,7 @@ public:
     bool IsSolid() const;
 
 private:
-    int32_t id{ -1 };
+    uint32_t id{ 0 };
     
     float frequency;
     float dampingRatio;

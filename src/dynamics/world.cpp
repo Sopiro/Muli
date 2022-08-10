@@ -406,12 +406,30 @@ GrabJoint* World::CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 t
 	gj->id = ++uid;
 
 	joints.push_back(gj);
-	gj->bodyA->jointIDs.push_back(gj->id);
+	body->jointIDs.push_back(gj->id);
 
 	jointMap.insert({ gj->id, gj });
 
 	return gj;
 }
+
+RevoluteJoint* World::CreateRevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchor, float frequency, float dampingRatio, float jointMass)
+{
+	if (bodyA->world != this || bodyB->world != this)
+		throw std::exception("You should register the rigid bodies before registering the joint");
+	
+	RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
+	rj->id = ++uid;
+
+	joints.push_back(rj);
+	bodyA->jointIDs.push_back(rj->id);
+	bodyB->jointIDs.push_back(rj->id);
+
+	jointMap.insert({ rj->id, rj });
+
+	return rj;
+}
+
 
 void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
 {

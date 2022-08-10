@@ -24,6 +24,7 @@ class RigidBody : public Entity
     friend class Island;
     friend class Joint;
     friend class GrabJoint;
+    friend class RevoluteJoint;
 
 public:
     RigidBody(BodyType _type);

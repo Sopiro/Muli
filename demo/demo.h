@@ -57,6 +57,18 @@ static void demo3(World& world, Settings& settings)
     }
 }
 
+static void demo4(World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, Static);
+    ground->SetRestitution(0.45f);
+
+    Box* b = world.CreateBox(0.3f);
+    b->position = glm::vec2(-3.0f, 5.0f);
+
+    world.CreateRevoluteJoint(ground, b, glm::vec2(0.0f, 5.0f), -1.0f);
+}
+
 std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
@@ -65,6 +77,7 @@ std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_
     demos.push_back({ "Single Box", demo1 });
     demos.push_back({ "Box stacking", demo2 });
     demos.push_back({ "Pyramid", demo3 });
+    demos.push_back({ "Single pendulum", demo4 });
 
     return demos;
 }

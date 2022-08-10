@@ -1,27 +1,29 @@
 set(SOURCE_FILES
-    entity.cpp
+    dynamics/entity.cpp
+    dynamics/world.cpp
+    dynamics/island.cpp
 
-    physics/world.cpp
+    dynamics/rigidbody.cpp
+    dynamics/polygon.cpp
+    dynamics/circle.cpp
+    dynamics/box.cpp
+    dynamics/util.cpp
 
-    physics/rigidbody.cpp
-    physics/polygon.cpp
-    physics/circle.cpp
-    physics/box.cpp
-    physics/util.cpp
-    physics/aabb.cpp
-    physics/aabbtree.cpp
-    physics/detection.cpp
-    physics/simplex.cpp
-    physics/polytope.cpp
-    physics/edge.cpp
+    collision/aabb.cpp
+    collision/aabbtree.cpp
+    collision/detection.cpp
+    collision/simplex.cpp
+    collision/polytope.cpp
+    collision/edge.cpp
 
-    physics/constraint.cpp
-    physics/contact_constraint.cpp
-    physics/contact_solver.cpp
-    physics/block_solver.cpp
-    physics/island.cpp
-    physics/joint.cpp
-    physics/grab_joint.cpp
+    constraint/constraint.cpp
+    constraint/contact/contact_constraint.cpp
+    constraint/contact/contact_solver.cpp
+    constraint/contact/block_solver.cpp
+
+    constraint/joint/joint.cpp
+    constraint/joint/grab_joint.cpp
+    constraint/joint/revolute_joint.cpp
 )
 
 add_library(spe ${SOURCE_FILES})
