@@ -21,15 +21,42 @@ public:
     Entity(Entity&&) noexcept = default;
     Entity& operator=(Entity&&) noexcept = default;
 
-    void ResetTransform();
-    void Translate(const glm::vec2& t);
-    void Rotate(float r);
-    void Scale(const glm::vec2& s);
+    inline void ResetTransform()
+    {
+        position.x = 0.0f;
+        position.y = 0.0f;
+        rotation = 0.0f;
+        scale.x = 1.0f;
+        scale.y = 1.0f;
+    }
+
+    inline void Translate(const glm::vec2& t)
+    {
+        position.x += t.x;
+        position.y += t.y;
+    }
+
+    inline void Rotate(float r)
+    {
+        rotation += r;
+    }
+
+    inline void Scale(const glm::vec2& s)
+    {
+        scale.x *= s.x;
+        scale.y *= s.y;
+    }
 
     // Returns local to global transform
-    glm::mat3 LocalToGlobal() const;
+    inline glm::mat3 LocalToGlobal() const
+    {
+        return glm::scale(glm::rotate(glm::translate(glm::mat3{ 1.0f }, position), rotation), scale);
+    }
 
     // Returns global to local transform
-    glm::mat3 GlobalToLocal() const;
+    inline glm::mat3 GlobalToLocal() const
+    {
+        return glm::translate(glm::rotate(glm::scale(glm::mat3{ 1.0f }, 1.0f / scale), -rotation), -position);
+    }
 };
 }

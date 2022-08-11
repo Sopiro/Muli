@@ -30,13 +30,13 @@ void RevoluteJoint::Prepare()
     glm::mat2 k{ 1.0f };
 
     k[0][0] = bodyA->invMass + bodyB->invMass +
-                bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
+        bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
 
     k[1][0] = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
     k[0][1] = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
 
     k[1][1] = bodyA->invMass + bodyB->invMass +
-                bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+        bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
 
     k[0][0] += gamma;
     k[1][1] += gamma;
@@ -64,7 +64,7 @@ void RevoluteJoint::Solve()
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
     glm::vec2 jv = (bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb))
-                    - (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra));
+        - (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra));
 
     // You don't have to clamp the impulse. It's equality constraint!
     glm::vec2 lambda = m * -(jv + bias + impulseSum * gamma);

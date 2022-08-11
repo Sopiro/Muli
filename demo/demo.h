@@ -69,6 +69,48 @@ static void demo4(World& world, Settings& settings)
     world.CreateRevoluteJoint(ground, b, glm::vec2(0.0f, 5.0f), -1.0f);
 }
 
+static void demo5(World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = false;
+
+    Box* g = world.CreateBox(0.3f, 6, Static);
+    g->position.y = 3.6f;
+
+    Box* b = world.CreateBox(0.3f);
+    b->position.x = 3.0f;
+    b->position.y = 3.6f + 2.0f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 1.0f, 0.05f, b->GetMass());
+
+    b = world.CreateBox(0.3f);
+    b->position.x = 3.0f;
+    b->position.y = 3.6f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 1.0f, 0.2f, b->GetMass());
+
+    b = world.CreateBox(0.3f);
+    b->position.x = 3.0f;
+    b->position.y = 3.6f - 2.0f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 1.0f, 0.7f, b->GetMass());
+
+    b = world.CreateBox(0.3f);
+    b->position.x = -3.0f;
+    b->position.y = 3.6f + 2.0f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 0.5f, 0.2f, b->GetMass());
+
+    // Reduce the amplitude by half every second
+    float halfLife = 1.0f;
+    float frequency = -glm::log(0.5f) / (halfLife * glm::pi<float>() * 2.0f);
+
+    b = world.CreateBox(0.3f);
+    b->position.x = -3.0f;
+    b->position.y = 3.6f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, frequency, 1.0f, b->GetMass());
+
+    b = world.CreateBox(0.3f);
+    b->position.x = -3.0f;
+    b->position.y = 3.6f - 2.0f;
+    world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 2.0f, 0.01f, b->GetMass());
+}
+
 std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
@@ -78,6 +120,7 @@ std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_
     demos.push_back({ "Box stacking", demo2 });
     demos.push_back({ "Pyramid", demo3 });
     demos.push_back({ "Single pendulum", demo4 });
+    demos.push_back({ "Springs", demo5 });
 
     return demos;
 }

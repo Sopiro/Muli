@@ -24,6 +24,7 @@ set(SOURCE_FILES
     constraint/joint/joint.cpp
     constraint/joint/grab_joint.cpp
     constraint/joint/revolute_joint.cpp
+    constraint/joint/distance_joint.cpp
 )
 
 add_library(spe ${SOURCE_FILES})

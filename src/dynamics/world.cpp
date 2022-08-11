@@ -31,6 +31,7 @@ void World::Update(float dt)
 		b->manifoldIDs.clear();
 
 		if (b->sleeping) continue;
+		if (b->type == Static) b->sleeping = true;
 
 		Node* node = b->node;
 		AABB tightAABB = create_AABB(b, 0.0f);
@@ -417,7 +418,7 @@ RevoluteJoint* World::CreateRevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, gl
 {
 	if (bodyA->world != this || bodyB->world != this)
 		throw std::exception("You should register the rigid bodies before registering the joint");
-	
+
 	RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
 	rj->id = ++uid;
 
@@ -430,6 +431,27 @@ RevoluteJoint* World::CreateRevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, gl
 	return rj;
 }
 
+DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchorA, glm::vec2 anchorB, float length, float frequency, float dampingRatio, float jointMass)
+{
+	if (bodyA->world != this || bodyB->world != this)
+		throw std::exception("You should register the rigid bodies before registering the joint");
+
+	DistanceJoint* dj = new DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
+	dj->id = ++uid;
+
+	joints.push_back(dj);
+	bodyA->jointIDs.push_back(dj->id);
+	bodyB->jointIDs.push_back(dj->id);
+
+	jointMap.insert({ dj->id, dj });
+
+	return dj;
+}
+
+DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass)
+{
+	return CreateDistanceJoint(bodyA, bodyB, bodyA->position, bodyB->position, length, frequency, dampingRatio, jointMass);
+}
 
 void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
 {
@@ -443,4 +465,11 @@ void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)
 	passTestSet.erase(make_pair_natural(bodyB->id, bodyA->id));
 }
 
+void World::Awake()
+{
+	for (RigidBody* b : bodies)
+	{
+		b->Awake();
+	}
+}
 }

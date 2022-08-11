@@ -204,7 +204,7 @@ void Game::HandleInput()
                 ImGui::Checkbox("Show BVH", &showBVH);
                 ImGui::Checkbox("Show Contact point", &showCP);
                 ImGui::Separator();
-                ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY);
+                if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
                 ImGui::SliderInt("Solve iteration", &settings.SOLVE_ITERATION, 1, 50);
 
                 ImGui::Separator();
@@ -281,7 +281,7 @@ void Game::Render()
             lines.push_back(anchor);
             lines.push_back(gj->GetTarget());
         }
-        else if(typeid(*j) == typeid(RevoluteJoint))
+        else if (typeid(*j) == typeid(RevoluteJoint))
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -297,6 +297,21 @@ void Game::Render()
             lines.push_back(ba->position);
             lines.push_back(anchorB);
             lines.push_back(bb->position);
+        }
+        else if (typeid(*j) == typeid(DistanceJoint))
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            DistanceJoint* dj = static_cast<DistanceJoint*>(j);
+
+            const glm::vec2& anchorA = ba->LocalToGlobal() * dj->GetLocalAnchorA();
+            const glm::vec2& anchorB = bb->LocalToGlobal() * dj->GetLocalAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(anchorB);
+
+            lines.push_back(anchorA);
+            lines.push_back(anchorB);
         }
     }
 

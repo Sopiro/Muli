@@ -14,7 +14,6 @@ RigidBody::RigidBody(BodyType _type) :
         invMass = 0.0f;
         inertia = FLT_MAX;
         invInertia = 0.0f;
-        sleeping = true;
     }
     else
     {
@@ -84,8 +83,6 @@ const Node* RigidBody::GetNode() const
 
 void RigidBody::Awake()
 {
-    if (type == Static) return;
-
     resting = 0.0f;
     sleeping = false;
 }

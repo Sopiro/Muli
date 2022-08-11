@@ -78,4 +78,11 @@ GLM_FUNC_QUALIFIER std::string operator*(vec<2, T, Q>& v)
 {
     return glm::to_string(v);
 }
+
+// to string
+template<class matType>
+GLM_FUNC_QUALIFIER std::string operator*(const matType& m)
+{
+    return glm::to_string(m);
+}
 }

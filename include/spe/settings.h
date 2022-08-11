@@ -12,7 +12,7 @@ namespace spe
 // Default joint settings
 #define DEFAULT_FREQUENCY 15.0
 #define DEFAULT_DAMPING_RATIO 1.0
-#define DEFAULT_JOINT_MASS -1.0
+#define DEFAULT_JOINT_MASS 1.0
 
 // Collision detection settings
 #define GJK_MAX_ITERATION 20
