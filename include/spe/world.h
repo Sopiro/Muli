@@ -71,6 +71,8 @@ public:
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(std::vector<glm::vec2> vertices, BodyType type = Dynamic, bool resetPosition = true, float density = DEFAULT_DENSITY);
+    Polygon* CreateRandomConvexPolygon(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
+    Polygon* CreateRegularPolygon(float radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
 
     GrabJoint* CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);
 

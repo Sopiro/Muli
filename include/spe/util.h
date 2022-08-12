@@ -12,8 +12,6 @@ struct uv
 
 namespace spe
 {
-class Polygon;
-
 float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area);
 
 inline float calculate_box_inertia(float width, float height, float mass)
@@ -81,14 +79,9 @@ inline glm::vec2 mid(glm::vec2 a, glm::vec2 b)
     return (a + b) / 2.0f;
 }
 
-Polygon* create_random_convex_body(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
-
-Polygon* create_regular_polygon(float radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
-
 std::vector<std::pair<RigidBody*, RigidBody*>> get_collision_pair_n2(const std::vector<RigidBody*>& bodies);
 
 // https://gist.github.com/ciembor/1494530
-
 /*
  * Converts an RGB color value to HSL. Conversion formula
  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.

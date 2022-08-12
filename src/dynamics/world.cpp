@@ -31,7 +31,7 @@ void World::Update(float dt)
 		b->manifoldIDs.clear();
 
 		if (b->sleeping) continue;
-		if (b->type == Static) b->sleeping = true;
+		if (b->type == BodyType::Static) b->sleeping = true;
 
 		Node* node = b->node;
 		AABB tightAABB = create_AABB(b, 0.0f);
@@ -66,7 +66,7 @@ void World::Update(float dt)
 			b = pair.first;
 		}
 
-		if (a->type == Static && b->type == Static)
+		if (a->type == BodyType::Static && b->type == BodyType::Static)
 			continue;
 
 		uint32_t key = make_pair_natural(a->id, b->id);
@@ -113,7 +113,7 @@ void World::Update(float dt)
 	{
 		RigidBody* b = bodies[i];
 
-		if (b->type == Static || (visited.find(b->id) != visited.end()))
+		if (b->type == BodyType::Static || (visited.find(b->id) != visited.end()))
 			continue;
 
 		stack = std::stack<RigidBody*>();
@@ -125,7 +125,7 @@ void World::Update(float dt)
 			RigidBody* t = stack.top();
 			stack.pop();
 
-			if (t->type == Static || (visited.find(t->id) != visited.end()))
+			if (t->type == BodyType::Static || (visited.find(t->id) != visited.end()))
 				continue;
 
 			visited.insert(t->id);
@@ -394,6 +394,62 @@ Circle* World::CreateCircle(float radius, BodyType type, float density)
 spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, BodyType type, bool resetPosition, float density)
 {
 	Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
+	Add(p);
+	return p;
+}
+
+Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, float density)
+{
+	if (num_vertices < 3)
+		num_vertices = glm::linearRand<uint32_t>(3, 8);
+
+	std::vector<float> angles{};
+	angles.reserve(num_vertices);
+
+	for (size_t i = 0; i < num_vertices; i++)
+	{
+		angles.push_back(glm::linearRand<float>(0.0f, 1.0f) * glm::pi<float>() * 2.0f);
+	}
+
+	std::sort(angles.begin(), angles.end());
+
+	std::vector<glm::vec2> vertices{};
+	vertices.reserve(num_vertices);
+
+	for (size_t i = 0; i < num_vertices; i++)
+	{
+		vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
+	}
+
+	Polygon* p = new Polygon(vertices, Dynamic, true, density);
+	Add(p);
+	return p;
+}
+
+Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float initial_angle, float density)
+{
+	if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
+
+	float angleStart = initial_angle;
+	float angle = glm::pi<float>() * 2.0f / num_vertices;
+
+	if (num_vertices % 2 == 0)
+		angleStart += angle / 2.0f;
+
+	std::vector<glm::vec2> vertices;
+	vertices.reserve(num_vertices);
+
+	for (size_t i = 0; i < num_vertices; i++)
+	{
+		float currentAngle = angleStart + angle * i;
+
+		glm::vec2 corner = glm::vec2{ glm::cos(currentAngle), glm::sin(currentAngle) };
+		corner *= radius * glm::sqrt(2);
+
+		vertices.push_back(corner);
+	}
+
+	Polygon* p = new Polygon(vertices, Dynamic, true, density);
 	Add(p);
 	return p;
 }

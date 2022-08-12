@@ -42,59 +42,6 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
     return inertia;
 }
 
-spe::Polygon* spe::create_random_convex_body(float radius, uint32_t num_vertices, float density)
-{
-    if (num_vertices < 3)
-        num_vertices = glm::linearRand<uint32_t>(3, 8);
-
-    std::vector<float> angles{};
-    angles.reserve(num_vertices);
-
-    for (size_t i = 0; i < num_vertices; i++)
-    {
-        angles.push_back(glm::linearRand<float>(0.0f, 1.0f) * glm::pi<float>() * 2.0f);
-    }
-
-    std::sort(angles.begin(), angles.end());
-
-    std::vector<glm::vec2> vertices{};
-    vertices.reserve(num_vertices);
-
-    for (size_t i = 0; i < num_vertices; i++)
-    {
-        vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
-    }
-
-    return new Polygon(vertices, Dynamic, true, density);
-}
-
-spe::Polygon* spe::create_regular_polygon(float radius, uint32_t num_vertices, float initial_angle, float density)
-{
-    if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
-
-    float angleStart = initial_angle;
-    float angle = glm::pi<float>() * 2.0f / num_vertices;
-
-    if (num_vertices % 2 == 0)
-        angleStart += angle / 2.0f;
-
-    std::vector<glm::vec2> vertices;
-    vertices.reserve(num_vertices);
-
-    for (size_t i = 0; i < num_vertices; i++)
-    {
-        float currentAngle = angleStart + angle * i;
-
-        glm::vec2 corner = glm::vec2{ glm::cos(currentAngle), glm::sin(currentAngle) };
-        corner *= radius * glm::sqrt(2);
-
-        vertices.push_back(corner);
-    }
-
-    return new Polygon(vertices, Dynamic, true, density);
-}
-
-
 std::vector<std::pair<RigidBody*, RigidBody*>> spe::get_collision_pair_n2(const std::vector<RigidBody*>& bodies)
 {
     std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
