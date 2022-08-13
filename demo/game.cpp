@@ -82,6 +82,10 @@ void Game::HandleInput()
             if (q.size() != 0)
             {
                 gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f);
+                gj->OnDestroy = [&](Joint* me) -> void
+                {
+                    gj = nullptr;
+                };
             }
             else
             {

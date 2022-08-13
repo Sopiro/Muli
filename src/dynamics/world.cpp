@@ -7,20 +7,12 @@ namespace spe
 World::World(const Settings& simulationSettings) :
 	settings{ simulationSettings }
 {
-	bodies.reserve(256);
+	bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
 }
 
 World::~World() noexcept
 {
-	for (RigidBody* body : bodies)
-	{
-		delete body;
-	}
-
-	for (Joint* joint : joints)
-	{
-		delete joint;
-	}
+	Reset();
 }
 
 void World::Update(float dt)
@@ -189,7 +181,10 @@ void World::Update(float dt)
 void World::Reset()
 {
 	uid = 0;
-	tree.Reset();
+
+	for (RigidBody* body : bodies) delete body;
+	for (Joint* joint : joints) delete joint;
+
 	bodies.clear();
 	pairs.clear();
 
@@ -202,6 +197,8 @@ void World::Reset()
 	jointMap.clear();
 
 	passTestSet.clear();
+
+	tree.Reset();
 }
 
 void World::Add(RigidBody* body)
@@ -528,4 +525,5 @@ void World::Awake()
 		b->Awake();
 	}
 }
+
 }

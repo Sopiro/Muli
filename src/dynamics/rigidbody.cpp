@@ -24,7 +24,6 @@ RigidBody::RigidBody(BodyType _type) :
 RigidBody::~RigidBody()
 {
     if (moved) return;
-
     if (OnDestroy != nullptr) OnDestroy(this);
 }
 
@@ -39,7 +38,8 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
 
     _other.moved = true;
 
-    //private member
+    // private member
+    world = _other.world;
     id = _other.id;
     islandID = _other.islandID;
 
@@ -52,7 +52,7 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     node = _other.node;
     _other.node = nullptr;
 
-    //protected member
+    // protected member
     force = _other.force;
     torque = _other.torque;
 
@@ -70,6 +70,9 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     surfaceSpeed = _other.surfaceSpeed;
 
     type = _other.type;
+
+    // public member
+    OnDestroy = std::move(_other.OnDestroy);
 
     Entity::operator=(std::move(_other));
 

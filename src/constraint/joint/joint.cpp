@@ -12,8 +12,14 @@ Joint::Joint(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings,
     SetProperties(_frequency, _dampingRatio, _jointMass);
 }
 
+Joint::~Joint()
+{
+    if (OnDestroy != nullptr) OnDestroy(this);
+}
+
 void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMass)
 {
+    // If the frequency is less than or equal to zero, make this joint solid
     if (_frequency > 0.0f)
     {
         frequency = _frequency;
@@ -24,7 +30,6 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
     }
     else
     {
-        // If the frequency is less than or equal to zero, make this joint solid
         frequency = -1.0f;
         dampingRatio = 0.0f;
         jointMass = 0.0f;
