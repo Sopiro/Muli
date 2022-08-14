@@ -14,7 +14,8 @@ ExternalProject_Add(
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     TEST_COMMAND ""
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
+    CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
 )
 
 # glm: math library
@@ -28,7 +29,8 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     TEST_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
+    INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
     ${PROJECT_BINARY_DIR}/dep_glm-prefix/src/dep_glm/glm
     ${DEP_INSTALL_DIR}/include/glm
 )

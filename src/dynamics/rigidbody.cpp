@@ -24,6 +24,10 @@ RigidBody::RigidBody(BodyType _type) :
 RigidBody::~RigidBody()
 {
     if (moved) return;
+
+    world = nullptr;
+    id = 0;
+
     if (OnDestroy != nullptr) OnDestroy(this);
 }
 
