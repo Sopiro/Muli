@@ -1,4 +1,4 @@
-#include "rendering/mesh.h"
+#include "mesh.h"
 #include "common.h"
 
 namespace spe

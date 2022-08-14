@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../common.h"
+#include "common.h"
 #include "renderer.h"
 #include "rigidbody_shader.h"
 #include "mesh.h"

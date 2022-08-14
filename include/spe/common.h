@@ -1,9 +1,6 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
-#include <spdlog/stopwatch.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// glm
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
@@ -11,7 +8,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/norm.hpp>
-#include <imgui.h>
 
 // stds
 #include <string>
@@ -29,6 +25,8 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
+#include <functional>
+#include <array>
 
 // Some useful operator overloading for glm containers
 namespace glm

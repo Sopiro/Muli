@@ -1,24 +1,25 @@
 set(DEMO_SOURCE_FILES
-    main.cpp
-    window.cpp
-    application.cpp
-    input.cpp
-    game.cpp
-    camera.cpp
-    util.cpp
+    src/main.cpp
+    src/window.cpp
+    src/application.cpp
+    src/input.cpp
+    src/game.cpp
+    src/camera.cpp
+    src/util.cpp
 
-    rendering/shader.cpp
-    rendering/rigidbody_shader.cpp
-    rendering/rigidbody_renderer.cpp
-    rendering/mesh.cpp
-    rendering/dynamic_shader.cpp
-    rendering/dynamic_renderer.cpp
+    src/rendering/shader.cpp
+    src/rendering/rigidbody_shader.cpp
+    src/rendering/rigidbody_renderer.cpp
+    src/rendering/mesh.cpp
+    src/rendering/dynamic_shader.cpp
+    src/rendering/dynamic_renderer.cpp
 )
 
 add_executable(demo ${DEMO_SOURCE_FILES})
 
 target_include_directories(demo PUBLIC
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_link_directories(demo PUBLIC ${DEP_LIB_DIR})

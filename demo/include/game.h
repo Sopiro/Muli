@@ -3,8 +3,8 @@
 #include "common.h"
 #include "input.h"
 #include "camera.h"
-#include "rendering/rigidbody_renderer.h"
-#include "rendering/dynamic_renderer.h"
+#include "rigidbody_renderer.h"
+#include "dynamic_renderer.h"
 
 namespace spe
 {

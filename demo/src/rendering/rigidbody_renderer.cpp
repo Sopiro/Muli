@@ -1,7 +1,7 @@
 #include "rigidbody_renderer.h"
 #include "spe/util.h"
-#include "../window.h"
-#include "../util.h"
+#include "window.h"
+#include "util.h"
 
 namespace spe
 {

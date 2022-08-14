@@ -23,6 +23,11 @@ if(BUILD_DEMO_PROJECT)
 
     add_subdirectory(demo)
     target_compile_options(demo PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
+    target_compile_definitions(demo PUBLIC
+        WINDOW_TITLE="${WINDOW_TITLE}"
+        WINDOW_WIDTH=${WINDOW_WIDTH}
+        WINDOW_HEIGHT=${WINDOW_HEIGHT}
+    )
 
     # default startup project for Visual Studio
     if(MSVC)
@@ -30,14 +35,3 @@ if(BUILD_DEMO_PROJECT)
         set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/demo")
     endif()
 endif()
-
-target_compile_definitions(demo PUBLIC
-    WINDOW_TITLE="${WINDOW_TITLE}"
-    WINDOW_WIDTH=${WINDOW_WIDTH}
-    WINDOW_HEIGHT=${WINDOW_HEIGHT}
-)
-
-install(
-    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/spe"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
