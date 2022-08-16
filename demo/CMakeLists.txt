@@ -1,3 +1,7 @@
+set(WINDOW_TITLE "SPE Demo")
+set(WINDOW_WIDTH 1280)
+set(WINDOW_HEIGHT 720)
+
 set(DEMO_SOURCE_FILES
     src/main.cpp
     src/window.cpp
@@ -16,9 +20,15 @@ set(DEMO_SOURCE_FILES
 )
 
 add_executable(demo ${DEMO_SOURCE_FILES})
+target_compile_definitions(demo PUBLIC
+    WINDOW_TITLE="${WINDOW_TITLE}"
+    WINDOW_WIDTH=${WINDOW_WIDTH}
+    WINDOW_HEIGHT=${WINDOW_HEIGHT}
+)
+target_compile_options(demo PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
 
 target_include_directories(demo PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 

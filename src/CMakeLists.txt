@@ -28,13 +28,17 @@ set(SOURCE_FILES
 )
 
 add_library(spe ${SOURCE_FILES})
+target_compile_options(spe PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
 
-target_include_directories(spe PUBLIC
+target_include_directories(spe
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${DEP_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/include
 )
 
-target_link_directories(spe PUBLIC ${DEP_LIB_DIR})
-target_link_libraries(spe PUBLIC ${DEP_LIBS})
-
-add_dependencies(spe ${DEP_LIST})
+install(
+    TARGETS spe
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

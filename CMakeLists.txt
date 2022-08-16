@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(spe)
+project(spe LANGUAGES CXX VERSION 0.0.1)
 
 # Variables
 set(CMAKE_CXX_STANDARD 17)
@@ -11,23 +11,14 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
+include(GNUInstallDirs)
+
 include(Dependency.cmake)
 
 add_subdirectory(src)
-target_compile_options(spe PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
 
 if(BUILD_DEMO_PROJECT)
-    set(WINDOW_TITLE "SPE Demo")
-    set(WINDOW_WIDTH 1280)
-    set(WINDOW_HEIGHT 720)
-
     add_subdirectory(demo)
-    target_compile_options(demo PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
-    target_compile_definitions(demo PUBLIC
-        WINDOW_TITLE="${WINDOW_TITLE}"
-        WINDOW_WIDTH=${WINDOW_WIDTH}
-        WINDOW_HEIGHT=${WINDOW_HEIGHT}
-    )
 
     # default startup project for Visual Studio
     if(MSVC)
@@ -35,3 +26,13 @@ if(BUILD_DEMO_PROJECT)
         set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/demo")
     endif()
 endif()
+
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/spe"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install/include/glm"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

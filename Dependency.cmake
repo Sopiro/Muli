@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 # variables
-set(DEP_INSTALL_DIR ${PROJECT_BINARY_DIR}/install)
+set(DEP_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/install)
 set(DEP_INCLUDE_DIR ${DEP_INSTALL_DIR}/include)
 set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
 
@@ -18,12 +18,8 @@ ExternalProject_Add(
     TEST_COMMAND ""
     INSTALL_COMMAND
     ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_BINARY_DIR}/dep_glm-prefix/src/dep_glm/glm
-    ${DEP_INSTALL_DIR}/include/glm
-)
-
-set(DEP_LIST
-    dep_glm
+    ${CMAKE_CURRENT_BINARY_DIR}/dep_glm-prefix/src/dep_glm/glm
+    ${DEP_INCLUDE_DIR}/glm
 )
 
 # demo project dependencies
@@ -39,6 +35,8 @@ if(BUILD_DEMO_PROJECT)
         TEST_COMMAND ""
         CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DSPDLOG_BUILD_EXAMPLE=OFF
     )
 
     # glfw: cross-platform window support
@@ -51,6 +49,7 @@ if(BUILD_DEMO_PROJECT)
         PATCH_COMMAND ""
         TEST_COMMAND ""
         CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
         -DGLFW_BUILD_EXAMPLES=OFF
         -DGLFW_BUILD_TESTS=OFF
@@ -67,6 +66,7 @@ if(BUILD_DEMO_PROJECT)
         PATCH_COMMAND ""
         TEST_COMMAND ""
         CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
         -DGLAD_INSTALL=ON
     )
@@ -92,7 +92,7 @@ if(BUILD_DEMO_PROJECT)
     )
 
     set(DEP_LIBS_DEMO
-        spdlog
+        spdlog$<$<CONFIG:Debug>:d>
         glfw3
         glad
         dep_imgui
