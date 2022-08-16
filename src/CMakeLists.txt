@@ -32,13 +32,34 @@ target_compile_options(spe PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
 
 target_include_directories(spe
     PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
     ${DEP_INCLUDE_DIR}
 )
 
 install(
     TARGETS spe
+    EXPORT speConfig
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(
+    EXPORT speConfig
+    NAMESPACE spe::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/spe"
+)
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/spe"
 )

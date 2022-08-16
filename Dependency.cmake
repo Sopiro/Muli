@@ -81,7 +81,6 @@ if(BUILD_DEMO_PROJECT)
         extern/imgui/imgui_impl_opengl3.cpp
         extern/imgui/imgui_demo.cpp
     )
-    set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/extern/imgui)
 
     set(DEP_LIST_DEMO
         dep_spdlog

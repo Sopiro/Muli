@@ -27,12 +27,14 @@ if(BUILD_DEMO_PROJECT)
     endif()
 endif()
 
+# install glm
 install(
-    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/spe"
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install/include/glm"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+# install spe
 install(
-    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install/include/glm"
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/spe"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

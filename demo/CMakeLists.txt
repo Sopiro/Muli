@@ -27,12 +27,14 @@ target_compile_definitions(demo PUBLIC
 )
 target_compile_options(demo PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
 
-target_include_directories(demo PUBLIC
+target_include_directories(demo PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../extern/imgui
+    ${DEP_INCLUDE_DIR}
 )
 
-target_link_directories(demo PUBLIC ${DEP_LIB_DIR})
-target_link_libraries(demo PUBLIC ${DEP_LIBS_DEMO} spe)
+target_link_directories(demo PRIVATE ${DEP_LIB_DIR})
+target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} spe)
 
 add_dependencies(demo ${DEP_LIST_DEMO} spe)
