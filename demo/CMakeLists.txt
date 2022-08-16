@@ -25,7 +25,7 @@ target_compile_definitions(demo PUBLIC
     WINDOW_WIDTH=${WINDOW_WIDTH}
     WINDOW_HEIGHT=${WINDOW_HEIGHT}
 )
-target_compile_options(demo PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
+target_compile_options(demo PUBLIC /wd4819 /wd4996)
 
 target_include_directories(demo PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include

@@ -28,7 +28,7 @@ set(SOURCE_FILES
 )
 
 add_library(spe ${SOURCE_FILES})
-target_compile_options(spe PUBLIC /wd4566 /wd4819 /wd4251 /wd4244 /wd4267)
+target_compile_options(spe PUBLIC /wd4819 /wd4996)
 
 target_include_directories(spe
     PUBLIC
@@ -49,17 +49,17 @@ install(
 install(
     EXPORT speConfig
     NAMESPACE spe::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/spe"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spe
 )
 
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake"
+    ${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
 )
 
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/spe"
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spe
 )
