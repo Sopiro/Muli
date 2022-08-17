@@ -59,7 +59,7 @@ GLM_FUNC_QUALIFIER float cross(vec<2, T, Q> const& v1, vec<2, T, Q> const& v2)
 template<typename T, qualifier Q>
 GLM_FUNC_QUALIFIER vec<2, T, Q> cross(float s, vec<2, T, Q> const& v)
 {
-    return typename vec<2, T, Q>{ -s * v.y, s* v.x };
+    return vec<2, T, Q>{ -s * v.y, s* v.x };
 }
 
 // clear vec2
