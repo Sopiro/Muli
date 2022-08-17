@@ -46,4 +46,5 @@ private:
 
     void ApplyImpulse(float lambda);
 };
+
 }

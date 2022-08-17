@@ -4,7 +4,7 @@
 
 namespace spe
 {
-static void demo1(World& world, Settings& settings)
+static void demo1(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -14,7 +14,7 @@ static void demo1(World& world, Settings& settings)
     box->SetAngularVelocity(glm::linearRand(-12.0f, 12.0f));
 }
 
-static void demo2(World& world, Settings& settings)
+static void demo2(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -34,7 +34,7 @@ static void demo2(World& world, Settings& settings)
     }
 }
 
-static void demo3(World& world, Settings& settings)
+static void demo3(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -57,7 +57,7 @@ static void demo3(World& world, Settings& settings)
     }
 }
 
-static void demo4(World& world, Settings& settings)
+static void demo4(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -69,7 +69,7 @@ static void demo4(World& world, Settings& settings)
     world.CreateRevoluteJoint(ground, b, glm::vec2(0.0f, 5.0f), -1.0f);
 }
 
-static void demo5(World& world, Settings& settings)
+static void demo5(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
@@ -111,7 +111,7 @@ static void demo5(World& world, Settings& settings)
     world.CreateDistanceJoint(g, b, { 0.0f, b->position.y }, b->position, 2.0f, 2.0f, 0.01f, b->GetMass());
 }
 
-static void demo6(World& world, Settings& settings)
+static void demo6(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -142,7 +142,7 @@ static void demo6(World& world, Settings& settings)
     pillar->position = { -(xStart - 0.2f), 3.0f };
 }
 
-static void demo7(World& world, Settings& settings)
+static void demo7(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
@@ -155,22 +155,222 @@ static void demo7(World& world, Settings& settings)
     world.CreateRevoluteJoint(ground, seesaw, seesaw->position, -1);
 
     RigidBody* b = world.CreateCircle(0.2f);
-    b->position = {-2.5f, 1.0f};
+    b->position = { -2.5f, 1.0f };
 
     b = world.CreateBox(0.2f);
-    b->position = {-2.8f, 1.0f};
+    b->position = { -2.8f, 1.0f };
     b->SetMass(1.0f);
 
     b = world.CreateBox(0.5f);
-    b->position = {2.5f, 5.0f};
+    b->position = { 2.5f, 5.0f };
     b->SetMass(30.0f);
 }
 
-std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_demos()
+static void demo8(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    ground->SetRestitution(0.45f);
+
+    Box* b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    b->position = { -0.6f, 5.0f };
+    b->rotation = -0.15f;
+    b->SetFriction(1.0f);
+
+    b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    b->position = { 0.0f, 3.0f };
+    b->rotation = 0.15f;
+    b->SetFriction(1.0f);
+
+    b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    b->position = { -0.6f, 1.0f };
+    b->rotation = -0.15f;
+    b->SetFriction(1.0f);
+
+
+    b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
+    b->position = { 3.1f, 4.3f };
+    b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
+    b->position = { -3.7f, 2.3f };
+
+    float xStart = -4.5f;
+    float yStart = 7.0f;
+    float gap = 0.30f;
+    float size = 0.30f;
+
+    std::array<float, 5> frictions = { 0.51f, 0.31f, 0.21f, 0.11f, 0.0f };
+
+    for (size_t i = 0; i < frictions.size(); i++)
+    {
+        b = world.CreateBox(size, size);
+        b->position = { xStart + (size + gap) * i, yStart };
+        b->SetFriction(frictions[i]);
+        b->SetLinearVelocity({ 2.0f, 0.0f });
+    }
+}
+
+static void demo9(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    ground->SetRestitution(0.7f);
+
+    int count = 7;
+    float gap = 1.0f;
+    float size = 0.3f;
+
+    float xStart = -(count - 1) / 2 * gap;
+    float yStart = 6.5f;
+
+    for (int i = 0; i < count; i++)
+    {
+        Box* b = world.CreateBox(size);
+        b->position = { xStart + gap * i, yStart };
+        float attenuation = (count - i) / (float)count;
+        b->SetRestitution(1.0f - attenuation * attenuation);
+    }
+}
+
+static void demo10(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    ground->SetRestitution(0.45f);
+
+    float xStart = 0.0f;
+    float yStart = 5.0f;
+    float sizeW = 0.3f;
+    float sizeH = 0.15f;
+    float gap = 0.1f;
+
+    RigidBody* b1 = world.CreateBox(sizeW, sizeH);
+    b1->SetMass(1.0);
+    b1->position = { xStart - (gap + sizeW), yStart };
+
+    Joint* j = world.CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
+
+    bool t = glm::linearRand<float>(0.0f, 1.0f) > 0.5;
+
+    for (int i = 1; i < 12; i++)
+    {
+        RigidBody* b2 = world.CreateBox(sizeW, sizeH);
+        b2->SetMass(1.0f);
+        b2->position = { xStart - (gap + sizeW) * (i + 1), yStart };
+
+        if (t)
+            j = world.CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, 15.0f, 0.5f);
+        else
+            j = world.CreateDistanceJoint(b1, b2, b1->position - glm::vec2{ sizeW / 2, 0 }, b2->position + glm::vec2{ sizeW / 2, 0 });
+
+        b1 = b2;
+    }
+}
+
+static void demo11(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    ground->SetRestitution(0.45f);
+
+    float groundStart = 0.2f;
+
+    float xStart = -5.0f;
+    float yStart = 4.0f;
+    float gap = 0.1f;
+
+    float pillarWidth = 0.3f;
+    float sizeX = 0.5f;
+    float sizeY = sizeX * 0.25f;
+
+    Box* pillar = world.CreateBox(pillarWidth, yStart, BodyType::Static);
+    pillar->position = glm::vec2(xStart, yStart / 2 + 0.2);
+
+    Box* b1 = world.CreateBox(sizeX, sizeY);
+    b1->SetMass(10.0f);
+    b1->position = glm::vec2(xStart + sizeX / 2 + pillarWidth / 2 + gap, yStart + groundStart);
+
+    Joint* j;
+
+    bool revoluteBridge = glm::linearRand<float>(0.0f, 1.0f) > 0.5;
+    float frequency = 30.0f;
+
+    if (revoluteBridge)
+    {
+        j = world.CreateRevoluteJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth, yStart) / 2.0f, frequency, 1.0f);
+    }
+    else
+    {
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(-sizeX / 2, 0.03), -1.0f, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(-sizeX / 2, -0.03), -1.0f, frequency, 1.0f);
+    }
+
+    for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); i++)
+    {
+        Box* b2 = world.CreateBox(sizeX, sizeY);
+        b2->SetMass(10.0f);
+        b2->position = glm::vec2(xStart + sizeX / 2.0f + pillarWidth / 2.0f + gap + (gap + sizeX) * i, yStart + groundStart);
+
+        if (revoluteBridge)
+        {
+            j = world.CreateRevoluteJoint(b1, b2, (b1->position + b2->position) / 2.0f, frequency, 1.0f);
+        }
+        else
+        {
+            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, 0.03f), b2->position + glm::vec2(-sizeX / 2.0f, 0.03f), -1.0f, frequency, 1.0f);
+            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, -0.03f), b2->position + glm::vec2(-sizeX / 2.0f, -0.03f), -1.0f, frequency, 1.0f);
+        }
+
+        b1 = b2;
+    }
+
+    pillar = world.CreateBox(pillarWidth, yStart, BodyType::Static);
+    pillar->position = glm::vec2(-xStart, yStart / 2.0f + 0.2f);
+
+    if (revoluteBridge)
+    {
+        j = world.CreateRevoluteJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth, yStart) / 2.0f, frequency, 1.0f);
+    }
+    else
+    {
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(sizeX / 2, 0.03), -1, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(sizeX / 2, -0.03), -1, frequency, 1.0f);
+    }
+
+    Camera& camera = game.GetCamera();
+    camera.position = glm::vec2{ 0, 3.6f + 1.8f };
+    camera.scale = glm::vec2{ 1.5f, 1.5f };
+}
+
+static void demo12(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    ground->SetRestitution(0.45f);
+
+    float xStart = -3.0f;
+    float yStart = 1.0f;
+    float size = 0.3f;
+    float gap = 0.3f;
+
+    int rows = 10;
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = i; j < rows; j++)
+        {
+            Circle* c = world.CreateCircle(size);
+            c->SetMass((1 + i) + (1 + i) * j + 2.0f);
+            c->position.x = xStart + (gap + size * 2) * i;
+            c->position.y = yStart + (gap + size * 2) * j;
+        }
+    }
+}
+
+std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
+    demos.reserve(12);
 
-    demos.reserve(3);
     demos.push_back({ "Single Box", demo1 });
     demos.push_back({ "Box stacking", demo2 });
     demos.push_back({ "Pyramid", demo3 });
@@ -178,7 +378,13 @@ std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> get_
     demos.push_back({ "Springs", demo5 });
     demos.push_back({ "Random convex shapes", demo6 });
     demos.push_back({ "Seesaw", demo7 });
+    demos.push_back({ "Friction test", demo8 });
+    demos.push_back({ "Restitution test", demo9 });
+    demos.push_back({ "Multi pendulum", demo10 });
+    demos.push_back({ "Suspension bridge", demo11 });
+    demos.push_back({ "Circle stacking", demo12 });
 
     return demos;
 }
+
 }

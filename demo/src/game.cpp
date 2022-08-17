@@ -21,10 +21,11 @@ Game::Game(Application& _app) :
         }
     );
 
-    settings.INV_DT = static_cast<float>(Window::Get().GetRefreshRate());
-    settings.DT = 1.0f / settings.INV_DT;
+    // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
+    simulationDeltaTime = 1.0f / 144.0f;
+    settings.VALID_REGION.min.y = -20.0f;
 
-    world = std::unique_ptr<World>(new World(settings));
+    world = std::make_unique<World>(settings);
 
     demos = get_demos();
     InitSimulation(0);
@@ -45,12 +46,12 @@ void Game::Update(float dt)
         if (step)
         {
             step = false;
-            world->Update(dt);
+            world->Update(simulationDeltaTime);
         }
     }
     else
     {
-        world->Update(dt);
+        world->Update(simulationDeltaTime);
     }
 }
 
@@ -81,7 +82,7 @@ void Game::HandleInput()
 
             if (q.size() != 0)
             {
-                gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f);
+                gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f, 0.5f, q[0]->GetMass());
                 gj->OnDestroy = [&](Joint* me) -> void
                 {
                     gj = nullptr;
@@ -157,8 +158,8 @@ void Game::HandleInput()
     // ImGui::ShowDemoWindow();
 
     // ImGui Windows
-    ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once);
-    ImGui::SetNextWindowSize({ 400, 360 }, ImGuiCond_Once);
+    ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once, { 0.0f, 0.0f });
+    ImGui::SetNextWindowSize({ 240, 360 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -189,6 +190,7 @@ void Game::HandleInput()
                 }
 
                 static int f = Window::Get().GetRefreshRate();
+                ImGui::SetNextItemWidth(120);
                 if (ImGui::SliderInt("Frame rate", &f, 10, 300))
                 {
                     app.SetFrameRate(f);
@@ -199,9 +201,8 @@ void Game::HandleInput()
 
                 ImGui::Separator();
 
-                ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
-
-                ImGui::Separator();
+                // ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
+                // ImGui::Separator();
 
                 ImGui::Checkbox("Camera reset", &resetCamera);
                 ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
@@ -209,6 +210,7 @@ void Game::HandleInput()
                 ImGui::Checkbox("Show Contact point", &showCP);
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
+                ImGui::SetNextItemWidth(120);
                 ImGui::SliderInt("Solve iteration", &settings.SOLVE_ITERATION, 1, 50);
 
                 ImGui::Separator();
@@ -220,7 +222,7 @@ void Game::HandleInput()
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 15 * ImGui::GetTextLineHeightWithSpacing())))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 17 * ImGui::GetTextLineHeightWithSpacing())))
                 {
                     for (size_t i = 0; i < demos.size(); i++)
                     {
@@ -379,7 +381,7 @@ void Game::InitSimulation(size_t demo)
 
     currentDemo = demo;
     demoTitle = demos[currentDemo].first;
-    demos[currentDemo].second(*world, settings);
+    demos[currentDemo].second(*this, *world, settings);
 
     for (RigidBody* b : world->GetBodies())
     {
@@ -396,6 +398,14 @@ void Game::Reset()
 {
     world->Reset();
     rRenderer.Reset();
+
+    camera.position = glm::vec2{ 0, 3.6 };
+    camera.scale = glm::vec2{ 1, 1 };
+}
+
+Camera& Game::GetCamera()
+{
+    return camera;
 }
 
 }

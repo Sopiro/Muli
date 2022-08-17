@@ -1,5 +1,6 @@
 #include "spe/world.h"
 #include "spe/island.h"
+#include <iostream>
 
 namespace spe
 {
@@ -17,6 +18,9 @@ World::~World() noexcept
 
 void World::Update(float dt)
 {
+	settings.DT = dt;
+	settings.INV_DT = 1.0f / dt;
+
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
 		RigidBody* b = bodies[i];
@@ -170,7 +174,7 @@ void World::Update(float dt)
 			sleepingIslands++;
 		}
 
-		island.Solve(dt);
+		island.Solve();
 		island.Clear();
 		restingBodies = 0;
 	}
@@ -238,9 +242,22 @@ void World::Remove(RigidBody* body)
 	{
 		uint32_t key = body->jointIDs[i];
 		Joint* joint = jointMap[key];
+		RigidBody* other = joint->bodyB->id == body->id ? joint->bodyA : joint->bodyB;
 
-		Remove(joint);
+		other->Awake();
+
+		auto it = std::find(other->jointIDs.begin(), other->jointIDs.end(), key);
+		if (it != other->jointIDs.end())
+		{
+			std::iter_swap(it, other->jointIDs.end() - 1);
+			other->jointIDs.pop_back();
+		}
+
+		jointMap.erase(key);
 	}
+
+	joints.clear();
+	std::transform(jointMap.begin(), jointMap.end(), std::back_inserter(joints), [](auto& kv) { return kv.second;});
 
 	bodies.erase(it);
 	tree.Remove(body);

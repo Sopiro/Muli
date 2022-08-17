@@ -26,6 +26,8 @@ public:
     void HandleInput();
     void Render();
 
+    Camera& GetCamera();
+
 private:
     Application& app;
 
@@ -39,8 +41,9 @@ private:
     std::vector<glm::vec2> lines{};
     DynamicRenderer dRenderer{};
 
-    GrabJoint* gj = nullptr;
     float time = 0.0f;
+    float simulationDeltaTime = 0.0f;
+    GrabJoint* gj = nullptr;
     glm::vec2 mpos{ 0.0f };
 
     bool pause = false;
@@ -50,7 +53,7 @@ private:
     bool showCP = false;
     bool resetCamera = true;
 
-    std::vector<std::pair<std::string, std::function<void(World&, Settings&)>>> demos;
+    std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> demos;
     size_t currentDemo;
     std::string demoTitle;
 
@@ -58,4 +61,5 @@ private:
     void InitSimulation(size_t demo);
     void Reset();
 };
+
 }

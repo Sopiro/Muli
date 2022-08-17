@@ -14,8 +14,8 @@ namespace spe
 // Simulation settings
 struct Settings
 {
-    float DT = 1.0f / 60.0f;
-    float INV_DT = 60.0f;
+    mutable float DT = 1.0f / 60.0f;
+    mutable float INV_DT = 60.0f;
 
     bool APPLY_GRAVITY = true;
     glm::vec2 GRAVITY = glm::vec2{ 0.0f, -10.0f };
@@ -40,7 +40,7 @@ struct Settings
     bool SLEEPING_ENABLED = true;
     float SLEEPING_TRESHOLD = 0.5f;
 
-    AABB VALID_REGION{ glm::vec2{-FLT_MAX, -20.0f},glm::vec2{FLT_MAX, FLT_MAX} };
+    AABB VALID_REGION{ glm::vec2{-FLT_MAX, -FLT_MAX},glm::vec2{FLT_MAX, FLT_MAX} };
 };
 
 class World final
@@ -123,4 +123,5 @@ private:
     size_t sleepingIslands = 0;
     size_t sleepingBodies = 0;
 };
+
 }

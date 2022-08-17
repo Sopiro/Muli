@@ -70,4 +70,5 @@ private:
     void Swap(Node* node1, Node* node2);
     void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked) const;
 };
+
 }

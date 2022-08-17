@@ -12,14 +12,15 @@ class Island
 private:
     World& world;
     bool sleeping{ false };
-    
+
     std::vector<RigidBody*> bodies{};
 
     std::vector<ContactConstraint*> ccs{};
     std::vector<Joint*> js{};
 
     Island(World& _world);
-    void Solve(float dt);
+    void Solve();
     void Clear();
 };
+
 }

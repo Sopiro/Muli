@@ -9,7 +9,7 @@ Island::Island(World& _world) :
 
 }
 
-void Island::Solve(float dt)
+void Island::Solve()
 {
     bool awakeIsland = false;
 
@@ -49,7 +49,7 @@ void Island::Solve(float dt)
             ((glm::length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
                 (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
         {
-            b->resting += dt;
+            b->resting += world.settings.DT;
         }
         else
         {
@@ -109,7 +109,7 @@ void Island::Clear()
     bodies.clear();
     ccs.clear();
     js.clear();
-    
+
     sleeping = false;
 }
 
