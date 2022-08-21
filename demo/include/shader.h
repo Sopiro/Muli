@@ -15,7 +15,7 @@ public:
     Shader(Shader&&) noexcept = delete;
     Shader& operator=(Shader&&) noexcept = delete;
 
-    void Use();
+    inline void Use();
 
 protected:
     Shader(const char* vsCode, const char* fsCode);
@@ -23,4 +23,10 @@ protected:
     std::unordered_map<std::string, uint32_t> uniformMap;
     uint32_t shaderHandle{ 0 };
 };
+
+inline void Shader::Use()
+{
+    glUseProgram(shaderHandle);
+}
+
 }

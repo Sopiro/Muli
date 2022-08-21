@@ -29,10 +29,6 @@ set(SOURCE_FILES
 
 add_library(spe ${SOURCE_FILES})
 
-if(MSVC)
-    target_compile_options(spe PUBLIC /wd4819 /wd4996)
-endif()
-
 target_include_directories(spe
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>

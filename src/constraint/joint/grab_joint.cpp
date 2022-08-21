@@ -71,19 +71,4 @@ void GrabJoint::ApplyImpulse(const glm::vec2& lambda)
     bodyA->angularVelocity += bodyA->invInertia * glm::cross(r, lambda);
 }
 
-const glm::vec2& GrabJoint::GetLocalAnchor() const
-{
-    return localAnchor;
-}
-
-const glm::vec2& GrabJoint::GetTarget() const
-{
-    return target;
-}
-
-void  GrabJoint::SetTarget(glm::vec2 _target)
-{
-    target = std::move(_target);
-}
-
 }

@@ -26,7 +26,7 @@ public:
     void HandleInput();
     void Render();
 
-    Camera& GetCamera();
+    inline Camera& GetCamera();
 
 private:
     Application& app;
@@ -61,5 +61,10 @@ private:
     void InitSimulation(size_t demo);
     void Reset();
 };
+
+inline Camera& Game::GetCamera()
+{
+    return camera;
+}
 
 }

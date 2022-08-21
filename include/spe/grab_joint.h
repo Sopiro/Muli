@@ -23,9 +23,9 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    const glm::vec2& GetLocalAnchor() const;
-    const glm::vec2& GetTarget() const;
-    void SetTarget(glm::vec2 target);
+    inline const glm::vec2& GetLocalAnchor() const;
+    inline const glm::vec2& GetTarget() const;
+    inline void SetTarget(glm::vec2 target);
 
 private:
     glm::vec2 localAnchor;
@@ -38,4 +38,20 @@ private:
 
     void ApplyImpulse(const glm::vec2& lambda);
 };
+
+inline const glm::vec2& GrabJoint::GetLocalAnchor() const
+{
+    return localAnchor;
+}
+
+inline const glm::vec2& GrabJoint::GetTarget() const
+{
+    return target;
+}
+
+inline void GrabJoint::SetTarget(glm::vec2 _target)
+{
+    target = std::move(_target);
+}
+
 }

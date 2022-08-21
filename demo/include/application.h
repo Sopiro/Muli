@@ -8,7 +8,7 @@ namespace spe
 class Application final
 {
 public:
-    static Application* Create(int width, int height, std::string title);
+    inline static Application* Create(int width, int height, std::string title);
 
     ~Application() noexcept;
 
@@ -18,7 +18,7 @@ public:
     Application(Application&&) noexcept = delete;
     Application& operator=(Application&&) noexcept = delete;
 
-    void SetFrameRate(uint32_t frameRate);
+    inline void SetFrameRate(uint32_t frameRate);
 
     void Run();
 
@@ -34,4 +34,19 @@ private:
     std::unique_ptr<Game> game;
     double frameTime;
 };
+
+inline Application* Application::Create(int width, int height, std::string title)
+{
+    assert(app == nullptr);
+
+    Application::app = new Application(width, height, title);
+    return Application::app;
+}
+
+inline void Application::SetFrameRate(uint32_t frameRate)
+{
+    frameRate = std::clamp<int>(frameRate, 30, 300);
+    frameTime = 1.0 / frameRate;
+}
+
 }

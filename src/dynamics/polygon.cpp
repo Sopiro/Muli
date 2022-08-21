@@ -47,46 +47,4 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
         Translate(centerOfMass);
 }
 
-void Polygon::SetMass(float _mass)
-{
-    assert(_mass > 0);
-
-    density = _mass / area;
-    mass = _mass;
-    invMass = 1.0f / mass;
-    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
-    invInertia = 1.0f / inertia;
-}
-
-void Polygon::SetDensity(float _density)
-{
-    assert(_density > 0);
-
-    density = _density;
-    mass = _density * area;
-    invMass = 1.0f / mass;
-    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
-    invInertia = 1.0f / inertia;
-}
-
-float Polygon::GetRadius() const
-{
-    return radius;
-}
-
-float Polygon::GetArea() const
-{
-    return area;
-}
-
-const std::vector<glm::vec2>& Polygon::GetVertices() const
-{
-    return vertices;
-}
-
-size_t Polygon::VertexCount() const
-{
-    return vertices.size();
-}
-
 }

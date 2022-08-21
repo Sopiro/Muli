@@ -59,14 +59,14 @@ public:
     Joint(Joint&&) noexcept = default;
     Joint& operator=(Joint&&) noexcept = default;
 
-    float GetFrequency() const;
-    void SetFrequency(float _frequency);
-    float GetDampingRatio() const;
-    void SetDampingRatio(float _dampingRatio);
-    float GetJointMass() const;
-    void SetJointMass(float _jointMass);
+    inline float GetFrequency() const;
+    inline void SetFrequency(float _frequency);
+    inline float GetDampingRatio() const;
+    inline void SetDampingRatio(float _dampingRatio);
+    inline float GetJointMass() const;
+    inline void SetJointMass(float _jointMass);
 
-    bool IsSolid() const;
+    inline bool IsSolid() const;
 
     std::function<void(Joint*)> OnDestroy = nullptr;
 
@@ -84,4 +84,40 @@ private:
     void SetProperties(float _frequency, float _dampingRatio, float _jointMass);
     void CalculateBetaAndGamma();
 };
+
+inline float Joint::GetFrequency() const
+{
+    return frequency;
+}
+
+inline void Joint::SetFrequency(float _frequency)
+{
+    SetProperties(_frequency, dampingRatio, jointMass);
+}
+
+inline float Joint::GetDampingRatio() const
+{
+    return dampingRatio;
+}
+
+inline void Joint::SetDampingRatio(float _dampingRatio)
+{
+    SetProperties(frequency, _dampingRatio, jointMass);
+}
+
+inline float Joint::GetJointMass() const
+{
+    return jointMass;
+}
+
+inline void Joint::SetJointMass(float _jointMass)
+{
+    SetProperties(frequency, dampingRatio, _jointMass);
+}
+
+inline bool Joint::IsSolid() const
+{
+    return frequency <= 0.0f;
+}
+
 }

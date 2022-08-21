@@ -4,94 +4,9 @@ namespace spe
 {
 Window* Window::window = nullptr;
 
-Window& Window::Get()
-{
-	return *window;
-}
-
 static void glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-}
-
-void Window::SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback)
-{
-	framebufferSizeChangeCallback = callback;
-}
-
-void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height)
-{
-	// SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
-
-	window->width = width;
-	window->height = height;
-
-	if (window->framebufferSizeChangeCallback != nullptr)
-	{
-		window->framebufferSizeChangeCallback(width, height);
-	}
-}
-
-void Window::OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods)
-{
-	ImGui_ImplGlfw_KeyCallback(glfwWindow, key, scancode, action, mods);
-
-	// SPDLOG_INFO("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
-	//     action == GLFW_PRESS ? "Pressed" :
-	//     action == GLFW_RELEASE ? "Released" :
-	//     action == GLFW_REPEAT ? "Repeat" : "Unknown",
-	//     mods & GLFW_MOD_CONTROL ? "C" : "-",
-	//     mods & GLFW_MOD_SHIFT ? "S" : "-",
-	//     mods & GLFW_MOD_ALT ? "A" : "-"
-	// );
-
-	if (key < 0) return;
-
-	switch (action)
-	{
-	case GLFW_PRESS:
-		Input::currKeys[key] = true;
-		break;
-	case GLFW_RELEASE:
-		Input::currKeys[key] = false;
-	}
-}
-
-void Window::OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier)
-{
-	ImGui_ImplGlfw_MouseButtonCallback(glfwWindow, button, action, modifier);
-
-	if (button < 0) return;
-
-	switch (action)
-	{
-	case GLFW_PRESS:
-		Input::currBtns[button] = true;
-		break;
-	case GLFW_RELEASE:
-		Input::currBtns[button] = false;
-	}
-}
-
-void Window::OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch)
-{
-	ImGui_ImplGlfw_CharCallback(glfwWindow, ch);
-}
-
-void Window::OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos)
-{
-	ImGui_ImplGlfw_CursorPosCallback(glfwWindow, xpos, ypos);
-
-	Input::currMousePos.x = static_cast<float>(xpos);
-	Input::currMousePos.y = static_cast<float>(ypos);
-}
-
-void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset)
-{
-	ImGui_ImplGlfw_ScrollCallback(glfwWindow, xoffset, yoffset);
-
-	Input::mouseScroll.x = static_cast<float>(xoffset);
-	Input::mouseScroll.y = static_cast<float>(yoffset);
 }
 
 Window::Window(int width, int height, std::string title)
@@ -187,41 +102,6 @@ Window::~Window()
 
 	glfwDestroyWindow(glfwWindow);
 	glfwTerminate();
-}
-
-bool Window::ShouldClose() const
-{
-	return glfwWindowShouldClose(glfwWindow);
-}
-
-void Window::BeginFrame() const
-{
-	Input::Update();
-
-	glfwPollEvents();
-
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-}
-
-void Window::EndFrame() const
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	glfwSwapBuffers(glfwWindow);
-}
-
-glm::ivec2 Window::GetWindowSize() const
-{
-	return glm::ivec2{ width, height };
-}
-
-int32_t Window::GetRefreshRate() const
-{
-	return refreshRate;
 }
 
 }

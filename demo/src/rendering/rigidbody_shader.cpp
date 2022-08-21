@@ -49,34 +49,10 @@ RigidBodyShader::RigidBodyShader() : Shader(
     )"
 )
 {
-    uniformMap.insert({"color", glGetUniformLocation(shaderHandle, "color")});
-    uniformMap.insert({"model", glGetUniformLocation(shaderHandle, "model")});
-    uniformMap.insert({"view", glGetUniformLocation(shaderHandle, "view")});
-    uniformMap.insert({"proj", glGetUniformLocation(shaderHandle, "proj")});
-}
-
-void RigidBodyShader::SetColor(glm::vec3 _color)
-{
-    color = std::move(_color);
-    glUniform3fv(uniformMap["color"], 1, &color.r);
-}
-
-void RigidBodyShader::SetModelMatrix(glm::mat4 _modelMatrix)
-{
-    modelMatrix = std::move(_modelMatrix);
-    glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, glm::value_ptr(modelMatrix));
-}
-
-void RigidBodyShader::SetViewMatrix(glm::mat4 _viewMatrix)
-{
-    viewMatrix = std::move(_viewMatrix);
-    glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, glm::value_ptr(viewMatrix));
-}
-
-void RigidBodyShader::SetProjectionMatrix(glm::mat4 _projMatrix)
-{
-    projMatrix = std::move(_projMatrix);
-    glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));
+    uniformMap.insert({ "color", glGetUniformLocation(shaderHandle, "color") });
+    uniformMap.insert({ "model", glGetUniformLocation(shaderHandle, "model") });
+    uniformMap.insert({ "view", glGetUniformLocation(shaderHandle, "view") });
+    uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
 }

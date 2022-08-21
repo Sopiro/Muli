@@ -14,10 +14,10 @@ public:
     DynamicRenderer();
     virtual ~DynamicRenderer();
 
-    void SetProjectionMatrix(glm::mat4 _projMatrix);
-    void SetViewMatrix(glm::mat4 _viewMatrix);
+    inline void SetProjectionMatrix(glm::mat4 _projMatrix);
+    inline void SetViewMatrix(glm::mat4 _viewMatrix);
 
-    virtual void Render() override;
+    inline virtual void Render() override;
     void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode = GL_LINES, glm::vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
@@ -32,4 +32,19 @@ private:
     uint32_t VAO;
     uint32_t VBO;
 };
+
+inline void DynamicRenderer::Render() {}
+
+inline void DynamicRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
+{
+    shader->Use();
+    shader->SetProjectionMatrix(std::move(_projMatrix));
+}
+
+inline void DynamicRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
+{
+    shader->Use();
+    shader->SetViewMatrix(std::move(_viewMatrix));
+}
+
 }

@@ -12,10 +12,10 @@ class DynamicShader final : public Shader
 public:
     static std::unique_ptr<DynamicShader> DynamicShader::Create();
 
-    void SetColor(glm::vec3 _color);
-    void SetViewMatrix(glm::mat4 _viewMatrix);
-    void SetProjectionMatrix(glm::mat4 _projMatrix);
-    void SetModelMatrix(glm::mat4 _modelMatrix);
+    inline void SetColor(glm::vec3 _color);
+    inline void SetViewMatrix(glm::mat4 _viewMatrix);
+    inline void SetProjectionMatrix(glm::mat4 _projMatrix);
+    inline void SetModelMatrix(glm::mat4 _modelMatrix);
 
 private:
     DynamicShader();
@@ -26,4 +26,29 @@ private:
     glm::mat4 projMatrix{ 1.0f };
     glm::mat4 modelMatrix{ 1.0f };
 };
+
+inline void DynamicShader::SetColor(glm::vec3 _color)
+{
+    color = std::move(_color);
+    glUniform3fv(uniformMap["color"], 1, &color.r);
+}
+
+inline void DynamicShader::SetModelMatrix(glm::mat4 _modelMatrix)
+{
+    modelMatrix = std::move(_modelMatrix);
+    glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, glm::value_ptr(modelMatrix));
+}
+
+inline void DynamicShader::SetViewMatrix(glm::mat4 _viewMatrix)
+{
+    viewMatrix = std::move(_viewMatrix);
+    glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, glm::value_ptr(viewMatrix));
+}
+
+inline void DynamicShader::SetProjectionMatrix(glm::mat4 _projMatrix)
+{
+    projMatrix = std::move(_projMatrix);
+    glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));
+}
+
 }

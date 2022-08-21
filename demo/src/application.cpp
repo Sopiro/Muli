@@ -5,15 +5,6 @@ namespace spe
 
 Application* Application::app = nullptr;
 
-Application* Application::Create(int width, int height, std::string title)
-{
-    assert(app == nullptr);
-
-    Application::app = new Application(width, height, title);
-
-    return app;
-}
-
 Application::Application(int width, int height, std::string title) :
     window(std::move(width), std::move(height), std::move(title))
 {
@@ -76,12 +67,6 @@ void Application::Render()
     // glViewport(0, 0, Window::Width, Window::Height);
 
     game->Render();
-}
-
-void Application::SetFrameRate(uint32_t frameRate)
-{
-    frameRate = std::clamp<int>(frameRate, 30, 300);
-    frameTime = 1.0 / frameRate;
 }
 
 }

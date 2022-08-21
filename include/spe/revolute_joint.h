@@ -23,8 +23,8 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    const glm::vec2& GetLocalAnchorA() const;
-    const glm::vec2& GetLocalAnchorB() const;
+    inline const glm::vec2& GetLocalAnchorA() const;
+    inline const glm::vec2& GetLocalAnchorB() const;
 
 private:
     glm::vec2 localAnchorA;
@@ -39,4 +39,15 @@ private:
 
     void ApplyImpulse(const glm::vec2& lambda);
 };
+
+inline const glm::vec2& RevoluteJoint::GetLocalAnchorA() const
+{
+    return localAnchorA;
+}
+
+inline const glm::vec2& RevoluteJoint::GetLocalAnchorB() const
+{
+    return localAnchorB;
+}
+
 }

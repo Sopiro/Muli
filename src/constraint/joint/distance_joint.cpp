@@ -85,24 +85,4 @@ void DistanceJoint::ApplyImpulse(float lambda)
     bodyB->angularVelocity += glm::dot(n, glm::cross(lambda, rb)) * bodyB->invInertia;
 }
 
-const glm::vec2& DistanceJoint::GetLocalAnchorA() const
-{
-    return localAnchorA;
-}
-
-const glm::vec2& DistanceJoint::GetLocalAnchorB() const
-{
-    return localAnchorB;
-}
-
-float DistanceJoint::GetJointLength() const
-{
-    return length;
-}
-
-void DistanceJoint::SetJointLength(float _length)
-{
-    length = glm::clamp<float>(length, 0, FLT_MAX);
-}
-
 }

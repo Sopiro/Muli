@@ -37,47 +37,47 @@ public:
     RigidBody(RigidBody&& _other) noexcept;
     RigidBody& operator=(RigidBody&& _other) noexcept;
 
-    const Node* GetNode() const;
+    inline const Node* GetNode() const;
 
     virtual void SetDensity(float d) = 0;
     virtual void SetMass(float m) = 0;
     virtual float GetArea() const = 0;
 
-    void Awake();
+    inline void Awake();
 
-    float GetDensity() const;
-    float GetMass() const;
-    float GetInverseMass() const;
-    float GetInertia() const;
-    float GetInverseInertia() const;
+    inline float GetDensity() const;
+    inline float GetMass() const;
+    inline float GetInverseMass() const;
+    inline float GetInertia() const;
+    inline float GetInverseInertia() const;
 
-    float GetFriction() const;
-    void SetFriction(float _friction);
+    inline float GetFriction() const;
+    inline void SetFriction(float _friction);
 
-    float GetRestitution() const;
-    void SetRestitution(float _restitution);
+    inline float GetRestitution() const;
+    inline void SetRestitution(float _restitution);
 
-    float GetSurfaceSpeed() const;
-    void SetSurfaceSpeed(float _surfaceSpeed);
+    inline float GetSurfaceSpeed() const;
+    inline void SetSurfaceSpeed(float _surfaceSpeed);
 
-    glm::vec2 GetLinearVelocity() const;
-    void SetLinearVelocity(glm::vec2 _linearVelocity);
+    inline glm::vec2 GetLinearVelocity() const;
+    inline void SetLinearVelocity(glm::vec2 _linearVelocity);
 
-    float GetAngularVelocity() const;
-    void SetAngularVelocity(float _angularVelocity);
+    inline float GetAngularVelocity() const;
+    inline void SetAngularVelocity(float _angularVelocity);
 
-    glm::vec2 GetForce() const;
-    void SetForce(glm::vec2 _force);
+    inline glm::vec2 GetForce() const;
+    inline void SetForce(glm::vec2 _force);
 
-    float GetTorque() const;
-    void SetTorque(float _torque);
+    inline float GetTorque() const;
+    inline void SetTorque(float _torque);
 
-    BodyType GetType() const;
+    inline BodyType GetType() const;
 
-    bool IsSleeping() const;
+    inline bool IsSleeping() const;
 
-    uint32_t GetID() const;
-    uint32_t GetIslandID() const;
+    inline uint32_t GetID() const;
+    inline uint32_t GetIslandID() const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
@@ -117,4 +117,131 @@ private:
 
     Node* node{ nullptr };
 };
+
+inline float RigidBody::GetDensity() const
+{
+    return density;
+}
+
+inline float RigidBody::GetMass() const
+{
+    return mass;
+}
+
+inline float RigidBody::GetInverseMass() const
+{
+    return invMass;
+}
+
+inline float RigidBody::GetInertia() const
+{
+    return inertia;
+}
+
+inline float RigidBody::GetInverseInertia() const
+{
+    return invInertia;
+}
+
+const Node* RigidBody::GetNode() const
+{
+    return node;
+}
+
+inline void RigidBody::Awake()
+{
+    resting = 0.0f;
+    sleeping = false;
+}
+
+inline float RigidBody::GetFriction() const
+{
+    return friction;
+}
+
+inline void RigidBody::SetFriction(float _friction)
+{
+    friction = std::move(_friction);
+}
+
+inline float RigidBody::GetRestitution() const
+{
+    return restitution;
+}
+
+inline void RigidBody::SetRestitution(float _restitution)
+{
+    restitution = std::move(_restitution);
+}
+
+inline float RigidBody::GetSurfaceSpeed() const
+{
+    return surfaceSpeed;
+}
+
+inline void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
+{
+    surfaceSpeed = std::move(_surfaceSpeed);
+}
+
+inline glm::vec2 RigidBody::GetLinearVelocity() const
+{
+    return linearVelocity;
+}
+
+inline void RigidBody::SetLinearVelocity(glm::vec2 _linearVelocity)
+{
+    linearVelocity = std::move(_linearVelocity);
+}
+
+inline float RigidBody::GetAngularVelocity() const
+{
+    return angularVelocity;
+}
+
+inline void RigidBody::SetAngularVelocity(float _angularVelocity)
+{
+    angularVelocity = std::move(_angularVelocity);
+}
+
+inline glm::vec2 RigidBody::GetForce() const
+{
+    return force;
+}
+
+inline void RigidBody::SetForce(glm::vec2 _force)
+{
+    force = std::move(_force);
+}
+
+inline float RigidBody::GetTorque() const
+{
+    return torque;
+}
+
+inline void RigidBody::SetTorque(float _torque)
+{
+    torque = std::move(_torque);
+}
+
+inline BodyType RigidBody::GetType() const
+{
+    return type;
+}
+
+inline bool RigidBody::IsSleeping() const
+{
+    return sleeping;
+}
+
+inline uint32_t RigidBody::GetID() const
+{
+    return id;
+}
+
+inline uint32_t RigidBody::GetIslandID() const
+{
+    return islandID;
+}
+
 }

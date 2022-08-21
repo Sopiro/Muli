@@ -5,8 +5,8 @@
 
 namespace spe
 {
-    struct Settings;
-    
+struct Settings;
+
 class Constraint
 {
 public:
@@ -45,8 +45,8 @@ public:
     */
     virtual void Solve() = 0;
 
-    RigidBody* GetBodyA() const;
-    RigidBody* GetBodyB() const;
+    inline RigidBody* GetBodyA() const;
+    inline RigidBody* GetBodyB() const;
 
 protected:
     RigidBody* bodyA;
@@ -56,4 +56,16 @@ protected:
     float beta{ 0.0f };
     float gamma{ 0.0f };
 };
+
+
+inline RigidBody* Constraint::GetBodyA() const
+{
+    return bodyA;
+}
+
+inline RigidBody* Constraint::GetBodyB() const
+{
+    return bodyB;
+}
+
 }

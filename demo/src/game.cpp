@@ -403,9 +403,4 @@ void Game::Reset()
     camera.scale = glm::vec2{ 1, 1 };
 }
 
-Camera& Game::GetCamera()
-{
-    return camera;
-}
-
 }

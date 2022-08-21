@@ -20,10 +20,12 @@ public:
     Polytope(const Simplex& simplex);
 
     ClosestEdgeInfo GetClosestEdge() const;
-
-    inline size_t Count() const
-    {
-        return vertices.size();
-    }
+    inline size_t Count() const;
 };
+
+inline size_t Polytope::Count() const
+{
+    return vertices.size();
+}
+
 }

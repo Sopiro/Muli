@@ -25,10 +25,10 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    const glm::vec2& GetLocalAnchorA() const;
-    const glm::vec2& GetLocalAnchorB() const;
-    float GetJointLength() const;
-    void SetJointLength(float _length);
+    inline const glm::vec2& GetLocalAnchorA() const;
+    inline const glm::vec2& GetLocalAnchorB() const;
+    inline float GetJointLength() const;
+    inline void SetJointLength(float _length);
 
 private:
     glm::vec2 localAnchorA;
@@ -46,5 +46,25 @@ private:
 
     void ApplyImpulse(float lambda);
 };
+
+inline const glm::vec2& DistanceJoint::GetLocalAnchorA() const
+{
+    return localAnchorA;
+}
+
+inline const glm::vec2& DistanceJoint::GetLocalAnchorB() const
+{
+    return localAnchorB;
+}
+
+inline float DistanceJoint::GetJointLength() const
+{
+    return length;
+}
+
+inline void DistanceJoint::SetJointLength(float _length)
+{
+    length = glm::clamp<float>(length, 0, FLT_MAX);
+}
 
 }

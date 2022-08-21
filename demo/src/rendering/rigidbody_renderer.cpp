@@ -1,7 +1,6 @@
 #include "rigidbody_renderer.h"
 #include "spe/util.h"
 #include "window.h"
-#include "util.h"
 
 namespace spe
 {
@@ -57,58 +56,6 @@ void RigidBodyRenderer::Render()
     }
 }
 
-void RigidBodyRenderer::Register(RigidBody* body)
-{
-    bodiesAndMeshes.push_back(std::pair(body, generate_mesh_from_rigidbody(*body)));
-}
-
-void RigidBodyRenderer::Register(const std::vector<RigidBody*>& bodies)
-{
-    for (auto b : bodies)
-    {
-        Register(b);
-    }
-}
-
-void RigidBodyRenderer::Unregister(RigidBody* body)
-{
-    size_t idx = bodiesAndMeshes.size();
-
-    for (size_t i = 0; i < bodiesAndMeshes.size(); i++)
-    {
-        if (bodiesAndMeshes[i].first == body)
-        {
-            idx = i;
-            break;
-        }
-    }
-
-    if (idx < bodiesAndMeshes.size())
-    {
-        bodiesAndMeshes.erase(bodiesAndMeshes.begin() + idx);
-    }
-}
-
-void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
-{
-    for (size_t i = 0; i < bodies.size(); i++)
-    {
-        Unregister(bodies[i]);
-    }
-}
-
-void RigidBodyRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
-{
-    shader->Use();
-    shader->SetProjectionMatrix(std::move(_projMatrix));
-}
-
-void RigidBodyRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
-{
-    shader->Use();
-    shader->SetViewMatrix(std::move(_viewMatrix));
-}
-
 // Viewport space -> NDC -> world spcae
 glm::vec2 RigidBodyRenderer::Pick(const glm::vec2& screenPos)
 {
@@ -129,16 +76,6 @@ glm::vec2 RigidBodyRenderer::Pick(const glm::vec2& screenPos)
     glm::vec4 invPos = invVP * glm::vec4{ worldPos, 0, 1 };
 
     return { invPos.x, invPos.y };
-}
-
-void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
-{
-    drawOutlineOnly = std::move(_drawOutlineOnly);
-}
-
-void RigidBodyRenderer::Reset()
-{
-    bodiesAndMeshes.clear();
 }
 
 }

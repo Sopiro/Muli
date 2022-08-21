@@ -12,14 +12,4 @@ Constraint::Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _se
 
 }
 
-RigidBody* Constraint::GetBodyA() const
-{
-    return bodyA;
-}
-
-RigidBody* Constraint::GetBodyB() const
-{
-    return bodyB;
-}
-
 }

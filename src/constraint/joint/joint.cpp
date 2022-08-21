@@ -50,39 +50,4 @@ void Joint::CalculateBetaAndGamma()
     gamma = 1.0f / ((d + h * k) * h);
 }
 
-float Joint::GetFrequency() const
-{
-    return frequency;
-}
-
-void Joint::SetFrequency(float _frequency)
-{
-    SetProperties(_frequency, dampingRatio, jointMass);
-}
-
-float Joint::GetDampingRatio() const
-{
-    return dampingRatio;
-}
-
-void Joint::SetDampingRatio(float _dampingRatio)
-{
-    SetProperties(frequency, _dampingRatio, jointMass);
-}
-
-float Joint::GetJointMass() const
-{
-    return jointMass;
-}
-
-void Joint::SetJointMass(float _jointMass)
-{
-    SetProperties(frequency, dampingRatio, _jointMass);
-}
-
-bool Joint::IsSolid() const
-{
-    return frequency <= 0.0f;
-}
-
 }

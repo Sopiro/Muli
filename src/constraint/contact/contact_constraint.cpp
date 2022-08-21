@@ -34,8 +34,8 @@ void ContactConstraint::Prepare()
 {
     for (size_t i = 0; i < numContacts; i++)
     {
-        normalContacts[i].Prepare(contactNormal, Normal);
-        tangentContacts[i].Prepare(contactTangent, Tangent);
+        normalContacts[i].Prepare(contactNormal, ContactType::Normal);
+        tangentContacts[i].Prepare(contactTangent, ContactType::Tangent);
     }
 
     if (numContacts == 2 && settings.BLOCK_SOLVE)

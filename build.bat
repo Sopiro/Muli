@@ -2,5 +2,5 @@ rmdir /s /q build
 mkdir build
 cd build
 cmake ..
-cmake --build .
+cmake --build . --config Release
 start spe.sln

@@ -84,18 +84,16 @@ public:
     std::vector<RigidBody*> QueryPoint(const glm::vec2& point) const;
     std::vector<RigidBody*> QueryRegion(const AABB& region) const;
 
-    const std::vector<RigidBody*>& GetBodies() const;
-    const size_t GetSleepingBodyCount() const;
-    const size_t GetSleepingIslandCount() const;
-    const AABBTree& GetBVH() const;
-    const std::vector<ContactConstraint>& GetContactConstraints() const;
+    inline const std::vector<RigidBody*>& GetBodies() const;
+    inline const size_t GetSleepingBodyCount() const;
+    inline const size_t GetSleepingIslandCount() const;
+    inline const AABBTree& GetBVH() const;
+    inline const std::vector<ContactConstraint>& GetContactConstraints() const;
+    inline const std::vector<Joint*>& GetJoints() const;
 
-    const std::vector<Joint*>& GetJoints() const;
-
-    void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
-    void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
-
-    void Awake();
+    inline void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
+    inline void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
+    inline void Awake();
 
 private:
     const Settings& settings;
@@ -123,5 +121,55 @@ private:
     size_t sleepingIslands = 0;
     size_t sleepingBodies = 0;
 };
+
+inline const std::vector<RigidBody*>& World::GetBodies() const
+{
+    return bodies;
+}
+
+inline const size_t World::GetSleepingBodyCount() const
+{
+    return sleepingBodies;
+}
+
+inline const size_t World::GetSleepingIslandCount() const
+{
+    return sleepingIslands;
+}
+
+inline const AABBTree& World::GetBVH() const
+{
+    return tree;
+}
+
+inline const std::vector<ContactConstraint>& World::GetContactConstraints() const
+{
+    return contactConstraints;
+}
+
+inline const std::vector<Joint*>& World::GetJoints() const
+{
+    return joints;
+}
+
+inline void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
+{
+    passTestSet.insert(make_pair_natural(bodyA->id, bodyB->id));
+    passTestSet.insert(make_pair_natural(bodyB->id, bodyA->id));
+}
+
+inline void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)
+{
+    passTestSet.erase(make_pair_natural(bodyA->id, bodyB->id));
+    passTestSet.erase(make_pair_natural(bodyB->id, bodyA->id));
+}
+
+inline void World::Awake()
+{
+    for (RigidBody* b : bodies)
+    {
+        b->Awake();
+    }
+}
 
 }

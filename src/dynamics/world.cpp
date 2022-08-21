@@ -356,36 +356,6 @@ std::vector<RigidBody*> World::QueryRegion(const AABB& region) const
 	return res;
 }
 
-const std::vector<RigidBody*>& World::GetBodies() const
-{
-	return bodies;
-}
-
-const size_t World::GetSleepingBodyCount() const
-{
-	return sleepingBodies;
-}
-
-const size_t World::GetSleepingIslandCount() const
-{
-	return sleepingIslands;
-}
-
-const AABBTree& World::GetBVH() const
-{
-	return tree;
-}
-
-const std::vector<ContactConstraint>& World::GetContactConstraints() const
-{
-	return contactConstraints;
-}
-
-const std::vector<Joint*>& World::GetJoints() const
-{
-	return joints;
-}
-
 Box* World::CreateBox(float size, BodyType type, float density)
 {
 	return CreateBox(size, size, type, density);
@@ -521,26 +491,6 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, gl
 DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass)
 {
 	return CreateDistanceJoint(bodyA, bodyB, bodyA->position, bodyB->position, length, frequency, dampingRatio, jointMass);
-}
-
-void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
-{
-	passTestSet.insert(make_pair_natural(bodyA->id, bodyB->id));
-	passTestSet.insert(make_pair_natural(bodyB->id, bodyA->id));
-}
-
-void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)
-{
-	passTestSet.erase(make_pair_natural(bodyA->id, bodyB->id));
-	passTestSet.erase(make_pair_natural(bodyB->id, bodyA->id));
-}
-
-void World::Awake()
-{
-	for (RigidBody* b : bodies)
-	{
-		b->Awake();
-	}
 }
 
 }

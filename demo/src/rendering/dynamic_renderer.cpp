@@ -26,8 +26,6 @@ DynamicRenderer::~DynamicRenderer()
     glDeleteBuffers(1, &VBO);
 }
 
-void DynamicRenderer::Render() {}
-
 // Batch rendering: batch size = maxVertexCount
 void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode, glm::vec3 color)
 {
@@ -58,18 +56,6 @@ void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMo
     {
         Draw(std::vector<glm::vec2>(vertices.begin() + maxVertexCount, vertices.end()), drawMode, color);
     }
-}
-
-void DynamicRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
-{
-    shader->Use();
-    shader->SetProjectionMatrix(std::move(_projMatrix));
-}
-
-void DynamicRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
-{
-    shader->Use();
-    shader->SetViewMatrix(std::move(_viewMatrix));
 }
 
 }

@@ -1,5 +1,3 @@
-#pragma warning(disable:4819)
-
 #if defined(_WIN32)
 #include <crtdbg.h>
 #endif

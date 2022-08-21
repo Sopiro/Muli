@@ -86,14 +86,4 @@ void RevoluteJoint::ApplyImpulse(const glm::vec2& lambda)
     bodyB->angularVelocity += bodyB->invInertia * glm::cross(rb, lambda);
 }
 
-const glm::vec2& RevoluteJoint::GetLocalAnchorA() const
-{
-    return localAnchorA;
-}
-
-const glm::vec2& RevoluteJoint::GetLocalAnchorB() const
-{
-    return localAnchorB;
-}
-
 }
