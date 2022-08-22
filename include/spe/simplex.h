@@ -20,11 +20,11 @@ public:
         vertices.reserve(3);
     }
 
-    inline size_t Count() const;
-    inline void Clear();
-    inline void AddVertex(const glm::vec2& vertex);
-    inline bool ContainsVertex(const glm::vec2& vertex) const;
-    inline void Shrink(const std::vector<uint32_t>& indices);
+    size_t Count() const;
+    void Clear();
+    void AddVertex(const glm::vec2& vertex);
+    bool ContainsVertex(const glm::vec2& vertex) const;
+    void Shrink(const std::vector<uint32_t>& indices);
 
     // Returns the closest point to the input q
     ClosestResult GetClosest(const glm::vec2& q) const;

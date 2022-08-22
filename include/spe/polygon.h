@@ -11,14 +11,14 @@ class Polygon : public RigidBody
 public:
     Polygon(std::vector<glm::vec2> _vertices, BodyType _type = Dynamic, bool _resetPosition = true, float _density = DEFAULT_DENSITY);
 
-    inline virtual void SetDensity(float d) override;
-    inline virtual void SetMass(float m) override;
+    virtual void SetDensity(float d) override;
+    virtual void SetMass(float m) override;
 
-    inline float GetRadius() const;
-    inline virtual float GetArea() const override final;
+    float GetRadius() const;
+    virtual float GetArea() const override final;
 
-    inline const std::vector<glm::vec2>& GetVertices() const;
-    inline size_t VertexCount() const;
+    const std::vector<glm::vec2>& GetVertices() const;
+    size_t VertexCount() const;
 
 protected:
     std::vector<glm::vec2> vertices;

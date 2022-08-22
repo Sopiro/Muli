@@ -16,7 +16,7 @@ World::~World() noexcept
 	Reset();
 }
 
-void World::Update(float dt)
+void World::Step(float dt)
 {
 	settings.DT = dt;
 	settings.INV_DT = 1.0f / dt;
@@ -35,7 +35,7 @@ void World::Update(float dt)
 		if (contains_AABB(node->aabb, tightAABB)) continue;
 
 		tree.Remove(b);
-		tree.Add(b);
+		tree.Insert(b);
 	}
 
 	// Broad Phase
@@ -213,7 +213,7 @@ void World::Add(RigidBody* body)
 	body->world = this;
 	body->id = ++uid;
 	bodies.push_back(body);
-	tree.Add(body);
+	tree.Insert(body);
 }
 
 void World::Add(const std::vector<RigidBody*>& bodies)

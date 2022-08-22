@@ -9,7 +9,7 @@ class Camera : public Entity
 public:
     Camera() = default;
 
-    inline glm::mat4 CameraTransform() const;
+    glm::mat4 CameraTransform() const;
 };
 
 inline glm::mat4 Camera::CameraTransform() const

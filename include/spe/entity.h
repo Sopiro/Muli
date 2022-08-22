@@ -11,7 +11,7 @@ public:
     float rotation;
     glm::vec2 scale;
 
-    inline Entity(glm::vec2 _position = glm::vec2{ 0.0f }, float _rotation = 0.0f, glm::vec2 _scale = glm::vec2{ 1.0f });
+    Entity(glm::vec2 _position = glm::vec2{ 0.0f }, float _rotation = 0.0f, glm::vec2 _scale = glm::vec2{ 1.0f });
     virtual ~Entity() noexcept = default;
 
     // Non-copyable object
@@ -21,15 +21,15 @@ public:
     Entity(Entity&&) noexcept = default;
     Entity& operator=(Entity&&) noexcept = default;
 
-    inline void ResetTransform();
-    inline void Translate(const glm::vec2& t);
-    inline void Rotate(float r);
-    inline void Scale(const glm::vec2& s);
+    void ResetTransform();
+    void Translate(const glm::vec2& t);
+    void Rotate(float r);
+    void Scale(const glm::vec2& s);
 
     // Returns local to global transform
-    inline glm::mat3 LocalToGlobal() const;
+    glm::mat3 LocalToGlobal() const;
     // Returns global to local transform
-    inline glm::mat3 GlobalToLocal() const;
+    glm::mat3 GlobalToLocal() const;
 };
 
 inline Entity::Entity(glm::vec2 _position, float _rotation, glm::vec2 _scale) :

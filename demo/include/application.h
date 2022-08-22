@@ -8,7 +8,7 @@ namespace spe
 class Application final
 {
 public:
-    inline static Application* Create(int width, int height, std::string title);
+    static Application* Create(int width, int height, std::string title);
 
     ~Application() noexcept;
 
@@ -18,7 +18,7 @@ public:
     Application(Application&&) noexcept = delete;
     Application& operator=(Application&&) noexcept = delete;
 
-    inline void SetFrameRate(uint32_t frameRate);
+    void SetFrameRate(uint32_t frameRate);
 
     void Run();
 

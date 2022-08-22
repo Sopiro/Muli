@@ -13,17 +13,17 @@ class Input final
 public:
     Input() = delete;
 
-    inline static void Init();
-    inline static void Update();
-    inline static bool IsKeyDown(int key);
-    inline static bool IsKeyPressed(int key);
-    inline static bool IsKeyReleased(int key);
-    inline static bool IsMouseDown(int button);
-    inline static bool IsMousePressed(int button);
-    inline static bool IsMouseReleased(int button);
-    inline static glm::vec2 GetMousePosition();
-    inline static glm::vec2 GetMouseAcceleration();
-    inline static glm::vec2 GetMouseScroll();
+    static void Init();
+    static void Update();
+    static bool IsKeyDown(int key);
+    static bool IsKeyPressed(int key);
+    static bool IsKeyReleased(int key);
+    static bool IsMouseDown(int button);
+    static bool IsMousePressed(int button);
+    static bool IsMouseReleased(int button);
+    static glm::vec2 GetMousePosition();
+    static glm::vec2 GetMouseAcceleration();
+    static glm::vec2 GetMouseScroll();
 private:
 
     static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;

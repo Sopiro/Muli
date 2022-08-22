@@ -23,9 +23,9 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    inline const glm::vec2& GetLocalAnchor() const;
-    inline const glm::vec2& GetTarget() const;
-    inline void SetTarget(glm::vec2 target);
+    const glm::vec2& GetLocalAnchor() const;
+    const glm::vec2& GetTarget() const;
+    void SetTarget(glm::vec2 target);
 
 private:
     glm::vec2 localAnchor;

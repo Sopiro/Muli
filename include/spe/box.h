@@ -11,11 +11,11 @@ public:
     Box(float _width, float _height, BodyType _type = Dynamic, float _density = DEFAULT_DENSITY);
     Box(float _width, BodyType _type = Dynamic, float _density = DEFAULT_DENSITY);
 
-    inline virtual void SetMass(float _mass) override;
-    inline virtual void SetDensity(float _density) override;
+    virtual void SetMass(float _mass) override;
+    virtual void SetDensity(float _density) override;
 
-    inline float GetWidth() const;
-    inline float GetHeight() const;
+    float GetWidth() const;
+    float GetHeight() const;
 
 protected:
     float width;

@@ -15,7 +15,7 @@ public:
     Shader(Shader&&) noexcept = delete;
     Shader& operator=(Shader&&) noexcept = delete;
 
-    inline void Use();
+    void Use();
 
 protected:
     Shader(const char* vsCode, const char* fsCode);

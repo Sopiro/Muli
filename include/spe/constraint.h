@@ -45,8 +45,8 @@ public:
     */
     virtual void Solve() = 0;
 
-    inline RigidBody* GetBodyA() const;
-    inline RigidBody* GetBodyB() const;
+    RigidBody* GetBodyA() const;
+    RigidBody* GetBodyB() const;
 
 protected:
     RigidBody* bodyA;

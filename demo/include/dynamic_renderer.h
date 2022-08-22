@@ -14,10 +14,10 @@ public:
     DynamicRenderer();
     virtual ~DynamicRenderer();
 
-    inline void SetProjectionMatrix(glm::mat4 _projMatrix);
-    inline void SetViewMatrix(glm::mat4 _viewMatrix);
+    void SetProjectionMatrix(glm::mat4 _projMatrix);
+    void SetViewMatrix(glm::mat4 _viewMatrix);
 
-    inline virtual void Render() override;
+    virtual void Render() override;
     void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode = GL_LINES, glm::vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:

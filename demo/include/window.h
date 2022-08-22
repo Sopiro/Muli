@@ -14,7 +14,7 @@ class Window final
     friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
 
 public:
-    inline static Window& Get();
+    static Window& Get();
 
     ~Window() noexcept;
 
@@ -24,10 +24,10 @@ public:
     Window(Window&&) noexcept = delete;
     Window& operator=(const Window&&) noexcept = delete;
 
-    inline void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
+    void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
 
-    inline glm::ivec2 GetWindowSize() const;
-    inline int32_t GetRefreshRate() const;
+    glm::ivec2 GetWindowSize() const;
+    int32_t GetRefreshRate() const;
 
 private:
     static Window* window;
@@ -40,16 +40,16 @@ private:
     GLFWwindow* glfwWindow;
     std::function<void(int width, int height)> framebufferSizeChangeCallback = nullptr;
 
-    inline bool ShouldClose() const;
-    inline void BeginFrame() const;
-    inline void EndFrame() const;
+    bool ShouldClose() const;
+    void BeginFrame() const;
+    void EndFrame() const;
 
-    inline static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
-    inline static void OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
-    inline static void OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier);
-    inline static void OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch);
-    inline static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
-    inline static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
+    static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
+    static void OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
+    static void OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier);
+    static void OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch);
+    static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
+    static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
 };
 
 inline Window& Window::Get()

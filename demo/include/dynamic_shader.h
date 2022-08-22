@@ -12,10 +12,10 @@ class DynamicShader final : public Shader
 public:
     static std::unique_ptr<DynamicShader> DynamicShader::Create();
 
-    inline void SetColor(glm::vec3 _color);
-    inline void SetViewMatrix(glm::mat4 _viewMatrix);
-    inline void SetProjectionMatrix(glm::mat4 _projMatrix);
-    inline void SetModelMatrix(glm::mat4 _modelMatrix);
+    void SetColor(glm::vec3 _color);
+    void SetViewMatrix(glm::mat4 _viewMatrix);
+    void SetProjectionMatrix(glm::mat4 _projMatrix);
+    void SetModelMatrix(glm::mat4 _modelMatrix);
 
 private:
     DynamicShader();

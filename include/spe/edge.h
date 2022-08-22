@@ -16,8 +16,8 @@ struct Edge
 
     Edge(glm::vec2 _p1, glm::vec2 _p2, int32_t _id1 = -1, int32_t _id2 = -1);
 
-    inline float Length() const;
-    inline glm::vec2 Normal() const;
+    float Length() const;
+    glm::vec2 Normal() const;
 };
 
 inline float Edge::Length() const

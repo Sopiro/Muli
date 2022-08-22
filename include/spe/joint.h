@@ -59,14 +59,14 @@ public:
     Joint(Joint&&) noexcept = default;
     Joint& operator=(Joint&&) noexcept = default;
 
-    inline float GetFrequency() const;
-    inline void SetFrequency(float _frequency);
-    inline float GetDampingRatio() const;
-    inline void SetDampingRatio(float _dampingRatio);
-    inline float GetJointMass() const;
-    inline void SetJointMass(float _jointMass);
+    float GetFrequency() const;
+    void SetFrequency(float _frequency);
+    float GetDampingRatio() const;
+    void SetDampingRatio(float _dampingRatio);
+    float GetJointMass() const;
+    void SetJointMass(float _jointMass);
 
-    inline bool IsSolid() const;
+    bool IsSolid() const;
 
     std::function<void(Joint*)> OnDestroy = nullptr;
 

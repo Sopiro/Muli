@@ -46,7 +46,7 @@ public:
 
     void Reset();
 
-    const Node* Add(RigidBody* body);
+    const Node* Insert(RigidBody* body);
     void Remove(RigidBody* body);
 
     // BFS tree traversal

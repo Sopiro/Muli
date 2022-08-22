@@ -46,12 +46,12 @@ void Game::Update(float dt)
         if (step)
         {
             step = false;
-            world->Update(simulationDeltaTime);
+            world->Step(simulationDeltaTime);
         }
     }
     else
     {
-        world->Update(simulationDeltaTime);
+        world->Step(simulationDeltaTime);
     }
 }
 

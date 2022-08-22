@@ -17,18 +17,18 @@ public:
 
     virtual void Render() override;
 
-    inline void SetProjectionMatrix(glm::mat4 _projMatrix);
-    inline void SetViewMatrix(glm::mat4 _viewMatrix);
+    void SetProjectionMatrix(glm::mat4 _projMatrix);
+    void SetViewMatrix(glm::mat4 _viewMatrix);
 
-    inline void Register(RigidBody* body);
-    inline void Register(const std::vector<RigidBody*>& bodies);
-    inline void Unregister(RigidBody* body);
-    inline void Unregister(const std::vector<RigidBody*>& bodies);
+    void Register(RigidBody* body);
+    void Register(const std::vector<RigidBody*>& bodies);
+    void Unregister(RigidBody* body);
+    void Unregister(const std::vector<RigidBody*>& bodies);
 
     glm::vec2 Pick(const glm::vec2& screenPos);
 
-    inline void SetDrawOutlined(bool drawOutlineOnly);
-    inline void Reset();
+    void SetDrawOutlined(bool drawOutlineOnly);
+    void Reset();
 
 private:
     // All registered rigid bodies

@@ -25,10 +25,10 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    inline const glm::vec2& GetLocalAnchorA() const;
-    inline const glm::vec2& GetLocalAnchorB() const;
-    inline float GetJointLength() const;
-    inline void SetJointLength(float _length);
+    const glm::vec2& GetLocalAnchorA() const;
+    const glm::vec2& GetLocalAnchorB() const;
+    float GetJointLength() const;
+    void SetJointLength(float _length);
 
 private:
     glm::vec2 localAnchorA;

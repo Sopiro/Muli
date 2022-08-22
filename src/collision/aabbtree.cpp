@@ -34,7 +34,7 @@ void AABBTree::Reset()
     root = nullptr;
 }
 
-const Node* AABBTree::Add(RigidBody* body)
+const Node* AABBTree::Insert(RigidBody* body)
 {
     AABB aabb = create_AABB(body, body->GetType() == BodyType::Static ? 0.0f : aabbMargin);
 

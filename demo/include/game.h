@@ -26,7 +26,7 @@ public:
     void HandleInput();
     void Render();
 
-    inline Camera& GetCamera();
+    Camera& GetCamera();
 
 private:
     Application& app;

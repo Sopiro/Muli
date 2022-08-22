@@ -57,7 +57,7 @@ public:
     World(World&&) noexcept = delete;
     World& operator=(World&&) noexcept = delete;
 
-    void Update(float dt);
+    void Step(float dt);
     void Reset();
 
     void Add(RigidBody* body);
@@ -84,16 +84,16 @@ public:
     std::vector<RigidBody*> QueryPoint(const glm::vec2& point) const;
     std::vector<RigidBody*> QueryRegion(const AABB& region) const;
 
-    inline const std::vector<RigidBody*>& GetBodies() const;
-    inline const size_t GetSleepingBodyCount() const;
-    inline const size_t GetSleepingIslandCount() const;
-    inline const AABBTree& GetBVH() const;
-    inline const std::vector<ContactConstraint>& GetContactConstraints() const;
-    inline const std::vector<Joint*>& GetJoints() const;
+    const std::vector<RigidBody*>& GetBodies() const;
+    const size_t GetSleepingBodyCount() const;
+    const size_t GetSleepingIslandCount() const;
+    const AABBTree& GetBVH() const;
+    const std::vector<ContactConstraint>& GetContactConstraints() const;
+    const std::vector<Joint*>& GetJoints() const;
 
-    inline void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
-    inline void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
-    inline void Awake();
+    void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
+    void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
+    void Awake();
 
 private:
     const Settings& settings;

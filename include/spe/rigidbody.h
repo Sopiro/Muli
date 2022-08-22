@@ -37,47 +37,38 @@ public:
     RigidBody(RigidBody&& _other) noexcept;
     RigidBody& operator=(RigidBody&& _other) noexcept;
 
-    inline const Node* GetNode() const;
+    const Node* GetNode() const;
 
     virtual void SetDensity(float d) = 0;
     virtual void SetMass(float m) = 0;
     virtual float GetArea() const = 0;
 
-    inline void Awake();
+    void Awake();
 
-    inline float GetDensity() const;
-    inline float GetMass() const;
-    inline float GetInverseMass() const;
-    inline float GetInertia() const;
-    inline float GetInverseInertia() const;
+    float GetDensity() const;
+    float GetMass() const;
+    float GetInverseMass() const;
+    float GetInertia() const;
+    float GetInverseInertia() const;
+    float GetFriction() const;
+    void SetFriction(float _friction);
+    float GetRestitution() const;
+    void SetRestitution(float _restitution);
+    float GetSurfaceSpeed() const;
+    void SetSurfaceSpeed(float _surfaceSpeed);
+    glm::vec2 GetLinearVelocity() const;
+    void SetLinearVelocity(glm::vec2 _linearVelocity);
+    float GetAngularVelocity() const;
+    void SetAngularVelocity(float _angularVelocity);
+    glm::vec2 GetForce() const;
+    void SetForce(glm::vec2 _force);
+    float GetTorque() const;
+    void SetTorque(float _torque);
+    BodyType GetType() const;
+    bool IsSleeping() const;
 
-    inline float GetFriction() const;
-    inline void SetFriction(float _friction);
-
-    inline float GetRestitution() const;
-    inline void SetRestitution(float _restitution);
-
-    inline float GetSurfaceSpeed() const;
-    inline void SetSurfaceSpeed(float _surfaceSpeed);
-
-    inline glm::vec2 GetLinearVelocity() const;
-    inline void SetLinearVelocity(glm::vec2 _linearVelocity);
-
-    inline float GetAngularVelocity() const;
-    inline void SetAngularVelocity(float _angularVelocity);
-
-    inline glm::vec2 GetForce() const;
-    inline void SetForce(glm::vec2 _force);
-
-    inline float GetTorque() const;
-    inline void SetTorque(float _torque);
-
-    inline BodyType GetType() const;
-
-    inline bool IsSleeping() const;
-
-    inline uint32_t GetID() const;
-    inline uint32_t GetIslandID() const;
+    uint32_t GetID() const;
+    uint32_t GetIslandID() const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
@@ -143,7 +134,7 @@ inline float RigidBody::GetInverseInertia() const
     return invInertia;
 }
 
-const Node* RigidBody::GetNode() const
+inline const Node* RigidBody::GetNode() const
 {
     return node;
 }

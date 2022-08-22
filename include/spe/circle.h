@@ -10,11 +10,11 @@ class Circle : public RigidBody
 public:
     Circle(float radius, BodyType _type = Dynamic, float _density = DEFAULT_DENSITY);
 
-    inline virtual void SetMass(float m) override;
-    inline virtual void SetDensity(float d) override;
+    virtual void SetMass(float m) override;
+    virtual void SetDensity(float d) override;
 
-    inline float GetRadius() const;
-    inline virtual float GetArea() const override final;
+    float GetRadius() const;
+    virtual float GetArea() const override final;
 
 protected:
     float radius;

@@ -23,8 +23,8 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
 
-    inline const glm::vec2& GetLocalAnchorA() const;
-    inline const glm::vec2& GetLocalAnchorB() const;
+    const glm::vec2& GetLocalAnchorA() const;
+    const glm::vec2& GetLocalAnchorB() const;
 
 private:
     glm::vec2 localAnchorA;
