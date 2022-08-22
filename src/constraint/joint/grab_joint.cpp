@@ -16,6 +16,8 @@ GrabJoint::GrabJoint(
 {
     localAnchor = _body->GlobalToLocal() * _anchor;
     target = _target;
+
+    type = JointType::JointGrab;
 }
 
 void GrabJoint::Prepare()

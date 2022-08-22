@@ -12,9 +12,9 @@ AABB::AABB(glm::vec2 _min, glm::vec2 _max) :
 
 AABB spe::create_AABB(RigidBody* body, float margin)
 {
-    auto& bodyType = typeid(*body);
+    BodyShape shape = body->GetShape();
 
-    if (bodyType == typeid(Circle))
+    if (shape == BodyShape::ShapeCircle)
     {
         Circle* c = static_cast<Circle*>(body);
 
@@ -26,7 +26,7 @@ AABB spe::create_AABB(RigidBody* body, float margin)
             glm::vec2(body->position.x + radius + margin, body->position.y + radius + margin)
         };
     }
-    else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
+    else if (shape == BodyShape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(body);
 

@@ -16,6 +16,8 @@ RevoluteJoint::RevoluteJoint(
 {
     localAnchorA = bodyA->GlobalToLocal() * _anchor;
     localAnchorB = bodyB->GlobalToLocal() * _anchor;
+
+    type = JointType::JointRevolute;
 }
 
 void RevoluteJoint::Prepare()

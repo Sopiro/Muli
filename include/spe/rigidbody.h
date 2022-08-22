@@ -8,6 +8,13 @@ namespace spe
 {
 struct Node;
 
+enum BodyShape : uint8_t
+{
+    ShapeCircle,
+    ShapePolygon,
+    ShapeEdge,
+};
+
 enum BodyType : uint8_t
 {
     Static,
@@ -65,6 +72,7 @@ public:
     float GetTorque() const;
     void SetTorque(float _torque);
     BodyType GetType() const;
+    BodyShape GetShape() const;
     bool IsSleeping() const;
 
     uint32_t GetID() const;
@@ -91,6 +99,7 @@ protected:
     float restitution{ DEFAULT_RESTITUTION };
     float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
 
+    BodyShape shape;
     BodyType type;
 
 private:
@@ -218,6 +227,11 @@ inline void RigidBody::SetTorque(float _torque)
 inline BodyType RigidBody::GetType() const
 {
     return type;
+}
+
+inline BodyShape RigidBody::GetShape() const
+{
+    return shape;
 }
 
 inline bool RigidBody::IsSleeping() const

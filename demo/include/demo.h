@@ -366,6 +366,67 @@ static void demo12(Game& game, World& world, Settings& settings)
     }
 }
 
+static void demo14(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+
+    float size = 15.0f;
+    float wallSize = 0.4f;
+
+    RigidBody* wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall->position.y = -size / 2.0f;
+    wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall->position.y = size / 2.0f;
+    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall->position.x = -size / 2.0f;
+    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall->position.x = size / 2.0f;
+
+    float r = 0.38f;
+
+    for (int i = 0; i < 1000; i++)
+    {
+        RigidBody* b = world.CreateBox(r);
+        b->position.x = glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f;
+        b->position.y = glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f;
+    }
+
+    Camera& c = game.GetCamera();
+    c.position = { 0.0f, 0.0f };
+    c.scale = { 3.f, 3.f };
+}
+
+static void demo13(Game& game, World& world, Settings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+
+    float size = 15.0f;
+    float wallSize = 0.4f;
+
+    RigidBody* wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall->position.y = -size / 2.0f;
+    wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall->position.y = size / 2.0f;
+    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall->position.x = -size / 2.0f;
+    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall->position.x = size / 2.0f;
+
+    float r = 0.2f;
+
+    for (int i = 0; i < 1000; i++)
+    {
+        RigidBody* b = world.CreateCircle(r);
+        b->position.x = glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f;
+        b->position.y = glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f;
+        b->rotation = glm::linearRand<float>(0.0f, glm::pi<float>() * 2.0f);
+    }
+
+    Camera& c = game.GetCamera();
+    c.position = { 0.0f, 0.0f };
+    c.scale = { 3.f, 3.f };
+}
+
 std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
@@ -383,6 +444,8 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>
     demos.push_back({ "Multi pendulum", demo10 });
     demos.push_back({ "Suspension bridge", demo11 });
     demos.push_back({ "Circle stacking", demo12 });
+    demos.push_back({ "1000 circles", demo13 });
+    demos.push_back({ "1000 boxes", demo14 });
 
     return demos;
 }

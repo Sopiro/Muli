@@ -9,9 +9,9 @@ namespace spe
 
 std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count)
 {
-    auto& bodyType = typeid(body);
+    BodyShape shape = body.GetShape();
 
-    if (bodyType == typeid(Circle))
+    if (shape == BodyShape::ShapeCircle)
     {
         Circle& c = static_cast<Circle&>(body);
 
@@ -41,7 +41,7 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
-    else if (bodyType == typeid(Polygon) || bodyType == typeid(Box))
+    else if (shape == BodyShape::ShapePolygon)
     {
         Polygon& p = static_cast<Polygon&>(body);
 

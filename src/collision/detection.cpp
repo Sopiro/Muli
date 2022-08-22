@@ -20,8 +20,8 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 {
     dir = glm::normalize(dir);
 
-    auto& type = typeid(*b);
-    if (type == typeid(Polygon) || type == typeid(Box))
+    BodyShape shape = b->GetShape();
+    if (shape == BodyShape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(b);
         const std::vector<glm::vec2>& vertices = p->GetVertices();
@@ -41,7 +41,7 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 
         return { vertices[idx], idx };
     }
-    else if (type == typeid(Circle))
+    else if (shape == BodyShape::ShapeCircle)
     {
         Circle* c = static_cast<Circle*>(b);
 
@@ -171,15 +171,15 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
     const glm::mat3 localToGlobal = b->LocalToGlobal();
 
-    auto& typeID = typeid(*b);
-    if (typeID == typeid(Circle))
+    BodyShape shape = b->GetShape();
+    if (shape == BodyShape::ShapeCircle)
     {
         curr = localToGlobal * curr;
         const glm::vec2 tangent = glm::cross(1.0f, dir) * TANGENT_MIN_LENGTH;
 
         return Edge{ curr, curr + tangent };
     }
-    else if (typeID == typeid(Polygon) || typeID == typeid(Box))
+    else if (shape == BodyShape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(b);
 
@@ -285,7 +285,7 @@ std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
     ContactManifold res{};
 
     // Circle vs. Circle collision
-    if (typeid(*a) == typeid(Circle) && typeid(*b) == typeid(Circle))
+    if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
     {
         float d = glm::distance2(a->position, b->position);
         const float r2 = static_cast<Circle*>(a)->GetRadius() + static_cast<Circle*>(b)->GetRadius();
@@ -385,13 +385,13 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
 {
     glm::vec2 localP = body->GlobalToLocal() * point;
 
-    auto& type = typeid(*body);
+    BodyShape shape = body->GetShape();
 
-    if (type == typeid(Circle))
+    if (shape == BodyShape::ShapeCircle)
     {
         return glm::length(localP) <= static_cast<Circle*>(body)->GetRadius();
     }
-    else if (type == typeid(Box) || type == typeid(Polygon))
+    else if (shape == BodyShape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(body);
         const std::vector<glm::vec2>& vertices = p->GetVertices();

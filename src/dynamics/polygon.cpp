@@ -45,6 +45,8 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
 
     if (!_resetPosition)
         Translate(centerOfMass);
+
+    shape = BodyShape::ShapePolygon;
 }
 
 }

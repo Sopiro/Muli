@@ -24,6 +24,7 @@ Game::Game(Application& _app) :
     // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
     simulationDeltaTime = 1.0f / 144.0f;
     settings.VALID_REGION.min.y = -20.0f;
+    settings.APPLY_WARM_STARTING_THRESHOLD = false;
 
     world = std::make_unique<World>(settings);
 
@@ -274,8 +275,11 @@ void Game::Render()
     for (size_t i = 0; i < joints.size(); i++)
     {
         Joint* j = joints[i];
+        JointType type = j->GetType();
 
-        if (typeid(*j) == typeid(GrabJoint))
+        switch (type)
+        {
+        case JointType::JointGrab:
         {
             RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
@@ -287,8 +291,10 @@ void Game::Render()
             lines.push_back(anchor);
             lines.push_back(gj->GetTarget());
         }
-        else if (typeid(*j) == typeid(RevoluteJoint))
+        break;
+        case JointType::JointRevolute:
         {
+
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
             RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
@@ -304,7 +310,8 @@ void Game::Render()
             lines.push_back(anchorB);
             lines.push_back(bb->position);
         }
-        else if (typeid(*j) == typeid(DistanceJoint))
+        break;
+        case JointType::JointDistance:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -318,6 +325,10 @@ void Game::Render()
 
             lines.push_back(anchorA);
             lines.push_back(anchorB);
+        }
+        break;
+        default:
+            break;
         }
     }
 

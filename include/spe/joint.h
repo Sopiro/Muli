@@ -7,6 +7,13 @@ namespace spe
 {
 struct Settings;
 
+enum JointType : uint8_t
+{
+    JointGrab,
+    JointRevolute,
+    JointDistance,
+};
+
 class Joint : public Constraint
 {
     /*
@@ -67,8 +74,12 @@ public:
     void SetJointMass(float _jointMass);
 
     bool IsSolid() const;
+    JointType GetType() const;
 
     std::function<void(Joint*)> OnDestroy = nullptr;
+
+protected:
+    JointType type;
 
 private:
     uint32_t id{ 0 };
@@ -118,6 +129,11 @@ inline void Joint::SetJointMass(float _jointMass)
 inline bool Joint::IsSolid() const
 {
     return frequency <= 0.0f;
+}
+
+inline JointType Joint::GetType() const
+{
+    return type;
 }
 
 }

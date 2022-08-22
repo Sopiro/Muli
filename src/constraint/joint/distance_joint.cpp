@@ -19,6 +19,8 @@ DistanceJoint::DistanceJoint(
     localAnchorA = bodyA->GlobalToLocal() * _anchorA;
     localAnchorB = bodyB->GlobalToLocal() * _anchorB;
     length = _length < 0.0f ? glm::length(_anchorB - _anchorA) : _length;
+
+    type = JointType::JointDistance;
 }
 
 void DistanceJoint::Prepare()

@@ -19,6 +19,8 @@ Circle::Circle(float _radius, BodyType _type, float _density) :
         inertia = calculate_circle_inertia(radius, mass);
         invInertia = 1.0f / inertia;
     }
+
+    shape = BodyShape::ShapeCircle;
 }
 
 }
