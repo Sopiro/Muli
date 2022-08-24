@@ -3,12 +3,14 @@
 #include "common.h"
 #include "rigidbody.h"
 #include "aabb.h"
+#include "settings.h"
 
 namespace spe
 {
 struct Node
 {
     friend class AABBTree;
+    friend class BroadPhase;
 
 public:
     uint32_t id;
@@ -35,7 +37,7 @@ private:
 class AABBTree
 {
 public:
-    AABBTree();
+    AABBTree(float _aabbMargin = DEFAULT_AABB_MARGIN);
     ~AABBTree() noexcept;
 
     AABBTree(const AABBTree&) noexcept = delete;
@@ -46,7 +48,7 @@ public:
 
     void Reset();
 
-    const Node* Insert(RigidBody* body);
+    const Node* Insert(AABB aabb, RigidBody* body);
     void Remove(RigidBody* body);
 
     // BFS tree traversal
@@ -57,6 +59,8 @@ public:
     std::vector<Node*> QueryPoint(const glm::vec2& point) const;
     std::vector<Node*> QueryRegion(const AABB& region)  const;
 
+    void Query(const AABB& aabb, std::function<bool(const Node*)> callback) const;
+
     float GetTreeCost() const;
     float GetMarginSize() const;
 
@@ -64,11 +68,11 @@ private:
     uint32_t nodeID = 0;
 
     Node* root = nullptr;
-    float aabbMargin = 0.05f;
+    float aabbMargin;
 
     void Rotate(Node* node);
     void Swap(Node* node1, Node* node2);
-    void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked) const;
+    void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint64_t>& checked) const;
 };
 
 }

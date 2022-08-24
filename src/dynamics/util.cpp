@@ -42,29 +42,4 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
     return inertia;
 }
 
-std::vector<std::pair<RigidBody*, RigidBody*>> spe::get_collision_pair_n2(const std::vector<RigidBody*>& bodies)
-{
-    std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
-
-    size_t numBodies = bodies.size();
-
-    pairs.reserve(numBodies / 2 + 1);
-
-    for (size_t i = 0; i < numBodies; i++)
-    {
-        RigidBody* a = bodies[i];
-        for (size_t j = 0; j < numBodies; j++)
-        {
-            RigidBody* b = bodies[j];
-
-            if (detect_collision_AABB(create_AABB(a), create_AABB(b)))
-            {
-                pairs.emplace_back(a, b);
-            }
-        }
-    }
-
-    return pairs;
-}
-
 }

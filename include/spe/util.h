@@ -4,6 +4,18 @@
 #include "rigidbody.h"
 #include "settings.h"
 
+struct BodyPair
+{
+    uint32_t first;
+    uint32_t second;
+};
+
+union PairID
+{
+    BodyPair pair;
+    uint64_t key;
+};
+
 struct uv
 {
     float u;
@@ -49,6 +61,17 @@ inline uint32_t make_pair_natural(uint32_t a, uint32_t b)
     return (a + b) * (a + b + 1) / 2 + b;
 }
 
+inline PairID combine_id(uint32_t a, uint32_t b)
+{
+    assert(a != b);
+    return a < b ? PairID{ a, b } : PairID{ b, a };
+}
+
+inline bool operator==(PairID lhs, PairID rhs)
+{
+    return lhs.key == rhs.key;
+}
+
 // Reverse version of pairing function
 // this guarantees initial pairing order
 inline std::pair<uint32_t, uint32_t> separate_pair(uint32_t p)
@@ -78,8 +101,6 @@ inline glm::vec2 mid(glm::vec2 a, glm::vec2 b)
 {
     return (a + b) / 2.0f;
 }
-
-std::vector<std::pair<RigidBody*, RigidBody*>> get_collision_pair_n2(const std::vector<RigidBody*>& bodies);
 
 // https://gist.github.com/ciembor/1494530
 /*
@@ -160,4 +181,11 @@ inline glm::vec3 hsl2rgb(float h, float s, float l)
 
     return res;
 }
+
+template<typename T>
+inline void log(T msg)
+{
+    std::cout << msg << '\n';
+}
+
 }

@@ -1,4 +1,5 @@
 #include "spe/aabbtree.h"
+#include "spe/util.h"
 
 namespace spe
 {
@@ -11,8 +12,9 @@ Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
 
 }
 
-AABBTree::AABBTree()
+AABBTree::AABBTree(float _aabbMargin)
 {
+    aabbMargin = _aabbMargin;
 }
 
 AABBTree::~AABBTree()
@@ -34,10 +36,104 @@ void AABBTree::Reset()
     root = nullptr;
 }
 
-const Node* AABBTree::Insert(RigidBody* body)
+const Node* AABBTree::Insert(AABB aabb, RigidBody* body)
 {
-    AABB aabb = create_AABB(body, body->GetType() == BodyType::Static ? 0.0f : aabbMargin);
+    Node* newNode = new Node(nodeID++, aabb, true);
+    newNode->body = body;
+    body->node = newNode;
 
+    if (root == nullptr)
+    {
+        root = newNode;
+        return newNode;
+    }
+
+    // Find the best sibling for the new leaf
+    Node* bestSibling = root;
+    float bestCost = area(union_of(root->aabb, aabb));
+
+    std::queue<std::pair<Node*, float>> q;
+    q.emplace(root, 0.0f);
+
+    while (q.size() != 0)
+    {
+        Node* current = q.front().first;
+        float inheritedCost = q.front().second;
+        q.pop();
+
+        AABB combined = union_of(current->aabb, aabb);
+        float directCost = area(combined);
+
+        float costForCurrent = directCost + inheritedCost;
+        if (costForCurrent < bestCost)
+        {
+            bestCost = costForCurrent;
+            bestSibling = current;
+        }
+
+        inheritedCost += directCost - area(current->aabb);
+
+        float lowerBoundCost = area(aabb) + inheritedCost;
+        if (lowerBoundCost < bestCost)
+        {
+            if (!current->isLeaf)
+            {
+                q.emplace(current->child1, inheritedCost);
+                q.emplace(current->child2, inheritedCost);
+            }
+        }
+    }
+
+    // Create a new parent
+    Node* oldParent = bestSibling->parent;
+    Node* newParent = new Node(nodeID++, union_of(aabb, bestSibling->aabb), false);
+    newParent->parent = oldParent;
+
+    if (oldParent != nullptr)
+    {
+        if (oldParent->child1 == bestSibling)
+        {
+            oldParent->child1 = newParent;
+        }
+        else
+        {
+            oldParent->child2 = newParent;
+        }
+
+        newParent->child1 = bestSibling;
+        newParent->child2 = newNode;
+        bestSibling->parent = newParent;
+        newNode->parent = newParent;
+    }
+    else
+    {
+        newParent->child1 = bestSibling;
+        newParent->child2 = newNode;
+        bestSibling->parent = newParent;
+        newNode->parent = newParent;
+        root = newParent;
+    }
+
+    // Walk back up the tree refitting ancestors' AABB and applying rotations
+    Node* ancestor = newNode->parent;
+    while (ancestor != nullptr)
+    {
+        Node* child1 = ancestor->child1;
+        Node* child2 = ancestor->child2;
+
+        ancestor->aabb = union_of(child1->aabb, child2->aabb);
+
+        Rotate(ancestor);
+
+        ancestor = ancestor->parent;
+    }
+
+    return newNode;
+}
+
+/*
+const Node* AABBTree::Insert(AABB aabb, RigidBody* body)
+{
     Node* newNode = new Node(nodeID++, std::move(aabb), true);
     newNode->body = body;
     body->node = newNode;
@@ -130,6 +226,7 @@ const Node* AABBTree::Insert(RigidBody* body)
 
     return newNode;
 }
+*/
 
 void AABBTree::Remove(RigidBody* body)
 {
@@ -329,7 +426,7 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
 {
     if (root == nullptr) return;
 
-    std::unordered_set<uint32_t> checked;
+    std::unordered_set<uint64_t> checked;
 
     if (!root->isLeaf)
     {
@@ -337,9 +434,9 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
     }
 }
 
-void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint32_t>& checked) const
+void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint64_t>& checked) const
 {
-    const uint32_t key = make_pair_natural(a->id, b->id);
+    const uint64_t key = combine_id(a->id, b->id).key;
 
     if (checked.find(key) != checked.end()) return;
 
@@ -447,6 +544,34 @@ std::vector<Node*> AABBTree::QueryRegion(const AABB& region) const
     }
 
     return res;
+}
+
+void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback) const
+{
+    if (root == nullptr) return;
+
+    std::queue<Node*> q;
+    q.push(root);
+
+    while (q.size() != 0)
+    {
+        Node* current = q.front();
+        q.pop();
+
+        if (!detect_collision_AABB(current->aabb, aabb))
+            continue;
+
+        if (current->isLeaf)
+        {
+            bool proceed = callback(current);
+            if (proceed == false) return;
+        }
+        else
+        {
+            q.push(current->child1);
+            q.push(current->child2);
+        }
+    }
 }
 
 float AABBTree::GetTreeCost() const

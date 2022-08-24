@@ -10,6 +10,7 @@
 #include <glm/gtx/norm.hpp>
 
 // stds
+#include <iostream>
 #include <string>
 #include <memory>
 #include <chrono>

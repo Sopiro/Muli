@@ -3,6 +3,8 @@
 namespace spe
 {
 
+#define DEFAULT_AABB_MARGIN 0.05f
+
 // Default body settings
 #define DEFAULT_DENSITY 12.5f
 #define DEFAULT_FRICTION 0.7f

@@ -3,6 +3,7 @@
 #include "common.h"
 #include "entity.h"
 #include "settings.h"
+#include "aabb.h"
 
 namespace spe
 {
@@ -33,6 +34,7 @@ class RigidBody : public Entity
     friend class GrabJoint;
     friend class RevoluteJoint;
     friend class DistanceJoint;
+    friend class BroadPhase;
 
 public:
     RigidBody(BodyType _type);
@@ -49,6 +51,7 @@ public:
     virtual void SetDensity(float d) = 0;
     virtual void SetMass(float m) = 0;
     virtual float GetArea() const = 0;
+    virtual AABB GetAABB() const = 0;
 
     void Awake();
 
@@ -109,7 +112,7 @@ private:
     uint32_t id{ 0 };
     uint32_t islandID{ 0 };
 
-    std::vector<uint32_t> manifoldIDs{};            // ids of contact manifold containing this body
+    std::vector<uint64_t> manifoldIDs{};            // ids of contact manifold containing this body
     std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
 
     float resting{ 0.0f };

@@ -1,13 +1,17 @@
 #pragma once
 
 #include "common.h"
-#include "aabbtree.h"
+#include "util.h"
+#include "broad_phase.h"
 #include "detection.h"
 #include "rigidbody.h"
 #include "contact_constraint.h"
 #include "grab_joint.h"
 #include "revolute_joint.h"
 #include "distance_joint.h"
+#include "box.h"
+#include "polygon.h"
+#include "circle.h"
 
 namespace spe
 {
@@ -46,6 +50,7 @@ struct Settings
 class World final
 {
     friend class Island;
+    friend class BroadPhase;
 
 public:
     World(const Settings& simulationSettings);
@@ -75,9 +80,7 @@ public:
     Polygon* CreateRegularPolygon(float radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
 
     GrabJoint* CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);
-
     RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchor, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchorA, glm::vec2 anchorB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
 
@@ -91,27 +94,23 @@ public:
     const std::vector<ContactConstraint>& GetContactConstraints() const;
     const std::vector<Joint*>& GetJoints() const;
 
-    void AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB);
-    void RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB);
     void Awake();
 
 private:
     const Settings& settings;
     uint32_t uid{ 0 };
 
-    // Dynamic AABB Tree for broad phase collision detection
-    AABBTree tree{};
-    // All registered rigid bodies
-    std::vector<RigidBody*> bodies{};
-    std::vector<std::pair<RigidBody*, RigidBody*>> pairs{};
+    BroadPhase broadphase;
 
-    std::unordered_set<uint32_t> passTestSet{};
+    // All registered rigid bodies
+    std::unordered_map<uint32_t, RigidBody*> bodyMap;
+    std::vector<RigidBody*> bodies{};
 
     // Constraints to be solved
     std::vector<ContactConstraint> contactConstraints{};
-    std::unordered_map<uint32_t, ContactConstraint*> contactConstraintMap{};
+    std::unordered_map<uint64_t, ContactConstraint*> contactConstraintMap{};
     std::vector<ContactConstraint> newContactConstraints{};
-    std::unordered_map<uint32_t, ContactConstraint*> newContactConstraintMap{};
+    std::unordered_map<uint64_t, ContactConstraint*> newContactConstraintMap{};
 
     std::vector<Joint*> joints{};
     std::unordered_map<uint32_t, Joint*> jointMap{};
@@ -139,7 +138,7 @@ inline const size_t World::GetSleepingIslandCount() const
 
 inline const AABBTree& World::GetBVH() const
 {
-    return tree;
+    return broadphase.tree;
 }
 
 inline const std::vector<ContactConstraint>& World::GetContactConstraints() const
@@ -150,18 +149,6 @@ inline const std::vector<ContactConstraint>& World::GetContactConstraints() cons
 inline const std::vector<Joint*>& World::GetJoints() const
 {
     return joints;
-}
-
-inline void World::AddPassTestPair(RigidBody* bodyA, RigidBody* bodyB)
-{
-    passTestSet.insert(make_pair_natural(bodyA->id, bodyB->id));
-    passTestSet.insert(make_pair_natural(bodyB->id, bodyA->id));
-}
-
-inline void World::RemovePassTestPair(RigidBody* bodyA, RigidBody* bodyB)
-{
-    passTestSet.erase(make_pair_natural(bodyA->id, bodyB->id));
-    passTestSet.erase(make_pair_natural(bodyB->id, bodyA->id));
 }
 
 inline void World::Awake()

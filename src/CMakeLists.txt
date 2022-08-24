@@ -15,6 +15,7 @@ set(SOURCE_FILES
     collision/simplex.cpp
     collision/polytope.cpp
     collision/edge.cpp
+    collision/broad_phase.cpp
 
     constraint/constraint.cpp
     constraint/contact/contact_constraint.cpp

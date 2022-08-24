@@ -15,6 +15,7 @@ public:
 
     float GetRadius() const;
     virtual float GetArea() const override final;
+    virtual AABB GetAABB() const override;
 
 protected:
     float radius;
@@ -51,6 +52,15 @@ inline float Circle::GetRadius() const
 inline float Circle::GetArea() const
 {
     return area;
+}
+
+inline AABB Circle::GetAABB() const
+{
+    return AABB
+    {
+        glm::vec2(position.x - radius, position.y - radius),
+        glm::vec2(position.x + radius, position.y + radius)
+    };
 }
 
 }

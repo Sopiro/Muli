@@ -1,23 +1,12 @@
 #pragma once
 
 #include "common.h"
-#include "rigidbody.h"
-#include "circle.h"
-#include "polygon.h"
-#include "box.h"
 
 namespace spe
 {
 struct AABB
 {
-    AABB(glm::vec2 _min, glm::vec2 _max);
-    ~AABB() noexcept = default;
-
-    AABB(const AABB&) noexcept = delete;
-    AABB& operator=(const AABB&) noexcept = delete;
-
-    AABB(AABB&&) noexcept = default;
-    AABB& operator=(AABB&&) noexcept = default;
+    AABB() = default;
 
     glm::vec2 min;
     glm::vec2 max;
@@ -77,5 +66,4 @@ inline bool contains_AABB(const AABB& container, const AABB& testee)
         && container.max.y >= testee.max.y;
 }
 
-AABB create_AABB(RigidBody* body, float margin = 0.0f);
 }

@@ -6,9 +6,11 @@ namespace spe
 {
 
 World::World(const Settings& simulationSettings) :
-	settings{ simulationSettings }
+	settings{ simulationSettings },
+	broadphase{ *this }
 {
 	bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
+	bodyMap.reserve(DEFAULT_BODY_RESERVE_COUNT);
 }
 
 World::~World() noexcept
@@ -21,52 +23,25 @@ void World::Step(float dt)
 	settings.DT = dt;
 	settings.INV_DT = 1.0f / dt;
 
-	for (size_t i = 0; i < bodies.size(); i++)
-	{
-		RigidBody* b = bodies[i];
-		b->manifoldIDs.clear();
+	broadphase.Update(dt);
 
-		if (b->sleeping) continue;
-		if (b->type == BodyType::Static) b->sleeping = true;
-
-		Node* node = b->node;
-		AABB tightAABB = create_AABB(b, 0.0f);
-
-		if (contains_AABB(node->aabb, tightAABB)) continue;
-
-		tree.Remove(b);
-		tree.Insert(b);
-	}
-
-	// Broad Phase
-	// Retrieve a list of collider pairs that are potentially colliding
-	// pairs = get_collision_pair_n2(bodies);
-	pairs.clear();
-	tree.GetCollisionPairs(pairs);
+	auto& pairs = broadphase.pairs;
 
 	newContactConstraints.clear();
 	newContactConstraintMap.clear();
 	newContactConstraints.reserve(pairs.size());
 	newContactConstraintMap.reserve(pairs.size());
 
-	for (size_t i = 0; i < pairs.size(); i++)
+	for (auto i = pairs.begin(); i != pairs.end(); i++)
 	{
-		std::pair<RigidBody*, RigidBody*> pair = pairs[i];
-		RigidBody* a = pair.first;
-		RigidBody* b = pair.second;
+		PairID pairID;
+		pairID.key = *i;
 
-		// Improve coherence
-		if (a->id > b->id)
-		{
-			a = pair.second;
-			b = pair.first;
-		}
+		RigidBody* a = bodyMap.at(pairID.pair.first);
+		RigidBody* b = bodyMap.at(pairID.pair.second);
 
 		if (a->type == BodyType::Static && b->type == BodyType::Static)
 			continue;
-
-		uint32_t key = make_pair_natural(a->id, b->id);
-		if (passTestSet.find(key) != passTestSet.end()) continue;
 
 		// Narrow Phase
 		// Execute more accurate and expensive collision detection
@@ -74,14 +49,14 @@ void World::Step(float dt)
 		if (!newManifold.has_value()) continue;
 
 		ContactConstraint& cc = newContactConstraints.emplace_back(std::move(newManifold.value()), settings);
-		newContactConstraintMap.insert({ key, &cc });
+		newContactConstraintMap.insert({ pairID.key, &cc });
 
-		a->manifoldIDs.push_back(key);
-		b->manifoldIDs.push_back(key);
+		a->manifoldIDs.push_back(pairID.key);
+		b->manifoldIDs.push_back(pairID.key);
 
 		if (settings.WARM_STARTING)
 		{
-			auto it = contactConstraintMap.find(key);
+			auto it = contactConstraintMap.find(pairID.key);
 			if (it != contactConstraintMap.end())
 			{
 				ContactConstraint* oldCC = it->second;
@@ -130,7 +105,7 @@ void World::Step(float dt)
 
 			for (size_t c = 0; c < t->manifoldIDs.size(); c++)
 			{
-				uint32_t key = t->manifoldIDs[c];
+				uint64_t key = t->manifoldIDs[c];
 				ContactConstraint* cc = contactConstraintMap[key];
 
 				RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
@@ -189,8 +164,8 @@ void World::Reset()
 	for (RigidBody* body : bodies) delete body;
 	for (Joint* joint : joints) delete joint;
 
+	bodyMap.clear();
 	bodies.clear();
-	pairs.clear();
 
 	contactConstraints.clear();
 	contactConstraintMap.clear();
@@ -200,9 +175,7 @@ void World::Reset()
 	joints.clear();
 	jointMap.clear();
 
-	passTestSet.clear();
-
-	tree.Reset();
+	broadphase.Reset();
 }
 
 void World::Add(RigidBody* body)
@@ -213,7 +186,8 @@ void World::Add(RigidBody* body)
 	body->world = this;
 	body->id = ++uid;
 	bodies.push_back(body);
-	tree.Insert(body);
+	bodyMap.insert({ uid, body });
+	broadphase.Add(body);
 }
 
 void World::Add(const std::vector<RigidBody*>& bodies)
@@ -231,7 +205,7 @@ void World::Remove(RigidBody* body)
 
 	for (size_t i = 0; i < body->manifoldIDs.size(); i++)
 	{
-		uint32_t key = body->manifoldIDs[i];
+		uint64_t key = body->manifoldIDs[i];
 		ContactConstraint* cc = contactConstraintMap[key];
 
 		RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
@@ -259,8 +233,9 @@ void World::Remove(RigidBody* body)
 	joints.clear();
 	std::transform(jointMap.begin(), jointMap.end(), std::back_inserter(joints), [](auto& kv) { return kv.second;});
 
+	broadphase.Remove(body);
 	bodies.erase(it);
-	tree.Remove(body);
+	bodyMap.erase(body->id);
 
 	delete body;
 }
@@ -295,7 +270,6 @@ void World::Remove(Joint* joint)
 	joint->bodyB->Awake();
 
 	jointMap.erase(joint->id);
-	RemovePassTestPair(joint->bodyA, joint->bodyB);
 
 	auto jit = std::find(joints.begin(), joints.end(), joint);
 	if (jit != joints.end())
@@ -318,7 +292,7 @@ void World::Remove(const std::vector<Joint*>& joints)
 std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
 {
 	std::vector<RigidBody*> res;
-	std::vector<Node*> nodes = tree.QueryPoint(point);
+	std::vector<Node*> nodes = broadphase.tree.QueryPoint(point);
 
 	for (size_t i = 0; i < nodes.size(); i++)
 	{
@@ -336,7 +310,7 @@ std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
 std::vector<RigidBody*> World::QueryRegion(const AABB& region) const
 {
 	std::vector<RigidBody*> res;
-	std::vector<Node*> nodes = tree.QueryRegion(region);
+	std::vector<Node*> nodes = broadphase.tree.QueryRegion(region);
 
 	for (size_t i = 0; i < nodes.size(); i++)
 	{
