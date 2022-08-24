@@ -7,16 +7,17 @@ namespace spe
 // Returns the closest point to the input q
 ClosestResult Simplex::GetClosest(const glm::vec2& q) const
 {
-    std::vector<uint32_t> contributors{};
-    contributors.reserve(3);
+    ClosestResult res;
 
-    switch (vertices.size())
+    switch (count)
     {
     case 1: // 0-Simplex: Point
     {
-        contributors.push_back(0);
+        res.result = vertices[0];
+        res.count = 1;
+        res.contributors[0] = 0;
 
-        return { vertices[0], contributors };
+        return res;
     }
     case 2: // 1-Simplex: Line segment
     {
@@ -26,20 +27,25 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
 
         if (w.v <= 0)
         {
-            contributors.push_back(0);
-            return { a, contributors };
+            res.result = a;
+            res.count = 1;
+            res.contributors[0] = 0;
+            return res;
         }
         else if (w.v >= 1)
         {
-            contributors.push_back(1);
-            return { b, contributors };
+            res.result = b;
+            res.count = 1;
+            res.contributors[0] = 1;
+            return res;
         }
         else
         {
-            contributors.push_back(0);
-            contributors.push_back(1);
-
-            return { lerp_vector(a, b, w), contributors };
+            res.result = lerp_vector(a, b, w);
+            res.count = 2;
+            res.contributors[0] = 0;
+            res.contributors[1] = 1;
+            return res;
         }
     }
     case 3: // 2-Simplex: Triangle
@@ -54,18 +60,24 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {
-            contributors.push_back(0);
-            return { a, contributors };
+            res.result = a;
+            res.count = 1;
+            res.contributors[0] = 0;
+            return res;
         }
         else if (wab.u <= 0 && wbc.v <= 0) // B area
         {
-            contributors.push_back(1);
-            return { b, contributors };
+            res.result = b;
+            res.count = 1;
+            res.contributors[0] = 1;
+            return res;
         }
         else if (wbc.u <= 0 && wca.v <= 0) // C area
         {
-            contributors.push_back(2);
-            return { c, contributors };
+            res.result = c;
+            res.count = 1;
+            res.contributors[0] = 2;
+            return res;
         }
 
         const float area = glm::cross(b - a, c - a);
@@ -80,53 +92,64 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
         {
             if (area != 0.0f)
             {
-                contributors.push_back(0);
-                contributors.push_back(1);
+                res.count = 2;
+                res.contributors[0] = 0;
+                res.contributors[1] = 1;
             }
             else
             {
-                contributors.push_back(0);
-                contributors.push_back(1);
-                contributors.push_back(2);
+                res.count = 3;
+                res.contributors[0] = 0;
+                res.contributors[1] = 1;
+                res.contributors[2] = 2;
             }
 
-            return { lerp_vector(a, b, wab), contributors };
+            res.result = lerp_vector(a, b, wab);
+            return res;
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
         {
             if (area != 0.0f)
             {
-                contributors.push_back(1);
-                contributors.push_back(2);
+                res.count = 2;
+                res.contributors[0] = 1;
+                res.contributors[1] = 2;
             }
             else
             {
-                contributors.push_back(0);
-                contributors.push_back(1);
-                contributors.push_back(2);
+                res.count = 3;
+                res.contributors[0] = 0;
+                res.contributors[1] = 1;
+                res.contributors[2] = 2;
             }
 
-            return { lerp_vector(b, c, wbc), contributors };
+            res.result = lerp_vector(b, c, wbc);
+            return res;
         }
         else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
         {
             if (area != 0.0f)
             {
-                contributors.push_back(2);
-                contributors.push_back(0);
+                res.count = 2;
+                res.contributors[0] = 2;
+                res.contributors[1] = 0;
             }
             else
             {
-                contributors.push_back(0);
-                contributors.push_back(1);
-                contributors.push_back(2);
+                res.count = 3;
+                res.contributors[0] = 0;
+                res.contributors[1] = 1;
+                res.contributors[2] = 2;
             }
 
-            return { lerp_vector(c, a, wca), contributors };
+            res.result = lerp_vector(c, a, wca);
+            return res;
         }
         else // Inside the triangle
         {
-            return { q, contributors };
+            res.result = q;
+            res.count = 0;
+            return res;
         }
     }
     default:

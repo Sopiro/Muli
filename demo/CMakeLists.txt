@@ -26,10 +26,6 @@ target_compile_definitions(demo PUBLIC
     WINDOW_HEIGHT=${WINDOW_HEIGHT}
 )
 
-if(MSVC)
-    target_compile_options(demo PUBLIC /wd4819 /wd4996)
-endif()
-
 target_include_directories(demo PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${CMAKE_CURRENT_SOURCE_DIR}/include

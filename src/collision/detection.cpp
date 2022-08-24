@@ -100,7 +100,7 @@ static GJKResult gjk(RigidBody* b1, RigidBody* b2)
         if (simplex.Count() != 1)
         {
             // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
-            simplex.Shrink(closest.contributors);
+            simplex.Shrink(closest.contributors, closest.count);
         }
 
         dir = origin - closest.result;

@@ -2,50 +2,54 @@
 
 #include "common.h"
 
+#define MAX_SIMPLEX_VERTEX_COUNT 3
+
 namespace spe
 {
 struct ClosestResult
 {
     glm::vec2 result;
-    std::vector<uint32_t> contributors; // Vertex indices that contributed to calculating the closest point
+    std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT> contributors; // Vertex indices that contributed to calculating the closest point
+    uint32_t count;
 };
 
 class Simplex
 {
 public:
-    std::vector<glm::vec2> vertices{};
+    Simplex() = default;
 
-    Simplex()
-    {
-        vertices.reserve(3);
-    }
+    std::array<glm::vec2, MAX_SIMPLEX_VERTEX_COUNT> vertices{};
 
     size_t Count() const;
     void Clear();
     void AddVertex(const glm::vec2& vertex);
     bool ContainsVertex(const glm::vec2& vertex) const;
-    void Shrink(const std::vector<uint32_t>& indices);
+    void Shrink(const std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT>& _indices, uint32_t _count);
 
     // Returns the closest point to the input q
     ClosestResult GetClosest(const glm::vec2& q) const;
+
+private:
+    uint32_t count = 0;
 };
 
 inline size_t Simplex::Count() const
 {
-    return vertices.size();
+    return count;
 }
 
 inline void Simplex::Clear()
 {
-    vertices.clear();
+    count = 0;
 }
 
 inline void Simplex::AddVertex(const glm::vec2& vertex)
 {
-    if (vertices.size() >= 3)
+    if (count == MAX_SIMPLEX_VERTEX_COUNT)
         throw std::exception("2-simplex can have verticies less than 4");
 
-    vertices.push_back(vertex);
+    vertices[count] = vertex;
+    count++;
 }
 
 inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
@@ -59,17 +63,17 @@ inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
     return false;
 }
 
-inline void Simplex::Shrink(const std::vector<uint32_t>& indices)
+inline void Simplex::Shrink(const std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT>& _indices, uint32_t _count)
 {
-    std::vector<glm::vec2> res{};
-    res.reserve(indices.size());
+    std::array<glm::vec2, MAX_SIMPLEX_VERTEX_COUNT> tmp;
 
-    for (size_t i = 0; i < indices.size(); i++)
+    for (uint32_t i = 0; i < _count; i++)
     {
-        res.push_back(vertices[indices[i]]);
+        tmp[i] = vertices[_indices[i]];
     }
 
-    vertices = std::move(res);
+    vertices = std::move(tmp);
+    count = _count;
 }
 
 }

@@ -3,10 +3,9 @@
 namespace spe
 {
 
-Polytope::Polytope(const Simplex& simplex) :
-    vertices{}
+Polytope::Polytope(const Simplex& simplex)
 {
-    vertices.reserve(3);
+    vertices.reserve(5);
     vertices.push_back(simplex.vertices[0]);
     vertices.push_back(simplex.vertices[1]);
     vertices.push_back(simplex.vertices[2]);
