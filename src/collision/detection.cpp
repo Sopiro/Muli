@@ -241,7 +241,7 @@ static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool
     }
 }
 
-static std::vector<ContactPoint> find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b)
+static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     Edge edgeA = find_farthest_edge(a, n);
     Edge edgeB = find_farthest_edge(b, -n);
@@ -264,26 +264,22 @@ static std::vector<ContactPoint> find_contact_points(const glm::vec2& n, RigidBo
     clip_edge(inc, ref->p2, -(ref->dir));
     clip_edge(inc, ref->p1, flip ? n : -n, true);
 
-    std::vector<ContactPoint> contactPoints{};
-
     // If two points are closer than threshold, merge them into one point
     if (inc->Length() <= CONTACT_MERGE_THRESHOLD)
     {
-        contactPoints.emplace_back(inc->p1, inc->id1);
+        out->contactPoints[0] = { inc->p1, inc->id1 };
+        out->numContacts = 1;
     }
     else
     {
-        contactPoints.emplace_back(inc->p1, inc->id1);
-        contactPoints.emplace_back(inc->p2, inc->id2);
+        out->contactPoints[0] = { inc->p1, inc->id1 };
+        out->contactPoints[1] = { inc->p2, inc->id2 };
+        out->numContacts = 2;
     }
-
-    return contactPoints;
 }
 
-std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
+bool spe::detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    ContactManifold res{};
-
     // Circle vs. Circle collision
     if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
     {
@@ -292,28 +288,31 @@ std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
 
         if (d > r2 * r2)
         {
-            return {};
+            return false;
         }
         else
         {
+            if (out == nullptr) return true;
+
             d = glm::sqrt(d);
 
-            res.bodyA = a;
-            res.bodyB = b;
-            res.contactNormal = glm::normalize(b->position - a->position);
-            res.contactPoints.push_back({ a->position + (res.contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 });
-            res.penetrationDepth = r2 - d;
-            res.featureFlipped = false;
+            out->bodyA = a;
+            out->bodyB = b;
+            out->contactNormal = glm::normalize(b->position - a->position);
+            out->contactPoints[0] = { a->position + (out->contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 };
+            out->numContacts = 1;
+            out->penetrationDepth = r2 - d;
+            out->featureFlipped = false;
 
-            if (glm::dot(res.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
+            if (glm::dot(out->contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
             {
-                res.bodyA = b;
-                res.bodyB = a;
-                res.contactNormal *= -1;
-                res.featureFlipped = true;
+                out->bodyA = b;
+                out->bodyB = a;
+                out->contactNormal *= -1;
+                out->featureFlipped = true;
             }
 
-            return res;
+            return true;
         }
     }
 
@@ -321,10 +320,12 @@ std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
 
     if (!gjkResult.collide)
     {
-        return {};
+        return false;
     }
     else
     {
+        if (out == nullptr) return true;
+
         // If the gjk termination simplex has vertices less than 3, expand to full simplex
         // Because EPA needs a full n-simplex to get started
         Simplex& simplex = gjkResult.simplex;
@@ -356,28 +357,27 @@ std::optional<ContactManifold> spe::detect_collision(RigidBody* a, RigidBody* b)
 
         EPAResult epaResult = epa(a, b, gjkResult.simplex);
 
-        res.bodyA = a;
-        res.bodyB = b;
-        res.contactNormal = epaResult.contactNormal;
-        res.penetrationDepth = epaResult.penetrationDepth;
-        res.featureFlipped = false;
+        out->bodyA = a;
+        out->bodyB = b;
+        out->contactNormal = epaResult.contactNormal;
+        out->penetrationDepth = epaResult.penetrationDepth;
+        out->featureFlipped = false;
 
         // Apply axis weight to improve coherence
         if (glm::dot(epaResult.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
         {
-            res.bodyA = b;
-            res.bodyB = a;
-            res.contactNormal *= -1;
-            res.featureFlipped = true;
+            out->bodyA = b;
+            out->bodyB = a;
+            out->contactNormal *= -1;
+            out->featureFlipped = true;
         }
 
         // Remove floating point error
-        res.contactNormal.x = glm::round((res.contactNormal.x / EPA_TOLERANCE)) * EPA_TOLERANCE;
-        res.contactNormal.y = glm::round((res.contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
+        out->contactNormal.x = glm::round((out->contactNormal.x / EPA_TOLERANCE)) * EPA_TOLERANCE;
+        out->contactNormal.y = glm::round((out->contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
 
-        res.contactPoints = find_contact_points(res.contactNormal, res.bodyA, res.bodyB);
-
-        return res;
+        find_contact_points(out->contactNormal, out->bodyA, out->bodyB, out);
+        return true;
     }
 }
 

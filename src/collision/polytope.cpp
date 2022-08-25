@@ -5,7 +5,7 @@ namespace spe
 
 Polytope::Polytope(const Simplex& simplex)
 {
-    vertices.reserve(5);
+    vertices.reserve(6);
     vertices.push_back(simplex.vertices[0]);
     vertices.push_back(simplex.vertices[1]);
     vertices.push_back(simplex.vertices[2]);
@@ -13,13 +13,13 @@ Polytope::Polytope(const Simplex& simplex)
 
 ClosestEdgeInfo Polytope::GetClosestEdge() const
 {
-    size_t minIndex = 0;
+    uint32_t minIndex = 0;
     float minDistance = FLT_MAX;
     glm::vec2 minNormal{ 0.0f };
 
-    for (size_t i = 0; i < vertices.size(); i++)
+    for (uint32_t i = 0; i < vertices.size(); i++)
     {
-        size_t j = (i + 1) % vertices.size();
+        uint32_t j = (i + 1) % vertices.size();
 
         const glm::vec2& vertexI = vertices[i];
         const glm::vec2& vertexJ = vertices[j];

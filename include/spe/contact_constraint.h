@@ -13,10 +13,10 @@ struct ContactInfo
     const RigidBody* other;
     const size_t numContacts;
     const glm::vec2 contactDir;
-    const std::vector<ContactPoint> contactPoints;
+    const std::array<ContactPoint, 2> contactPoints;
     const float impulse;
 
-    ContactInfo(RigidBody* _other, size_t _numContacts, glm::vec2 _contactDir, std::vector<ContactPoint> _contactPoints, float _impulse) :
+    ContactInfo(RigidBody* _other, size_t _numContacts, glm::vec2 _contactDir, std::array<ContactPoint, 2> _contactPoints, float _impulse) :
         other{ _other },
         numContacts{ _numContacts },
         contactDir{ _contactDir },
@@ -44,7 +44,7 @@ public:
     ContactInfo GetContactInfo() const;
 
 private:
-    std::vector<ContactPoint> contactPoints;
+    std::array<ContactPoint, 2> contactPoints;
     float penetrationDepth;
     glm::vec2 contactNormal;
     glm::vec2 contactTangent;
@@ -52,8 +52,8 @@ private:
     size_t numContacts;
 
     // Solvers
-    std::vector<ContactSolver> normalContacts{};
-    std::vector<ContactSolver> tangentContacts{};
-    std::unique_ptr<BlockSolver> blockSolver;
+    std::array<ContactSolver, 2> tangentContacts;
+    std::array<ContactSolver, 2> normalContacts;
+    BlockSolver blockSolver;
 };
 }

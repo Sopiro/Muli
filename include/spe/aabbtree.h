@@ -48,7 +48,7 @@ public:
 
     void Reset();
 
-    const Node* Insert(AABB aabb, RigidBody* body);
+    const Node* Insert(RigidBody* body, AABB aabb);
     void Remove(RigidBody* body);
 
     // BFS tree traversal
@@ -56,9 +56,8 @@ public:
 
     void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
-    std::vector<Node*> QueryPoint(const glm::vec2& point) const;
-    std::vector<Node*> QueryRegion(const AABB& region)  const;
-
+    std::vector<Node*> Query(const glm::vec2& point) const;
+    std::vector<Node*> Query(const AABB& region)  const;
     void Query(const AABB& aabb, std::function<bool(const Node*)> callback) const;
 
     float GetTreeCost() const;

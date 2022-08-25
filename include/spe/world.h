@@ -84,8 +84,8 @@ public:
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchorA, glm::vec2 anchorB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
 
-    std::vector<RigidBody*> QueryPoint(const glm::vec2& point) const;
-    std::vector<RigidBody*> QueryRegion(const AABB& region) const;
+    std::vector<RigidBody*> Query(const glm::vec2& point) const;
+    std::vector<RigidBody*> Query(const AABB& region) const;
 
     const std::vector<RigidBody*>& GetBodies() const;
     const size_t GetSleepingBodyCount() const;

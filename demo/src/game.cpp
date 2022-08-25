@@ -79,7 +79,7 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            auto q = world->QueryPoint(mpos);
+            auto q = world->Query(mpos);
 
             if (q.size() != 0)
             {
@@ -118,7 +118,7 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            std::vector<RigidBody*> q = world->QueryPoint(mpos);
+            std::vector<RigidBody*> q = world->Query(mpos);
 
             world->Remove(q);
         }
@@ -188,6 +188,10 @@ void Game::HandleInput()
                     ImGui::BeginDisabled(!pause);
                     if (ImGui::Button("Start")) pause = false;
                     ImGui::EndDisabled();
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Restart")) InitSimulation(currentDemo);
                 }
 
                 static int f = Window::Get().GetRefreshRate();

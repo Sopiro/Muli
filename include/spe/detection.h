@@ -9,11 +9,6 @@ struct ContactPoint
 {
     glm::vec2 point;
     int32_t id;
-
-    ContactPoint(glm::vec2 _point, int32_t _id) :
-        point{ _point },
-        id{ _id }
-    {}
 };
 
 struct ContactManifold
@@ -21,12 +16,13 @@ struct ContactManifold
     RigidBody* bodyA;
     RigidBody* bodyB;
 
-    std::vector<ContactPoint> contactPoints;
+    std::array<ContactPoint, 2> contactPoints;
+    uint32_t numContacts;
     float penetrationDepth;
     glm::vec2 contactNormal;
     bool featureFlipped;
 };
 
-std::optional<ContactManifold> detect_collision(RigidBody* a, RigidBody* b);
+bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* res = nullptr);
 bool test_point_inside(RigidBody* body, const glm::vec2& point);
 }

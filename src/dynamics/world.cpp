@@ -45,10 +45,10 @@ void World::Step(float dt)
 
 		// Narrow Phase
 		// Execute more accurate and expensive collision detection
-		std::optional<ContactManifold> newManifold = detect_collision(a, b);
-		if (!newManifold.has_value()) continue;
+		ContactManifold newManifold;
+		if (detect_collision(a, b, &newManifold) == false) continue;
 
-		ContactConstraint& cc = newContactConstraints.emplace_back(std::move(newManifold.value()), settings);
+		ContactConstraint& cc = newContactConstraints.emplace_back(std::move(newManifold), settings);
 		newContactConstraintMap.insert({ pairID.key, &cc });
 
 		a->manifoldIDs.push_back(pairID.key);
@@ -289,10 +289,10 @@ void World::Remove(const std::vector<Joint*>& joints)
 	}
 }
 
-std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
+std::vector<RigidBody*> World::Query(const glm::vec2& point) const
 {
 	std::vector<RigidBody*> res;
-	std::vector<Node*> nodes = broadphase.tree.QueryPoint(point);
+	std::vector<Node*> nodes = broadphase.tree.Query(point);
 
 	for (size_t i = 0; i < nodes.size(); i++)
 	{
@@ -307,10 +307,10 @@ std::vector<RigidBody*> World::QueryPoint(const glm::vec2& point) const
 	return res;
 }
 
-std::vector<RigidBody*> World::QueryRegion(const AABB& region) const
+std::vector<RigidBody*> World::Query(const AABB& region) const
 {
 	std::vector<RigidBody*> res;
-	std::vector<Node*> nodes = broadphase.tree.QueryRegion(region);
+	std::vector<Node*> nodes = broadphase.tree.Query(region);
 
 	for (size_t i = 0; i < nodes.size(); i++)
 	{

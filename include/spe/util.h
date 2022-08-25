@@ -16,7 +16,7 @@ union PairID
     uint64_t key;
 };
 
-struct uv
+struct UV
 {
     float u;
     float v;
@@ -37,7 +37,7 @@ inline float calculate_circle_inertia(float radius, float mass)
 }
 
 // Project point P to line segment AB, calculate barycentric weights
-inline uv get_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
+inline UV get_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
 {
     glm::vec2 dir = b - a;
     float len = glm::length(dir);
@@ -49,7 +49,7 @@ inline uv get_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
-inline glm::vec2 lerp_vector(glm::vec2 a, glm::vec2 b, uv uv)
+inline glm::vec2 lerp_vector(glm::vec2 a, glm::vec2 b, UV uv)
 {
     return { a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }

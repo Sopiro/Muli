@@ -36,7 +36,7 @@ void AABBTree::Reset()
     root = nullptr;
 }
 
-const Node* AABBTree::Insert(AABB aabb, RigidBody* body)
+const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
 {
     Node* newNode = new Node(nodeID++, aabb, true);
     newNode->body = body;
@@ -484,7 +484,7 @@ void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*
     }
 }
 
-std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point) const
+std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
 {
     std::vector<Node*> res;
 
@@ -515,7 +515,7 @@ std::vector<Node*> AABBTree::QueryPoint(const glm::vec2& point) const
     return res;
 }
 
-std::vector<Node*> AABBTree::QueryRegion(const AABB& region) const
+std::vector<Node*> AABBTree::Query(const AABB& region) const
 {
     std::vector<Node*> res;
 

@@ -26,13 +26,11 @@ class ContactSolver
     friend class BlockSolver;
 
 public:
-    ContactSolver(ContactConstraint& _cc, const glm::vec2& _contactPoint);
-
     void Prepare(const glm::vec2& dir, ContactType contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
-    ContactConstraint& cc;
+    ContactConstraint* cc;
     glm::vec2 contactPoint;
     ContactType contactType;
 

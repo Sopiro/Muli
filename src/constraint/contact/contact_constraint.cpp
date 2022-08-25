@@ -8,25 +8,23 @@ ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Sett
     Constraint(manifold.bodyA, manifold.bodyB, _settings)
 {
     contactPoints = manifold.contactPoints;
+    numContacts = manifold.numContacts;
     penetrationDepth = manifold.penetrationDepth;
     contactNormal = manifold.contactNormal;
     contactTangent = glm::vec2(-contactNormal.y, contactNormal.x);
     featureFlipped = manifold.featureFlipped;
 
-    numContacts = contactPoints.size();
-
-    normalContacts.reserve(numContacts);
-    tangentContacts.reserve(numContacts);
-
     for (size_t i = 0; i < numContacts; i++)
     {
-        normalContacts.emplace_back(*this, contactPoints[i].point);
-        tangentContacts.emplace_back(*this, contactPoints[i].point);
+        normalContacts[i].cc = this;
+        normalContacts[i].contactPoint = contactPoints[i].point;
+        tangentContacts[i].cc = this;
+        tangentContacts[i].contactPoint = contactPoints[i].point;
     }
 
     if (numContacts == 2 && settings.BLOCK_SOLVE)
     {
-        blockSolver = std::unique_ptr<BlockSolver>(new BlockSolver(*this));
+        blockSolver.cc = this;
     }
 }
 
@@ -40,7 +38,7 @@ void ContactConstraint::Prepare()
 
     if (numContacts == 2 && settings.BLOCK_SOLVE)
     {
-        blockSolver->Prepare();
+        blockSolver.Prepare();
     }
 }
 
@@ -61,7 +59,7 @@ void ContactConstraint::Solve()
     }
     else // Solve two contact constraint in one shot using block solver
     {
-        blockSolver->Solve();
+        blockSolver.Solve();
     }
 }
 

@@ -23,7 +23,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     {
         const glm::vec2 a = vertices[0];
         const glm::vec2 b = vertices[1];
-        const uv w = get_uv(a, b, q);
+        const UV w = get_uv(a, b, q);
 
         if (w.v <= 0)
         {
@@ -54,9 +54,9 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
         const glm::vec2 b = vertices[1];
         const glm::vec2 c = vertices[2];
 
-        const uv wab = get_uv(a, b, q);
-        const uv wbc = get_uv(b, c, q);
-        const uv wca = get_uv(c, a, q);
+        const UV wab = get_uv(a, b, q);
+        const UV wbc = get_uv(b, c, q);
+        const UV wca = get_uv(c, a, q);
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {

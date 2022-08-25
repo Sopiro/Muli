@@ -4,12 +4,6 @@
 namespace spe
 {
 
-BlockSolver::BlockSolver(ContactConstraint& _cc) :
-    cc{ _cc }
-{
-
-}
-
 void BlockSolver::Prepare()
 {
     // Calculate Jacobian J and effective mass M
@@ -18,8 +12,8 @@ void BlockSolver::Prepare()
     // K = (J · M^-1 · J^t)
     // M = K^-1
 
-    nc1 = &cc.normalContacts[0];
-    nc2 = &cc.normalContacts[1];
+    nc1 = &cc->normalContacts[0];
+    nc2 = &cc->normalContacts[1];
 
     j1 = &nc1->jacobian;
     j2 = &nc2->jacobian;
@@ -27,22 +21,22 @@ void BlockSolver::Prepare()
     k = glm::mat2{ 1.0f };
 
     k[0][0]
-        = cc.bodyA->invMass
-        + j1->wa * cc.bodyA->invInertia * j1->wa
-        + cc.bodyB->invMass
-        + j1->wb * cc.bodyB->invInertia * j1->wb;
+        = cc->bodyA->invMass
+        + j1->wa * cc->bodyA->invInertia * j1->wa
+        + cc->bodyB->invMass
+        + j1->wb * cc->bodyB->invInertia * j1->wb;
 
     k[1][1]
-        = cc.bodyA->invMass
-        + j2->wa * cc.bodyA->invInertia * j2->wa
-        + cc.bodyB->invMass
-        + j2->wb * cc.bodyB->invInertia * j2->wb;
+        = cc->bodyA->invMass
+        + j2->wa * cc->bodyA->invInertia * j2->wa
+        + cc->bodyB->invMass
+        + j2->wb * cc->bodyB->invInertia * j2->wb;
 
     k[0][1]
-        = cc.bodyA->invMass
-        + j1->wa * cc.bodyA->invInertia * j2->wa
-        + cc.bodyB->invMass
-        + j1->wb * cc.bodyB->invInertia * j2->wb;
+        = cc->bodyA->invMass
+        + j1->wa * cc->bodyA->invInertia * j2->wa
+        + cc->bodyB->invMass
+        + j1->wb * cc->bodyB->invInertia * j2->wb;
 
     k[1][0] = k[0][1];
 
@@ -94,16 +88,16 @@ void BlockSolver::Solve()
 
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
-        = glm::dot(j1->va, cc.bodyA->linearVelocity)
-        + j1->wa * cc.bodyA->angularVelocity
-        + glm::dot(j1->vb, cc.bodyB->linearVelocity)
-        + j1->wb * cc.bodyB->angularVelocity;
+        = glm::dot(j1->va, cc->bodyA->linearVelocity)
+        + j1->wa * cc->bodyA->angularVelocity
+        + glm::dot(j1->vb, cc->bodyB->linearVelocity)
+        + j1->wb * cc->bodyB->angularVelocity;
 
     float vn2
-        = glm::dot(j2->va, cc.bodyA->linearVelocity)
-        + j2->wa * cc.bodyA->angularVelocity
-        + glm::dot(j2->vb, cc.bodyB->linearVelocity)
-        + j2->wb * cc.bodyB->angularVelocity;
+        = glm::dot(j2->va, cc->bodyA->linearVelocity)
+        + j2->wa * cc->bodyA->angularVelocity
+        + glm::dot(j2->vb, cc->bodyB->linearVelocity)
+        + j2->wb * cc->bodyB->angularVelocity;
 
     glm::vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
 
@@ -185,10 +179,10 @@ void BlockSolver::ApplyImpulse(const glm::vec2& lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    cc.bodyA->linearVelocity += j1->va * (cc.bodyA->invMass * (lambda.x + lambda.y));
-    cc.bodyA->angularVelocity += cc.bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
-    cc.bodyB->linearVelocity += j1->vb * (cc.bodyB->invMass * (lambda.x + lambda.y));
-    cc.bodyB->angularVelocity += cc.bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
+    cc->bodyA->linearVelocity += j1->va * (cc->bodyA->invMass * (lambda.x + lambda.y));
+    cc->bodyA->angularVelocity += cc->bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
+    cc->bodyB->linearVelocity += j1->vb * (cc->bodyB->invMass * (lambda.x + lambda.y));
+    cc->bodyB->angularVelocity += cc->bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
 }
 
 }

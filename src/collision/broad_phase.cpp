@@ -25,6 +25,12 @@ void BroadPhase::Update(float dt)
         AABB treeAABB = node->aabb;
 
         AABB aabb = body->GetAABB();
+
+        if (contains_AABB(treeAABB, aabb))
+        {
+            continue;
+        }
+
         glm::vec2 d = body->linearVelocity * dt * velocityMultiplier;
         if (d.x > 0.0f)
             aabb.max.x += d.x;
@@ -34,12 +40,6 @@ void BroadPhase::Update(float dt)
             aabb.max.y += d.y;
         else
             aabb.min.y += d.y;
-
-        if (contains_AABB(treeAABB, aabb))
-        {
-            continue;
-        }
-
         aabb.max += margin;
         aabb.min -= margin;
 
@@ -70,10 +70,8 @@ void BroadPhase::Update(float dt)
                 return true;
             });
 
-        tree.Insert(aabb, body);
+        tree.Insert(body, aabb);
     }
-
-    // log(pairs.size());
 }
 
 void BroadPhase::Reset()
@@ -88,21 +86,7 @@ void BroadPhase::Add(RigidBody* body)
     fatAABB.min -= margin;
     fatAABB.max += margin;
 
-    tree.Query(fatAABB,
-        [&](const Node* n) -> bool
-        {
-            assert(body != n->body);
-
-            if (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static)
-                return true;
-
-            PairID pairID = combine_id(body->GetID(), n->body->GetID());
-            pairs.insert(pairID.key);
-
-            return true;
-        });
-
-    tree.Insert(fatAABB, body);
+    tree.Insert(body, fatAABB);
 }
 
 void BroadPhase::Remove(RigidBody* body)

@@ -10,14 +10,14 @@ struct Jacobian;
 
 class BlockSolver
 {
-public:
-    BlockSolver(ContactConstraint& _cc);
+    friend class ContactConstraint;
 
+public:
     void Prepare();
     void Solve();
 
 private:
-    ContactConstraint& cc;
+    ContactConstraint* cc;
 
     ContactSolver* nc1;
     ContactSolver* nc2;
