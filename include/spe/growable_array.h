@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdlib.h"
-#include "stdio.h"
 
 template <typename T, uint32_t N>
 class GrowableArray
@@ -21,6 +20,58 @@ public:
             free(array);
             array = nullptr;
         }
+    }
+
+    GrowableArray(const GrowableArray& other) noexcept
+    {
+        operator=(other);
+    }
+
+    GrowableArray& operator=(const GrowableArray& other) noexcept
+    {
+        assert(this != &other);
+        if (other.array == other.stack_array)
+        {
+            array = stack_array;
+            memcpy(stack_array, other.stack_array, other.count * sizeof(T));
+        }
+        else
+        {
+            array = (T*)malloc(other.capacity * sizeof(T));
+            memcpy(array, other.array, other.count * sizeof(T));
+        }
+
+        capacity = other.capacity;
+        count = other.count;
+
+        return *this;
+    }
+
+    GrowableArray(GrowableArray&& other) noexcept
+    {
+        operator=(std::move(other));
+    }
+
+    GrowableArray& operator=(GrowableArray&& other) noexcept
+    {
+        assert(this != &other);
+        if (other.array == other.stack_array)
+        {
+            array = stack_array;
+            memcpy(stack_array, other.stack_array, other.count * sizeof(T));
+        }
+        else
+        {
+            array = other.array;
+            other.array = other.stack_array;
+            other.count = 0;
+            other.capacity = N;
+        }
+
+        capacity = other.capacity;
+        count = other.count;
+
+        return *this;
     }
 
     void Push(const T& data)
@@ -75,7 +126,6 @@ public:
         }
 
         uint32_t ptr = count;
-
         while (index != ptr)
         {
             array[ptr] = array[ptr - 1];
@@ -90,7 +140,6 @@ public:
     void Remove(uint32_t index)
     {
         uint32_t ptr = index;
-
         while (ptr != count)
         {
             array[ptr] = array[ptr + 1];
@@ -105,8 +154,18 @@ public:
         return count;
     }
 
+    void Clear()
+    {
+        count = 0;
+    }
+
     void Reset()
     {
+        if (array != stack_array)
+        {
+            free(array);
+        }
+        array = stack_array;
         count = 0;
     }
 

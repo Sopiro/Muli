@@ -76,7 +76,7 @@ void World::Step(float dt)
 	sleepingBodies = 0;
 
 	std::unordered_set<uint32_t> visited{};
-	std::stack<RigidBody*> stack;
+	GrowableArray<RigidBody*, 256> stack;
 
 	// Perform a DFS(Depth First Search) on the constraint graph
 	// After building island, each island can be solved in parallel because they are independent of each other
@@ -87,14 +87,13 @@ void World::Step(float dt)
 		if (b->type == BodyType::Static || (visited.find(b->id) != visited.end()))
 			continue;
 
-		stack = std::stack<RigidBody*>();
-		stack.push(b);
+		stack.Clear();
+		stack.Push(b);
 
 		islandID++;
-		while (stack.size() > 0)
+		while (stack.Count() > 0)
 		{
-			RigidBody* t = stack.top();
-			stack.pop();
+			RigidBody* t = stack.Pop();
 
 			if (t->type == BodyType::Static || (visited.find(t->id) != visited.end()))
 				continue;
@@ -114,7 +113,7 @@ void World::Step(float dt)
 					continue;
 
 				island.ccs.push_back(cc);
-				stack.push(other);
+				stack.Push(other);
 			}
 
 			for (size_t j = 0; j < t->jointIDs.size(); j++)
@@ -134,7 +133,7 @@ void World::Step(float dt)
 					continue;
 
 				island.js.push_back(joint);
-				stack.push(other);
+				stack.Push(other);
 			}
 
 			if (t->resting > settings.SLEEPING_TRESHOLD)
