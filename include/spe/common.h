@@ -29,6 +29,8 @@
 #include <functional>
 #include <array>
 
+#include "growable_array.h"
+
 // Some useful operator overloading for glm containers
 namespace glm
 {

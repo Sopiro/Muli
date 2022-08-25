@@ -149,7 +149,7 @@ static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
         if (glm::abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
         {
             // Insert the support vertex so that it expands our polytope
-            polytope.vertices.insert(polytope.vertices.begin() + closestEdge.index + 1, supportPoint);
+            polytope.vertices.Insert(closestEdge.index + 1, supportPoint);
         }
         else
         {

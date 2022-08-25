@@ -2,12 +2,13 @@
 
 #include "common.h"
 #include "simplex.h"
+#include "growable_array.h"
 
 namespace spe
 {
 struct ClosestEdgeInfo
 {
-    size_t index;
+    uint32_t index;
     float distance;
     glm::vec2 normal;
 };
@@ -15,17 +16,17 @@ struct ClosestEdgeInfo
 class Polytope
 {
 public:
-    std::vector<glm::vec2> vertices;
+    GrowableArray<glm::vec2, 8> vertices;
 
     Polytope(const Simplex& simplex);
 
     ClosestEdgeInfo GetClosestEdge() const;
-    size_t Count() const;
+    uint32_t Count() const;
 };
 
-inline size_t Polytope::Count() const
+inline uint32_t Polytope::Count() const
 {
-    return vertices.size();
+    return vertices.Count();
 }
 
 }
