@@ -22,20 +22,6 @@ AABBTree::~AABBTree()
     Reset();
 }
 
-void AABBTree::Reset()
-{
-    Traverse
-    (
-        [&](const Node* n) -> void
-        {
-            delete n;
-        }
-    );
-
-    nodeID = 0;
-    root = nullptr;
-}
-
 const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
 {
     Node* newNode = new Node(nodeID++, aabb, true);
@@ -52,14 +38,14 @@ const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
     Node* bestSibling = root;
     float bestCost = area(union_of(root->aabb, aabb));
 
-    std::queue<std::pair<Node*, float>> q;
-    q.emplace(root, 0.0f);
+    GrowableArray<std::pair<Node*, float>, 16> stack;
+    stack.Push({ root, 0.0f });
 
-    while (q.size() != 0)
+    while (stack.Count() != 0)
     {
-        Node* current = q.front().first;
-        float inheritedCost = q.front().second;
-        q.pop();
+        Node* current = stack.Back().first;
+        float inheritedCost = stack.Back().second;
+        stack.Pop();
 
         AABB combined = union_of(current->aabb, aabb);
         float directCost = area(combined);
@@ -78,8 +64,8 @@ const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
         {
             if (!current->isLeaf)
             {
-                q.emplace(current->child1, inheritedCost);
-                q.emplace(current->child2, inheritedCost);
+                stack.Push({ current->child1, inheritedCost });
+                stack.Push({ current->child2, inheritedCost });
             }
         }
     }
@@ -130,103 +116,6 @@ const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
 
     return newNode;
 }
-
-/*
-const Node* AABBTree::Insert(AABB aabb, RigidBody* body)
-{
-    Node* newNode = new Node(nodeID++, std::move(aabb), true);
-    newNode->body = body;
-    body->node = newNode;
-
-    if (root == nullptr)
-    {
-        root = newNode;
-        return newNode;
-    }
-
-    // Find the best sibling for the new leaf
-    Node* bestSibling = root;
-    float bestCost = area(union_of(root->aabb, aabb));
-
-    std::queue<std::pair<Node*, float>> q;
-    q.emplace(root, 0.0f);
-
-    while (q.size() != 0)
-    {
-        Node* current = q.front().first;
-        float inheritedCost = q.front().second;
-        q.pop();
-
-        AABB combined = union_of(current->aabb, aabb);
-        float directCost = area(combined);
-
-        float costForCurrent = directCost + inheritedCost;
-        if (costForCurrent < bestCost)
-        {
-            bestCost = costForCurrent;
-            bestSibling = current;
-        }
-
-        inheritedCost += directCost - area(current->aabb);
-
-        float lowerBoundCost = area(aabb) + inheritedCost;
-        if (lowerBoundCost < bestCost)
-        {
-            if (!current->isLeaf)
-            {
-                q.emplace(current->child1, inheritedCost);
-                q.emplace(current->child2, inheritedCost);
-            }
-        }
-    }
-
-    // Create a new parent
-    Node* oldParent = bestSibling->parent;
-    Node* newParent = new Node(nodeID++, union_of(aabb, bestSibling->aabb), false);
-    newParent->parent = oldParent;
-
-    if (oldParent != nullptr)
-    {
-        if (oldParent->child1 == bestSibling)
-        {
-            oldParent->child1 = newParent;
-        }
-        else
-        {
-            oldParent->child2 = newParent;
-        }
-
-        newParent->child1 = bestSibling;
-        newParent->child2 = newNode;
-        bestSibling->parent = newParent;
-        newNode->parent = newParent;
-    }
-    else
-    {
-        newParent->child1 = bestSibling;
-        newParent->child2 = newNode;
-        bestSibling->parent = newParent;
-        newNode->parent = newParent;
-        root = newParent;
-    }
-
-    // Walk back up the tree refitting ancestors' AABB and applying rotations
-    Node* ancestor = newNode->parent;
-    while (ancestor != nullptr)
-    {
-        Node* child1 = ancestor->child1;
-        Node* child2 = ancestor->child2;
-
-        ancestor->aabb = union_of(child1->aabb, child2->aabb);
-
-        Rotate(ancestor);
-
-        ancestor = ancestor->parent;
-    }
-
-    return newNode;
-}
-*/
 
 void AABBTree::Remove(RigidBody* body)
 {
@@ -291,7 +180,7 @@ void AABBTree::Rotate(Node* node)
     Node* sibling = parent->child1 == node ? parent->child2 : parent->child1;
 
     size_t count = 2;
-    std::array<float, 4> costDiffs;
+    float costDiffs[4];
     float nodeArea = area(node->aabb);
 
     costDiffs[0] = area(union_of(sibling->aabb, node->child1->aabb)) - nodeArea;
@@ -404,18 +293,17 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
 {
     if (root == nullptr) return;
 
-    std::queue<const Node*> q;
-    q.push(root);
+    GrowableArray<const Node*, 16> stack;
+    stack.Push(root);
 
-    while (q.size() != 0)
+    while (stack.Count() != 0)
     {
-        const Node* current = q.front();
-        q.pop();
+        const Node* current = stack.Pop();
 
         if (!current->isLeaf)
         {
-            q.push(current->child1);
-            q.push(current->child2);
+            stack.Push(current->child1);
+            stack.Push(current->child2);
         }
 
         callback(current);
@@ -490,13 +378,12 @@ std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
 
     if (root == nullptr) return res;
 
-    std::queue<Node*> q;
-    q.push(root);
+    GrowableArray<Node*, 16> stack;
+    stack.Push(root);
 
-    while (q.size() != 0)
+    while (stack.Count() != 0)
     {
-        Node* current = q.front();
-        q.pop();
+        Node* current = stack.Pop();
 
         if (!test_point_inside_AABB(current->aabb, point))
             continue;
@@ -507,8 +394,8 @@ std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
         }
         else
         {
-            q.push(current->child1);
-            q.push(current->child2);
+            stack.Push(current->child1);
+            stack.Push(current->child2);
         }
     }
 
@@ -521,13 +408,12 @@ std::vector<Node*> AABBTree::Query(const AABB& region) const
 
     if (root == nullptr) return res;
 
-    std::queue<Node*> q;
-    q.push(root);
+    GrowableArray<Node*, 16> stack;
+    stack.Push(root);
 
-    while (q.size() != 0)
+    while (stack.Count() != 0)
     {
-        Node* current = q.front();
-        q.pop();
+        Node* current = stack.Pop();
 
         if (!detect_collision_AABB(current->aabb, region))
             continue;
@@ -538,8 +424,8 @@ std::vector<Node*> AABBTree::Query(const AABB& region) const
         }
         else
         {
-            q.push(current->child1);
-            q.push(current->child2);
+            stack.Push(current->child1);
+            stack.Push(current->child2);
         }
     }
 
@@ -550,13 +436,12 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
 {
     if (root == nullptr) return;
 
-    std::queue<Node*> q;
-    q.push(root);
+    GrowableArray<Node*, 16> stack;
+    stack.Push(root);
 
-    while (q.size() != 0)
+    while (stack.Count() != 0)
     {
-        Node* current = q.front();
-        q.pop();
+        Node* current = stack.Pop();
 
         if (!detect_collision_AABB(current->aabb, aabb))
             continue;
@@ -568,30 +453,10 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
         }
         else
         {
-            q.push(current->child1);
-            q.push(current->child2);
+            stack.Push(current->child1);
+            stack.Push(current->child2);
         }
     }
-}
-
-float AABBTree::GetTreeCost() const
-{
-    float cost = 0.0f;
-
-    Traverse
-    (
-        [&](const Node* node) -> void
-        {
-            cost += area(node->aabb);
-        }
-    );
-
-    return cost;
-}
-
-float AABBTree::GetMarginSize() const
-{
-    return aabbMargin;
 }
 
 }

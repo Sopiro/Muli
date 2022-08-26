@@ -111,7 +111,7 @@ void Game::HandleInput()
         {
             if (gj != nullptr)
             {
-                world->Remove(gj);
+                world->Destroy(gj);
                 gj = nullptr;
             }
         }
@@ -120,7 +120,7 @@ void Game::HandleInput()
         {
             std::vector<RigidBody*> q = world->Query(mpos);
 
-            world->Remove(q);
+            world->Destroy(q);
         }
 
         if (Input::GetMouseScroll().y != 0)
@@ -358,7 +358,9 @@ void Game::Render()
 
         for (size_t i = 0; i < cc.size(); i++)
         {
-            auto ci = cc[i].GetContactInfo();
+            ContactInfo ci;
+            cc[i].GetContactInfo(&ci);
+
             for (size_t j = 0; j < ci.numContacts; j++)
             {
                 points.push_back(ci.contactPoints[j].point);

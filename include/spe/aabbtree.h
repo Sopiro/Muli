@@ -51,9 +51,7 @@ public:
     const Node* Insert(RigidBody* body, AABB aabb);
     void Remove(RigidBody* body);
 
-    // BFS tree traversal
     void Traverse(std::function<void(const Node*)> callback) const;
-
     void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
     std::vector<Node*> Query(const glm::vec2& point) const;
@@ -73,5 +71,39 @@ private:
     void Swap(Node* node1, Node* node2);
     void CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint64_t>& checked) const;
 };
+
+inline void AABBTree::Reset()
+{
+    Traverse
+    (
+        [&](const Node* n) -> void
+        {
+            delete n;
+        }
+    );
+
+    nodeID = 0;
+    root = nullptr;
+}
+
+inline float AABBTree::GetTreeCost() const
+{
+    float cost = 0.0f;
+
+    Traverse
+    (
+        [&](const Node* node) -> void
+        {
+            cost += area(node->aabb);
+        }
+    );
+
+    return cost;
+}
+
+inline float AABBTree::GetMarginSize() const
+{
+    return aabbMargin;
+}
 
 }

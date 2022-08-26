@@ -67,10 +67,10 @@ public:
 
     void Add(RigidBody* body);
     void Add(const std::vector<RigidBody*>& bodies);
-    void Remove(RigidBody* body);
-    void Remove(const std::vector<RigidBody*>& bodies);
-    void Remove(Joint* joint);
-    void Remove(const std::vector<Joint*>& joints);
+    void Destroy(RigidBody* body);
+    void Destroy(const std::vector<RigidBody*>& bodies);
+    void Destroy(Joint* joint);
+    void Destroy(const std::vector<Joint*>& joints);
 
     Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);

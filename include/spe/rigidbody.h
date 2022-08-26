@@ -112,7 +112,7 @@ private:
     uint32_t id{ 0 };
     uint32_t islandID{ 0 };
 
-    std::vector<uint64_t> manifoldIDs{};            // ids of contact manifold containing this body
+    std::vector<uint64_t> contactConstraintIDs{};            // ids of contact manifold containing this body
     std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
 
     float resting{ 0.0f };

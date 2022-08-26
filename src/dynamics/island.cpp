@@ -100,7 +100,9 @@ void Island::Solve()
         b->rotation += b->angularVelocity * world.settings.DT;
 
         if (!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
-            world.Remove(b);
+        {
+            world.Destroy(b);
+        }
     }
 }
 

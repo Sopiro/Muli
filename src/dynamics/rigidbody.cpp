@@ -47,7 +47,7 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     id = _other.id;
     islandID = _other.islandID;
 
-    manifoldIDs = std::move(_other.manifoldIDs);
+    contactConstraintIDs = std::move(_other.contactConstraintIDs);
     jointIDs = std::move(_other.jointIDs);
 
     resting = _other.resting;

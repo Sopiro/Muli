@@ -9,7 +9,7 @@ namespace spe
 struct ClosestResult
 {
     glm::vec2 result;
-    std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT> contributors; // Vertex indices that contributed to calculating the closest point
+    uint32_t contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
     uint32_t count;
 };
 
@@ -18,13 +18,13 @@ class Simplex
 public:
     Simplex() = default;
 
-    std::array<glm::vec2, MAX_SIMPLEX_VERTEX_COUNT> vertices{};
+    glm::vec2 vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
     size_t Count() const;
     void Clear();
     void AddVertex(const glm::vec2& vertex);
     bool ContainsVertex(const glm::vec2& vertex) const;
-    void Shrink(const std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT>& _indices, uint32_t _count);
+    void Shrink(const uint32_t* _indices, uint32_t _count);
 
     // Returns the closest point to the input q
     ClosestResult GetClosest(const glm::vec2& q) const;
@@ -54,7 +54,7 @@ inline void Simplex::AddVertex(const glm::vec2& vertex)
 
 inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
 {
-    for (size_t i = 0; i < vertices.size(); i++)
+    for (size_t i = 0; i < count; i++)
     {
         if (vertex == vertices[i])
             return true;
@@ -63,16 +63,16 @@ inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
     return false;
 }
 
-inline void Simplex::Shrink(const std::array<uint32_t, MAX_SIMPLEX_VERTEX_COUNT>& _indices, uint32_t _count)
+inline void Simplex::Shrink(const uint32_t* _indices, uint32_t _count)
 {
-    std::array<glm::vec2, MAX_SIMPLEX_VERTEX_COUNT> tmp;
+    glm::vec2 tmp[MAX_SIMPLEX_VERTEX_COUNT];
 
     for (uint32_t i = 0; i < _count; i++)
     {
         tmp[i] = vertices[_indices[i]];
     }
 
-    vertices = std::move(tmp);
+    memcpy(vertices, tmp, _count * sizeof(glm::vec2));
     count = _count;
 }
 

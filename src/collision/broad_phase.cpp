@@ -16,7 +16,7 @@ void BroadPhase::Update(float dt)
     for (size_t i = 0; i < world.bodies.size(); i++)
     {
         RigidBody* body = world.bodies[i];
-        body->manifoldIDs.clear();
+        body->contactConstraintIDs.clear();
 
         if (body->sleeping) continue;
         if (body->type == BodyType::Static) body->sleeping = true;

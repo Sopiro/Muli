@@ -7,7 +7,7 @@ namespace spe
 ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Settings& _settings) :
     Constraint(manifold.bodyA, manifold.bodyB, _settings)
 {
-    contactPoints = manifold.contactPoints;
+    memcpy(contactPoints, manifold.contactPoints, manifold.numContacts * sizeof(ContactPoint));
     numContacts = manifold.numContacts;
     penetrationDepth = manifold.penetrationDepth;
     contactNormal = manifold.contactNormal;
@@ -95,25 +95,6 @@ void ContactConstraint::TryWarmStart(const ContactConstraint& oldCC)
             persistent = true;
         }
     }
-}
-
-ContactInfo ContactConstraint::GetContactInfo() const
-{
-    float impulse = 0.0f;
-
-    for (size_t i = 0; i < numContacts; i++)
-    {
-        impulse += normalContacts[i].impulseSum;
-    }
-
-    return ContactInfo
-    {
-        featureFlipped ? bodyB : bodyA,
-        numContacts,
-        featureFlipped ? -contactNormal : contactNormal,
-        contactPoints,
-        impulse
-    };
 }
 
 }

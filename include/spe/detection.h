@@ -16,7 +16,7 @@ struct ContactManifold
     RigidBody* bodyA;
     RigidBody* bodyB;
 
-    std::array<ContactPoint, 2> contactPoints;
+    ContactPoint contactPoints[2];
     uint32_t numContacts;
     float penetrationDepth;
     glm::vec2 contactNormal;

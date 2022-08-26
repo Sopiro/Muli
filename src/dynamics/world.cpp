@@ -48,11 +48,11 @@ void World::Step(float dt)
 		ContactManifold newManifold;
 		if (detect_collision(a, b, &newManifold) == false) continue;
 
-		ContactConstraint& cc = newContactConstraints.emplace_back(std::move(newManifold), settings);
+		ContactConstraint& cc = newContactConstraints.emplace_back(newManifold, settings);
 		newContactConstraintMap.insert({ pairID.key, &cc });
 
-		a->manifoldIDs.push_back(pairID.key);
-		b->manifoldIDs.push_back(pairID.key);
+		a->contactConstraintIDs.push_back(pairID.key);
+		b->contactConstraintIDs.push_back(pairID.key);
 
 		if (settings.WARM_STARTING)
 		{
@@ -102,9 +102,9 @@ void World::Step(float dt)
 			t->islandID = islandID;
 			island.bodies.push_back(t);
 
-			for (size_t c = 0; c < t->manifoldIDs.size(); c++)
+			for (size_t c = 0; c < t->contactConstraintIDs.size(); c++)
 			{
-				uint64_t key = t->manifoldIDs[c];
+				uint64_t key = t->contactConstraintIDs[c];
 				ContactConstraint* cc = contactConstraintMap[key];
 
 				RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
@@ -197,14 +197,14 @@ void World::Add(const std::vector<RigidBody*>& bodies)
 	}
 }
 
-void World::Remove(RigidBody* body)
+void World::Destroy(RigidBody* body)
 {
 	auto it = std::find(bodies.begin(), bodies.end(), body);
 	if (it == bodies.end()) throw std::exception("This body is not registered in this world.");;
 
-	for (size_t i = 0; i < body->manifoldIDs.size(); i++)
+	for (size_t i = 0; i < body->contactConstraintIDs.size(); i++)
 	{
-		uint64_t key = body->manifoldIDs[i];
+		uint64_t key = body->contactConstraintIDs[i];
 		ContactConstraint* cc = contactConstraintMap[key];
 
 		RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
@@ -227,6 +227,8 @@ void World::Remove(RigidBody* body)
 		}
 
 		jointMap.erase(key);
+
+		delete joint;
 	}
 
 	joints.clear();
@@ -239,15 +241,15 @@ void World::Remove(RigidBody* body)
 	delete body;
 }
 
-void World::Remove(const std::vector<RigidBody*>& bodies)
+void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
-		Remove(bodies[i]);
+		Destroy(bodies[i]);
 	}
 }
 
-void World::Remove(Joint* joint)
+void World::Destroy(Joint* joint)
 {
 	if (std::find(joints.begin(), joints.end(), joint) == joints.end())
 		throw std::exception("This joint is not registered in this world.");;
@@ -280,11 +282,11 @@ void World::Remove(Joint* joint)
 	delete joint;
 }
 
-void World::Remove(const std::vector<Joint*>& joints)
+void World::Destroy(const std::vector<Joint*>& joints)
 {
 	for (size_t i = 0; i < joints.size(); i++)
 	{
-		Remove(joints[i]);
+		Destroy(joints[i]);
 	}
 }
 

@@ -10,20 +10,11 @@ namespace spe
 {
 struct ContactInfo
 {
-    const RigidBody* other;
-    const size_t numContacts;
-    const glm::vec2 contactDir;
-    const std::array<ContactPoint, 2> contactPoints;
-    const float impulse;
-
-    ContactInfo(RigidBody* _other, size_t _numContacts, glm::vec2 _contactDir, std::array<ContactPoint, 2> _contactPoints, float _impulse) :
-        other{ _other },
-        numContacts{ _numContacts },
-        contactDir{ _contactDir },
-        contactPoints{ _contactPoints },
-        impulse{ _impulse }
-    {
-    }
+    RigidBody* other;
+    size_t numContacts;
+    ContactPoint contactPoints[2];
+    glm::vec2 contactDir;
+    float impulse;
 };
 
 class ContactConstraint : public Constraint
@@ -38,22 +29,38 @@ public:
     virtual void Prepare() override;
     virtual void Solve() override;
     void TryWarmStart(const ContactConstraint& oldCC);
-
-    bool persistent{ false };
-
-    ContactInfo GetContactInfo() const;
+    void GetContactInfo(ContactInfo* out) const;
 
 private:
-    std::array<ContactPoint, 2> contactPoints;
+    ContactPoint contactPoints[2];
     float penetrationDepth;
     glm::vec2 contactNormal;
     glm::vec2 contactTangent;
     bool featureFlipped;
     size_t numContacts;
+    bool persistent{ false };
 
     // Solvers
-    std::array<ContactSolver, 2> tangentContacts;
-    std::array<ContactSolver, 2> normalContacts;
+    ContactSolver tangentContacts[2];
+    ContactSolver normalContacts[2];
     BlockSolver blockSolver;
 };
+
+inline void ContactConstraint::GetContactInfo(ContactInfo* out) const
+{
+    float impulse = 0.0f;
+
+    for (size_t i = 0; i < numContacts; i++)
+    {
+        impulse += normalContacts[i].impulseSum;
+    }
+
+    out->other = featureFlipped ? bodyB : bodyA;
+    out->numContacts = numContacts;
+    out->contactDir = featureFlipped ? -contactNormal : contactNormal;
+    out->impulse = impulse;
+
+    memcpy(out->contactPoints, contactPoints, numContacts * sizeof(ContactPoint));
+}
+
 }
