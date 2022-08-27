@@ -8,6 +8,7 @@
 
 namespace spe
 {
+
 class RigidBodyRenderer final : public Renderer
 {
     friend class RigidBodyShader;
@@ -75,7 +76,7 @@ inline void RigidBodyRenderer::Unregister(RigidBody* body)
 
 inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
 {
-    for (size_t i = 0; i < bodies.size(); i++)
+    for (uint32_t i = 0; i < bodies.size(); i++)
     {
         Unregister(bodies[i]);
     }

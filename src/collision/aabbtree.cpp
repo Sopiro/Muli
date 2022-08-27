@@ -179,7 +179,7 @@ void AABBTree::Rotate(Node* node)
     Node* parent = node->parent;
     Node* sibling = parent->child1 == node ? parent->child2 : parent->child1;
 
-    size_t count = 2;
+    uint32_t count = 2;
     float costDiffs[4];
     float nodeArea = area(node->aabb);
 
@@ -195,8 +195,8 @@ void AABBTree::Rotate(Node* node)
         count += 2;
     }
 
-    size_t bestDiffIndex = 0;
-    for (size_t i = 1; i < count; i++)
+    uint32_t bestDiffIndex = 0;
+    for (uint32_t i = 1; i < count; i++)
     {
         if (costDiffs[i] < costDiffs[bestDiffIndex])
             bestDiffIndex = i;

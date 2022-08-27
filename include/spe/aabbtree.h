@@ -7,6 +7,7 @@
 
 namespace spe
 {
+
 struct Node
 {
     friend class AABBTree;

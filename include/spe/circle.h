@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class Circle : public RigidBody
 {
 public:

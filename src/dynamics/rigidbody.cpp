@@ -33,13 +33,6 @@ RigidBody::~RigidBody()
 
 RigidBody::RigidBody(RigidBody&& _other) noexcept
 {
-    *this = std::move(_other);
-}
-
-RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
-{
-    if (this == &_other) return *this;
-
     _other.moved = true;
 
     // private member
@@ -79,8 +72,6 @@ RigidBody& RigidBody::operator=(RigidBody&& _other) noexcept
     OnDestroy = std::move(_other.OnDestroy);
 
     Entity::operator=(std::move(_other));
-
-    return *this;
 }
 
 }

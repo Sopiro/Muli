@@ -7,6 +7,7 @@
 
 namespace spe
 {
+
 struct Node;
 
 enum BodyShape : uint8_t
@@ -44,7 +45,7 @@ public:
     RigidBody& operator=(const RigidBody&) = delete;
 
     RigidBody(RigidBody&& _other) noexcept;
-    RigidBody& operator=(RigidBody&& _other) noexcept;
+    RigidBody& operator=(RigidBody&& _other) = delete;
 
     const Node* GetNode() const;
 
@@ -87,10 +88,10 @@ public:
 protected:
     // Center of mass in local space = (0, 0)
     glm::vec2 force{ 0.0f };                        // N
-    float torque{ 0.0f };                           // N⋅m
+    float torque = 0.0f;                            // N⋅m
 
     glm::vec2 linearVelocity{ 0.0f };               // m/s
-    float angularVelocity{ 0.0f };                  // rad/s
+    float angularVelocity = 0.0f;                   // rad/s
 
     float density;                                  // kg/m²
     float mass;                                     // kg
@@ -98,27 +99,27 @@ protected:
     float inertia;                                  // kg⋅m²
     float invInertia;
 
-    float friction{ DEFAULT_FRICTION };
-    float restitution{ DEFAULT_RESTITUTION };
-    float surfaceSpeed{ DEFAULT_SURFACESPEED };     // m/s (Tangential speed)
+    float friction = DEFAULT_FRICTION;
+    float restitution = DEFAULT_RESTITUTION;
+    float surfaceSpeed = DEFAULT_SURFACESPEED;     // m/s (Tangential speed)
 
     BodyShape shape;
     BodyType type;
 
 private:
-    bool moved{ false };
+    bool moved = false;
 
-    World* world{ nullptr };
-    uint32_t id{ 0 };
-    uint32_t islandID{ 0 };
+    World* world = nullptr;
+    uint32_t id = 0;
+    uint32_t islandID = 0;
 
     std::vector<uint64_t> contactConstraintIDs{};            // ids of contact manifold containing this body
     std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
 
-    float resting{ 0.0f };
-    bool sleeping{ false };
+    float resting = 0.0f;
+    bool sleeping = false;
 
-    Node* node{ nullptr };
+    Node* node = nullptr;
 };
 
 inline float RigidBody::GetDensity() const

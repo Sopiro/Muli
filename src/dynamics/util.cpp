@@ -16,7 +16,7 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
     {
         area = 0;
 
-        for (int i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
         {
             auto v1 = vertices[i];
             auto v2 = vertices[(i + 1) % count];
@@ -26,7 +26,7 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
         area *= 0.5;
     }
 
-    for (int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
     {
         auto v1 = vertices[i];
         auto v2 = vertices[(i + 1) % count];

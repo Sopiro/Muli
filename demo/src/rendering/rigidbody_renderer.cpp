@@ -15,7 +15,7 @@ void RigidBodyRenderer::Render()
 {
     shader->Use();
 
-    for (size_t i = 0; i < bodiesAndMeshes.size(); i++)
+    for (uint32_t i = 0; i < bodiesAndMeshes.size(); i++)
     {
         RigidBody* body = bodiesAndMeshes[i].first;
         std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;

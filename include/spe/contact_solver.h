@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 class ContactConstraint;
 
 enum ContactType : uint8_t

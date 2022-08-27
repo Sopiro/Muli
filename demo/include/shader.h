@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 class Shader
 {
 public:

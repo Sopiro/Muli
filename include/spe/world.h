@@ -15,6 +15,7 @@
 
 namespace spe
 {
+
 // Simulation settings
 struct Settings
 {
@@ -22,7 +23,7 @@ struct Settings
     mutable float INV_DT = 60.0f;
 
     bool APPLY_GRAVITY = true;
-    glm::vec2 GRAVITY = glm::vec2{ 0.0f, -10.0f };
+    glm::vec2 GRAVITY{ 0.0f, -10.0f };
 
     bool IMPULSE_ACCUMULATION = true;
     bool WARM_STARTING = true;
@@ -36,7 +37,7 @@ struct Settings
     float RESTITUTION_SLOP = 0.5f;
 
     bool BLOCK_SOLVE = true;
-    int32_t SOLVE_ITERATION = 10;
+    uint32_t SOLVE_ITERATION = 10;
 
     float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
     float REST_ANGULAR_TOLERANCE = (0.5f * glm::pi<float>() / 180.0f) * (0.5f * glm::pi<float>() / 180.0f);
@@ -88,8 +89,8 @@ public:
     std::vector<RigidBody*> Query(const AABB& region) const;
 
     const std::vector<RigidBody*>& GetBodies() const;
-    const size_t GetSleepingBodyCount() const;
-    const size_t GetSleepingIslandCount() const;
+    const uint32_t GetSleepingBodyCount() const;
+    const uint32_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
     const std::vector<ContactConstraint>& GetContactConstraints() const;
     const std::vector<Joint*>& GetJoints() const;
@@ -117,8 +118,8 @@ private:
 
     bool forceIntegration = false;
     uint32_t numIslands = 0;
-    size_t sleepingIslands = 0;
-    size_t sleepingBodies = 0;
+    uint32_t sleepingIslands = 0;
+    uint32_t sleepingBodies = 0;
 };
 
 inline const std::vector<RigidBody*>& World::GetBodies() const
@@ -126,12 +127,12 @@ inline const std::vector<RigidBody*>& World::GetBodies() const
     return bodies;
 }
 
-inline const size_t World::GetSleepingBodyCount() const
+inline const uint32_t World::GetSleepingBodyCount() const
 {
     return sleepingBodies;
 }
 
-inline const size_t World::GetSleepingIslandCount() const
+inline const uint32_t World::GetSleepingIslandCount() const
 {
     return sleepingIslands;
 }

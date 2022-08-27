@@ -5,12 +5,14 @@
 
 namespace spe
 {
+
 struct Settings;
 
 class GrabJoint : public Joint
 {
 public:
-    GrabJoint(
+    GrabJoint
+    (
         RigidBody* _body,
         glm::vec2 _anchor,
         glm::vec2 _target,

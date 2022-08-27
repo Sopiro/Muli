@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 struct Settings;
 
 class Constraint
@@ -57,6 +58,13 @@ protected:
     float gamma{ 0.0f };
 };
 
+inline Constraint::Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings) :
+    bodyA{ _bodyA },
+    bodyB{ _bodyB },
+    settings{ _settings }
+{
+
+}
 
 inline RigidBody* Constraint::GetBodyA() const
 {

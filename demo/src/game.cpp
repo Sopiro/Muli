@@ -216,7 +216,9 @@ void Game::HandleInput()
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
                 ImGui::SetNextItemWidth(120);
-                ImGui::SliderInt("Solve iteration", &settings.SOLVE_ITERATION, 1, 50);
+                static int iteration = settings.SOLVE_ITERATION;
+                ImGui::SliderInt("Solve iteration", &iteration, 1, 50);
+                settings.SOLVE_ITERATION = static_cast<uint32_t>(iteration);
 
                 ImGui::Separator();
                 ImGui::Text(demos[currentDemo].first.data());
@@ -229,7 +231,7 @@ void Game::HandleInput()
             {
                 if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 17 * ImGui::GetTextLineHeightWithSpacing())))
                 {
-                    for (size_t i = 0; i < demos.size(); i++)
+                    for (uint32_t i = 0; i < demos.size(); i++)
                     {
                         const bool selected = (currentDemo == i);
 
@@ -276,7 +278,7 @@ void Game::Render()
     lines.clear();
 
     const std::vector<Joint*>& joints = world->GetJoints();
-    for (size_t i = 0; i < joints.size(); i++)
+    for (uint32_t i = 0; i < joints.size(); i++)
     {
         Joint* j = joints[i];
         JointType type = j->GetType();
@@ -356,12 +358,12 @@ void Game::Render()
     {
         const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
 
-        for (size_t i = 0; i < cc.size(); i++)
+        for (uint32_t i = 0; i < cc.size(); i++)
         {
             ContactInfo ci;
             cc[i].GetContactInfo(&ci);
 
-            for (size_t j = 0; j < ci.numContacts; j++)
+            for (uint32_t j = 0; j < ci.numContacts; j++)
             {
                 points.push_back(ci.contactPoints[j].point);
             }
@@ -385,7 +387,7 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::InitSimulation(size_t demo)
+void Game::InitSimulation(uint32_t demo)
 {
     time = 0;
     if (resetCamera)
@@ -415,9 +417,6 @@ void Game::Reset()
 {
     world->Reset();
     rRenderer.Reset();
-
-    camera.position = glm::vec2{ 0, 3.6 };
-    camera.scale = glm::vec2{ 1, 1 };
 }
 
 }

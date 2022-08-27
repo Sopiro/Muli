@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class DynamicShader final : public Shader
 {
     friend class DynamicRenderer;

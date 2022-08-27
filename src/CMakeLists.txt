@@ -1,5 +1,4 @@
 set(SOURCE_FILES
-    dynamics/entity.cpp
     dynamics/world.cpp
     dynamics/island.cpp
 
@@ -9,20 +8,16 @@ set(SOURCE_FILES
     dynamics/box.cpp
     dynamics/util.cpp
 
-    collision/aabb.cpp
     collision/aabbtree.cpp
     collision/detection.cpp
     collision/simplex.cpp
     collision/polytope.cpp
-    collision/edge.cpp
     collision/broad_phase.cpp
 
-    constraint/constraint.cpp
     constraint/contact/contact_constraint.cpp
     constraint/contact/contact_solver.cpp
     constraint/contact/block_solver.cpp
 
-    constraint/joint/joint.cpp
     constraint/joint/grab_joint.cpp
     constraint/joint/revolute_joint.cpp
     constraint/joint/distance_joint.cpp

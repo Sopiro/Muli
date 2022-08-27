@@ -4,6 +4,9 @@
 #include "rigidbody.h"
 #include "settings.h"
 
+namespace spe
+{
+
 struct BodyPair
 {
     uint32_t first;
@@ -22,8 +25,6 @@ struct UV
     float v;
 };
 
-namespace spe
-{
 float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area);
 
 inline float calculate_box_inertia(float width, float height, float mass)

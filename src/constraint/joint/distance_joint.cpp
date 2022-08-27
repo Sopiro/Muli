@@ -3,6 +3,7 @@
 
 namespace spe
 {
+
 DistanceJoint::DistanceJoint(
     RigidBody* _bodyA,
     RigidBody* _bodyB,

@@ -4,10 +4,9 @@
 
 namespace spe
 {
+
 struct AABB
 {
-    AABB() = default;
-
     glm::vec2 min;
     glm::vec2 max;
 };

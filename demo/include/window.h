@@ -8,6 +8,7 @@
 
 namespace spe
 {
+
 class Window final
 {
     friend class Application;

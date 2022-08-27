@@ -5,12 +5,14 @@
 
 namespace spe
 {
+
 struct Settings;
 
 class RevoluteJoint : public Joint
 {
 public:
-    RevoluteJoint(
+    RevoluteJoint
+    (
         RigidBody* _bodyA,
         RigidBody* _bodyB,
         glm::vec2 _anchor,

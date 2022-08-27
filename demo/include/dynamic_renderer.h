@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 // Dynamic batch renderer
 class DynamicRenderer final : public Renderer
 {

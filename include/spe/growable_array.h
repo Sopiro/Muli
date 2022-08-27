@@ -2,6 +2,11 @@
 
 #include "stdlib.h"
 
+namespace spe
+{
+
+// Inspired by b2GrowableStack in box2d code
+// Use only element types that don't need a destructor
 template <typename T, uint32_t N>
 class GrowableArray
 {
@@ -106,7 +111,7 @@ public:
         return array[count - 1];
     }
 
-    /// O(n)
+    // O(n)
     void Insert(uint32_t index, const T& data)
     {
         assert(index <= count);
@@ -136,7 +141,7 @@ public:
         ++count;
     }
 
-    /// O(n)
+    // O(n)
     void Remove(uint32_t index)
     {
         uint32_t ptr = index;
@@ -190,3 +195,5 @@ private:
     uint32_t count;
     uint32_t capacity;
 };
+
+}

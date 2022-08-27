@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 class Window;
 
 class Input final

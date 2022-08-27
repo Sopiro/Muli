@@ -5,12 +5,14 @@
 
 namespace spe
 {
+
 struct Settings;
 
 class DistanceJoint : public Joint
 {
 public:
-    DistanceJoint(
+    DistanceJoint
+    (
         RigidBody* _bodyA,
         RigidBody* _bodyB,
         glm::vec2 _anchorA,
@@ -34,15 +36,15 @@ private:
     glm::vec2 localAnchorA;
     glm::vec2 localAnchorB;
 
-    float length{ 0.0f };
+    float length = 0.0f;
 
     glm::vec2 ra{ 0.0f };
     glm::vec2 rb{ 0.0f };
 
-    float m{ 1.0f };
-    glm::vec2 n{ 0.0f };
-    float bias{ 0.0f };
-    float impulseSum{ 0.0f };
+    float m = 1.0f;
+    glm::vec2 n{ 0.0 };
+    float bias = 0.0f;
+    float impulseSum = 0.0f;
 
     void ApplyImpulse(float lambda);
 };

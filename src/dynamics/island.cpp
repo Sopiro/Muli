@@ -14,7 +14,7 @@ void Island::Solve()
     bool awakeIsland = false;
 
     // Integrate forces, yield tentative velocities that possibly violate the constraint
-    for (size_t i = 0; i < bodies.size(); i++)
+    for (uint32_t i = 0; i < bodies.size(); i++)
     {
         RigidBody* b = bodies[i];
 
@@ -69,25 +69,25 @@ void Island::Solve()
 
     // Prepare for solving
     {
-        for (size_t i = 0; i < ccs.size(); i++)
+        for (uint32_t i = 0; i < ccs.size(); i++)
             ccs[i]->Prepare();
-        for (size_t i = 0; i < js.size(); i++)
+        for (uint32_t i = 0; i < js.size(); i++)
             js[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
     {
-        for (size_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
+        for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
         {
-            for (size_t j = 0; j < ccs.size(); j++)
+            for (uint32_t j = 0; j < ccs.size(); j++)
                 ccs[j]->Solve();
-            for (size_t j = 0; j < js.size(); j++)
+            for (uint32_t j = 0; j < js.size(); j++)
                 js[j]->Solve();
         }
     }
 
     // Update positions using corrected velocities (Semi-implicit euler integration)
-    for (size_t i = 0; i < bodies.size(); i++)
+    for (uint32_t i = 0; i < bodies.size(); i++)
     {
         RigidBody* b = bodies[i];
 

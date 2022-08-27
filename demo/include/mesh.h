@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 class Mesh
 {
 public:
@@ -31,4 +32,5 @@ private:
     uint32_t EBOt;
     uint32_t EBOl;
 };
+
 }

@@ -6,6 +6,7 @@
 
 namespace spe
 {
+
 class BroadPhase
 {
     friend class World;
@@ -22,7 +23,7 @@ private:
     float margin = 0.1f;
     float velocityMultiplier = 3.0f;
     AABBTree tree;
-    std::unordered_set<uint64_t> pairs{};
+    std::set<uint64_t> pairs{};
 };
 
 }

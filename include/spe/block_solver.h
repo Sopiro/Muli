@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 class ContactConstraint;
 class ContactSolver;
 struct Jacobian;

@@ -6,6 +6,7 @@
 
 namespace spe
 {
+
 struct ClosestEdgeInfo
 {
     uint32_t index;

@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 struct ContactPoint
 {
     glm::vec2 point;
@@ -25,4 +26,5 @@ struct ContactManifold
 
 bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* res = nullptr);
 bool test_point_inside(RigidBody* body, const glm::vec2& point);
+
 }

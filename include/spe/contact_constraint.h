@@ -8,10 +8,11 @@
 
 namespace spe
 {
+
 struct ContactInfo
 {
     RigidBody* other;
-    size_t numContacts;
+    uint32_t numContacts;
     ContactPoint contactPoints[2];
     glm::vec2 contactDir;
     float impulse;
@@ -37,8 +38,8 @@ private:
     glm::vec2 contactNormal;
     glm::vec2 contactTangent;
     bool featureFlipped;
-    size_t numContacts;
-    bool persistent{ false };
+    uint32_t numContacts;
+    bool persistent;
 
     // Solvers
     ContactSolver tangentContacts[2];
@@ -50,7 +51,7 @@ inline void ContactConstraint::GetContactInfo(ContactInfo* out) const
 {
     float impulse = 0.0f;
 
-    for (size_t i = 0; i < numContacts; i++)
+    for (uint32_t i = 0; i < numContacts; i++)
     {
         impulse += normalContacts[i].impulseSum;
     }

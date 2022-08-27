@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class Application final
 {
 public:

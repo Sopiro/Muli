@@ -46,6 +46,4 @@ DynamicShader::DynamicShader() : Shader(
     uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
-
-
 }

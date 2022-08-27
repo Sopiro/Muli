@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 // Children: Box
 class Polygon : public RigidBody
 {

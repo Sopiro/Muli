@@ -23,7 +23,7 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
         std::vector<glm::vec2> texCoords;
         vertices.reserve(circle_polygon_count);
 
-        for (size_t i = 0; i < circle_polygon_count; i++)
+        for (uint32_t i = 0; i < circle_polygon_count; i++)
         {
             float currentAngle = angle * i;
 

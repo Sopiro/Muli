@@ -5,13 +5,14 @@
 
 namespace spe
 {
+
 class Island
 {
     friend class World;
 
 private:
     World& world;
-    bool sleeping{ false };
+    bool sleeping = false;
 
     std::vector<RigidBody*> bodies{};
 

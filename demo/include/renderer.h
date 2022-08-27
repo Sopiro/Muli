@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class Renderer
 {
 public:
@@ -19,4 +20,5 @@ public:
 
     virtual void Render() = 0;
 };
+
 }

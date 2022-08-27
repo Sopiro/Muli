@@ -3,6 +3,7 @@
 
 namespace spe
 {
+
 RevoluteJoint::RevoluteJoint(
     RigidBody* _bodyA,
     RigidBody* _bodyB,

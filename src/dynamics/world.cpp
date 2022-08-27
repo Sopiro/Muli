@@ -80,7 +80,7 @@ void World::Step(float dt)
 
 	// Perform a DFS(Depth First Search) on the constraint graph
 	// After building island, each island can be solved in parallel because they are independent of each other
-	for (size_t i = 0; i < bodies.size(); i++)
+	for (uint32_t i = 0; i < bodies.size(); i++)
 	{
 		RigidBody* b = bodies[i];
 
@@ -102,7 +102,7 @@ void World::Step(float dt)
 			t->islandID = islandID;
 			island.bodies.push_back(t);
 
-			for (size_t c = 0; c < t->contactConstraintIDs.size(); c++)
+			for (uint32_t c = 0; c < t->contactConstraintIDs.size(); c++)
 			{
 				uint64_t key = t->contactConstraintIDs[c];
 				ContactConstraint* cc = contactConstraintMap[key];
@@ -116,7 +116,7 @@ void World::Step(float dt)
 				stack.Push(other);
 			}
 
-			for (size_t j = 0; j < t->jointIDs.size(); j++)
+			for (uint32_t j = 0; j < t->jointIDs.size(); j++)
 			{
 				uint32_t key = t->jointIDs[j];
 				Joint* joint = jointMap[key];
@@ -144,7 +144,7 @@ void World::Step(float dt)
 
 		if (island.sleeping)
 		{
-			sleepingBodies += island.bodies.size();
+			sleepingBodies += static_cast<uint32_t>(island.bodies.size());
 			sleepingIslands++;
 		}
 
@@ -202,7 +202,7 @@ void World::Destroy(RigidBody* body)
 	auto it = std::find(bodies.begin(), bodies.end(), body);
 	if (it == bodies.end()) throw std::exception("This body is not registered in this world.");;
 
-	for (size_t i = 0; i < body->contactConstraintIDs.size(); i++)
+	for (uint32_t i = 0; i < body->contactConstraintIDs.size(); i++)
 	{
 		uint64_t key = body->contactConstraintIDs[i];
 		ContactConstraint* cc = contactConstraintMap[key];
@@ -211,7 +211,7 @@ void World::Destroy(RigidBody* body)
 		other->Awake();
 	}
 
-	for (size_t i = 0; i < body->jointIDs.size(); i++)
+	for (uint32_t i = 0; i < body->jointIDs.size(); i++)
 	{
 		uint32_t key = body->jointIDs[i];
 		Joint* joint = jointMap[key];
@@ -243,7 +243,7 @@ void World::Destroy(RigidBody* body)
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
-	for (size_t i = 0; i < bodies.size(); i++)
+	for (uint32_t i = 0; i < bodies.size(); i++)
 	{
 		Destroy(bodies[i]);
 	}
@@ -284,7 +284,7 @@ void World::Destroy(Joint* joint)
 
 void World::Destroy(const std::vector<Joint*>& joints)
 {
-	for (size_t i = 0; i < joints.size(); i++)
+	for (uint32_t i = 0; i < joints.size(); i++)
 	{
 		Destroy(joints[i]);
 	}
@@ -295,7 +295,7 @@ std::vector<RigidBody*> World::Query(const glm::vec2& point) const
 	std::vector<RigidBody*> res;
 	std::vector<Node*> nodes = broadphase.tree.Query(point);
 
-	for (size_t i = 0; i < nodes.size(); i++)
+	for (uint32_t i = 0; i < nodes.size(); i++)
 	{
 		RigidBody* body = nodes[i]->body;
 
@@ -313,7 +313,7 @@ std::vector<RigidBody*> World::Query(const AABB& region) const
 	std::vector<RigidBody*> res;
 	std::vector<Node*> nodes = broadphase.tree.Query(region);
 
-	for (size_t i = 0; i < nodes.size(); i++)
+	for (uint32_t i = 0; i < nodes.size(); i++)
 	{
 		RigidBody* body = nodes[i]->body;
 
@@ -365,7 +365,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 	std::vector<float> angles{};
 	angles.reserve(num_vertices);
 
-	for (size_t i = 0; i < num_vertices; i++)
+	for (uint32_t i = 0; i < num_vertices; i++)
 	{
 		angles.push_back(glm::linearRand<float>(0.0f, 1.0f) * glm::pi<float>() * 2.0f);
 	}
@@ -375,7 +375,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 	std::vector<glm::vec2> vertices{};
 	vertices.reserve(num_vertices);
 
-	for (size_t i = 0; i < num_vertices; i++)
+	for (uint32_t i = 0; i < num_vertices; i++)
 	{
 		vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
 	}
@@ -398,7 +398,7 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
 	std::vector<glm::vec2> vertices;
 	vertices.reserve(num_vertices);
 
-	for (size_t i = 0; i < num_vertices; i++)
+	for (uint32_t i = 0; i < num_vertices; i++)
 	{
 		float currentAngle = angleStart + angle * i;
 

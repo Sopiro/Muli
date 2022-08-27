@@ -87,7 +87,7 @@ static GJKResult gjk(RigidBody* b1, RigidBody* b2)
     glm::vec2 supportPoint = cso_support(b1, b2, dir);
     simplex.AddVertex(supportPoint);
 
-    for (size_t k = 0; k < GJK_MAX_ITERATION; k++)
+    for (uint32_t k = 0; k < GJK_MAX_ITERATION; k++)
     {
         ClosestResult closest = simplex.GetClosest(origin);
 
@@ -140,7 +140,7 @@ static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
 
     ClosestEdgeInfo closestEdge{ 0, FLT_MAX, glm::vec2{0.0f} };
 
-    for (size_t i = 0; i < EPA_MAX_ITERATION; i++)
+    for (uint32_t i = 0; i < EPA_MAX_ITERATION; i++)
     {
         closestEdge = polytope.GetClosestEdge();
         const glm::vec2 supportPoint = cso_support(b1, b2, closestEdge.normal);
@@ -278,44 +278,43 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
     }
 }
 
-bool spe::detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
 {
-    // Circle vs. Circle collision
-    if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
+    float d = glm::distance2(a->position, b->position);
+    const float r2 = a->GetRadius() + b->GetRadius();
+
+    if (d > r2 * r2)
     {
-        float d = glm::distance2(a->position, b->position);
-        const float r2 = static_cast<Circle*>(a)->GetRadius() + static_cast<Circle*>(b)->GetRadius();
-
-        if (d > r2 * r2)
-        {
-            return false;
-        }
-        else
-        {
-            if (out == nullptr) return true;
-
-            d = glm::sqrt(d);
-
-            out->bodyA = a;
-            out->bodyB = b;
-            out->contactNormal = glm::normalize(b->position - a->position);
-            out->contactPoints[0] = { a->position + (out->contactNormal * static_cast<Circle*>(a)->GetRadius()), -1 };
-            out->numContacts = 1;
-            out->penetrationDepth = r2 - d;
-            out->featureFlipped = false;
-
-            if (glm::dot(out->contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
-            {
-                out->bodyA = b;
-                out->bodyB = a;
-                out->contactNormal *= -1;
-                out->featureFlipped = true;
-            }
-
-            return true;
-        }
+        return false;
     }
+    else
+    {
+        if (out == nullptr) return true;
 
+        d = glm::sqrt(d);
+
+        out->bodyA = a;
+        out->bodyB = b;
+        out->contactNormal = glm::normalize(b->position - a->position);
+        out->contactPoints[0] = { a->position + (out->contactNormal * a->GetRadius()), -1 };
+        out->numContacts = 1;
+        out->penetrationDepth = r2 - d;
+        out->featureFlipped = false;
+
+        if (glm::dot(out->contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
+        {
+            out->bodyA = b;
+            out->bodyB = a;
+            out->contactNormal *= -1;
+            out->featureFlipped = true;
+        }
+
+        return true;
+    }
+}
+
+static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
+{
     GJKResult gjkResult = gjk(a, b);
 
     if (!gjkResult.collide)
@@ -353,8 +352,6 @@ bool spe::detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
         }
         }
 
-        assert(simplex.Count() == 3);
-
         EPAResult epaResult = epa(a, b, gjkResult.simplex);
 
         out->bodyA = a;
@@ -381,24 +378,35 @@ bool spe::detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
+bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
+{
+    // Circle vs. Circle collision
+    if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
+    {
+        return circle_vs_circle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
+    }
+    else
+    {
+        return convex_vs_convex(a, b, out);
+    }
+}
+
 bool test_point_inside(RigidBody* body, const glm::vec2& point)
 {
     glm::vec2 localP = body->GlobalToLocal() * point;
 
-    BodyShape shape = body->GetShape();
-
-    if (shape == BodyShape::ShapeCircle)
+    if (body->GetShape() == BodyShape::ShapeCircle)
     {
         return glm::length(localP) <= static_cast<Circle*>(body)->GetRadius();
     }
-    else if (shape == BodyShape::ShapePolygon)
+    else if (body->GetShape() == BodyShape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(body);
         const std::vector<glm::vec2>& vertices = p->GetVertices();
 
         float dir = glm::cross(vertices[0] - localP, vertices[1] - localP);
 
-        for (size_t i = 1; i < vertices.size(); i++)
+        for (uint32_t i = 1; i < vertices.size(); i++)
         {
             float nDir = glm::cross(vertices[i] - localP, vertices[(i + 1) % vertices.size()] - localP);
 
@@ -413,4 +421,5 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
         throw std::exception("Not a supported shape");
     }
 }
+
 }

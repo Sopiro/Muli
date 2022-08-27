@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class Box : public Polygon
 {
 public:

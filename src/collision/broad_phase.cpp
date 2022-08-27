@@ -8,12 +8,11 @@ namespace spe
 BroadPhase::BroadPhase(World& _world) :
     world{ _world }
 {
-    // pairs.reserve(DEFAULT_BODY_RESERVE_COUNT * 2);
 }
 
 void BroadPhase::Update(float dt)
 {
-    for (size_t i = 0; i < world.bodies.size(); i++)
+    for (uint32_t i = 0; i < world.bodies.size(); i++)
     {
         RigidBody* body = world.bodies[i];
         body->contactConstraintIDs.clear();

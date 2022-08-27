@@ -13,8 +13,9 @@ ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Sett
     contactNormal = manifold.contactNormal;
     contactTangent = glm::vec2(-contactNormal.y, contactNormal.x);
     featureFlipped = manifold.featureFlipped;
+    persistent = false;
 
-    for (size_t i = 0; i < numContacts; i++)
+    for (uint32_t i = 0; i < numContacts; i++)
     {
         normalContacts[i].cc = this;
         normalContacts[i].contactPoint = contactPoints[i].point;
@@ -30,7 +31,7 @@ ContactConstraint::ContactConstraint(const ContactManifold& manifold, const Sett
 
 void ContactConstraint::Prepare()
 {
-    for (size_t i = 0; i < numContacts; i++)
+    for (uint32_t i = 0; i < numContacts; i++)
     {
         normalContacts[i].Prepare(contactNormal, ContactType::Normal);
         tangentContacts[i].Prepare(contactTangent, ContactType::Tangent);
@@ -45,14 +46,14 @@ void ContactConstraint::Prepare()
 void ContactConstraint::Solve()
 {
     // Solve tangential constraint first
-    for (size_t i = 0; i < numContacts; i++)
+    for (uint32_t i = 0; i < numContacts; i++)
     {
         tangentContacts[i].Solve(&normalContacts[i]);
     }
 
     if (numContacts == 1 || !settings.BLOCK_SOLVE)
     {
-        for (size_t i = 0; i < numContacts; i++)
+        for (uint32_t i = 0; i < numContacts; i++)
         {
             normalContacts[i].Solve();
         }
@@ -65,9 +66,9 @@ void ContactConstraint::Solve()
 
 void ContactConstraint::TryWarmStart(const ContactConstraint& oldCC)
 {
-    for (size_t n = 0; n < numContacts; n++)
+    for (uint32_t n = 0; n < numContacts; n++)
     {
-        size_t o = 0;
+        uint32_t o = 0;
         for (; o < oldCC.numContacts; o++)
         {
             if (contactPoints[n].id == oldCC.contactPoints[o].id)

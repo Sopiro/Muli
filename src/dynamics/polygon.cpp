@@ -10,7 +10,7 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
     glm::vec2 centerOfMass{ 0.0f };
     size_t count = vertices.size();
 
-    for (int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
     {
         centerOfMass += vertices[i];
     }
@@ -22,7 +22,7 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
     vertices[0] -= centerOfMass;
     radius = glm::length(vertices[0]);
 
-    for (int i = 1; i < count; i++)
+    for (uint32_t i = 1; i < count; i++)
     {
         vertices[i] -= centerOfMass;
         radius = glm::max(radius, glm::length(vertices[i]));
@@ -44,7 +44,9 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
     }
 
     if (!_resetPosition)
+    {
         Translate(centerOfMass);
+    }
 
     shape = BodyShape::ShapePolygon;
 }

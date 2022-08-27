@@ -4,6 +4,7 @@
 
 namespace spe
 {
+
 static void demo1(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
@@ -27,7 +28,7 @@ static void demo2(Game& game, World& world, Settings& settings)
     // float error = 0.015f;
     float error = 0.0f;
 
-    for (size_t i = 0; i < 20; i++)
+    for (uint32_t i = 0; i < 20; i++)
     {
         RigidBody* b = world.CreateBox(size);
         b->position = glm::vec2{ glm::linearRand(-error, error), start + i * (size + gap) };
@@ -47,9 +48,9 @@ static void demo3(Game& game, World& world, Settings& settings)
     float xStart = -(rows - 1.0f) * (boxSize + xGap) / 2.0f;
     float yStart = 0.55f;
 
-    for (size_t y = 0; y < rows; y++)
+    for (int y = 0; y < rows; y++)
     {
-        for (size_t x = 0; x < rows - y; x++)
+        for (int x = 0; x < rows - y; x++)
         {
             RigidBody* b = world.CreateBox(boxSize);
             b->position = glm::vec2{ xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap) };
@@ -200,7 +201,7 @@ static void demo8(Game& game, World& world, Settings& settings)
 
     std::array<float, 5> frictions = { 0.51f, 0.31f, 0.21f, 0.11f, 0.0f };
 
-    for (size_t i = 0; i < frictions.size(); i++)
+    for (uint32_t i = 0; i < frictions.size(); i++)
     {
         b = world.CreateBox(size, size);
         b->position = { xStart + (size + gap) * i, yStart };

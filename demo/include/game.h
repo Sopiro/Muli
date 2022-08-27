@@ -8,6 +8,7 @@
 
 namespace spe
 {
+
 class Application;
 
 class Game final
@@ -54,11 +55,11 @@ private:
     bool resetCamera = true;
 
     std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> demos;
-    size_t currentDemo;
+    uint32_t currentDemo;
     std::string demoTitle;
 
     void UpdateProjectionMatrix();
-    void InitSimulation(size_t demo);
+    void InitSimulation(uint32_t demo);
     void Reset();
 };
 

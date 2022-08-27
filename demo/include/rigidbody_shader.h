@@ -5,6 +5,7 @@
 
 namespace spe
 {
+
 class RigidBodyShader final : public Shader
 {
     friend class RigidBodyRenderer;

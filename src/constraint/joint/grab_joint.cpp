@@ -3,6 +3,7 @@
 
 namespace spe
 {
+
 GrabJoint::GrabJoint(
     RigidBody* _body,
     glm::vec2 _anchor,

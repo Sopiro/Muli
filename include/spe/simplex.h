@@ -6,6 +6,7 @@
 
 namespace spe
 {
+
 struct ClosestResult
 {
     glm::vec2 result;
@@ -20,7 +21,7 @@ public:
 
     glm::vec2 vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
-    size_t Count() const;
+    uint32_t Count() const;
     void Clear();
     void AddVertex(const glm::vec2& vertex);
     bool ContainsVertex(const glm::vec2& vertex) const;
@@ -33,7 +34,7 @@ private:
     uint32_t count = 0;
 };
 
-inline size_t Simplex::Count() const
+inline uint32_t Simplex::Count() const
 {
     return count;
 }
@@ -54,7 +55,7 @@ inline void Simplex::AddVertex(const glm::vec2& vertex)
 
 inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
 {
-    for (size_t i = 0; i < count; i++)
+    for (uint32_t i = 0; i < count; i++)
     {
         if (vertex == vertices[i])
             return true;

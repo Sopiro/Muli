@@ -34,6 +34,7 @@
 // Some useful operator overloading for glm containers
 namespace glm
 {
+
 // 3x3 matrix * 2d vector multiplication
 template<typename T, qualifier Q>
 GLM_FUNC_QUALIFIER typename mat<2, 2, T, Q>::col_type mul(mat<3, 3, T, Q> const& m, typename mat<2, 2, T, Q>::row_type const& v, float z = 1.0f)
@@ -86,4 +87,5 @@ GLM_FUNC_QUALIFIER std::string operator*(const matType& m)
 {
     return glm::to_string(m);
 }
+
 }
