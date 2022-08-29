@@ -5,8 +5,8 @@
 namespace spe
 {
 
-BroadPhase::BroadPhase(World& _world) :
-    world{ _world }
+BroadPhase::BroadPhase(World& _world)
+    : world{ _world }
 {
 }
 
@@ -46,28 +46,27 @@ void BroadPhase::Update(float dt)
 
         // Remove the old, potentially false pair
         tree.Query(treeAABB,
-            [&](const Node* n) -> bool
-            {
-                PairID pairID = combine_id(body->GetID(), n->body->GetID());
-                pairs.erase(pairID.key);
+                   [&](const Node* n) -> bool
+                   {
+                       PairID pairID = combine_id(body->GetID(), n->body->GetID());
+                       pairs.erase(pairID.key);
 
-                return true;
-            });
+                       return true;
+                   });
 
         // Insert new pair
         tree.Query(aabb,
-            [&](const Node* n) -> bool
-            {
-                assert(body != n->body);
+                   [&](const Node* n) -> bool
+                   {
+                       assert(body != n->body);
 
-                if (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static)
-                    return true;
+                       if (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static) return true;
 
-                PairID pairID = combine_id(body->GetID(), n->body->GetID());
-                pairs.insert(pairID.key);
+                       PairID pairID = combine_id(body->GetID(), n->body->GetID());
+                       pairs.insert(pairID.key);
 
-                return true;
-            });
+                       return true;
+                   });
 
         tree.Insert(body, aabb);
     }
@@ -91,18 +90,19 @@ void BroadPhase::Add(RigidBody* body)
 void BroadPhase::Remove(RigidBody* body)
 {
     tree.Query(body->node->aabb,
-        [&](const Node* n) -> bool
-        {
-            if (body->GetID() == n->body->GetID() || (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static))
-                return true;
+               [&](const Node* n) -> bool
+               {
+                   if (body->GetID() == n->body->GetID() ||
+                       (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static))
+                       return true;
 
-            PairID pairID = combine_id(body->GetID(), n->body->GetID());
-            pairs.erase(pairID.key);
+                   PairID pairID = combine_id(body->GetID(), n->body->GetID());
+                   pairs.erase(pairID.key);
 
-            return true;
-        });
+                   return true;
+               });
 
     tree.Remove(body);
 }
 
-}
+} // namespace spe

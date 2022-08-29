@@ -11,18 +11,15 @@ struct Settings;
 class DistanceJoint : public Joint
 {
 public:
-    DistanceJoint
-    (
-        RigidBody* _bodyA,
-        RigidBody* _bodyB,
-        glm::vec2 _anchorA,
-        glm::vec2 _anchorB,
-        float _length,
-        const Settings& _settings,
-        float _frequency = 10.0f,
-        float _dampingRatio = 1.0f,
-        float _jointMass = 1.0f
-    );
+    DistanceJoint(RigidBody* _bodyA,
+                  RigidBody* _bodyB,
+                  glm::vec2 _anchorA,
+                  glm::vec2 _anchorB,
+                  float _length,
+                  const Settings& _settings,
+                  float _frequency = 10.0f,
+                  float _dampingRatio = 1.0f,
+                  float _jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void Solve() override;
@@ -69,4 +66,4 @@ inline void DistanceJoint::SetJointLength(float _length)
     length = glm::clamp<float>(length, 0, FLT_MAX);
 }
 
-}
+} // namespace spe

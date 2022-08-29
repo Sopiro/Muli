@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common.h"
 #include "aabb.h"
 #include "aabbtree.h"
+#include "common.h"
 
 namespace spe
 {
@@ -26,4 +26,4 @@ private:
     std::set<uint64_t> pairs{};
 };
 
-}
+} // namespace spe

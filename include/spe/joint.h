@@ -18,47 +18,47 @@ enum JointType : uint8_t
 class Joint : public Constraint
 {
     /*
-    * Equation of motion for the damped harmonic oscillator
-    * a = d²x/dt²
-    * v = dx/dt
-    *
-    * ma + cv + kx = 0
-    *
-    * c = damping coefficient for springy motion
-    * m = mass
-    * k = spring constant
-    *
-    * a + 2ζωv + ω²x = 0
-    *
-    * ζ = damping ratio
-    * ω = angular frequecy
-    *
-    * 2ζω = c / m
-    * ω² = k / m
-    *
-    * Constraint equation
-    * J·v + (β/h)·C(x) + (γ/h)·λ = 0
-    *
-    * h = dt
-    * C(x) = Posiitonal error
-    * λ = Corrective impulse
-    *
-    * β = hk / (c + hk)
-    * γ = 1 / (c + hk)
-    *
-    * More reading:
-    * https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf
-    * https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=4&t=1354
-    */
+     * Equation of motion for the damped harmonic oscillator
+     * a = d²x/dt²
+     * v = dx/dt
+     *
+     * ma + cv + kx = 0
+     *
+     * c = damping coefficient for springy motion
+     * m = mass
+     * k = spring constant
+     *
+     * a + 2ζωv + ω²x = 0
+     *
+     * ζ = damping ratio
+     * ω = angular frequecy
+     *
+     * 2ζω = c / m
+     * ω² = k / m
+     *
+     * Constraint equation
+     * J·v + (β/h)·C(x) + (γ/h)·λ = 0
+     *
+     * h = dt
+     * C(x) = Posiitonal error
+     * λ = Corrective impulse
+     *
+     * β = hk / (c + hk)
+     * γ = 1 / (c + hk)
+     *
+     * More reading:
+     * https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf
+     * https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=4&t=1354
+     */
     friend class World;
 
 public:
-    Joint(
-        RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings,
-        float _frequency = DEFAULT_FREQUENCY,
-        float _dampingRatio = DEFAULT_DAMPING_RATIO,
-        float _jointMass = DEFAULT_JOINT_MASS
-    );
+    Joint(RigidBody* _bodyA,
+          RigidBody* _bodyB,
+          const Settings& _settings,
+          float _frequency = DEFAULT_FREQUENCY,
+          float _dampingRatio = DEFAULT_DAMPING_RATIO,
+          float _jointMass = DEFAULT_JOINT_MASS);
     ~Joint() noexcept;
 
     Joint(const Joint&) = delete;
@@ -97,11 +97,9 @@ private:
     void CalculateBetaAndGamma();
 };
 
-inline Joint::Joint(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass) :
-    Constraint(_bodyA, _bodyB, _settings)
+inline Joint::Joint(
+    RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings, float _frequency, float _dampingRatio, float _jointMass)
+    : Constraint(_bodyA, _bodyB, _settings)
 {
     SetProperties(_frequency, _dampingRatio, _jointMass);
 }
@@ -176,13 +174,12 @@ inline void Joint::SetProperties(float _frequency, float _dampingRatio, float _j
 inline void Joint::CalculateBetaAndGamma()
 {
     float omega = 2.0f * glm::pi<float>() * frequency;
-    float d = 2.0f * jointMass * dampingRatio * omega;  // Damping coefficient
-    float k = jointMass * omega * omega;                // Spring constant
+    float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
+    float k = jointMass * omega * omega;               // Spring constant
     float h = 1.0f / 144.0f;
 
     beta = h * k / (d + h * k);
     gamma = 1.0f / ((d + h * k) * h);
 }
 
-
-}
+} // namespace spe

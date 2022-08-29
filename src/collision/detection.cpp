@@ -1,11 +1,11 @@
 #include "spe/detection.h"
-#include "spe/rigidbody.h"
-#include "spe/polygon.h"
 #include "spe/box.h"
 #include "spe/circle.h"
-#include "spe/simplex.h"
-#include "spe/polytope.h"
 #include "spe/edge.h"
+#include "spe/polygon.h"
+#include "spe/polytope.h"
+#include "spe/rigidbody.h"
+#include "spe/simplex.h"
 
 namespace spe
 {
@@ -54,11 +54,11 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 }
 
 /*
-* Returns support point in 'Minkowski Difference' set
-* Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
-* Minkowski Difference : A ⊖ B = {Pa - Pb| Pa ∈ A, Pb ∈ B}
-* CSO stands for Configuration Space Object
-*/
+ * Returns support point in 'Minkowski Difference' set
+ * Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
+ * Minkowski Difference : A ⊖ B = {Pa - Pb| Pa ∈ A, Pb ∈ B}
+ * CSO stands for Configuration Space Object
+ */
 static glm::vec2 cso_support(RigidBody* b1, RigidBody* b2, glm::vec2 dir)
 {
     const glm::vec2 localDirP1 = glm::mul(b1->GlobalToLocal(), dir, 0);
@@ -138,7 +138,7 @@ static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
 {
     Polytope polytope{ gjkResult };
 
-    ClosestEdgeInfo closestEdge{ 0, FLT_MAX, glm::vec2{0.0f} };
+    ClosestEdgeInfo closestEdge{ 0, FLT_MAX, glm::vec2{ 0.0f } };
 
     for (uint32_t i = 0; i < EPA_MAX_ITERATION; i++)
     {
@@ -196,9 +196,8 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
         curr = localToGlobal * curr;
 
-        return w ?
-            Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx } :
-            Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
+        return w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
+                 : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
     }
     else
     {
@@ -335,8 +334,7 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
             const glm::vec2& v = simplex.vertices[0];
             glm::vec2 randomSupport = cso_support(a, b, glm::vec2{ 1, 0 });
 
-            if (randomSupport == v)
-                randomSupport = cso_support(a, b, glm::vec2{ -1, 0 });
+            if (randomSupport == v) randomSupport = cso_support(a, b, glm::vec2{ -1, 0 });
 
             simplex.AddVertex(randomSupport);
         }
@@ -410,8 +408,7 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
         {
             float nDir = glm::cross(vertices[i] - localP, vertices[(i + 1) % vertices.size()] - localP);
 
-            if (dir * nDir < 0)
-                return false;
+            if (dir * nDir < 0) return false;
         }
 
         return true;
@@ -422,4 +419,4 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
     }
 }
 
-}
+} // namespace spe

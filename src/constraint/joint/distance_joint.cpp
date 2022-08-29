@@ -4,18 +4,16 @@
 namespace spe
 {
 
-DistanceJoint::DistanceJoint(
-    RigidBody* _bodyA,
-    RigidBody* _bodyB,
-    glm::vec2 _anchorA,
-    glm::vec2 _anchorB,
-    float _length,
-    const Settings& _settings,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
-) :
-    Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+DistanceJoint::DistanceJoint(RigidBody* _bodyA,
+                             RigidBody* _bodyB,
+                             glm::vec2 _anchorA,
+                             glm::vec2 _anchorB,
+                             float _length,
+                             const Settings& _settings,
+                             float _frequency,
+                             float _dampingRatio,
+                             float _jointMass)
+    : Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = bodyA->GlobalToLocal() * _anchorA;
     localAnchorB = bodyB->GlobalToLocal() * _anchorB;
@@ -40,10 +38,13 @@ void DistanceJoint::Prepare()
 
     n = glm::normalize(u);
 
-    float k = bodyA->invMass + bodyB->invMass
+    // clang-format off
+    float k
+        = bodyA->invMass + bodyB->invMass
         + bodyA->invInertia * glm::cross(n, ra) * glm::cross(n, ra)
         + bodyB->invInertia * glm::cross(n, rb) * glm::cross(n, rb)
         + gamma;
+    // clang-format on
 
     m = 1.0f / k;
 
@@ -54,8 +55,7 @@ void DistanceJoint::Prepare()
     else
         bias = 0.0f;
 
-    if (settings.WARM_STARTING)
-        ApplyImpulse(impulseSum);
+    if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
 
 void DistanceJoint::Solve()
@@ -64,17 +64,16 @@ void DistanceJoint::Solve()
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    float jv = glm::dot((bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb))
-        - (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra))
-        , n);
+    float jv = glm::dot((bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb)) -
+                            (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra)),
+                        n);
 
     // You don't have to clamp the impulse. It's equality constraint!
     float lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
 
-    if (settings.WARM_STARTING)
-        impulseSum += lambda;
+    if (settings.WARM_STARTING) impulseSum += lambda;
 }
 
 void DistanceJoint::ApplyImpulse(float lambda)
@@ -88,4 +87,4 @@ void DistanceJoint::ApplyImpulse(float lambda)
     bodyB->angularVelocity += glm::dot(n, glm::cross(lambda, rb)) * bodyB->invInertia;
 }
 
-}
+} // namespace spe

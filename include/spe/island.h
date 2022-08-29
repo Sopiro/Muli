@@ -24,4 +24,4 @@ private:
     void Clear();
 };
 
-}
+} // namespace spe

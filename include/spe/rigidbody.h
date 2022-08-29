@@ -1,9 +1,9 @@
 #pragma once
 
+#include "aabb.h"
 #include "common.h"
 #include "entity.h"
 #include "settings.h"
-#include "aabb.h"
 
 namespace spe
 {
@@ -87,21 +87,21 @@ public:
 
 protected:
     // Center of mass in local space = (0, 0)
-    glm::vec2 force{ 0.0f };                        // N
-    float torque = 0.0f;                            // N⋅m
+    glm::vec2 force{ 0.0f }; // N
+    float torque = 0.0f;     // N⋅m
 
-    glm::vec2 linearVelocity{ 0.0f };               // m/s
-    float angularVelocity = 0.0f;                   // rad/s
+    glm::vec2 linearVelocity{ 0.0f }; // m/s
+    float angularVelocity = 0.0f;     // rad/s
 
-    float density;                                  // kg/m²
-    float mass;                                     // kg
+    float density; // kg/m²
+    float mass;    // kg
     float invMass;
-    float inertia;                                  // kg⋅m²
+    float inertia; // kg⋅m²
     float invInertia;
 
     float friction = DEFAULT_FRICTION;
     float restitution = DEFAULT_RESTITUTION;
-    float surfaceSpeed = DEFAULT_SURFACESPEED;     // m/s (Tangential speed)
+    float surfaceSpeed = DEFAULT_SURFACESPEED; // m/s (Tangential speed)
 
     BodyShape shape;
     BodyType type;
@@ -113,8 +113,8 @@ private:
     uint32_t id = 0;
     uint32_t islandID = 0;
 
-    std::vector<uint64_t> contactConstraintIDs{};            // ids of contact manifold containing this body
-    std::vector<uint32_t> jointIDs{};               // ids of the joint containing this body
+    std::vector<uint64_t> contactConstraintIDs{}; // ids of contact manifold containing this body
+    std::vector<uint32_t> jointIDs{};             // ids of the joint containing this body
 
     float resting = 0.0f;
     bool sleeping = false;
@@ -253,4 +253,4 @@ inline uint32_t RigidBody::GetIslandID() const
     return islandID;
 }
 
-}
+} // namespace spe

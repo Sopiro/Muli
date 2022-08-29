@@ -1,7 +1,7 @@
 #include "spe/util.h"
+#include "spe/aabb.h"
 #include "spe/box.h"
 #include "spe/circle.h"
-#include "spe/aabb.h"
 
 namespace spe
 {
@@ -42,4 +42,4 @@ float spe::calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertic
     return inertia;
 }
 
-}
+} // namespace spe

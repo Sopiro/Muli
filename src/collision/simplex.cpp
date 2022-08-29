@@ -159,4 +159,4 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     };
 }
 
-}
+} // namespace spe

@@ -4,12 +4,11 @@
 namespace spe
 {
 
-Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf) :
-    id{ _id },
-    aabb{ std::move(_aabb) },
-    isLeaf{ _isLeaf }
+Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf)
+    : id{ _id }
+    , aabb{ std::move(_aabb) }
+    , isLeaf{ _isLeaf }
 {
-
 }
 
 AABBTree::AABBTree(float _aabbMargin)
@@ -198,8 +197,7 @@ void AABBTree::Rotate(Node* node)
     uint32_t bestDiffIndex = 0;
     for (uint32_t i = 1; i < count; i++)
     {
-        if (costDiffs[i] < costDiffs[bestDiffIndex])
-            bestDiffIndex = i;
+        if (costDiffs[i] < costDiffs[bestDiffIndex]) bestDiffIndex = i;
     }
 
     if (costDiffs[bestDiffIndex] < 0.0)
@@ -322,7 +320,10 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
     }
 }
 
-void AABBTree::CheckCollision(Node* a, Node* b, std::vector<std::pair<RigidBody*, RigidBody*>>& pairs, std::unordered_set<uint64_t>& checked) const
+void AABBTree::CheckCollision(Node* a,
+                              Node* b,
+                              std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
+                              std::unordered_set<uint64_t>& checked) const
 {
     const uint64_t key = combine_id(a->id, b->id).key;
 
@@ -385,8 +386,7 @@ std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
     {
         Node* current = stack.Pop();
 
-        if (!test_point_inside_AABB(current->aabb, point))
-            continue;
+        if (!test_point_inside_AABB(current->aabb, point)) continue;
 
         if (current->isLeaf)
         {
@@ -415,8 +415,7 @@ std::vector<Node*> AABBTree::Query(const AABB& region) const
     {
         Node* current = stack.Pop();
 
-        if (!detect_collision_AABB(current->aabb, region))
-            continue;
+        if (!detect_collision_AABB(current->aabb, region)) continue;
 
         if (current->isLeaf)
         {
@@ -443,8 +442,7 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
     {
         Node* current = stack.Pop();
 
-        if (!detect_collision_AABB(current->aabb, aabb))
-            continue;
+        if (!detect_collision_AABB(current->aabb, aabb)) continue;
 
         if (current->isLeaf)
         {
@@ -459,4 +457,4 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
     }
 }
 
-}
+} // namespace spe

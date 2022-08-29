@@ -11,16 +11,13 @@ struct Settings;
 class GrabJoint : public Joint
 {
 public:
-    GrabJoint
-    (
-        RigidBody* _body,
-        glm::vec2 _anchor,
-        glm::vec2 _target,
-        const Settings& _settings,
-        float _frequency = 1.0f,
-        float _dampingRatio = 0.5f,
-        float _jointMass = -1.0f
-    );
+    GrabJoint(RigidBody* _body,
+              glm::vec2 _anchor,
+              glm::vec2 _target,
+              const Settings& _settings,
+              float _frequency = 1.0f,
+              float _dampingRatio = 0.5f,
+              float _jointMass = -1.0f);
 
     virtual void Prepare() override;
     virtual void Solve() override;
@@ -56,4 +53,4 @@ inline void GrabJoint::SetTarget(glm::vec2 _target)
     target = std::move(_target);
 }
 
-}
+} // namespace spe

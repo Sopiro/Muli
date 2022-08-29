@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util.h"
 #include "rigidbody.h"
+#include "util.h"
 
 namespace spe
 {
@@ -57,11 +57,13 @@ inline float Circle::GetArea() const
 
 inline AABB Circle::GetAABB() const
 {
+    // clang-format off
     return AABB
     {
         glm::vec2(position.x - radius, position.y - radius),
         glm::vec2(position.x + radius, position.y + radius)
     };
+    // clang-format on
 }
 
-}
+} // namespace spe

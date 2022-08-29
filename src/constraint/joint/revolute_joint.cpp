@@ -4,16 +4,14 @@
 namespace spe
 {
 
-RevoluteJoint::RevoluteJoint(
-    RigidBody* _bodyA,
-    RigidBody* _bodyB,
-    glm::vec2 _anchor,
-    const Settings& _settings,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
-) :
-    Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
+                             RigidBody* _bodyB,
+                             glm::vec2 _anchor,
+                             const Settings& _settings,
+                             float _frequency,
+                             float _dampingRatio,
+                             float _jointMass)
+    : Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = bodyA->GlobalToLocal() * _anchor;
     localAnchorB = bodyB->GlobalToLocal() * _anchor;
@@ -32,14 +30,12 @@ void RevoluteJoint::Prepare()
 
     glm::mat2 k{ 1.0f };
 
-    k[0][0] = bodyA->invMass + bodyB->invMass +
-        bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
+    k[0][0] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
 
     k[1][0] = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
     k[0][1] = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
 
-    k[1][1] = bodyA->invMass + bodyB->invMass +
-        bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+    k[1][1] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
 
     k[0][0] += gamma;
     k[1][1] += gamma;
@@ -56,8 +52,7 @@ void RevoluteJoint::Prepare()
     else
         glm::clear(bias);
 
-    if (settings.WARM_STARTING)
-        ApplyImpulse(impulseSum);
+    if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
 
 void RevoluteJoint::Solve()
@@ -66,16 +61,15 @@ void RevoluteJoint::Solve()
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    glm::vec2 jv = (bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb))
-        - (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra));
+    glm::vec2 jv = (bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb)) -
+                   (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra));
 
     // You don't have to clamp the impulse. It's equality constraint!
     glm::vec2 lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
 
-    if (settings.WARM_STARTING)
-        impulseSum += lambda;
+    if (settings.WARM_STARTING) impulseSum += lambda;
 }
 
 void RevoluteJoint::ApplyImpulse(const glm::vec2& lambda)
@@ -89,4 +83,4 @@ void RevoluteJoint::ApplyImpulse(const glm::vec2& lambda)
     bodyB->angularVelocity += bodyB->invInertia * glm::cross(rb, lambda);
 }
 
-}
+} // namespace spe

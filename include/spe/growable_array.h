@@ -196,4 +196,4 @@ private:
     uint32_t capacity;
 };
 
-}
+} // namespace spe

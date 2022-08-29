@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util.h"
 #include "rigidbody.h"
+#include "util.h"
 
 namespace spe
 {
@@ -10,7 +10,10 @@ namespace spe
 class Polygon : public RigidBody
 {
 public:
-    Polygon(std::vector<glm::vec2> _vertices, BodyType _type = Dynamic, bool _resetPosition = true, float _density = DEFAULT_DENSITY);
+    Polygon(std::vector<glm::vec2> _vertices,
+            BodyType _type = Dynamic,
+            bool _resetPosition = true,
+            float _density = DEFAULT_DENSITY);
 
     virtual void SetDensity(float d) override;
     virtual void SetMass(float m) override;
@@ -88,4 +91,4 @@ inline AABB Polygon::GetAABB() const
     return AABB{ min, max };
 }
 
-}
+} // namespace spe

@@ -46,8 +46,7 @@ inline void Simplex::Clear()
 
 inline void Simplex::AddVertex(const glm::vec2& vertex)
 {
-    if (count == MAX_SIMPLEX_VERTEX_COUNT)
-        throw std::exception("2-simplex can have verticies less than 4");
+    if (count == MAX_SIMPLEX_VERTEX_COUNT) throw std::exception("2-simplex can have verticies less than 4");
 
     vertices[count] = vertex;
     count++;
@@ -57,8 +56,7 @@ inline bool Simplex::ContainsVertex(const glm::vec2& vertex) const
 {
     for (uint32_t i = 0; i < count; i++)
     {
-        if (vertex == vertices[i])
-            return true;
+        if (vertex == vertices[i]) return true;
     }
 
     return false;
@@ -77,4 +75,4 @@ inline void Simplex::Shrink(const uint32_t* _indices, uint32_t _count)
     count = _count;
 }
 
-}
+} // namespace spe

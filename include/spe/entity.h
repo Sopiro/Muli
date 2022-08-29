@@ -33,10 +33,10 @@ public:
     glm::mat3 GlobalToLocal() const;
 };
 
-inline Entity::Entity(glm::vec2 _position, float _rotation, glm::vec2 _scale) :
-    position{ std::move(_position) },
-    rotation{ std::move(_rotation) },
-    scale{ std::move(_scale) }
+inline Entity::Entity(glm::vec2 _position, float _rotation, glm::vec2 _scale)
+    : position{ std::move(_position) }
+    , rotation{ std::move(_rotation) }
+    , scale{ std::move(_scale) }
 {
 }
 
@@ -76,4 +76,4 @@ inline glm::mat3 Entity::GlobalToLocal() const
     return glm::translate(glm::rotate(glm::scale(glm::mat3{ 1.0f }, 1.0f / scale), -rotation), -position);
 }
 
-}
+} // namespace spe

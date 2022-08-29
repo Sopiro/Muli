@@ -3,10 +3,9 @@
 namespace spe
 {
 
-Island::Island(World& _world) :
-    world{ _world }
+Island::Island(World& _world)
+    : world{ _world }
 {
-
 }
 
 void Island::Solve()
@@ -36,8 +35,7 @@ void Island::Solve()
             float angular_a = b->torque * b->invInertia * world.settings.DT;
             b->angularVelocity += angular_a;
 
-            if (sleeping &&
-                (glm::length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
+            if (sleeping && (glm::length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
                 (angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE))
             {
                 sleeping = false;
@@ -47,7 +45,7 @@ void Island::Solve()
 
         if ((sleeping && !world.forceIntegration) ||
             ((glm::length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
-                (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
+             (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
         {
             b->resting += world.settings.DT;
         }
@@ -57,7 +55,7 @@ void Island::Solve()
             awakeIsland = true;
         }
 
-        // Apply gravity 
+        // Apply gravity
         if (world.settings.APPLY_GRAVITY && !sleeping)
         {
             b->linearVelocity += world.settings.GRAVITY * world.settings.DT;
@@ -115,4 +113,4 @@ void Island::Clear()
     sleeping = false;
 }
 
-}
+} // namespace spe

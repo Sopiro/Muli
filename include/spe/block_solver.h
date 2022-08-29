@@ -32,4 +32,4 @@ private:
     void ApplyImpulse(const glm::vec2& lambda);
 };
 
-}
+} // namespace spe

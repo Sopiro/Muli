@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common.h"
-#include "simplex.h"
 #include "growable_array.h"
+#include "simplex.h"
 
 namespace spe
 {
@@ -30,4 +30,4 @@ inline uint32_t Polytope::Count() const
     return vertices.Count();
 }
 
-}
+} // namespace spe

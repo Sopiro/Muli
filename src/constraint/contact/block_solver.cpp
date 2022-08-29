@@ -20,6 +20,7 @@ void BlockSolver::Prepare()
 
     k = glm::mat2{ 1.0f };
 
+    // clang-format off
     k[0][0]
         = cc->bodyA->invMass
         + j1->wa * cc->bodyA->invInertia * j1->wa
@@ -39,6 +40,7 @@ void BlockSolver::Prepare()
         + j1->wb * cc->bodyB->invInertia * j2->wb;
 
     k[1][0] = k[0][1];
+    // clang-format on
 
     assert(glm::determinant(k) != 0);
     m = glm::inverse(k);
@@ -53,7 +55,7 @@ void BlockSolver::Solve()
     // Build the mini LCP for this contact patch
     //
     // vn = A * x + b, vn >= 0, x >= 0 and vn_i * x_i = 0 with i = 1..2
-    //  
+    //
     // A = J * W * JT and J = ( -n, -r1 x n, n, r2 x n )
     // b = vn0 - velocityBias
     //
@@ -71,7 +73,7 @@ void BlockSolver::Solve()
     //
     // a := old total impulse
     // x := new total impulse
-    // d := incremental impulse 
+    // d := incremental impulse
     //
     // For the current iteration we extend the formula for the incremental impulse
     // to compute the new total impulse:
@@ -80,12 +82,12 @@ void BlockSolver::Solve()
     //     = A * (x - a) + b
     //     = A * x + b - A * a
     //     = A * x + b'
-    // b' = b - A * a; 
-
+    // b' = b - A * a;
 
     glm::vec2 a = { nc1->impulseSum, nc2->impulseSum }; // old total impulse
     assert(a.x >= 0.0f && a.y >= 0.0f);
 
+    // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
         = glm::dot(j1->va, cc->bodyA->linearVelocity)
@@ -98,6 +100,7 @@ void BlockSolver::Solve()
         + j2->wa * cc->bodyA->angularVelocity
         + glm::dot(j2->vb, cc->bodyB->linearVelocity)
         + j2->wb * cc->bodyB->angularVelocity;
+    // clang-format on
 
     glm::vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
 
@@ -124,7 +127,7 @@ void BlockSolver::Solve()
         // Case 2: vn1 = 0 and x2 = 0
         // The first constraint is violated and the second constraint is satisfied
         //
-        //   0 = a11 * x1 + a12 * 0 + b1' 
+        //   0 = a11 * x1 + a12 * 0 + b1'
         // vn2 = a21 * x1 + a22 * 0 + b2'
         //
 
@@ -138,7 +141,7 @@ void BlockSolver::Solve()
         // Case 3: vn2 = 0 and x1 = 0
         // The first constraint is satisfied and the second constraint is violated
         //
-        // vn1 = a11 * 0 + a12 * x2 + b1' 
+        // vn1 = a11 * 0 + a12 * x2 + b1'
         //   0 = a21 * 0 + a22 * x2 + b2'
         //
         x.x = 0.0f;
@@ -149,7 +152,7 @@ void BlockSolver::Solve()
 
         //
         // Case 4: x1 = 0 and x2 = 0
-        // Both constraints are satisfied 
+        // Both constraints are satisfied
         //
         // vn1 = b1
         // vn2 = b2;
@@ -185,4 +188,4 @@ void BlockSolver::ApplyImpulse(const glm::vec2& lambda)
     cc->bodyB->angularVelocity += cc->bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
 }
 
-}
+} // namespace spe

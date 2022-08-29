@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util.h"
 #include "polygon.h"
+#include "util.h"
 
 namespace spe
 {
@@ -57,4 +57,4 @@ inline void Box::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-}
+} // namespace spe

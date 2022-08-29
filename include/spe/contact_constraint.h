@@ -1,10 +1,10 @@
 #pragma once
 
+#include "block_solver.h"
 #include "common.h"
 #include "constraint.h"
-#include "detection.h"
 #include "contact_solver.h"
-#include "block_solver.h"
+#include "detection.h"
 
 namespace spe
 {
@@ -64,4 +64,4 @@ inline void ContactConstraint::GetContactInfo(ContactInfo* out) const
     memcpy(out->contactPoints, contactPoints, numContacts * sizeof(ContactPoint));
 }
 
-}
+} // namespace spe

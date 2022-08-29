@@ -50,4 +50,4 @@ private:
     void ApplyImpulse(float lambda);
 };
 
-}
+} // namespace spe

@@ -59,10 +59,12 @@ inline bool detect_collision_AABB(const AABB& a, const AABB& b)
 
 inline bool contains_AABB(const AABB& container, const AABB& testee)
 {
+    // clang-format off
     return container.min.x <= testee.min.x
         && container.min.y <= testee.min.y
         && container.max.x >= testee.max.x
         && container.max.y >= testee.max.y;
+    // clang-format on
 }
 
-}
+} // namespace spe

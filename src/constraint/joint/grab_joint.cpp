@@ -4,16 +4,14 @@
 namespace spe
 {
 
-GrabJoint::GrabJoint(
-    RigidBody* _body,
-    glm::vec2 _anchor,
-    glm::vec2 _target,
-    const Settings& _settings,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
-) :
-    Joint(_body, _body, _settings, _frequency, _dampingRatio, _jointMass)
+GrabJoint::GrabJoint(RigidBody* _body,
+                     glm::vec2 _anchor,
+                     glm::vec2 _target,
+                     const Settings& _settings,
+                     float _frequency,
+                     float _dampingRatio,
+                     float _jointMass)
+    : Joint(_body, _body, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchor = _body->GlobalToLocal() * _anchor;
     target = _target;
@@ -49,8 +47,7 @@ void GrabJoint::Prepare()
     else
         glm::clear(bias);
 
-    if (settings.WARM_STARTING)
-        ApplyImpulse(impulseSum);
+    if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
 
 void GrabJoint::Solve()
@@ -64,8 +61,7 @@ void GrabJoint::Solve()
 
     ApplyImpulse(lambda);
 
-    if (settings.WARM_STARTING)
-        impulseSum += lambda;
+    if (settings.WARM_STARTING) impulseSum += lambda;
 }
 
 void GrabJoint::ApplyImpulse(const glm::vec2& lambda)
@@ -74,4 +70,4 @@ void GrabJoint::ApplyImpulse(const glm::vec2& lambda)
     bodyA->angularVelocity += bodyA->invInertia * glm::cross(r, lambda);
 }
 
-}
+} // namespace spe

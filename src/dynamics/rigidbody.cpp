@@ -3,9 +3,9 @@
 namespace spe
 {
 
-RigidBody::RigidBody(BodyType _type) :
-    Entity(),
-    type{ std::move(_type) }
+RigidBody::RigidBody(BodyType _type)
+    : Entity()
+    , type{ std::move(_type) }
 {
     if (type == Static)
     {
@@ -74,4 +74,4 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     Entity::operator=(std::move(_other));
 }
 
-}
+} // namespace spe

@@ -46,7 +46,7 @@ inline UV get_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
 
     float region = glm::dot(dir, p - a) / len;
 
-    return { 1 - region,  region };
+    return { 1 - region, region };
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
@@ -132,9 +132,12 @@ inline glm::vec3 rgb2hsl(float r, float g, float b)
         float d = max - min;
         res.s = (res.z > 0.5f) ? d / (2.0f - max - min) : d / (max + min);
 
-        if (max == r) res.x = (g - b) / d + (g < b ? 6 : 0);
-        else if (max == g) res.x = (b - r) / d + 2;
-        else if (max == b) res.x = (r - g) / d + 4;
+        if (max == r)
+            res.x = (g - b) / d + (g < b ? 6 : 0);
+        else if (max == g)
+            res.x = (b - r) / d + 2;
+        else if (max == b)
+            res.x = (r - g) / d + 4;
 
         res.x /= 6;
     }
@@ -183,10 +186,10 @@ inline glm::vec3 hsl2rgb(float h, float s, float l)
     return res;
 }
 
-template<typename T>
+template <typename T>
 inline void log(T msg)
 {
     std::cout << msg << '\n';
 }
 
-}
+} // namespace spe

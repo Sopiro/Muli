@@ -1,17 +1,17 @@
 #pragma once
 
-#include "common.h"
-#include "util.h"
-#include "broad_phase.h"
-#include "detection.h"
-#include "rigidbody.h"
-#include "contact_constraint.h"
-#include "grab_joint.h"
-#include "revolute_joint.h"
-#include "distance_joint.h"
 #include "box.h"
-#include "polygon.h"
+#include "broad_phase.h"
 #include "circle.h"
+#include "common.h"
+#include "contact_constraint.h"
+#include "detection.h"
+#include "distance_joint.h"
+#include "grab_joint.h"
+#include "polygon.h"
+#include "revolute_joint.h"
+#include "rigidbody.h"
+#include "util.h"
 
 namespace spe
 {
@@ -45,7 +45,7 @@ struct Settings
     bool SLEEPING_ENABLED = true;
     float SLEEPING_TRESHOLD = 0.5f;
 
-    AABB VALID_REGION{ glm::vec2{-FLT_MAX, -FLT_MAX},glm::vec2{FLT_MAX, FLT_MAX} };
+    AABB VALID_REGION{ glm::vec2{ -FLT_MAX, -FLT_MAX }, glm::vec2{ FLT_MAX, FLT_MAX } };
 };
 
 class World final
@@ -76,14 +76,42 @@ public:
     Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
-    Polygon* CreatePolygon(std::vector<glm::vec2> vertices, BodyType type = Dynamic, bool resetPosition = true, float density = DEFAULT_DENSITY);
+    Polygon* CreatePolygon(std::vector<glm::vec2> vertices,
+                           BodyType type = Dynamic,
+                           bool resetPosition = true,
+                           float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
-    Polygon* CreateRegularPolygon(float radius, uint32_t num_vertices = 0, float initial_angle = 0, float density = DEFAULT_DENSITY);
+    Polygon* CreateRegularPolygon(float radius,
+                                  uint32_t num_vertices = 0,
+                                  float initial_angle = 0,
+                                  float density = DEFAULT_DENSITY);
 
-    GrabJoint* CreateGrabJoint(RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);
-    RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchor, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchorA, glm::vec2 anchorB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA, RigidBody* bodyB, float length = -1.0f, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    GrabJoint* CreateGrabJoint(RigidBody* body,
+                               glm::vec2 anchor,
+                               glm::vec2 target,
+                               float frequency = 1.0f,
+                               float dampingRatio = 0.5f,
+                               float jointMass = 1.0f);
+    RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA,
+                                       RigidBody* bodyB,
+                                       glm::vec2 anchor,
+                                       float frequency = 10.0f,
+                                       float dampingRatio = 1.0f,
+                                       float jointMass = 1.0f);
+    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
+                                       RigidBody* bodyB,
+                                       glm::vec2 anchorA,
+                                       glm::vec2 anchorB,
+                                       float length = -1.0f,
+                                       float frequency = 10.0f,
+                                       float dampingRatio = 1.0f,
+                                       float jointMass = 1.0f);
+    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
+                                       RigidBody* bodyB,
+                                       float length = -1.0f,
+                                       float frequency = 10.0f,
+                                       float dampingRatio = 1.0f,
+                                       float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const glm::vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& region) const;
@@ -160,4 +188,4 @@ inline void World::Awake()
     }
 }
 
-}
+} // namespace spe

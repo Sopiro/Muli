@@ -3,9 +3,9 @@
 namespace spe
 {
 
-Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPosition, float _density) :
-    RigidBody(std::move(_type)),
-    vertices{ std::move(_vertices) }
+Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPosition, float _density)
+    : RigidBody(std::move(_type))
+    , vertices{ std::move(_vertices) }
 {
     glm::vec2 centerOfMass{ 0.0f };
     size_t count = vertices.size();
@@ -51,4 +51,4 @@ Polygon::Polygon(std::vector<glm::vec2> _vertices, BodyType _type, bool _resetPo
     shape = BodyShape::ShapePolygon;
 }
 
-}
+} // namespace spe

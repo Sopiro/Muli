@@ -3,9 +3,9 @@
 namespace spe
 {
 
-Circle::Circle(float _radius, BodyType _type, float _density) :
-    RigidBody(std::move(_type)),
-    radius{ std::move(_radius) }
+Circle::Circle(float _radius, BodyType _type, float _density)
+    : RigidBody(std::move(_type))
+    , radius{ std::move(_radius) }
 {
     area = glm::pi<float>() * radius * radius;
 
@@ -23,4 +23,4 @@ Circle::Circle(float _radius, BodyType _type, float _density) :
     shape = BodyShape::ShapeCircle;
 }
 
-}
+} // namespace spe

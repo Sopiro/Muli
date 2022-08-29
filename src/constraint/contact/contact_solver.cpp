@@ -1,6 +1,6 @@
 #include "spe/contact_solver.h"
-#include "spe/world.h"
 #include "spe/contact_constraint.h"
+#include "spe/world.h"
 
 namespace spe
 {
@@ -30,7 +30,7 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
     {
         // Relative velocity at contact point
         glm::vec2 relativeVelocity = (cc->bodyB->linearVelocity + glm::cross(cc->bodyB->angularVelocity, rb)) -
-            (cc->bodyA->linearVelocity + glm::cross(cc->bodyA->angularVelocity, ra));
+                                     (cc->bodyA->linearVelocity + glm::cross(cc->bodyA->angularVelocity, ra));
 
         float normalVelocity = glm::dot(cc->contactNormal, relativeVelocity);
 
@@ -43,14 +43,16 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
     {
         bias = -(cc->bodyB->surfaceSpeed - cc->bodyA->surfaceSpeed);
 
-        if (cc->featureFlipped)
-            bias *= -1;
+        if (cc->featureFlipped) bias *= -1;
     }
 
-    float k = cc->bodyA->invMass
+    // clang-format off
+    float k
+        = cc->bodyA->invMass
         + jacobian.wa * cc->bodyA->invInertia * jacobian.wa
         + cc->bodyB->invMass
         + jacobian.wb * cc->bodyB->invInertia * jacobian.wb;
+    // clang-format on
 
     effectiveMass = k > 0.0f ? 1.0f / k : 0.0f;
 
@@ -63,12 +65,13 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
+    // clang-format off
     // Jacobian * velocity vector (Normal velocity)
     float jv = glm::dot(jacobian.va, cc->bodyA->linearVelocity)
         + jacobian.wa * cc->bodyA->angularVelocity
         + glm::dot(jacobian.vb, cc->bodyB->linearVelocity)
         + jacobian.wb * cc->bodyB->angularVelocity;
-
+    // clang-format on
 
     float lambda = effectiveMass * -(jv + bias);
 
@@ -109,4 +112,4 @@ void ContactSolver::ApplyImpulse(float lambda)
     cc->bodyB->angularVelocity += cc->bodyB->invInertia * jacobian.wb * lambda;
 }
 
-}
+} // namespace spe

@@ -26,4 +26,4 @@ namespace spe
 
 #define DEFAULT_BODY_RESERVE_COUNT 256
 
-}
+} // namespace spe

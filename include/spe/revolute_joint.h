@@ -11,16 +11,13 @@ struct Settings;
 class RevoluteJoint : public Joint
 {
 public:
-    RevoluteJoint
-    (
-        RigidBody* _bodyA,
-        RigidBody* _bodyB,
-        glm::vec2 _anchor,
-        const Settings& _settings,
-        float _frequency = 10.0f,
-        float _dampingRatio = 1.0f,
-        float _jointMass = -1.0f
-    );
+    RevoluteJoint(RigidBody* _bodyA,
+                  RigidBody* _bodyB,
+                  glm::vec2 _anchor,
+                  const Settings& _settings,
+                  float _frequency = 10.0f,
+                  float _dampingRatio = 1.0f,
+                  float _jointMass = -1.0f);
 
     virtual void Prepare() override;
     virtual void Solve() override;
@@ -52,4 +49,4 @@ inline const glm::vec2& RevoluteJoint::GetLocalAnchorB() const
     return localAnchorB;
 }
 
-}
+} // namespace spe

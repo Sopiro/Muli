@@ -45,4 +45,4 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
     return { minIndex, minDistance, minNormal };
 }
 
-}
+} // namespace spe
