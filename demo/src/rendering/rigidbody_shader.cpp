@@ -1,4 +1,4 @@
-#include "rigidbody_shader.h"    
+#include "rigidbody_shader.h"
 
 namespace spe
 {
@@ -8,9 +8,10 @@ std::unique_ptr<RigidBodyShader> RigidBodyShader::Create()
     return std::unique_ptr<RigidBodyShader>(new RigidBodyShader);
 }
 
-RigidBodyShader::RigidBodyShader() : Shader(
-    // Vertex shader
-    R"(
+RigidBodyShader::RigidBodyShader()
+    : Shader(
+          // Vertex shader
+          R"(
         #version 330 core
 
         layout (location = 0) in vec3 pos;
@@ -30,8 +31,8 @@ RigidBodyShader::RigidBodyShader() : Shader(
            texCoord = _texCoord;
         }
     )",
-    // Fragment shader
-    R"(
+          // Fragment shader
+          R"(
         #version 330 core
         
         out vec4 fragColor;
@@ -46,8 +47,7 @@ RigidBodyShader::RigidBodyShader() : Shader(
             
             fragColor = vec4(color, 1.0f);
         }
-    )"
-)
+    )")
 {
     uniformMap.insert({ "color", glGetUniformLocation(shaderHandle, "color") });
     uniformMap.insert({ "model", glGetUniformLocation(shaderHandle, "model") });
@@ -55,4 +55,4 @@ RigidBodyShader::RigidBodyShader() : Shader(
     uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
-}
+} // namespace spe

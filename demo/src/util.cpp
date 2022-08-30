@@ -1,8 +1,8 @@
-#include "common.h"
 #include "util.h"
+#include "common.h"
+#include "spe/box.h"
 #include "spe/circle.h"
 #include "spe/polygon.h"
-#include "spe/box.h"
 
 namespace spe
 {
@@ -108,4 +108,4 @@ std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices)
     return indices;
 }
 
-}
+} // namespace spe

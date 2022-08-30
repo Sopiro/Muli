@@ -2,9 +2,9 @@
 
 #include "common.h"
 
+#include "input.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include "input.h"
 
 namespace spe
 {
@@ -164,4 +164,4 @@ inline int32_t Window::GetRefreshRate() const
     return refreshRate;
 }
 
-}
+} // namespace spe

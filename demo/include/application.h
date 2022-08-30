@@ -1,7 +1,7 @@
 #pragma once
 
-#include "window.h"
 #include "game.h"
+#include "window.h"
 
 namespace spe
 {
@@ -24,6 +24,7 @@ public:
     void Run();
 
     glm::vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 1.0f };
+
 private:
     static Application* app;
 
@@ -50,4 +51,4 @@ inline void Application::SetFrameRate(uint32_t frameRate)
     frameTime = 1.0 / frameRate;
 }
 
-}
+} // namespace spe

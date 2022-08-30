@@ -1,4 +1,4 @@
-#include "shader.h"    
+#include "shader.h"
 
 namespace spe
 {
@@ -65,4 +65,4 @@ Shader::~Shader()
     if (shaderHandle) glDeleteProgram(shaderHandle);
 }
 
-}
+} // namespace spe

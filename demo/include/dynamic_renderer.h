@@ -1,7 +1,7 @@
 #pragma once
 
-#include "renderer.h"
 #include "dynamic_shader.h"
+#include "renderer.h"
 
 namespace spe
 {
@@ -19,7 +19,9 @@ public:
     void SetViewMatrix(glm::mat4 _viewMatrix);
 
     virtual void Render() override;
-    void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMode = GL_LINES, glm::vec3 color = { 0.0f, 0.0f, 0.0f });
+    void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices,
+                               GLenum drawMode = GL_LINES,
+                               glm::vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
     const uint32_t maxVertexCount = 1024; // must be a even number
@@ -34,7 +36,9 @@ private:
     uint32_t VBO;
 };
 
-inline void DynamicRenderer::Render() {}
+inline void DynamicRenderer::Render()
+{
+}
 
 inline void DynamicRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
 {
@@ -48,4 +52,4 @@ inline void DynamicRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
     shader->SetViewMatrix(std::move(_viewMatrix));
 }
 
-}
+} // namespace spe

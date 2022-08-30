@@ -1,10 +1,10 @@
 #pragma once
 
 #include "box.h"
-#include "broad_phase.h"
 #include "circle.h"
 #include "common.h"
 #include "contact_constraint.h"
+#include "contact_manager.h"
 #include "detection.h"
 #include "distance_joint.h"
 #include "grab_joint.h"
@@ -52,6 +52,7 @@ class World final
 {
     friend class Island;
     friend class BroadPhase;
+    friend class ContactManager;
 
 public:
     World(const Settings& simulationSettings);
@@ -116,12 +117,12 @@ public:
     std::vector<RigidBody*> Query(const glm::vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& region) const;
 
-    const std::vector<RigidBody*>& GetBodies() const;
+    std::vector<RigidBody*>& GetBodies();
     const uint32_t GetSleepingBodyCount() const;
     const uint32_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
-    const std::vector<ContactConstraint>& GetContactConstraints() const;
-    const std::vector<Joint*>& GetJoints() const;
+    // const std::vector<ContactConstraint>& GetContactConstraints() const;
+    std::vector<Joint*>& GetJoints();
 
     void Awake();
 
@@ -129,17 +130,11 @@ private:
     const Settings& settings;
     uint32_t uid{ 0 };
 
-    BroadPhase broadphase;
+    ContactManager contactManager;
 
     // All registered rigid bodies
     std::unordered_map<uint32_t, RigidBody*> bodyMap;
     std::vector<RigidBody*> bodies{};
-
-    // Constraints to be solved
-    std::vector<ContactConstraint> contactConstraints{};
-    std::unordered_map<uint64_t, ContactConstraint*> contactConstraintMap{};
-    std::vector<ContactConstraint> newContactConstraints{};
-    std::unordered_map<uint64_t, ContactConstraint*> newContactConstraintMap{};
 
     std::vector<Joint*> joints{};
     std::unordered_map<uint32_t, Joint*> jointMap{};
@@ -150,7 +145,20 @@ private:
     uint32_t sleepingBodies = 0;
 };
 
-inline const std::vector<RigidBody*>& World::GetBodies() const
+inline World::World(const Settings& simulationSettings)
+    : settings{ simulationSettings }
+    , contactManager{ *this }
+{
+    bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
+    bodyMap.reserve(DEFAULT_BODY_RESERVE_COUNT);
+}
+
+inline World::~World() noexcept
+{
+    Reset();
+}
+
+inline std::vector<RigidBody*>& World::GetBodies()
 {
     return bodies;
 }
@@ -167,15 +175,15 @@ inline const uint32_t World::GetSleepingIslandCount() const
 
 inline const AABBTree& World::GetBVH() const
 {
-    return broadphase.tree;
+    return contactManager.broadPhase.tree;
 }
 
-inline const std::vector<ContactConstraint>& World::GetContactConstraints() const
-{
-    return contactConstraints;
-}
+// inline const std::vector<ContactConstraint>& World::GetContactConstraints() const
+// {
+//     return contactConstraints;
+// }
 
-inline const std::vector<Joint*>& World::GetJoints() const
+inline std::vector<Joint*>& World::GetJoints()
 {
     return joints;
 }

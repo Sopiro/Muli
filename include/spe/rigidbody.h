@@ -2,6 +2,7 @@
 
 #include "aabb.h"
 #include "common.h"
+#include "contact.h"
 #include "entity.h"
 #include "settings.h"
 
@@ -36,6 +37,7 @@ class RigidBody : public Entity
     friend class RevoluteJoint;
     friend class DistanceJoint;
     friend class BroadPhase;
+    friend class ContactManager;
 
 public:
     RigidBody(BodyType _type);
@@ -112,6 +114,8 @@ private:
     World* world = nullptr;
     uint32_t id = 0;
     uint32_t islandID = 0;
+
+    ContactEdge* contactList = nullptr;
 
     std::vector<uint64_t> contactConstraintIDs{}; // ids of contact manifold containing this body
     std::vector<uint32_t> jointIDs{};             // ids of the joint containing this body

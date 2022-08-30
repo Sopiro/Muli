@@ -30,4 +30,4 @@ inline void Shader::Use()
     glUseProgram(shaderHandle);
 }
 
-}
+} // namespace spe

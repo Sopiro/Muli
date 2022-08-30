@@ -33,4 +33,4 @@ private:
     uint32_t EBOl;
 };
 
-}
+} // namespace spe

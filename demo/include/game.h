@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common.h"
-#include "input.h"
 #include "camera.h"
-#include "rigidbody_renderer.h"
+#include "common.h"
 #include "dynamic_renderer.h"
+#include "input.h"
+#include "rigidbody_renderer.h"
 
 namespace spe
 {
@@ -51,7 +51,7 @@ private:
     bool step = false;
     bool drawOutlineOnly = false;
     bool showBVH = false;
-    bool showCP = false;
+    // bool showCP = false;
     bool resetCamera = true;
 
     std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> demos;
@@ -68,4 +68,4 @@ inline Camera& Game::GetCamera()
     return camera;
 }
 
-}
+} // namespace spe

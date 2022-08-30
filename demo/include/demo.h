@@ -188,7 +188,6 @@ static void demo8(Game& game, World& world, Settings& settings)
     b->rotation = -0.15f;
     b->SetFriction(1.0f);
 
-
     b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
     b->position = { 3.1f, 4.3f };
     b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
@@ -261,7 +260,8 @@ static void demo10(Game& game, World& world, Settings& settings)
         if (t)
             j = world.CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, 15.0f, 0.5f);
         else
-            j = world.CreateDistanceJoint(b1, b2, b1->position - glm::vec2{ sizeW / 2, 0 }, b2->position + glm::vec2{ sizeW / 2, 0 });
+            j = world.CreateDistanceJoint(b1, b2, b1->position - glm::vec2{ sizeW / 2, 0 },
+                                          b2->position + glm::vec2{ sizeW / 2, 0 });
 
         b1 = b2;
     }
@@ -301,8 +301,10 @@ static void demo11(Game& game, World& world, Settings& settings)
     }
     else
     {
-        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(-sizeX / 2, 0.03), -1.0f, frequency, 1.0f);
-        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(-sizeX / 2, -0.03), -1.0f, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f),
+                                      b1->position + glm::vec2(-sizeX / 2, 0.03), -1.0f, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f),
+                                      b1->position + glm::vec2(-sizeX / 2, -0.03), -1.0f, frequency, 1.0f);
     }
 
     for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); i++)
@@ -317,8 +319,10 @@ static void demo11(Game& game, World& world, Settings& settings)
         }
         else
         {
-            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, 0.03f), b2->position + glm::vec2(-sizeX / 2.0f, 0.03f), -1.0f, frequency, 1.0f);
-            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, -0.03f), b2->position + glm::vec2(-sizeX / 2.0f, -0.03f), -1.0f, frequency, 1.0f);
+            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, 0.03f),
+                                          b2->position + glm::vec2(-sizeX / 2.0f, 0.03f), -1.0f, frequency, 1.0f);
+            j = world.CreateDistanceJoint(b1, b2, b1->position + glm::vec2(sizeX / 2.0f, -0.03f),
+                                          b2->position + glm::vec2(-sizeX / 2.0f, -0.03f), -1.0f, frequency, 1.0f);
         }
 
         b1 = b2;
@@ -333,8 +337,10 @@ static void demo11(Game& game, World& world, Settings& settings)
     }
     else
     {
-        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(sizeX / 2, 0.03), -1, frequency, 1.0f);
-        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f), b1->position + glm::vec2(sizeX / 2, -0.03), -1, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f),
+                                      b1->position + glm::vec2(sizeX / 2, 0.03), -1, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->position + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f),
+                                      b1->position + glm::vec2(sizeX / 2, -0.03), -1, frequency, 1.0f);
     }
 
     Camera& camera = game.GetCamera();
@@ -428,7 +434,6 @@ static void demo14(Game& game, World& world, Settings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-
 static void demo15(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
@@ -474,4 +479,4 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>
     return demos;
 }
 
-}
+} // namespace spe

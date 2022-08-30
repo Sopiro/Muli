@@ -1,5 +1,5 @@
-#include "mesh.h"
 #include "common.h"
+#include "mesh.h"
 
 namespace spe
 {
@@ -8,4 +8,4 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
 std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices);
 
-}
+} // namespace spe

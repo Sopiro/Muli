@@ -5,154 +5,149 @@
 namespace spe
 {
 
-World::World(const Settings& simulationSettings)
-    : settings{ simulationSettings }
-    , broadphase{ *this }
-{
-    bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
-    bodyMap.reserve(DEFAULT_BODY_RESERVE_COUNT);
-}
-
-World::~World() noexcept
-{
-    Reset();
-}
-
 void World::Step(float dt)
 {
     settings.DT = dt;
     settings.INV_DT = 1.0f / dt;
 
-    broadphase.Update(dt);
+    contactManager.Update(dt);
 
-    auto& pairs = broadphase.pairs;
-
-    newContactConstraints.clear();
-    newContactConstraintMap.clear();
-    newContactConstraints.reserve(pairs.size());
-    newContactConstraintMap.reserve(pairs.size());
-
-    for (auto i = pairs.begin(); i != pairs.end(); i++)
+    if (bodies[1])
     {
-        PairID pairID;
-        pairID.key = *i;
-
-        RigidBody* a = bodyMap.at(pairID.pair.first);
-        RigidBody* b = bodyMap.at(pairID.pair.second);
-
-        if (a->type == BodyType::Static && b->type == BodyType::Static) continue;
-
-        // Narrow Phase
-        // Execute more accurate and expensive collision detection
-        ContactManifold newManifold;
-        if (detect_collision(a, b, &newManifold) == false) continue;
-
-        ContactConstraint& cc = newContactConstraints.emplace_back(newManifold, settings);
-        newContactConstraintMap.insert({ pairID.key, &cc });
-
-        a->contactConstraintIDs.push_back(pairID.key);
-        b->contactConstraintIDs.push_back(pairID.key);
-
-        if (settings.WARM_STARTING)
+        int count = 0;
+        ContactEdge* e = bodies[1]->contactList;
+        while (e)
         {
-            auto it = contactConstraintMap.find(pairID.key);
-            if (it != contactConstraintMap.end())
-            {
-                ContactConstraint* oldCC = it->second;
-                cc.TryWarmStart(*oldCC);
-            }
+            std::cout << "id: " << e->other->id << '\n';
+            count++;
+            e = e->next;
         }
+
+        std::cout << "count: " << count << '\n';
+        log("----");
     }
 
-    contactConstraints = std::move(newContactConstraints);
-    contactConstraintMap = std::move(newContactConstraintMap);
+    // for (auto i = pairs.begin(); i != pairs.end(); i++)
+    // {
+    //     PairID pairID;
+    //     pairID.key = *i;
 
-    // Build the constraint island
-    Island island{ *this };
-    uint32_t restingBodies = 0;
-    uint32_t islandID = 0;
-    sleepingIslands = 0;
-    sleepingBodies = 0;
+    //     RigidBody* a = bodyMap.at(pairID.pair.first);
+    //     RigidBody* b = bodyMap.at(pairID.pair.second);
 
-    std::unordered_set<uint32_t> visited{};
-    GrowableArray<RigidBody*, 256> stack;
+    //     if (a->type == BodyType::Static && b->type == BodyType::Static) continue;
 
-    // Perform a DFS(Depth First Search) on the constraint graph
-    // After building island, each island can be solved in parallel because they are independent of each other
-    for (uint32_t i = 0; i < bodies.size(); i++)
-    {
-        RigidBody* b = bodies[i];
+    //     // Narrow Phase
+    //     // Execute more accurate and expensive collision detection
+    //     ContactManifold newManifold;
+    //     if (detect_collision(a, b, &newManifold) == false) continue;
 
-        if (b->type == BodyType::Static || (visited.find(b->id) != visited.end())) continue;
+    //     ContactConstraint& cc = newContactConstraints.emplace_back(newManifold, settings);
+    //     newContactConstraintMap.insert({ pairID.key, &cc });
 
-        stack.Clear();
-        stack.Push(b);
+    //     a->contactConstraintIDs.push_back(pairID.key);
+    //     b->contactConstraintIDs.push_back(pairID.key);
 
-        islandID++;
-        while (stack.Count() > 0)
-        {
-            RigidBody* t = stack.Pop();
+    //     if (settings.WARM_STARTING)
+    //     {
+    //         auto it = contactConstraintMap.find(pairID.key);
+    //         if (it != contactConstraintMap.end())
+    //         {
+    //             ContactConstraint* oldCC = it->second;
+    //             cc.TryWarmStart(*oldCC);
+    //         }
+    //     }
+    // }
 
-            if (t->type == BodyType::Static || (visited.find(t->id) != visited.end())) continue;
+    // contactConstraints = std::move(newContactConstraints);
+    // contactConstraintMap = std::move(newContactConstraintMap);
 
-            visited.insert(t->id);
-            t->islandID = islandID;
-            island.bodies.push_back(t);
+    // // Build the constraint island
+    // Island island{ *this };
+    // uint32_t restingBodies = 0;
+    // uint32_t islandID = 0;
+    // sleepingIslands = 0;
+    // sleepingBodies = 0;
 
-            for (uint32_t c = 0; c < t->contactConstraintIDs.size(); c++)
-            {
-                uint64_t key = t->contactConstraintIDs[c];
-                ContactConstraint* cc = contactConstraintMap[key];
+    // std::unordered_set<uint32_t> visited{};
+    // GrowableArray<RigidBody*, 256> stack;
 
-                RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
+    // // Perform a DFS(Depth First Search) on the constraint graph
+    // // After building island, each island can be solved in parallel because they are independent of each other
+    // for (uint32_t i = 0; i < bodies.size(); i++)
+    // {
+    //     RigidBody* b = bodies[i];
 
-                if (visited.find(other->id) != visited.end()) continue;
+    //     if (b->type == BodyType::Static || (visited.find(b->id) != visited.end())) continue;
 
-                island.ccs.push_back(cc);
-                stack.Push(other);
-            }
+    //     stack.Clear();
+    //     stack.Push(b);
 
-            for (uint32_t j = 0; j < t->jointIDs.size(); j++)
-            {
-                uint32_t key = t->jointIDs[j];
-                Joint* joint = jointMap[key];
+    //     islandID++;
+    //     while (stack.Count() > 0)
+    //     {
+    //         RigidBody* t = stack.Pop();
 
-                RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
+    //         if (t->type == BodyType::Static || (visited.find(t->id) != visited.end())) continue;
 
-                if (joint->bodyA == joint->bodyB)
-                {
-                    island.js.push_back(joint);
-                    t->Awake();
-                }
+    //         visited.insert(t->id);
+    //         t->islandID = islandID;
+    //         island.bodies.push_back(t);
 
-                if (visited.find(other->id) != visited.end()) continue;
+    //         for (uint32_t c = 0; c < t->contactConstraintIDs.size(); c++)
+    //         {
+    //             uint64_t key = t->contactConstraintIDs[c];
+    //             ContactConstraint* cc = contactConstraintMap[key];
 
-                island.js.push_back(joint);
-                stack.Push(other);
-            }
+    //             RigidBody* other = cc->bodyB->id == t->id ? cc->bodyA : cc->bodyB;
 
-            if (t->resting > settings.SLEEPING_TRESHOLD) restingBodies++;
-        }
+    //             if (visited.find(other->id) != visited.end()) continue;
 
-        island.sleeping = settings.SLEEPING_ENABLED && (restingBodies == island.bodies.size());
+    //             island.ccs.push_back(cc);
+    //             stack.Push(other);
+    //         }
 
-        if (island.sleeping)
-        {
-            sleepingBodies += static_cast<uint32_t>(island.bodies.size());
-            sleepingIslands++;
-        }
+    //         for (uint32_t j = 0; j < t->jointIDs.size(); j++)
+    //         {
+    //             uint32_t key = t->jointIDs[j];
+    //             Joint* joint = jointMap[key];
 
-        island.Solve();
-        island.Clear();
-        restingBodies = 0;
-    }
+    //             RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
 
-    numIslands = islandID;
+    //             if (joint->bodyA == joint->bodyB)
+    //             {
+    //                 island.js.push_back(joint);
+    //                 t->Awake();
+    //             }
+
+    //             if (visited.find(other->id) != visited.end()) continue;
+
+    //             island.js.push_back(joint);
+    //             stack.Push(other);
+    //         }
+
+    //         if (t->resting > settings.SLEEPING_TRESHOLD) restingBodies++;
+    //     }
+
+    //     island.sleeping = settings.SLEEPING_ENABLED && (restingBodies == island.bodies.size());
+
+    //     if (island.sleeping)
+    //     {
+    //         sleepingBodies += static_cast<uint32_t>(island.bodies.size());
+    //         sleepingIslands++;
+    //     }
+
+    //     island.Solve();
+    //     island.Clear();
+    //     restingBodies = 0;
+    // }
+
+    // numIslands = islandID;
 }
 
 void World::Reset()
 {
-    uid = 0;
+    contactManager.Reset();
 
     for (RigidBody* body : bodies)
         delete body;
@@ -161,16 +156,10 @@ void World::Reset()
 
     bodyMap.clear();
     bodies.clear();
-
-    contactConstraints.clear();
-    contactConstraintMap.clear();
-    newContactConstraints.clear();
-    newContactConstraintMap.clear();
-
     joints.clear();
     jointMap.clear();
 
-    broadphase.Reset();
+    uid = 0;
 }
 
 void World::Add(RigidBody* body)
@@ -181,7 +170,7 @@ void World::Add(RigidBody* body)
     body->id = ++uid;
     bodies.push_back(body);
     bodyMap.insert({ uid, body });
-    broadphase.Add(body);
+    contactManager.Add(body);
 }
 
 void World::Add(const std::vector<RigidBody*>& bodies)
@@ -196,16 +185,8 @@ void World::Destroy(RigidBody* body)
 {
     auto it = std::find(bodies.begin(), bodies.end(), body);
     if (it == bodies.end()) throw std::exception("This body is not registered in this world.");
-    ;
 
-    for (uint32_t i = 0; i < body->contactConstraintIDs.size(); i++)
-    {
-        uint64_t key = body->contactConstraintIDs[i];
-        ContactConstraint* cc = contactConstraintMap[key];
-
-        RigidBody* other = cc->bodyB->id == body->id ? cc->bodyA : cc->bodyB;
-        other->Awake();
-    }
+    contactManager.Remove(body);
 
     for (uint32_t i = 0; i < body->jointIDs.size(); i++)
     {
@@ -230,7 +211,7 @@ void World::Destroy(RigidBody* body)
     joints.clear();
     std::transform(jointMap.begin(), jointMap.end(), std::back_inserter(joints), [](auto& kv) { return kv.second; });
 
-    broadphase.Remove(body);
+    contactManager.Remove(body);
     bodies.erase(it);
     bodyMap.erase(body->id);
 
@@ -290,7 +271,7 @@ void World::Destroy(const std::vector<Joint*>& joints)
 std::vector<RigidBody*> World::Query(const glm::vec2& point) const
 {
     std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = broadphase.tree.Query(point);
+    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(point);
 
     for (uint32_t i = 0; i < nodes.size(); i++)
     {
@@ -308,7 +289,7 @@ std::vector<RigidBody*> World::Query(const glm::vec2& point) const
 std::vector<RigidBody*> World::Query(const AABB& region) const
 {
     std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = broadphase.tree.Query(region);
+    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(region);
 
     for (uint32_t i = 0; i < nodes.size(); i++)
     {

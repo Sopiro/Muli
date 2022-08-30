@@ -15,4 +15,4 @@ glm::vec2 Input::mouseAcceleration{ 0.0f };
 
 glm::vec2 Input::mouseScroll{ 0.0f };
 
-}
+} // namespace spe

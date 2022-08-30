@@ -5,8 +5,8 @@ namespace spe
 
 Application* Application::app = nullptr;
 
-Application::Application(int width, int height, std::string title) :
-    window(std::move(width), std::move(height), std::move(title))
+Application::Application(int width, int height, std::string title)
+    : window(std::move(width), std::move(height), std::move(title))
 {
     Input::Init();
     game = std::make_unique<Game>(*this);
@@ -69,4 +69,4 @@ void Application::Render()
     game->Render();
 }
 
-}
+} // namespace spe

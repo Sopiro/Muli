@@ -58,4 +58,4 @@ void DynamicRenderer::Draw(const std::vector<glm::vec2>& vertices, GLenum drawMo
     }
 }
 
-}
+} // namespace spe

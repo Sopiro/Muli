@@ -5,24 +5,17 @@
 namespace spe
 {
 
-BroadPhase::BroadPhase(World& _world)
-    : world{ _world }
-{
-}
-
-void BroadPhase::Update(float dt)
+void BroadPhase::UpdateDynamicTree(float dt)
 {
     for (uint32_t i = 0; i < world.bodies.size(); i++)
     {
         RigidBody* body = world.bodies[i];
-        body->contactConstraintIDs.clear();
 
         if (body->sleeping) continue;
         if (body->type == BodyType::Static) body->sleeping = true;
 
         Node* node = body->node;
         AABB treeAABB = node->aabb;
-
         AABB aabb = body->GetAABB();
 
         if (contains_AABB(treeAABB, aabb))
@@ -43,66 +36,26 @@ void BroadPhase::Update(float dt)
         aabb.min -= margin;
 
         tree.Remove(body);
-
-        // Remove the old, potentially false pair
-        tree.Query(treeAABB,
-                   [&](const Node* n) -> bool
-                   {
-                       PairID pairID = combine_id(body->GetID(), n->body->GetID());
-                       pairs.erase(pairID.key);
-
-                       return true;
-                   });
-
-        // Insert new pair
-        tree.Query(aabb,
-                   [&](const Node* n) -> bool
-                   {
-                       assert(body != n->body);
-
-                       if (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static) return true;
-
-                       PairID pairID = combine_id(body->GetID(), n->body->GetID());
-                       pairs.insert(pairID.key);
-
-                       return true;
-                   });
-
         tree.Insert(body, aabb);
     }
 }
 
-void BroadPhase::Reset()
+void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback)
 {
-    pairs.clear();
-    tree.Reset();
-}
+    for (uint32_t i = 0; i < world.bodies.size(); i++)
+    {
+        RigidBody* bodyA = world.bodies[i];
 
-void BroadPhase::Add(RigidBody* body)
-{
-    AABB fatAABB = body->GetAABB();
-    fatAABB.min -= margin;
-    fatAABB.max += margin;
+        tree.Query(bodyA->node->aabb, [&](const Node* n) -> bool {
+            RigidBody* bodyB = n->body;
 
-    tree.Insert(body, fatAABB);
-}
+            if (bodyA == bodyB || (bodyA->id > bodyB->id)) return true;
 
-void BroadPhase::Remove(RigidBody* body)
-{
-    tree.Query(body->node->aabb,
-               [&](const Node* n) -> bool
-               {
-                   if (body->GetID() == n->body->GetID() ||
-                       (body->GetType() == BodyType::Static && n->body->GetType() == BodyType::Static))
-                       return true;
+            callback(bodyA, bodyB);
 
-                   PairID pairID = combine_id(body->GetID(), n->body->GetID());
-                   pairs.erase(pairID.key);
-
-                   return true;
-               });
-
-    tree.Remove(body);
+            return true;
+        });
+    }
 }
 
 } // namespace spe

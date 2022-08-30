@@ -13,6 +13,7 @@ set(SOURCE_FILES
     collision/simplex.cpp
     collision/polytope.cpp
     collision/broad_phase.cpp
+    collision/contact_manager.cpp
 
     constraint/contact/contact_constraint.cpp
     constraint/contact/contact_solver.cpp

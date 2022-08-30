@@ -78,4 +78,4 @@ glm::vec2 RigidBodyRenderer::Pick(const glm::vec2& screenPos)
     return { invPos.x, invPos.y };
 }
 
-}
+} // namespace spe

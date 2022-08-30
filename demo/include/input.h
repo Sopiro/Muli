@@ -25,8 +25,8 @@ public:
     static glm::vec2 GetMousePosition();
     static glm::vec2 GetMouseAcceleration();
     static glm::vec2 GetMouseScroll();
-private:
 
+private:
     static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
     static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
 
@@ -105,4 +105,4 @@ inline glm::vec2 Input::GetMouseScroll()
     return mouseScroll;
 }
 
-}
+} // namespace spe

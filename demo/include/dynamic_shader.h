@@ -21,7 +21,7 @@ public:
 private:
     DynamicShader();
 
-    // uniforms 
+    // uniforms
     glm::vec3 color{ 0.0f };
     glm::mat4 viewMatrix{ 1.0f };
     glm::mat4 projMatrix{ 1.0f };
@@ -52,4 +52,4 @@ inline void DynamicShader::SetProjectionMatrix(glm::mat4 _projMatrix)
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, glm::value_ptr(projMatrix));
 }
 
-}
+} // namespace spe

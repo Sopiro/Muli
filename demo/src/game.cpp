@@ -1,25 +1,21 @@
 #include "game.h"
 #include "application.h"
-#include "spe/detection.h"
 #include "demo.h"
+#include "spe/detection.h"
 
 namespace spe
 {
 
-Game::Game(Application& _app) :
-    app{ _app }
+Game::Game(Application& _app)
+    : app{ _app }
 {
     glm::vec2 windowSize = Window::Get().GetWindowSize();
 
     UpdateProjectionMatrix();
-    Window::Get().SetFramebufferSizeChangeCallback
-    (
-        [&](int width, int height) -> void
-        {
-            glViewport(0, 0, width, height);
-            UpdateProjectionMatrix();
-        }
-    );
+    Window::Get().SetFramebufferSizeChangeCallback([&](int width, int height) -> void {
+        glViewport(0, 0, width, height);
+        UpdateProjectionMatrix();
+    });
 
     // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
     simulationDeltaTime = 1.0f / 144.0f;
@@ -84,10 +80,7 @@ void Game::HandleInput()
             if (q.size() != 0)
             {
                 gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f, 0.5f, q[0]->GetMass());
-                gj->OnDestroy = [&](Joint* me) -> void
-                {
-                    gj = nullptr;
-                };
+                gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
             }
             else
             {
@@ -95,10 +88,7 @@ void Game::HandleInput()
                 b->position = mpos;
                 rRenderer.Register(b);
 
-                b->OnDestroy = [&](RigidBody* me) -> void
-                {
-                    rRenderer.Unregister(me);
-                };
+                b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
             }
         }
 
@@ -212,7 +202,7 @@ void Game::HandleInput()
                 ImGui::Checkbox("Camera reset", &resetCamera);
                 ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
                 ImGui::Checkbox("Show BVH", &showBVH);
-                ImGui::Checkbox("Show Contact point", &showCP);
+                // ImGui::Checkbox("Show Contact point", &showCP);
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
                 ImGui::SetNextItemWidth(120);
@@ -341,34 +331,33 @@ void Game::Render()
     if (showBVH)
     {
         const AABBTree& tree = world->GetBVH();
-        tree.Traverse([&](const Node* n)->void
-            {
-                lines.push_back(n->aabb.min);
-                lines.push_back({ n->aabb.max.x, n->aabb.min.y });
-                lines.push_back({ n->aabb.max.x, n->aabb.min.y });
-                lines.push_back(n->aabb.max);
-                lines.push_back(n->aabb.max);
-                lines.push_back({ n->aabb.min.x, n->aabb.max.y });
-                lines.push_back({ n->aabb.min.x, n->aabb.max.y });
-                lines.push_back(n->aabb.min);
-            });
+        tree.Traverse([&](const Node* n) -> void {
+            lines.push_back(n->aabb.min);
+            lines.push_back({ n->aabb.max.x, n->aabb.min.y });
+            lines.push_back({ n->aabb.max.x, n->aabb.min.y });
+            lines.push_back(n->aabb.max);
+            lines.push_back(n->aabb.max);
+            lines.push_back({ n->aabb.min.x, n->aabb.max.y });
+            lines.push_back({ n->aabb.min.x, n->aabb.max.y });
+            lines.push_back(n->aabb.min);
+        });
     }
 
-    if (showCP)
-    {
-        const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
+    // if (showCP)
+    // {
+    //     const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
 
-        for (uint32_t i = 0; i < cc.size(); i++)
-        {
-            ContactInfo ci;
-            cc[i].GetContactInfo(&ci);
+    //     for (uint32_t i = 0; i < cc.size(); i++)
+    //     {
+    //         ContactInfo ci;
+    //         cc[i].GetContactInfo(&ci);
 
-            for (uint32_t j = 0; j < ci.numContacts; j++)
-            {
-                points.push_back(ci.contactPoints[j].point);
-            }
-        }
-    }
+    //         for (uint32_t j = 0; j < ci.numContacts; j++)
+    //         {
+    //             points.push_back(ci.contactPoints[j].point);
+    //         }
+    //     }
+    // }
 
     dRenderer.SetViewMatrix(camera.CameraTransform());
     glPointSize(5.0f);
@@ -382,7 +371,8 @@ void Game::UpdateProjectionMatrix()
     glm::vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= 100.0f;
 
-    glm::mat4 projMatrix = glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
+    glm::mat4 projMatrix =
+        glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
     rRenderer.SetProjectionMatrix(projMatrix);
     dRenderer.SetProjectionMatrix(projMatrix);
 }
@@ -406,10 +396,7 @@ void Game::InitSimulation(uint32_t demo)
     {
         rRenderer.Register(b);
 
-        b->OnDestroy = [&](RigidBody* me)-> void
-        {
-            rRenderer.Unregister(me);
-        };
+        b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
     }
 }
 
@@ -419,4 +406,4 @@ void Game::Reset()
     rRenderer.Reset();
 }
 
-}
+} // namespace spe

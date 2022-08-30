@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common.h"
+#include "mesh.h"
 #include "renderer.h"
 #include "rigidbody_shader.h"
-#include "mesh.h"
 #include "util.h"
 
 namespace spe
@@ -104,4 +104,4 @@ inline void RigidBodyRenderer::Reset()
     bodiesAndMeshes.clear();
 }
 
-}
+} // namespace spe

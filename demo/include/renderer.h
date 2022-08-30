@@ -21,4 +21,4 @@ public:
     virtual void Render() = 0;
 };
 
-}
+} // namespace spe

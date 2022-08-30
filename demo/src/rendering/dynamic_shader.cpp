@@ -1,4 +1,4 @@
-#include "dynamic_shader.h"    
+#include "dynamic_shader.h"
 
 namespace spe
 {
@@ -8,9 +8,10 @@ std::unique_ptr<DynamicShader> DynamicShader::Create()
     return std::unique_ptr<DynamicShader>(new DynamicShader);
 }
 
-DynamicShader::DynamicShader() : Shader(
-    // Vertex shader
-    R"(
+DynamicShader::DynamicShader()
+    : Shader(
+          // Vertex shader
+          R"(
         #version 330 core
 
         layout (location = 0) in vec2 pos;
@@ -25,8 +26,8 @@ DynamicShader::DynamicShader() : Shader(
            gl_Position = mvp * vec4(pos, 0.0, 1.0);
         }
     )",
-    // Fragment shader
-    R"(
+          // Fragment shader
+          R"(
         #version 330 core
         
         out vec4 fragColor;
@@ -37,8 +38,7 @@ DynamicShader::DynamicShader() : Shader(
         {
             fragColor = vec4(color, 1.0f);
         }
-    )"
-)
+    )")
 {
     uniformMap.insert({ "color", glGetUniformLocation(shaderHandle, "color") });
     uniformMap.insert({ "model", glGetUniformLocation(shaderHandle, "model") });
@@ -46,4 +46,4 @@ DynamicShader::DynamicShader() : Shader(
     uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
-}
+} // namespace spe
