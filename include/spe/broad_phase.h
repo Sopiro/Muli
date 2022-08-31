@@ -10,7 +10,6 @@ namespace spe
 class BroadPhase
 {
     friend class World;
-    friend class ContactManager;
 
 public:
     BroadPhase(World& _world);
@@ -20,6 +19,7 @@ public:
     void Reset();
     void Add(RigidBody* body);
     void Remove(RigidBody* body);
+    bool TestOverlap(RigidBody* bodyA, RigidBody* bodyB);
 
 private:
     World& world;
@@ -27,6 +27,16 @@ private:
     float velocityMultiplier = 3.0f;
     AABBTree tree;
 };
+
+inline BroadPhase::BroadPhase(World& _world)
+    : world{ _world }
+{
+}
+
+inline BroadPhase::~BroadPhase()
+{
+    Reset();
+}
 
 inline void BroadPhase::Reset()
 {
@@ -47,14 +57,9 @@ inline void BroadPhase::Remove(RigidBody* body)
     tree.Remove(body);
 }
 
-inline BroadPhase::BroadPhase(World& _world)
-    : world{ _world }
+inline bool BroadPhase::TestOverlap(RigidBody* bodyA, RigidBody* bodyB)
 {
-}
-
-inline BroadPhase::~BroadPhase()
-{
-    Reset();
+    return test_overlap_aabb(bodyA->node->aabb, bodyB->node->aabb);
 }
 
 } // namespace spe

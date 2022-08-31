@@ -2,13 +2,13 @@
 
 #include "aabb.h"
 #include "common.h"
-#include "contact.h"
 #include "entity.h"
 #include "settings.h"
 
 namespace spe
 {
 
+struct ContactEdge;
 struct Node;
 
 enum BodyShape : uint8_t
@@ -116,9 +116,7 @@ private:
     uint32_t islandID = 0;
 
     ContactEdge* contactList = nullptr;
-
-    std::vector<uint64_t> contactConstraintIDs{}; // ids of contact manifold containing this body
-    std::vector<uint32_t> jointIDs{};             // ids of the joint containing this body
+    std::vector<uint32_t> jointIDs{}; // ids of the joint containing this body
 
     float resting = 0.0f;
     bool sleeping = false;

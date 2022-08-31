@@ -333,7 +333,7 @@ void AABBTree::CheckCollision(Node* a,
 
     if (a->isLeaf && b->isLeaf)
     {
-        if (detect_collision_AABB(a->aabb, b->aabb))
+        if (test_overlap_aabb(a->aabb, b->aabb))
         {
             pairs.emplace_back(a->body, b->body);
         }
@@ -343,7 +343,7 @@ void AABBTree::CheckCollision(Node* a,
         CheckCollision(a->child1, a->child2, pairs, checked);
         CheckCollision(b->child1, b->child2, pairs, checked);
 
-        if (detect_collision_AABB(a->aabb, b->aabb))
+        if (test_overlap_aabb(a->aabb, b->aabb))
         {
             CheckCollision(a->child1, b->child1, pairs, checked);
             CheckCollision(a->child1, b->child2, pairs, checked);
@@ -355,7 +355,7 @@ void AABBTree::CheckCollision(Node* a,
     {
         CheckCollision(b->child1, b->child2, pairs, checked);
 
-        if (detect_collision_AABB(a->aabb, b->aabb))
+        if (test_overlap_aabb(a->aabb, b->aabb))
         {
             CheckCollision(a, b->child1, pairs, checked);
             CheckCollision(a, b->child2, pairs, checked);
@@ -365,7 +365,7 @@ void AABBTree::CheckCollision(Node* a,
     {
         CheckCollision(a->child1, a->child2, pairs, checked);
 
-        if (detect_collision_AABB(a->aabb, b->aabb))
+        if (test_overlap_aabb(a->aabb, b->aabb))
         {
             CheckCollision(b, a->child1, pairs, checked);
             CheckCollision(b, a->child2, pairs, checked);
@@ -415,7 +415,7 @@ std::vector<Node*> AABBTree::Query(const AABB& region) const
     {
         Node* current = stack.Pop();
 
-        if (!detect_collision_AABB(current->aabb, region)) continue;
+        if (!test_overlap_aabb(current->aabb, region)) continue;
 
         if (current->isLeaf)
         {
@@ -442,7 +442,7 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
     {
         Node* current = stack.Pop();
 
-        if (!detect_collision_AABB(current->aabb, aabb)) continue;
+        if (!test_overlap_aabb(current->aabb, aabb)) continue;
 
         if (current->isLeaf)
         {

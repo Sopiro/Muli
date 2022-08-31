@@ -5,7 +5,7 @@
 namespace spe
 {
 
-class ContactConstraint;
+class Contact;
 
 enum ContactType : uint8_t
 {
@@ -23,7 +23,7 @@ struct Jacobian
 
 class ContactSolver
 {
-    friend class ContactConstraint;
+    friend class Contact;
     friend class BlockSolver;
 
 public:
@@ -31,7 +31,7 @@ public:
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
-    ContactConstraint* cc;
+    Contact* contact;
     glm::vec2 contactPoint;
     ContactType contactType;
 

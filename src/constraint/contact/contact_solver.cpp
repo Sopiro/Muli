@@ -1,5 +1,5 @@
 #include "spe/contact_solver.h"
-#include "spe/contact_constraint.h"
+#include "spe/contact.h"
 #include "spe/world.h"
 
 namespace spe
@@ -11,14 +11,14 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
     // J = [-dir, -ra × dir, dir, rb × dir] (dir: Contact vector, normal or tangent)
     // M = (J · M^-1 · J^t)^-1
 
-    beta = cc->settings.POSITION_CORRECTION_BETA;
-    restitution = cc->bodyA->restitution * cc->bodyB->restitution;
-    friction = cc->bodyA->friction * cc->bodyB->friction;
+    beta = contact->settings.POSITION_CORRECTION_BETA;
+    restitution = contact->bodyA->restitution * contact->bodyB->restitution;
+    friction = contact->bodyA->friction * contact->bodyB->friction;
 
     contactType = _contactType;
 
-    ra = contactPoint - cc->bodyA->position;
-    rb = contactPoint - cc->bodyB->position;
+    ra = contactPoint - contact->bodyA->position;
+    rb = contactPoint - contact->bodyB->position;
 
     jacobian.va = -dir;
     jacobian.wa = glm::cross(-ra, dir);
@@ -29,34 +29,35 @@ void ContactSolver::Prepare(const glm::vec2& dir, ContactType _contactType)
     if (contactType == Normal)
     {
         // Relative velocity at contact point
-        glm::vec2 relativeVelocity = (cc->bodyB->linearVelocity + glm::cross(cc->bodyB->angularVelocity, rb)) -
-                                     (cc->bodyA->linearVelocity + glm::cross(cc->bodyA->angularVelocity, ra));
+        glm::vec2 relativeVelocity = (contact->bodyB->linearVelocity + glm::cross(contact->bodyB->angularVelocity, rb)) -
+                                     (contact->bodyA->linearVelocity + glm::cross(contact->bodyA->angularVelocity, ra));
 
-        float normalVelocity = glm::dot(cc->contactNormal, relativeVelocity);
+        float normalVelocity = glm::dot(contact->manifold.contactNormal, relativeVelocity);
 
-        if (cc->settings.POSITION_CORRECTION)
-            bias = -(beta * cc->settings.INV_DT) * glm::max(cc->penetrationDepth - cc->settings.PENETRATION_SLOP, 0.0f);
+        if (contact->settings.POSITION_CORRECTION)
+            bias = -(beta * contact->settings.INV_DT) *
+                   glm::max(contact->manifold.penetrationDepth - contact->settings.PENETRATION_SLOP, 0.0f);
 
-        bias += restitution * glm::min(normalVelocity + cc->settings.RESTITUTION_SLOP, 0.0f);
+        bias += restitution * glm::min(normalVelocity + contact->settings.RESTITUTION_SLOP, 0.0f);
     }
     else
     {
-        bias = -(cc->bodyB->surfaceSpeed - cc->bodyA->surfaceSpeed);
+        bias = -(contact->bodyB->surfaceSpeed - contact->bodyA->surfaceSpeed);
 
-        if (cc->featureFlipped) bias *= -1;
+        if (contact->manifold.featureFlipped) bias *= -1;
     }
 
     // clang-format off
     float k
-        = cc->bodyA->invMass
-        + jacobian.wa * cc->bodyA->invInertia * jacobian.wa
-        + cc->bodyB->invMass
-        + jacobian.wb * cc->bodyB->invInertia * jacobian.wb;
+        = contact->bodyA->invMass
+        + jacobian.wa * contact->bodyA->invInertia * jacobian.wa
+        + contact->bodyB->invMass
+        + jacobian.wb * contact->bodyB->invInertia * jacobian.wb;
     // clang-format on
 
     effectiveMass = k > 0.0f ? 1.0f / k : 0.0f;
 
-    if (cc->settings.WARM_STARTING) ApplyImpulse(impulseSum);
+    if (contact->settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
 
 void ContactSolver::Solve(const ContactSolver* normalContact)
@@ -67,10 +68,10 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
 
     // clang-format off
     // Jacobian * velocity vector (Normal velocity)
-    float jv = glm::dot(jacobian.va, cc->bodyA->linearVelocity)
-        + jacobian.wa * cc->bodyA->angularVelocity
-        + glm::dot(jacobian.vb, cc->bodyB->linearVelocity)
-        + jacobian.wb * cc->bodyB->angularVelocity;
+    float jv = glm::dot(jacobian.va, contact->bodyA->linearVelocity)
+        + jacobian.wa * contact->bodyA->angularVelocity
+        + glm::dot(jacobian.vb, contact->bodyB->linearVelocity)
+        + jacobian.wb * contact->bodyB->angularVelocity;
     // clang-format on
 
     float lambda = effectiveMass * -(jv + bias);
@@ -79,21 +80,21 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     switch (contactType)
     {
     case Normal:
-        if (cc->settings.IMPULSE_ACCUMULATION)
+        if (contact->settings.IMPULSE_ACCUMULATION)
             impulseSum = glm::max(0.0f, impulseSum + lambda);
         else
             impulseSum = glm::max(0.0f, lambda);
         break;
     case Tangent:
         float maxFriction = friction * normalContact->impulseSum;
-        if (cc->settings.IMPULSE_ACCUMULATION)
+        if (contact->settings.IMPULSE_ACCUMULATION)
             impulseSum = glm::clamp(impulseSum + lambda, -maxFriction, maxFriction);
         else
             impulseSum = glm::clamp(lambda, -maxFriction, maxFriction);
         break;
     }
 
-    if (cc->settings.IMPULSE_ACCUMULATION)
+    if (contact->settings.IMPULSE_ACCUMULATION)
         lambda = impulseSum - oldImpulseSum;
     else
         lambda = impulseSum;
@@ -106,10 +107,10 @@ void ContactSolver::ApplyImpulse(float lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    cc->bodyA->linearVelocity += jacobian.va * (cc->bodyA->invMass * lambda);
-    cc->bodyA->angularVelocity += cc->bodyA->invInertia * jacobian.wa * lambda;
-    cc->bodyB->linearVelocity += jacobian.vb * (cc->bodyB->invMass * lambda);
-    cc->bodyB->angularVelocity += cc->bodyB->invInertia * jacobian.wb * lambda;
+    contact->bodyA->linearVelocity += jacobian.va * (contact->bodyA->invMass * lambda);
+    contact->bodyA->angularVelocity += contact->bodyA->invInertia * jacobian.wa * lambda;
+    contact->bodyB->linearVelocity += jacobian.vb * (contact->bodyB->invMass * lambda);
+    contact->bodyB->angularVelocity += contact->bodyB->invInertia * jacobian.wb * lambda;
 }
 
 } // namespace spe

@@ -49,7 +49,7 @@ inline bool test_point_inside_AABB(const AABB& aabb, const glm::vec2& point)
     return true;
 }
 
-inline bool detect_collision_AABB(const AABB& a, const AABB& b)
+inline bool test_overlap_aabb(const AABB& a, const AABB& b)
 {
     if (a.min.x > b.max.x || a.max.x < b.min.x) return false;
     if (a.min.y > b.max.y || a.max.y < b.min.y) return false;

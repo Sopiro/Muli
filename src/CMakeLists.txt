@@ -15,7 +15,7 @@ set(SOURCE_FILES
     collision/broad_phase.cpp
     collision/contact_manager.cpp
 
-    constraint/contact/contact_constraint.cpp
+    constraint/contact/contact.cpp
     constraint/contact/contact_solver.cpp
     constraint/contact/block_solver.cpp
 

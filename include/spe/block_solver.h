@@ -5,20 +5,20 @@
 namespace spe
 {
 
-class ContactConstraint;
+class Contact;
 class ContactSolver;
 struct Jacobian;
 
 class BlockSolver
 {
-    friend class ContactConstraint;
+    friend class Contact;
 
 public:
     void Prepare();
     void Solve();
 
 private:
-    ContactConstraint* cc;
+    Contact* c;
 
     ContactSolver* nc1;
     ContactSolver* nc2;

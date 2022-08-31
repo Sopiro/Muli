@@ -295,6 +295,7 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
         out->bodyA = a;
         out->bodyB = b;
         out->contactNormal = glm::normalize(b->position - a->position);
+        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
         out->contactPoints[0] = { a->position + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
@@ -372,12 +373,17 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
         out->contactNormal.y = glm::round((out->contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
 
         find_contact_points(out->contactNormal, out->bodyA, out->bodyB, out);
+        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
+
         return true;
     }
 }
 
 bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
+    out->numContacts = 0;
+    out->penetrationDepth = 0.0f;
+
     // Circle vs. Circle collision
     if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
     {

@@ -202,7 +202,7 @@ void Game::HandleInput()
                 ImGui::Checkbox("Camera reset", &resetCamera);
                 ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
                 ImGui::Checkbox("Show BVH", &showBVH);
-                // ImGui::Checkbox("Show Contact point", &showCP);
+                ImGui::Checkbox("Show Contact point", &showCP);
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
                 ImGui::SetNextItemWidth(120);
@@ -343,21 +343,20 @@ void Game::Render()
         });
     }
 
-    // if (showCP)
-    // {
-    //     const std::vector<ContactConstraint>& cc = world->GetContactConstraints();
+    if (showCP)
+    {
+        const Contact* c = world->GetContacts();
 
-    //     for (uint32_t i = 0; i < cc.size(); i++)
-    //     {
-    //         ContactInfo ci;
-    //         cc[i].GetContactInfo(&ci);
+        while (c)
+        {
+            for (uint32_t j = 0; j < c->GetContactManifold().numContacts; j++)
+            {
+                points.push_back(c->GetContactManifold().contactPoints[j].point);
+            }
 
-    //         for (uint32_t j = 0; j < ci.numContacts; j++)
-    //         {
-    //             points.push_back(ci.contactPoints[j].point);
-    //         }
-    //     }
-    // }
+            c = c->GetNext();
+        }
+    }
 
     dRenderer.SetViewMatrix(camera.CameraTransform());
     glPointSize(5.0f);

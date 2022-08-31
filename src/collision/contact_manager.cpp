@@ -7,8 +7,10 @@ namespace spe
 
 void ContactManager::Update(float dt)
 {
+    // Update the dynamic AABB tree node
     broadPhase.UpdateDynamicTree(dt);
 
+    // Find contacts, insert into the contact graph
     broadPhase.FindContacts([&](RigidBody* bodyA, RigidBody* bodyB) -> void {
         ContactEdge* e = bodyB->contactList;
         while (e)
@@ -19,9 +21,9 @@ void ContactManager::Update(float dt)
         }
 
         // Create new contact
-        Contact* c = new Contact(bodyA, bodyB);
+        Contact* c = new Contact(bodyA, bodyB, world.settings);
 
-        // Insert into the world contact list
+        // Insert into the world
         c->prev = nullptr;
         c->next = contactList;
         if (contactList != nullptr)
@@ -30,7 +32,7 @@ void ContactManager::Update(float dt)
         }
         contactList = c;
 
-        // Connect to island graph.
+        // Connect to island graph
 
         // Connect contact edge to body A
         c->nodeA.contact = c;
@@ -58,6 +60,40 @@ void ContactManager::Update(float dt)
 
         ++contactCount;
     });
+
+    int count = 0;
+
+    // Narrow phase
+    // Evaluate contacts, prepare for solving step
+    Contact* c = contactList;
+    while (c)
+    {
+        RigidBody* bodyA = c->bodyA;
+        RigidBody* bodyB = c->bodyB;
+
+        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != BodyType::Static;
+        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != BodyType::Static;
+
+        if (!activeA && !activeB)
+        {
+            c = c->GetNext();
+            continue;
+        }
+
+        bool overlap = broadPhase.TestOverlap(bodyA, bodyB);
+
+        if (!overlap)
+        {
+            Contact* t = c;
+            c = c->GetNext();
+            Destroy(t);
+            continue;
+        }
+
+        c->Update();
+        if (c->touching) ++count;
+        c = c->GetNext();
+    }
 }
 
 void ContactManager::Reset()
@@ -68,7 +104,7 @@ void ContactManager::Reset()
     while (c)
     {
         Contact* c0 = c;
-        c = c->next;
+        c = c->GetNext();
         delete c0; // Destroy(c0);
     }
     contactList = nullptr;
@@ -78,6 +114,12 @@ void ContactManager::Destroy(Contact* c)
 {
     RigidBody* bodyA = c->bodyA;
     RigidBody* bodyB = c->bodyB;
+
+    if (bodyA->id > bodyB->id)
+    {
+        bodyA = c->bodyB;
+        bodyB = c->bodyA;
+    }
 
     // Remove from the world
     if (c->prev) c->prev->next = c->next;

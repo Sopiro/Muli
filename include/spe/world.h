@@ -3,7 +3,6 @@
 #include "box.h"
 #include "circle.h"
 #include "common.h"
-#include "contact_constraint.h"
 #include "contact_manager.h"
 #include "detection.h"
 #include "distance_joint.h"
@@ -121,7 +120,7 @@ public:
     const uint32_t GetSleepingBodyCount() const;
     const uint32_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
-    // const std::vector<ContactConstraint>& GetContactConstraints() const;
+    const Contact* GetContacts() const;
     std::vector<Joint*>& GetJoints();
 
     void Awake();
@@ -178,10 +177,10 @@ inline const AABBTree& World::GetBVH() const
     return contactManager.broadPhase.tree;
 }
 
-// inline const std::vector<ContactConstraint>& World::GetContactConstraints() const
-// {
-//     return contactConstraints;
-// }
+inline const Contact* World::GetContacts() const
+{
+    return contactManager.contactList;
+}
 
 inline std::vector<Joint*>& World::GetJoints()
 {

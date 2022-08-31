@@ -51,7 +51,7 @@ private:
     bool step = false;
     bool drawOutlineOnly = false;
     bool showBVH = false;
-    // bool showCP = false;
+    bool showCP = false;
     bool resetCamera = true;
 
     std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> demos;

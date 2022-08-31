@@ -1,5 +1,10 @@
 #pragma once
 
+#include "block_solver.h"
+#include "constraint.h"
+#include "contact_solver.h"
+#include "detection.h"
+
 namespace spe
 {
 class RigidBody;
@@ -9,42 +14,61 @@ struct ContactEdge
 {
     RigidBody* other;
     Contact* contact;
-    ContactEdge* prev;
-    ContactEdge* next;
+    ContactEdge* prev = nullptr;
+    ContactEdge* next = nullptr;
 };
 
-class Contact
+class Contact : Constraint
 {
-    friend class BroadPhase;
-    friend class ContactManager;
     friend class World;
+    friend class ContactManager;
+    friend class BroadPhase;
+    friend class ContactSolver;
+    friend class BlockSolver;
 
 public:
-    Contact(RigidBody* _bodyA, RigidBody* _bodyB);
+    Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings);
     ~Contact() noexcept = default;
 
+    void Update();
     Contact* GetNext() const;
 
-private:
-    RigidBody* bodyA;
-    RigidBody* bodyB;
+    virtual void Prepare() override;
+    virtual void Solve() override;
 
-    Contact* prev;
-    Contact* next;
+    const ContactManifold& GetContactManifold() const;
+
+private:
+    Contact* prev = nullptr;
+    Contact* next = nullptr;
 
     ContactEdge nodeA;
     ContactEdge nodeB;
+
+    bool touching = false;
+    bool persistent = false;
+
+    ContactManifold manifold;
+
+    ContactSolver tangentContacts[2];
+    ContactSolver normalContacts[2];
+    BlockSolver blockSolver;
 };
 
-inline Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB)
-    : bodyA{ _bodyA }
-    , bodyB{ _bodyB }
+inline Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings)
+    : Constraint(_bodyA, _bodyB, _settings)
 {
+    manifold.numContacts = 0;
 }
 
 inline Contact* Contact::GetNext() const
 {
     return next;
+}
+
+inline const ContactManifold& Contact::GetContactManifold() const
+{
+    return manifold;
 }
 
 } // namespace spe

@@ -40,7 +40,7 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     id = _other.id;
     islandID = _other.islandID;
 
-    contactConstraintIDs = std::move(_other.contactConstraintIDs);
+    contactList = _other.contactList;
     jointIDs = std::move(_other.jointIDs);
 
     resting = _other.resting;

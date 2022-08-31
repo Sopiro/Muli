@@ -67,20 +67,20 @@ void Island::Solve()
 
     // Prepare for solving
     {
-        for (uint32_t i = 0; i < ccs.size(); i++)
-            ccs[i]->Prepare();
-        for (uint32_t i = 0; i < js.size(); i++)
-            js[i]->Prepare();
+        for (uint32_t i = 0; i < contacts.size(); i++)
+            contacts[i]->Prepare();
+        for (uint32_t i = 0; i < joints.size(); i++)
+            joints[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
     {
         for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
         {
-            for (uint32_t j = 0; j < ccs.size(); j++)
-                ccs[j]->Solve();
-            for (uint32_t j = 0; j < js.size(); j++)
-                js[j]->Solve();
+            for (uint32_t j = 0; j < contacts.size(); j++)
+                contacts[j]->Solve();
+            for (uint32_t j = 0; j < joints.size(); j++)
+                joints[j]->Solve();
         }
     }
 
@@ -107,8 +107,8 @@ void Island::Solve()
 void Island::Clear()
 {
     bodies.clear();
-    ccs.clear();
-    js.clear();
+    contacts.clear();
+    joints.clear();
 
     sleeping = false;
 }

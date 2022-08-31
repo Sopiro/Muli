@@ -1,10 +1,11 @@
 #pragma once
 
 #include "common.h"
-#include "rigidbody.h"
 
 namespace spe
 {
+
+class RigidBody;
 
 struct ContactPoint
 {
@@ -21,6 +22,7 @@ struct ContactManifold
     uint32_t numContacts;
     float penetrationDepth;
     glm::vec2 contactNormal;
+    glm::vec2 contactTangent;
     bool featureFlipped;
 };
 

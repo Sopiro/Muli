@@ -16,8 +16,8 @@ private:
 
     std::vector<RigidBody*> bodies{};
 
-    std::vector<ContactConstraint*> ccs{};
-    std::vector<Joint*> js{};
+    std::vector<Contact*> contacts{};
+    std::vector<Joint*> joints{};
 
     Island(World& _world);
     void Solve();
