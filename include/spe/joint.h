@@ -8,13 +8,6 @@ namespace spe
 
 struct Settings;
 
-enum JointType : uint8_t
-{
-    JointGrab,
-    JointRevolute,
-    JointDistance,
-};
-
 class Joint : public Constraint
 {
     /*
@@ -53,7 +46,15 @@ class Joint : public Constraint
     friend class World;
 
 public:
-    Joint(RigidBody* _bodyA,
+    enum Type : uint8_t
+    {
+        JointGrab,
+        JointRevolute,
+        JointDistance,
+    };
+
+    Joint(Joint::Type _type,
+          RigidBody* _bodyA,
           RigidBody* _bodyB,
           const Settings& _settings,
           float _frequency = DEFAULT_FREQUENCY,
@@ -75,16 +76,14 @@ public:
     void SetJointMass(float _jointMass);
 
     bool IsSolid() const;
-    JointType GetType() const;
+    Joint::Type GetType() const;
 
     std::function<void(Joint*)> OnDestroy = nullptr;
 
 protected:
-    JointType type;
+    Joint::Type type;
 
 private:
-    uint32_t id{ 0 };
-
     // Following parameters are used to soften the joint
     float frequency;
     float dampingRatio;
@@ -97,10 +96,16 @@ private:
     void CalculateBetaAndGamma();
 };
 
-inline Joint::Joint(
-    RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings, float _frequency, float _dampingRatio, float _jointMass)
+inline Joint::Joint(Joint::Type _type,
+                    RigidBody* _bodyA,
+                    RigidBody* _bodyB,
+                    const Settings& _settings,
+                    float _frequency,
+                    float _dampingRatio,
+                    float _jointMass)
     : Constraint(_bodyA, _bodyB, _settings)
 {
+    type = _type;
     SetProperties(_frequency, _dampingRatio, _jointMass);
 }
 
@@ -144,7 +149,7 @@ inline bool Joint::IsSolid() const
     return frequency <= 0.0f;
 }
 
-inline JointType Joint::GetType() const
+inline Joint::Type Joint::GetType() const
 {
     return type;
 }

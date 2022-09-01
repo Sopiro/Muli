@@ -13,13 +13,11 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              float _frequency,
                              float _dampingRatio,
                              float _jointMass)
-    : Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(Joint::Type::JointDistance, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = bodyA->GlobalToLocal() * _anchorA;
     localAnchorB = bodyB->GlobalToLocal() * _anchorB;
     length = _length < 0.0f ? glm::length(_anchorB - _anchorA) : _length;
-
-    type = JointType::JointDistance;
 }
 
 void DistanceJoint::Prepare()

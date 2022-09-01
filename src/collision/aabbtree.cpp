@@ -11,16 +11,6 @@ Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf)
 {
 }
 
-AABBTree::AABBTree(float _aabbMargin)
-{
-    aabbMargin = _aabbMargin;
-}
-
-AABBTree::~AABBTree()
-{
-    Reset();
-}
-
 const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
 {
     Node* newNode = new Node(nodeID++, aabb, true);
@@ -402,7 +392,7 @@ std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
     return res;
 }
 
-std::vector<Node*> AABBTree::Query(const AABB& region) const
+std::vector<Node*> AABBTree::Query(const AABB& aabb) const
 {
     std::vector<Node*> res;
 
@@ -415,7 +405,7 @@ std::vector<Node*> AABBTree::Query(const AABB& region) const
     {
         Node* current = stack.Pop();
 
-        if (!test_overlap_aabb(current->aabb, region)) continue;
+        if (!test_overlap_aabb(current->aabb, aabb)) continue;
 
         if (current->isLeaf)
         {

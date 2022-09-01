@@ -23,14 +23,17 @@ public:
 
 private:
     World& world;
-    float margin = 0.1f;
-    float velocityMultiplier = 3.0f;
     AABBTree tree;
+
+    float margin;
+    float velocityMultiplier;
 };
 
 inline BroadPhase::BroadPhase(World& _world)
     : world{ _world }
 {
+    margin = DEFAULT_AABB_MARGIN;
+    velocityMultiplier = DEFAULT_VELOCITY_MULTIPLIER;
 }
 
 inline BroadPhase::~BroadPhase()

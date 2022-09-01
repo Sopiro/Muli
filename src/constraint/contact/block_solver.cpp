@@ -4,7 +4,7 @@
 namespace spe
 {
 
-void BlockSolver::Prepare()
+void BlockSolver::Prepare(Contact* _contact)
 {
     // Calculate Jacobian J and effective mass M
     // J = [-n, -ra1 × n, n, rb1 × n
@@ -12,8 +12,10 @@ void BlockSolver::Prepare()
     // K = (J · M^-1 · J^t)
     // M = K^-1
 
-    nc1 = &c->normalContacts[0];
-    nc2 = &c->normalContacts[1];
+    contact = _contact;
+
+    nc1 = &contact->normalContacts[0];
+    nc2 = &contact->normalContacts[1];
 
     j1 = &nc1->jacobian;
     j2 = &nc2->jacobian;
@@ -22,22 +24,22 @@ void BlockSolver::Prepare()
 
     // clang-format off
     k[0][0]
-        = c->bodyA->invMass
-        + j1->wa * c->bodyA->invInertia * j1->wa
-        + c->bodyB->invMass
-        + j1->wb * c->bodyB->invInertia * j1->wb;
+        = contact->manifold.bodyA->invMass
+        + j1->wa * contact->manifold.bodyA->invInertia * j1->wa
+        + contact->manifold.bodyB->invMass
+        + j1->wb * contact->manifold.bodyB->invInertia * j1->wb;
 
     k[1][1]
-        = c->bodyA->invMass
-        + j2->wa * c->bodyA->invInertia * j2->wa
-        + c->bodyB->invMass
-        + j2->wb * c->bodyB->invInertia * j2->wb;
+        = contact->manifold.bodyA->invMass
+        + j2->wa * contact->manifold.bodyA->invInertia * j2->wa
+        + contact->manifold.bodyB->invMass
+        + j2->wb * contact->manifold.bodyB->invInertia * j2->wb;
 
     k[0][1]
-        = c->bodyA->invMass
-        + j1->wa * c->bodyA->invInertia * j2->wa
-        + c->bodyB->invMass
-        + j1->wb * c->bodyB->invInertia * j2->wb;
+        = contact->manifold.bodyA->invMass
+        + j1->wa * contact->manifold.bodyA->invInertia * j2->wa
+        + contact->manifold.bodyB->invMass
+        + j1->wb * contact->manifold.bodyB->invInertia * j2->wb;
 
     k[1][0] = k[0][1];
     // clang-format on
@@ -91,16 +93,16 @@ void BlockSolver::Solve()
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
-        = glm::dot(j1->va, c->bodyA->linearVelocity)
-        + j1->wa * c->bodyA->angularVelocity
-        + glm::dot(j1->vb, c->bodyB->linearVelocity)
-        + j1->wb * c->bodyB->angularVelocity;
+        = glm::dot(j1->va, contact->manifold.bodyA->linearVelocity)
+        + j1->wa * contact->manifold.bodyA->angularVelocity
+        + glm::dot(j1->vb, contact->manifold.bodyB->linearVelocity)
+        + j1->wb * contact->manifold.bodyB->angularVelocity;
 
     float vn2
-        = glm::dot(j2->va, c->bodyA->linearVelocity)
-        + j2->wa * c->bodyA->angularVelocity
-        + glm::dot(j2->vb, c->bodyB->linearVelocity)
-        + j2->wb * c->bodyB->angularVelocity;
+        = glm::dot(j2->va, contact->manifold.bodyA->linearVelocity)
+        + j2->wa * contact->manifold.bodyA->angularVelocity
+        + glm::dot(j2->vb, contact->manifold.bodyB->linearVelocity)
+        + j2->wb * contact->manifold.bodyB->angularVelocity;
     // clang-format on
 
     glm::vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
@@ -183,10 +185,10 @@ void BlockSolver::ApplyImpulse(const glm::vec2& lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    c->bodyA->linearVelocity += j1->va * (c->bodyA->invMass * (lambda.x + lambda.y));
-    c->bodyA->angularVelocity += c->bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
-    c->bodyB->linearVelocity += j1->vb * (c->bodyB->invMass * (lambda.x + lambda.y));
-    c->bodyB->angularVelocity += c->bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
+    contact->manifold.bodyA->linearVelocity += j1->va * (contact->manifold.bodyA->invMass * (lambda.x + lambda.y));
+    contact->manifold.bodyA->angularVelocity += contact->manifold.bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
+    contact->manifold.bodyB->linearVelocity += j1->vb * (contact->manifold.bodyB->invMass * (lambda.x + lambda.y));
+    contact->manifold.bodyB->angularVelocity += contact->manifold.bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
 }
 
 } // namespace spe

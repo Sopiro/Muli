@@ -3,13 +3,6 @@
 namespace spe
 {
 
-Polytope::Polytope(const Simplex& simplex)
-{
-    vertices.Push(simplex.vertices[0]);
-    vertices.Push(simplex.vertices[1]);
-    vertices.Push(simplex.vertices[2]);
-}
-
 ClosestEdgeInfo Polytope::GetClosestEdge() const
 {
     uint32_t minIndex = 0;

@@ -26,7 +26,7 @@ struct ContactManifold
     bool featureFlipped;
 };
 
-bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* res = nullptr);
+bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
 bool test_point_inside(RigidBody* body, const glm::vec2& point);
 
 } // namespace spe

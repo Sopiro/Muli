@@ -3,34 +3,6 @@
 namespace spe
 {
 
-RigidBody::RigidBody(BodyType _type)
-    : Entity()
-    , type{ std::move(_type) }
-{
-    if (type == Static)
-    {
-        density = FLT_MAX;
-        mass = FLT_MAX;
-        invMass = 0.0f;
-        inertia = FLT_MAX;
-        invInertia = 0.0f;
-    }
-    else
-    {
-        // This part is implemented by children.
-    }
-}
-
-RigidBody::~RigidBody()
-{
-    if (moved) return;
-
-    world = nullptr;
-    id = 0;
-
-    if (OnDestroy != nullptr) OnDestroy(this);
-}
-
 RigidBody::RigidBody(RigidBody&& _other) noexcept
 {
     _other.moved = true;
@@ -41,7 +13,7 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     islandID = _other.islandID;
 
     contactList = _other.contactList;
-    jointIDs = std::move(_other.jointIDs);
+    joints = std::move(_other.joints);
 
     resting = _other.resting;
     sleeping = _other.sleeping;

@@ -24,4 +24,18 @@ private:
     void Clear();
 };
 
+inline Island::Island(World& _world)
+    : world{ _world }
+{
+}
+
+inline void Island::Clear()
+{
+    bodies.clear();
+    contacts.clear();
+    joints.clear();
+
+    sleeping = false;
+}
+
 } // namespace spe

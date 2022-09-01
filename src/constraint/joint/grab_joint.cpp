@@ -11,12 +11,10 @@ GrabJoint::GrabJoint(RigidBody* _body,
                      float _frequency,
                      float _dampingRatio,
                      float _jointMass)
-    : Joint(_body, _body, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(type = Joint::Type::JointGrab, _body, _body, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchor = _body->GlobalToLocal() * _anchor;
     target = _target;
-
-    type = JointType::JointGrab;
 }
 
 void GrabJoint::Prepare()

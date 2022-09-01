@@ -20,8 +20,8 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 {
     dir = glm::normalize(dir);
 
-    BodyShape shape = b->GetShape();
-    if (shape == BodyShape::ShapePolygon)
+    RigidBody::Shape shape = b->GetShape();
+    if (shape == RigidBody::Shape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(b);
         const std::vector<glm::vec2>& vertices = p->GetVertices();
@@ -41,7 +41,7 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 
         return { vertices[idx], idx };
     }
-    else if (shape == BodyShape::ShapeCircle)
+    else if (shape == RigidBody::Shape::ShapeCircle)
     {
         Circle* c = static_cast<Circle*>(b);
 
@@ -91,7 +91,7 @@ static GJKResult gjk(RigidBody* b1, RigidBody* b2)
     {
         ClosestResult closest = simplex.GetClosest(origin);
 
-        if (glm::distance2(closest.result, origin) < GJK_TOLERANCE)
+        if (glm::distance2(closest.point, origin) < GJK_TOLERANCE)
         {
             collide = true;
             break;
@@ -103,12 +103,12 @@ static GJKResult gjk(RigidBody* b1, RigidBody* b2)
             simplex.Shrink(closest.contributors, closest.count);
         }
 
-        dir = origin - closest.result;
+        dir = origin - closest.point;
         supportPoint = cso_support(b1, b2, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (glm::length(dir) > glm::dot(glm::normalize(dir), supportPoint - closest.result))
+        if (glm::length(dir) > glm::dot(glm::normalize(dir), supportPoint - closest.point))
         {
             collide = false;
             break;
@@ -171,15 +171,15 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
     const glm::mat3 localToGlobal = b->LocalToGlobal();
 
-    BodyShape shape = b->GetShape();
-    if (shape == BodyShape::ShapeCircle)
+    RigidBody::Shape shape = b->GetShape();
+    if (shape == RigidBody::Shape::ShapeCircle)
     {
         curr = localToGlobal * curr;
         const glm::vec2 tangent = glm::cross(1.0f, dir) * TANGENT_MIN_LENGTH;
 
         return Edge{ curr, curr + tangent };
     }
-    else if (shape == BodyShape::ShapePolygon)
+    else if (shape == RigidBody::Shape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(b);
 
@@ -385,7 +385,7 @@ bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
     out->penetrationDepth = 0.0f;
 
     // Circle vs. Circle collision
-    if (a->GetShape() == BodyShape::ShapeCircle && b->GetShape() == BodyShape::ShapeCircle)
+    if (a->GetShape() == RigidBody::Shape::ShapeCircle && b->GetShape() == RigidBody::Shape::ShapeCircle)
     {
         return circle_vs_circle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
     }
@@ -399,11 +399,11 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
 {
     glm::vec2 localP = body->GlobalToLocal() * point;
 
-    if (body->GetShape() == BodyShape::ShapeCircle)
+    if (body->GetShape() == RigidBody::Shape::ShapeCircle)
     {
         return glm::length(localP) <= static_cast<Circle*>(body)->GetRadius();
     }
-    else if (body->GetShape() == BodyShape::ShapePolygon)
+    else if (body->GetShape() == RigidBody::Shape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(body);
         const std::vector<glm::vec2>& vertices = p->GetVertices();

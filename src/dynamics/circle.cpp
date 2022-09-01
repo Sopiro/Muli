@@ -3,13 +3,13 @@
 namespace spe
 {
 
-Circle::Circle(float _radius, BodyType _type, float _density)
-    : RigidBody(std::move(_type))
+Circle::Circle(float _radius, Type _type, float _density)
+    : RigidBody(std::move(_type), Shape::ShapeCircle)
     , radius{ std::move(_radius) }
 {
     area = glm::pi<float>() * radius * radius;
 
-    if (type == Dynamic)
+    if (type == RigidBody::Type::Dynamic)
     {
         assert(_density > 0);
 
@@ -19,8 +19,28 @@ Circle::Circle(float _radius, BodyType _type, float _density)
         inertia = calculate_circle_inertia(radius, mass);
         invInertia = 1.0f / inertia;
     }
+}
 
-    shape = BodyShape::ShapeCircle;
+void Circle::SetMass(float _mass)
+{
+    assert(_mass > 0);
+
+    density = _mass / area;
+    mass = _mass;
+    invMass = 1.0f / mass;
+    inertia = calculate_circle_inertia(radius, mass);
+    invInertia = 1.0f / inertia;
+}
+
+void Circle::SetDensity(float _density)
+{
+    assert(density > 0);
+
+    density = _density;
+    mass = density * area;
+    invMass = 1.0f / mass;
+    inertia = calculate_circle_inertia(radius, mass);
+    invInertia = 1.0f / inertia;
 }
 
 } // namespace spe

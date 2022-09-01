@@ -14,8 +14,8 @@ struct ContactEdge
 {
     RigidBody* other;
     Contact* contact;
-    ContactEdge* prev = nullptr;
-    ContactEdge* next = nullptr;
+    ContactEdge* prev;
+    ContactEdge* next;
 };
 
 class Contact : Constraint
@@ -39,8 +39,8 @@ public:
     const ContactManifold& GetContactManifold() const;
 
 private:
-    Contact* prev = nullptr;
-    Contact* next = nullptr;
+    Contact* prev;
+    Contact* next;
 
     ContactEdge nodeA;
     ContactEdge nodeB;

@@ -11,7 +11,7 @@ class Polygon : public RigidBody
 {
 public:
     Polygon(std::vector<glm::vec2> _vertices,
-            BodyType _type = Dynamic,
+            RigidBody::Type _type = Dynamic,
             bool _resetPosition = true,
             float _density = DEFAULT_DENSITY);
 
@@ -30,28 +30,6 @@ protected:
     float area;
     float radius;
 };
-
-inline void Polygon::SetMass(float _mass)
-{
-    assert(_mass > 0);
-
-    density = _mass / area;
-    mass = _mass;
-    invMass = 1.0f / mass;
-    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
-    invInertia = 1.0f / inertia;
-}
-
-inline void Polygon::SetDensity(float _density)
-{
-    assert(_density > 0);
-
-    density = _density;
-    mass = _density * area;
-    invMass = 1.0f / mass;
-    inertia = calculate_convex_polygon_inertia(vertices, mass, area);
-    invInertia = 1.0f / inertia;
-}
 
 inline float Polygon::GetRadius() const
 {

@@ -11,12 +11,10 @@ RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
                              float _frequency,
                              float _dampingRatio,
                              float _jointMass)
-    : Joint(_bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(Joint::Type::JointRevolute, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = bodyA->GlobalToLocal() * _anchor;
     localAnchorB = bodyB->GlobalToLocal() * _anchor;
-
-    type = JointType::JointRevolute;
 }
 
 void RevoluteJoint::Prepare()

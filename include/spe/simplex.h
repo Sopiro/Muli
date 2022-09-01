@@ -9,7 +9,7 @@ namespace spe
 
 struct ClosestResult
 {
-    glm::vec2 result;
+    glm::vec2 point;
     uint32_t contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
     uint32_t count;
 };

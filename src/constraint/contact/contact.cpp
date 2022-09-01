@@ -1,4 +1,6 @@
 #include "spe/contact.h"
+#include "spe/block_solver.h"
+#include "spe/contact_solver.h"
 #include "spe/world.h"
 
 namespace spe
@@ -8,6 +10,12 @@ void Contact::Update()
 {
     ContactManifold oldManifold = manifold;
 
+    bool wasTouching = touching;
+    touching = detect_collision(bodyA, bodyB, &manifold);
+
+    if (!touching) return;
+
+    // Warm start the contact solver
     float oldNormalImpulse[2];
     float oldTangentImpulse[2];
 
@@ -17,15 +25,6 @@ void Contact::Update()
         normalContacts[i].impulseSum = 0.0f;
         oldTangentImpulse[i] = tangentContacts[i].impulseSum;
         tangentContacts[i].impulseSum = 0.0f;
-    }
-
-    bool wasTouching = touching;
-    touching = detect_collision(bodyA, bodyB, &manifold);
-
-    if (touching)
-    {
-        bodyA = manifold.bodyA;
-        bodyB = manifold.bodyB;
     }
 
     for (uint32_t n = 0; n < manifold.numContacts; n++)
@@ -63,19 +62,13 @@ void Contact::Prepare()
 {
     for (uint32_t i = 0; i < manifold.numContacts; i++)
     {
-        normalContacts[i].contact = this;
-        normalContacts[i].contactPoint = manifold.contactPoints[i].point;
-        normalContacts[i].Prepare(manifold.contactNormal, ContactType::Normal);
-
-        tangentContacts[i].contact = this;
-        tangentContacts[i].contactPoint = manifold.contactPoints[i].point;
-        tangentContacts[i].Prepare(manifold.contactTangent, ContactType::Tangent);
+        normalContacts[i].Prepare(this, manifold.contactPoints[i].point, manifold.contactNormal, ContactSolver::Type::Normal);
+        tangentContacts[i].Prepare(this, manifold.contactPoints[i].point, manifold.contactTangent, ContactSolver::Type::Tangent);
     }
 
     if (manifold.numContacts == 2 && settings.BLOCK_SOLVE)
     {
-        blockSolver.c = this;
-        blockSolver.Prepare();
+        blockSolver.Prepare(this);
     }
 }
 

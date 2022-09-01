@@ -27,13 +27,19 @@ class ContactSolver
     friend class BlockSolver;
 
 public:
-    void Prepare(const glm::vec2& dir, ContactType contactType);
+    enum Type : uint8_t
+    {
+        Normal = 0,
+        Tangent
+    };
+
+    void Prepare(Contact* _contact, const glm::vec2& _contactPoint, const glm::vec2& _dir, ContactSolver::Type _contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
     Contact* contact;
     glm::vec2 contactPoint;
-    ContactType contactType;
+    ContactSolver::Type contactType;
 
     glm::vec2 ra;
     glm::vec2 rb;

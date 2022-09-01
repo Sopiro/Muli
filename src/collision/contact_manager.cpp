@@ -71,8 +71,8 @@ void ContactManager::Update(float dt)
         RigidBody* bodyA = c->bodyA;
         RigidBody* bodyB = c->bodyB;
 
-        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != BodyType::Static;
-        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != BodyType::Static;
+        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::Type::Static;
+        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::Type::Static;
 
         if (!activeA && !activeB)
         {
@@ -91,35 +91,14 @@ void ContactManager::Update(float dt)
         }
 
         c->Update();
-        if (c->touching) ++count;
         c = c->GetNext();
     }
-}
-
-void ContactManager::Reset()
-{
-    broadPhase.Reset();
-
-    Contact* c = contactList;
-    while (c)
-    {
-        Contact* c0 = c;
-        c = c->GetNext();
-        delete c0; // Destroy(c0);
-    }
-    contactList = nullptr;
 }
 
 void ContactManager::Destroy(Contact* c)
 {
     RigidBody* bodyA = c->bodyA;
     RigidBody* bodyB = c->bodyB;
-
-    if (bodyA->id > bodyB->id)
-    {
-        bodyA = c->bodyB;
-        bodyB = c->bodyA;
-    }
 
     // Remove from the world
     if (c->prev) c->prev->next = c->next;
@@ -138,6 +117,22 @@ void ContactManager::Destroy(Contact* c)
 
     --contactCount;
     delete c;
+}
+
+void ContactManager::Reset()
+{
+    broadPhase.Reset();
+
+    Contact* c = contactList;
+    while (c)
+    {
+        Contact* c0 = c;
+        c = c->GetNext();
+        delete c0; // Destroy(c0);
+    }
+    contactList = nullptr;
+
+    contactCount = 0;
 }
 
 } // namespace spe

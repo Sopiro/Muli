@@ -214,6 +214,7 @@ void Game::HandleInput()
                 ImGui::Text(demos[currentDemo].first.data());
                 ImGui::Text("Bodies: %d", world->GetBodies().size());
                 ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
+                ImGui::Text("Broad phase contacts: %d", world->GetContactCount());
                 ImGui::EndTabItem();
             }
 
@@ -271,11 +272,11 @@ void Game::Render()
     for (uint32_t i = 0; i < joints.size(); i++)
     {
         Joint* j = joints[i];
-        JointType type = j->GetType();
+        Joint::Type type = j->GetType();
 
         switch (type)
         {
-        case JointType::JointGrab:
+        case Joint::Type::JointGrab:
         {
             RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
@@ -288,7 +289,7 @@ void Game::Render()
             lines.push_back(gj->GetTarget());
         }
         break;
-        case JointType::JointRevolute:
+        case Joint::Type::JointRevolute:
         {
 
             RigidBody* ba = j->GetBodyA();
@@ -307,7 +308,7 @@ void Game::Render()
             lines.push_back(bb->position);
         }
         break;
-        case JointType::JointDistance:
+        case Joint::Type::JointDistance:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();

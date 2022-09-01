@@ -25,11 +25,11 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == Static)
+        if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == RigidBody::Type::Static)
         {
             glm::vec3 color{ 1.0f };
 
-            if (body->GetType() == Dynamic)
+            if (body->GetType() == RigidBody::Type::Dynamic)
             {
                 int32_t id = body->GetIslandID();
 

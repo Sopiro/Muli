@@ -16,10 +16,10 @@ public:
     ~ContactManager();
 
     void Update(float dt);
-    void ValidateContacts();
-    void Reset();
     void Add(RigidBody* body);
     void Remove(RigidBody* body);
+    void Reset();
+    uint32_t GetContactCount() const;
 
 private:
     World& world;
@@ -59,6 +59,11 @@ inline void ContactManager::Remove(RigidBody* body)
         Destroy(ce0->contact);
     }
     body->contactList = nullptr;
+}
+
+inline uint32_t ContactManager::GetContactCount() const
+{
+    return contactCount;
 }
 
 } // namespace spe

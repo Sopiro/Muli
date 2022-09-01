@@ -13,7 +13,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     {
     case 1: // 0-Simplex: Point
     {
-        res.result = vertices[0];
+        res.point = vertices[0];
         res.count = 1;
         res.contributors[0] = 0;
 
@@ -23,25 +23,25 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     {
         const glm::vec2 a = vertices[0];
         const glm::vec2 b = vertices[1];
-        const UV w = get_uv(a, b, q);
+        const UV w = compute_uv(a, b, q);
 
         if (w.v <= 0)
         {
-            res.result = a;
+            res.point = a;
             res.count = 1;
             res.contributors[0] = 0;
             return res;
         }
         else if (w.v >= 1)
         {
-            res.result = b;
+            res.point = b;
             res.count = 1;
             res.contributors[0] = 1;
             return res;
         }
         else
         {
-            res.result = lerp_vector(a, b, w);
+            res.point = lerp_vector(a, b, w);
             res.count = 2;
             res.contributors[0] = 0;
             res.contributors[1] = 1;
@@ -54,27 +54,27 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
         const glm::vec2 b = vertices[1];
         const glm::vec2 c = vertices[2];
 
-        const UV wab = get_uv(a, b, q);
-        const UV wbc = get_uv(b, c, q);
-        const UV wca = get_uv(c, a, q);
+        const UV wab = compute_uv(a, b, q);
+        const UV wbc = compute_uv(b, c, q);
+        const UV wca = compute_uv(c, a, q);
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {
-            res.result = a;
+            res.point = a;
             res.count = 1;
             res.contributors[0] = 0;
             return res;
         }
         else if (wab.u <= 0 && wbc.v <= 0) // B area
         {
-            res.result = b;
+            res.point = b;
             res.count = 1;
             res.contributors[0] = 1;
             return res;
         }
         else if (wbc.u <= 0 && wca.v <= 0) // C area
         {
-            res.result = c;
+            res.point = c;
             res.count = 1;
             res.contributors[0] = 2;
             return res;
@@ -104,7 +104,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.result = lerp_vector(a, b, wab);
+            res.point = lerp_vector(a, b, wab);
             return res;
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
@@ -123,7 +123,7 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.result = lerp_vector(b, c, wbc);
+            res.point = lerp_vector(b, c, wbc);
             return res;
         }
         else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
@@ -142,12 +142,12 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.result = lerp_vector(c, a, wca);
+            res.point = lerp_vector(c, a, wca);
             return res;
         }
         else // Inside the triangle
         {
-            res.result = q;
+            res.point = q;
             res.count = 0;
             return res;
         }

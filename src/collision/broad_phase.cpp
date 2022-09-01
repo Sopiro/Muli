@@ -12,7 +12,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
         RigidBody* body = world.bodies[i];
 
         if (body->sleeping) continue;
-        if (body->type == BodyType::Static) body->sleeping = true;
+        if (body->type == RigidBody::Type::Static) body->sleeping = true;
 
         Node* node = body->node;
         AABB treeAABB = node->aabb;

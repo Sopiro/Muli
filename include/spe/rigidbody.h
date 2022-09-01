@@ -8,39 +8,42 @@
 namespace spe
 {
 
-struct ContactEdge;
 struct Node;
-
-enum BodyShape : uint8_t
-{
-    ShapeCircle,
-    ShapePolygon,
-    ShapeEdge,
-};
-
-enum BodyType : uint8_t
-{
-    Static,
-    Dynamic,
-};
+struct ContactEdge;
 
 // Children: Polygon, Circle
 class RigidBody : public Entity
 {
     friend class World;
-    friend class AABBTree;
+    friend class Island;
+
     friend class ContactSolver;
     friend class BlockSolver;
-    friend class Island;
+
     friend class Joint;
     friend class GrabJoint;
     friend class RevoluteJoint;
     friend class DistanceJoint;
+
+    friend class AABBTree;
     friend class BroadPhase;
     friend class ContactManager;
 
 public:
-    RigidBody(BodyType _type);
+    enum Shape : uint8_t
+    {
+        ShapeCircle,
+        ShapePolygon,
+        ShapeEdge,
+    };
+
+    enum Type : uint8_t
+    {
+        Static,
+        Dynamic,
+    };
+
+    RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
     ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;
@@ -77,8 +80,8 @@ public:
     void SetForce(glm::vec2 _force);
     float GetTorque() const;
     void SetTorque(float _torque);
-    BodyType GetType() const;
-    BodyShape GetShape() const;
+    Type GetType() const;
+    Shape GetShape() const;
     bool IsSleeping() const;
 
     uint32_t GetID() const;
@@ -105,8 +108,8 @@ protected:
     float restitution = DEFAULT_RESTITUTION;
     float surfaceSpeed = DEFAULT_SURFACESPEED; // m/s (Tangential speed)
 
-    BodyShape shape;
-    BodyType type;
+    Shape shape;
+    Type type;
 
 private:
     bool moved = false;
@@ -116,13 +119,42 @@ private:
     uint32_t islandID = 0;
 
     ContactEdge* contactList = nullptr;
-    std::vector<uint32_t> jointIDs{}; // ids of the joint containing this body
+    std::vector<Joint*> joints{}; // ids of the joint containing this body
 
     float resting = 0.0f;
     bool sleeping = false;
 
     Node* node = nullptr;
 };
+
+inline RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
+    : Entity()
+    , type{ std::move(_type) }
+    , shape{ std::move(_shape) }
+{
+    if (type == Static)
+    {
+        density = FLT_MAX;
+        mass = FLT_MAX;
+        invMass = 0.0f;
+        inertia = FLT_MAX;
+        invInertia = 0.0f;
+    }
+    else
+    {
+        // This part is implemented by children.
+    }
+}
+
+inline RigidBody::~RigidBody()
+{
+    if (moved) return;
+
+    world = nullptr;
+    id = 0;
+
+    if (OnDestroy != nullptr) OnDestroy(this);
+}
 
 inline float RigidBody::GetDensity() const
 {
@@ -230,12 +262,12 @@ inline void RigidBody::SetTorque(float _torque)
     torque = std::move(_torque);
 }
 
-inline BodyType RigidBody::GetType() const
+inline RigidBody::Type RigidBody::GetType() const
 {
     return type;
 }
 
-inline BodyShape RigidBody::GetShape() const
+inline RigidBody::Shape RigidBody::GetShape() const
 {
     return shape;
 }

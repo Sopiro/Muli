@@ -73,11 +73,11 @@ public:
     void Destroy(Joint* joint);
     void Destroy(const std::vector<Joint*>& joints);
 
-    Box* CreateBox(float size, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
-    Box* CreateBox(float width, float height, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
-    Circle* CreateCircle(float radius, BodyType type = Dynamic, float density = DEFAULT_DENSITY);
+    Box* CreateBox(float size, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
+    Box* CreateBox(float width, float height, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
+    Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(std::vector<glm::vec2> vertices,
-                           BodyType type = Dynamic,
+                           RigidBody::Type type = RigidBody::Type::Dynamic,
                            bool resetPosition = true,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
@@ -122,6 +122,7 @@ public:
     const AABBTree& GetBVH() const;
     const Contact* GetContacts() const;
     std::vector<Joint*>& GetJoints();
+    uint32_t GetContactCount() const;
 
     void Awake();
 
@@ -132,11 +133,8 @@ private:
     ContactManager contactManager;
 
     // All registered rigid bodies
-    std::unordered_map<uint32_t, RigidBody*> bodyMap;
     std::vector<RigidBody*> bodies{};
-
     std::vector<Joint*> joints{};
-    std::unordered_map<uint32_t, Joint*> jointMap{};
 
     bool forceIntegration = false;
     uint32_t numIslands = 0;
@@ -149,7 +147,6 @@ inline World::World(const Settings& simulationSettings)
     , contactManager{ *this }
 {
     bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
-    bodyMap.reserve(DEFAULT_BODY_RESERVE_COUNT);
 }
 
 inline World::~World() noexcept
@@ -193,6 +190,11 @@ inline void World::Awake()
     {
         b->Awake();
     }
+}
+
+inline uint32_t World::GetContactCount() const
+{
+    return contactManager.contactCount;
 }
 
 } // namespace spe

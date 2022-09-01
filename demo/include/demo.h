@@ -8,7 +8,7 @@ namespace spe
 static void demo1(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
 
     RigidBody* box = world.CreateBox(0.4f);
     box->position = { 0.0f, 5.0f };
@@ -18,7 +18,7 @@ static void demo1(Game& game, World& world, Settings& settings)
 static void demo2(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     float start = 0.5f;
@@ -38,7 +38,7 @@ static void demo2(Game& game, World& world, Settings& settings)
 static void demo3(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     int32_t rows = 15;
@@ -61,7 +61,7 @@ static void demo3(Game& game, World& world, Settings& settings)
 static void demo4(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     Box* b = world.CreateBox(0.3f);
@@ -74,7 +74,7 @@ static void demo5(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
-    Box* g = world.CreateBox(0.3f, 6, BodyType::Static);
+    Box* g = world.CreateBox(0.3f, 6, RigidBody::Type::Static);
     g->position.y = 3.6f;
 
     Box* b = world.CreateBox(0.3f);
@@ -115,7 +115,7 @@ static void demo5(Game& game, World& world, Settings& settings)
 static void demo6(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     int rows = 12;
@@ -136,17 +136,17 @@ static void demo6(Game& game, World& world, Settings& settings)
         }
     }
 
-    Box* pillar = world.CreateBox(0.25f, 4.0f, BodyType::Static);
+    Box* pillar = world.CreateBox(0.25f, 4.0f, RigidBody::Type::Static);
     pillar->position = { xStart - 0.2f, 3.0f };
 
-    pillar = world.CreateBox(0.25f, 4.0f, BodyType::Static);
+    pillar = world.CreateBox(0.25f, 4.0f, RigidBody::Type::Static);
     pillar->position = { -(xStart - 0.2f), 3.0f };
 }
 
 static void demo7(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     Box* seesaw = world.CreateBox(6.0f, 0.1f);
@@ -170,27 +170,27 @@ static void demo7(Game& game, World& world, Settings& settings)
 static void demo8(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
-    Box* b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    Box* b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->position = { -0.6f, 5.0f };
     b->rotation = -0.15f;
     b->SetFriction(1.0f);
 
-    b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->position = { 0.0f, 3.0f };
     b->rotation = 0.15f;
     b->SetFriction(1.0f);
 
-    b = world.CreateBox(6.0f, 0.1f, BodyType::Static);
+    b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->position = { -0.6f, 1.0f };
     b->rotation = -0.15f;
     b->SetFriction(1.0f);
 
-    b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
+    b = world.CreateBox(0.1f, 1.1f, RigidBody::Type::Static);
     b->position = { 3.1f, 4.3f };
-    b = world.CreateBox(0.1f, 1.1f, BodyType::Static);
+    b = world.CreateBox(0.1f, 1.1f, RigidBody::Type::Static);
     b->position = { -3.7f, 2.3f };
 
     float xStart = -4.5f;
@@ -212,7 +212,7 @@ static void demo8(Game& game, World& world, Settings& settings)
 static void demo9(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.7f);
 
     int count = 7;
@@ -234,7 +234,7 @@ static void demo9(Game& game, World& world, Settings& settings)
 static void demo10(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     float xStart = 0.0f;
@@ -270,7 +270,7 @@ static void demo10(Game& game, World& world, Settings& settings)
 static void demo11(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     float groundStart = 0.2f;
@@ -283,7 +283,7 @@ static void demo11(Game& game, World& world, Settings& settings)
     float sizeX = 0.5f;
     float sizeY = sizeX * 0.25f;
 
-    Box* pillar = world.CreateBox(pillarWidth, yStart, BodyType::Static);
+    Box* pillar = world.CreateBox(pillarWidth, yStart, RigidBody::Type::Static);
     pillar->position = glm::vec2(xStart, yStart / 2 + 0.2);
 
     Box* b1 = world.CreateBox(sizeX, sizeY);
@@ -328,7 +328,7 @@ static void demo11(Game& game, World& world, Settings& settings)
         b1 = b2;
     }
 
-    pillar = world.CreateBox(pillarWidth, yStart, BodyType::Static);
+    pillar = world.CreateBox(pillarWidth, yStart, RigidBody::Type::Static);
     pillar->position = glm::vec2(-xStart, yStart / 2.0f + 0.2f);
 
     if (revoluteBridge)
@@ -351,7 +351,7 @@ static void demo11(Game& game, World& world, Settings& settings)
 static void demo12(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, BodyType::Static);
+    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
     ground->SetRestitution(0.45f);
 
     float xStart = -3.0f;
@@ -380,13 +380,13 @@ static void demo13(Game& game, World& world, Settings& settings)
     float size = 15.0f;
     float wallSize = 0.4f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, BodyType::Static);
+    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = -size / 2.0f;
-    wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = -size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = size / 2.0f;
 
     float r = 0.2f;
@@ -411,13 +411,13 @@ static void demo14(Game& game, World& world, Settings& settings)
     float size = 15.0f;
     float wallSize = 0.4f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, BodyType::Static);
+    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = -size / 2.0f;
-    wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = -size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = size / 2.0f;
 
     float r = 0.38f;
@@ -441,13 +441,13 @@ static void demo15(Game& game, World& world, Settings& settings)
     float size = 15.0f;
     float wallSize = 0.4f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, BodyType::Static);
+    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = -size / 2.0f;
-    wall = world.CreateBox(size, wallSize, BodyType::Static);
+    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
     wall->position.y = size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = -size / 2.0f;
-    wall = world.CreateBox(wallSize, size, BodyType::Static);
+    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
     wall->position.x = size / 2.0f;
 
     Camera& c = game.GetCamera();

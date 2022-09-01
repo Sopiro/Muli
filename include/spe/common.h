@@ -80,17 +80,10 @@ GLM_FUNC_QUALIFIER void clear(vec<2, T, Q>& v, float value = 0.0f)
 }
 
 // to string
-template <typename T, qualifier Q>
-GLM_FUNC_QUALIFIER std::string operator*(vec<2, T, Q>& v)
+template <typename T>
+GLM_FUNC_QUALIFIER std::string operator*(T& v)
 {
     return glm::to_string(v);
-}
-
-// to string
-template <class matType>
-GLM_FUNC_QUALIFIER std::string operator*(const matType& m)
-{
-    return glm::to_string(m);
 }
 
 } // namespace glm

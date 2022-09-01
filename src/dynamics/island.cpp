@@ -3,11 +3,6 @@
 namespace spe
 {
 
-Island::Island(World& _world)
-    : world{ _world }
-{
-}
-
 void Island::Solve()
 {
     bool awakeIsland = false;
@@ -102,15 +97,6 @@ void Island::Solve()
             world.Destroy(b);
         }
     }
-}
-
-void Island::Clear()
-{
-    bodies.clear();
-    contacts.clear();
-    joints.clear();
-
-    sleeping = false;
 }
 
 } // namespace spe

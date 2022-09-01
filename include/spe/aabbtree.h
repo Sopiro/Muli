@@ -38,7 +38,7 @@ private:
 class AABBTree
 {
 public:
-    AABBTree(float _aabbMargin = DEFAULT_AABB_MARGIN);
+    AABBTree() = default;
     ~AABBTree() noexcept;
 
     AABBTree(const AABBTree&) noexcept = delete;
@@ -47,20 +47,18 @@ public:
     AABBTree(AABBTree&&) noexcept = delete;
     AABBTree& operator=(AABBTree&&) noexcept = delete;
 
-    void Reset();
-
     const Node* Insert(RigidBody* body, AABB aabb);
     void Remove(RigidBody* body);
+    void Reset();
 
     void Traverse(std::function<void(const Node*)> callback) const;
     void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
     std::vector<Node*> Query(const glm::vec2& point) const;
-    std::vector<Node*> Query(const AABB& region) const;
+    std::vector<Node*> Query(const AABB& aabb) const;
     void Query(const AABB& aabb, std::function<bool(const Node*)> callback) const;
 
-    float GetTreeCost() const;
-    float GetMarginSize() const;
+    float ComputeTreeCost() const;
 
 private:
     uint32_t nodeID = 0;
@@ -76,6 +74,11 @@ private:
                         std::unordered_set<uint64_t>& checked) const;
 };
 
+inline AABBTree::~AABBTree()
+{
+    Reset();
+}
+
 inline void AABBTree::Reset()
 {
     Traverse([&](const Node* n) -> void { delete n; });
@@ -84,18 +87,13 @@ inline void AABBTree::Reset()
     root = nullptr;
 }
 
-inline float AABBTree::GetTreeCost() const
+inline float AABBTree::ComputeTreeCost() const
 {
     float cost = 0.0f;
 
     Traverse([&](const Node* node) -> void { cost += area(node->aabb); });
 
     return cost;
-}
-
-inline float AABBTree::GetMarginSize() const
-{
-    return aabbMargin;
 }
 
 } // namespace spe

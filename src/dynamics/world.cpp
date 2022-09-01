@@ -14,13 +14,18 @@ void World::Step(float dt)
 
     // Build the constraint island
     Island island{ *this };
+    island.bodies.reserve(bodies.size());
+    island.contacts.reserve(contactManager.contactCount);
+    island.joints.reserve(joints.size());
     uint32_t restingBodies = 0;
     uint32_t islandID = 0;
     sleepingIslands = 0;
     sleepingBodies = 0;
 
     std::unordered_set<uint32_t> visited{};
-    GrowableArray<RigidBody*, 256> stack;
+    std::vector<RigidBody*> stack;
+    visited.reserve(bodies.size());
+    stack.reserve(bodies.size());
 
     // Perform a DFS(Depth First Search) on the constraint graph
     // After building island, each island can be solved in parallel because they are independent of each other
@@ -28,44 +33,40 @@ void World::Step(float dt)
     {
         RigidBody* b = bodies[i];
 
-        if (b->type == BodyType::Static || (visited.find(b->id) != visited.end())) continue;
+        if (b->type == RigidBody::Type::Static || (visited.find(b->id) != visited.end())) continue;
 
-        stack.Clear();
-        stack.Push(b);
+        stack.clear();
+        stack.push_back(b);
 
         islandID++;
-        while (stack.Count() > 0)
+        while (stack.size() > 0)
         {
-            RigidBody* t = stack.Pop();
+            RigidBody* t = stack.back();
+            stack.pop_back();
 
-            if (t->type == BodyType::Static || (visited.find(t->id) != visited.end())) continue;
+            if (t->type == RigidBody::Type::Static || (visited.find(t->id) != visited.end())) continue;
 
             visited.insert(t->id);
             t->islandID = islandID;
             island.bodies.push_back(t);
 
-            ContactEdge* ce = t->contactList;
-            while (ce)
+            for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
                 if (visited.find(ce->other->id) != visited.end())
                 {
-                    ce = ce->next;
                     continue;
                 }
 
                 if (ce->contact->touching)
                 {
                     island.contacts.push_back(ce->contact);
+                    stack.push_back(ce->other);
                 }
-
-                stack.Push(ce->other);
-                ce = ce->next;
             }
 
-            for (uint32_t j = 0; j < t->jointIDs.size(); j++)
+            for (uint32_t j = 0; j < t->joints.size(); j++)
             {
-                uint32_t key = t->jointIDs[j];
-                Joint* joint = jointMap[key];
+                Joint* joint = t->joints[j];
 
                 RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
 
@@ -75,10 +76,13 @@ void World::Step(float dt)
                     t->Awake();
                 }
 
-                if (visited.find(other->id) != visited.end()) continue;
+                if (visited.find(other->id) != visited.end())
+                {
+                    continue;
+                }
 
                 island.joints.push_back(joint);
-                stack.Push(other);
+                stack.push_back(other);
             }
 
             if (t->resting > settings.SLEEPING_TRESHOLD) restingBodies++;
@@ -109,10 +113,8 @@ void World::Reset()
     for (Joint* joint : joints)
         delete joint;
 
-    bodyMap.clear();
     bodies.clear();
     joints.clear();
-    jointMap.clear();
 
     uid = 0;
 }
@@ -124,7 +126,6 @@ void World::Add(RigidBody* body)
     body->world = this;
     body->id = ++uid;
     bodies.push_back(body);
-    bodyMap.insert({ uid, body });
     contactManager.Add(body);
 }
 
@@ -143,32 +144,27 @@ void World::Destroy(RigidBody* body)
 
     contactManager.Remove(body);
 
-    for (uint32_t i = 0; i < body->jointIDs.size(); i++)
+    for (uint32_t i = 0; i < body->joints.size(); i++)
     {
-        uint32_t key = body->jointIDs[i];
-        Joint* joint = jointMap[key];
+        Joint* joint = body->joints[i];
         RigidBody* other = joint->bodyB->id == body->id ? joint->bodyA : joint->bodyB;
 
         other->Awake();
 
-        auto it = std::find(other->jointIDs.begin(), other->jointIDs.end(), key);
-        if (it != other->jointIDs.end())
+        auto it = std::find(other->joints.begin(), other->joints.end(), joint);
+        if (it != other->joints.end())
         {
-            std::iter_swap(it, other->jointIDs.end() - 1);
-            other->jointIDs.pop_back();
+            std::iter_swap(it, other->joints.end() - 1);
+            other->joints.pop_back();
         }
-
-        jointMap.erase(key);
 
         delete joint;
     }
 
     joints.clear();
-    std::transform(jointMap.begin(), jointMap.end(), std::back_inserter(joints), [](auto& kv) { return kv.second; });
 
     contactManager.Remove(body);
     bodies.erase(it);
-    bodyMap.erase(body->id);
 
     delete body;
 }
@@ -185,25 +181,22 @@ void World::Destroy(Joint* joint)
 {
     if (std::find(joints.begin(), joints.end(), joint) == joints.end())
         throw std::exception("This joint is not registered in this world.");
-    ;
 
-    auto it = std::find(joint->bodyA->jointIDs.begin(), joint->bodyA->jointIDs.end(), joint->id);
-    if (it != joint->bodyA->jointIDs.end())
+    auto it = std::find(joint->bodyA->joints.begin(), joint->bodyA->joints.end(), joint);
+    if (it != joint->bodyA->joints.end())
     {
-        std::iter_swap(it, joint->bodyA->jointIDs.end() - 1);
-        joint->bodyA->jointIDs.pop_back();
+        std::iter_swap(it, joint->bodyA->joints.end() - 1);
+        joint->bodyA->joints.pop_back();
     }
     joint->bodyA->Awake();
 
-    it = std::find(joint->bodyB->jointIDs.begin(), joint->bodyB->jointIDs.end(), joint->id);
-    if (it != joint->bodyB->jointIDs.end())
+    it = std::find(joint->bodyB->joints.begin(), joint->bodyB->joints.end(), joint);
+    if (it != joint->bodyB->joints.end())
     {
-        std::iter_swap(it, joint->bodyB->jointIDs.end() - 1);
-        joint->bodyB->jointIDs.pop_back();
+        std::iter_swap(it, joint->bodyB->joints.end() - 1);
+        joint->bodyB->joints.pop_back();
     }
     joint->bodyB->Awake();
-
-    jointMap.erase(joint->id);
 
     auto jit = std::find(joints.begin(), joints.end(), joint);
     if (jit != joints.end())
@@ -253,7 +246,9 @@ std::vector<RigidBody*> World::Query(const AABB& region) const
         float w = region.max.x - region.min.x;
         float h = region.max.y - region.min.y;
 
-        Polygon t{ { region.min, { region.max.x, region.min.y }, region.max, { region.min.x, region.max.y } }, Dynamic, false };
+        Polygon t{ { region.min, { region.max.x, region.min.y }, region.max, { region.min.x, region.max.y } },
+                   RigidBody::Type::Dynamic,
+                   false };
 
         if (detect_collision(body, &t))
         {
@@ -264,26 +259,26 @@ std::vector<RigidBody*> World::Query(const AABB& region) const
     return res;
 }
 
-Box* World::CreateBox(float size, BodyType type, float density)
+Box* World::CreateBox(float size, RigidBody::Type type, float density)
 {
     return CreateBox(size, size, type, density);
 }
 
-Box* World::CreateBox(float width, float height, BodyType type, float density)
+Box* World::CreateBox(float width, float height, RigidBody::Type type, float density)
 {
     Box* b = new Box(width, height, type, density);
     Add(b);
     return b;
 }
 
-Circle* World::CreateCircle(float radius, BodyType type, float density)
+Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
 {
     Circle* c = new Circle(radius, type, density);
     Add(c);
     return c;
 }
 
-spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, BodyType type, bool resetPosition, float density)
+spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, RigidBody::Type type, bool resetPosition, float density)
 {
     Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
     Add(p);
@@ -312,7 +307,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
         vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
     }
 
-    Polygon* p = new Polygon(vertices, Dynamic, true, density);
+    Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, density);
     Add(p);
     return p;
 }
@@ -339,7 +334,7 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
         vertices.push_back(corner);
     }
 
-    Polygon* p = new Polygon(vertices, Dynamic, true, density);
+    Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, density);
     Add(p);
     return p;
 }
@@ -350,12 +345,9 @@ GrabJoint* World::CreateGrabJoint(
     if (body->world != this) throw std::exception("You should register the rigid bodies before registering the joint");
 
     GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
-    gj->id = ++uid;
 
     joints.push_back(gj);
-    body->jointIDs.push_back(gj->id);
-
-    jointMap.insert({ gj->id, gj });
+    body->joints.push_back(gj);
 
     return gj;
 }
@@ -367,13 +359,10 @@ RevoluteJoint* World::CreateRevoluteJoint(
         throw std::exception("You should register the rigid bodies before registering the joint");
 
     RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
-    rj->id = ++uid;
 
     joints.push_back(rj);
-    bodyA->jointIDs.push_back(rj->id);
-    bodyB->jointIDs.push_back(rj->id);
-
-    jointMap.insert({ rj->id, rj });
+    bodyA->joints.push_back(rj);
+    bodyB->joints.push_back(rj);
 
     return rj;
 }
@@ -391,13 +380,10 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
         throw std::exception("You should register the rigid bodies before registering the joint");
 
     DistanceJoint* dj = new DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
-    dj->id = ++uid;
 
     joints.push_back(dj);
-    bodyA->jointIDs.push_back(dj->id);
-    bodyB->jointIDs.push_back(dj->id);
-
-    jointMap.insert({ dj->id, dj });
+    bodyA->joints.push_back(dj);
+    bodyB->joints.push_back(dj);
 
     return dj;
 }
