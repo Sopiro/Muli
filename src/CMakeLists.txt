@@ -19,6 +19,7 @@ set(SOURCE_FILES
     constraint/contact/contact_solver.cpp
     constraint/contact/block_solver.cpp
 
+    constraint/joint/joint.cpp
     constraint/joint/grab_joint.cpp
     constraint/joint/revolute_joint.cpp
     constraint/joint/distance_joint.cpp

@@ -15,8 +15,9 @@ void World::Step(float dt)
     // Build the constraint island
     Island island{ *this };
     island.bodies.reserve(bodyCount);
+    island.joints.reserve(jointCount);
     island.contacts.reserve(contactManager.contactCount);
-    island.joints.reserve(joints.size());
+
     uint32_t restingBodies = 0;
     uint32_t islandID = 0;
     sleepingIslands = 0;
@@ -62,25 +63,21 @@ void World::Step(float dt)
                 }
             }
 
-            for (uint32_t j = 0; j < t->joints.size(); j++)
+            for (JointEdge* je = t->jointList; je; je = je->next)
             {
-                Joint* joint = t->joints[j];
-
-                RigidBody* other = joint->bodyB->id == t->id ? joint->bodyA : joint->bodyB;
-
-                if (joint->bodyA == joint->bodyB)
+                if (je->other == t)
                 {
-                    island.joints.push_back(joint);
+                    island.joints.push_back(je->joint);
                     t->Awake();
                 }
 
-                if (visited.find(other->id) != visited.end())
+                if (visited.find(je->other->id) != visited.end())
                 {
                     continue;
                 }
 
-                island.joints.push_back(joint);
-                stack.push_back(other);
+                island.joints.push_back(je->joint);
+                stack.push_back(je->other);
             }
 
             if (t->resting > settings.SLEEPING_TRESHOLD) restingBodies++;
@@ -101,11 +98,12 @@ void World::Step(float dt)
 
     numIslands = islandID;
 
-    for (RigidBody* b : destroyBuffer)
-    {
+    for (RigidBody* b : destroyBufferBody)
         Destroy(b);
-    }
-    destroyBuffer.clear();
+    for (Joint* j : destroyBufferJoint)
+        Destroy(j);
+    destroyBufferBody.clear();
+    destroyBufferJoint.clear();
 }
 
 void World::Reset()
@@ -119,14 +117,21 @@ void World::Reset()
         b = b->next;
         delete b0;
     }
-    for (Joint* joint : joints)
-        delete joint;
+
+    Joint* j = jointList;
+    while (j)
+    {
+        Joint* j0 = j;
+        j = j->next;
+        delete j0;
+    }
 
     bodyList = nullptr;
     bodyListTail = nullptr;
     bodyCount = 0;
 
-    joints.clear();
+    jointList = nullptr;
+    jointCount = 0;
 
     uid = 0;
 }
@@ -168,21 +173,14 @@ void World::Destroy(RigidBody* body)
 
     contactManager.Remove(body);
 
-    for (uint32_t i = 0; i < body->joints.size(); i++)
+    JointEdge* je = body->jointList;
+    while (je)
     {
-        Joint* joint = body->joints[i];
-        RigidBody* other = joint->bodyB->id == body->id ? joint->bodyA : joint->bodyB;
+        JointEdge* je0 = je;
+        je = je->next;
+        je0->other->Awake();
 
-        other->Awake();
-
-        auto it = std::find(other->joints.begin(), other->joints.end(), joint);
-        if (it != other->joints.end())
-        {
-            std::iter_swap(it, other->joints.end() - 1);
-            other->joints.pop_back();
-        }
-
-        delete joint;
+        Destroy(je0->joint);
     }
 
     contactManager.Remove(body);
@@ -198,7 +196,7 @@ void World::Destroy(RigidBody* body)
 
 void World::BufferDestroy(RigidBody* body)
 {
-    destroyBuffer.push_back(body);
+    destroyBufferBody.push_back(body);
 }
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
@@ -211,33 +209,34 @@ void World::Destroy(const std::vector<RigidBody*>& bodies)
 
 void World::Destroy(Joint* joint)
 {
-    if (std::find(joints.begin(), joints.end(), joint) == joints.end())
-        throw std::exception("This joint is not registered in this world.");
+    RigidBody* bodyA = joint->bodyA;
+    RigidBody* bodyB = joint->bodyB;
 
-    auto it = std::find(joint->bodyA->joints.begin(), joint->bodyA->joints.end(), joint);
-    if (it != joint->bodyA->joints.end())
-    {
-        std::iter_swap(it, joint->bodyA->joints.end() - 1);
-        joint->bodyA->joints.pop_back();
-    }
-    joint->bodyA->Awake();
+    // Remove from the world
+    if (joint->prev) joint->prev->next = joint->next;
+    if (joint->next) joint->next->prev = joint->prev;
+    if (joint == jointList) jointList = joint->next;
 
-    it = std::find(joint->bodyB->joints.begin(), joint->bodyB->joints.end(), joint);
-    if (it != joint->bodyB->joints.end())
-    {
-        std::iter_swap(it, joint->bodyB->joints.end() - 1);
-        joint->bodyB->joints.pop_back();
-    }
-    joint->bodyB->Awake();
+    // Remove from bodyA
+    if (joint->nodeA.prev) joint->nodeA.prev->next = joint->nodeA.next;
+    if (joint->nodeA.next) joint->nodeA.next->prev = joint->nodeA.prev;
+    if (&joint->nodeA == bodyA->jointList) bodyA->jointList = joint->nodeA.next;
 
-    auto jit = std::find(joints.begin(), joints.end(), joint);
-    if (jit != joints.end())
+    // Remove from bodyB
+    if (joint->bodyA != joint->bodyB)
     {
-        std::iter_swap(jit, joints.end() - 1);
-        joints.pop_back();
+        if (joint->nodeB.prev) joint->nodeB.prev->next = joint->nodeB.next;
+        if (joint->nodeB.next) joint->nodeB.next->prev = joint->nodeB.prev;
+        if (&joint->nodeB == bodyB->jointList) bodyB->jointList = joint->nodeB.next;
     }
 
+    --jointCount;
     delete joint;
+}
+
+void World::BufferDestroy(Joint* joint)
+{
+    destroyBufferJoint.push_back(joint);
 }
 
 void World::Destroy(const std::vector<Joint*>& joints)
@@ -266,19 +265,19 @@ std::vector<RigidBody*> World::Query(const glm::vec2& point) const
     return res;
 }
 
-std::vector<RigidBody*> World::Query(const AABB& region) const
+std::vector<RigidBody*> World::Query(const AABB& aabb) const
 {
     std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(region);
+    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(aabb);
 
     for (uint32_t i = 0; i < nodes.size(); i++)
     {
         RigidBody* body = nodes[i]->body;
 
-        float w = region.max.x - region.min.x;
-        float h = region.max.y - region.min.y;
+        float w = aabb.max.x - aabb.min.x;
+        float h = aabb.max.y - aabb.min.y;
 
-        Polygon t{ { region.min, { region.max.x, region.min.y }, region.max, { region.min.x, region.max.y } },
+        Polygon t{ { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } },
                    RigidBody::Type::Dynamic,
                    false };
 
@@ -291,16 +290,16 @@ std::vector<RigidBody*> World::Query(const AABB& region) const
     return res;
 }
 
-Box* World::CreateBox(float size, RigidBody::Type type, float density)
-{
-    return CreateBox(size, size, type, density);
-}
-
 Box* World::CreateBox(float width, float height, RigidBody::Type type, float density)
 {
     Box* b = new Box(width, height, type, density);
     Add(b);
     return b;
+}
+
+Box* World::CreateBox(float size, RigidBody::Type type, float density)
+{
+    return CreateBox(size, size, type, density);
 }
 
 Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
@@ -319,7 +318,10 @@ spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, RigidBody::T
 
 Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, float density)
 {
-    if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 8);
+    if (num_vertices < 3)
+    {
+        num_vertices = glm::linearRand<uint32_t>(3, 8);
+    }
 
     std::vector<float> angles{};
     angles.reserve(num_vertices);
@@ -346,12 +348,18 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 
 Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float initial_angle, float density)
 {
-    if (num_vertices < 3) num_vertices = glm::linearRand<uint32_t>(3, 11);
+    if (num_vertices < 3)
+    {
+        num_vertices = glm::linearRand<uint32_t>(3, 11);
+    }
 
     float angleStart = initial_angle;
     float angle = glm::pi<float>() * 2.0f / num_vertices;
 
-    if (num_vertices % 2 == 0) angleStart += angle / 2.0f;
+    if (num_vertices % 2 == 0)
+    {
+        angleStart += angle / 2.0f;
+    }
 
     std::vector<glm::vec2> vertices;
     vertices.reserve(num_vertices);
@@ -374,13 +382,14 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
 GrabJoint* World::CreateGrabJoint(
     RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency, float dampingRatio, float jointMass)
 {
-    if (body->world != this) throw std::exception("You should register the rigid bodies before registering the joint");
+    if (body->world != this)
+    {
+        throw std::exception("You should register the rigid bodies before registering the joint");
+    }
 
     GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
 
-    joints.push_back(gj);
-    body->joints.push_back(gj);
-
+    Add(gj);
     return gj;
 }
 
@@ -388,14 +397,13 @@ RevoluteJoint* World::CreateRevoluteJoint(
     RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchor, float frequency, float dampingRatio, float jointMass)
 {
     if (bodyA->world != this || bodyB->world != this)
+    {
         throw std::exception("You should register the rigid bodies before registering the joint");
+    }
 
     RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
 
-    joints.push_back(rj);
-    bodyA->joints.push_back(rj);
-    bodyB->joints.push_back(rj);
-
+    Add(rj);
     return rj;
 }
 
@@ -409,14 +417,13 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
                                           float jointMass)
 {
     if (bodyA->world != this || bodyB->world != this)
+    {
         throw std::exception("You should register the rigid bodies before registering the joint");
+    }
 
     DistanceJoint* dj = new DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
 
-    joints.push_back(dj);
-    bodyA->joints.push_back(dj);
-    bodyB->joints.push_back(dj);
-
+    Add(dj);
     return dj;
 }
 
@@ -424,6 +431,49 @@ DistanceJoint* World::CreateDistanceJoint(
     RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass)
 {
     return CreateDistanceJoint(bodyA, bodyB, bodyA->position, bodyB->position, length, frequency, dampingRatio, jointMass);
+}
+
+void World::Add(Joint* joint)
+{
+    // Insert into the world
+    joint->prev = nullptr;
+    joint->next = jointList;
+    if (jointList != nullptr)
+    {
+        jointList->prev = joint;
+    }
+    jointList = joint;
+
+    // Connect to island graph
+
+    // Connect joint edge to body A
+    joint->nodeA.joint = joint;
+    joint->nodeA.other = joint->bodyB;
+
+    joint->nodeA.prev = nullptr;
+    joint->nodeA.next = joint->bodyA->jointList;
+    if (joint->bodyA->jointList != nullptr)
+    {
+        joint->bodyA->jointList->prev = &joint->nodeA;
+    }
+    joint->bodyA->jointList = &joint->nodeA;
+
+    // Connect joint edge to body B
+    if (joint->bodyA != joint->bodyB)
+    {
+        joint->nodeB.joint = joint;
+        joint->nodeB.other = joint->bodyA;
+
+        joint->nodeB.prev = nullptr;
+        joint->nodeB.next = joint->bodyB->jointList;
+        if (joint->bodyB->jointList != nullptr)
+        {
+            joint->bodyB->jointList->prev = &joint->nodeB;
+        }
+        joint->bodyB->jointList = &joint->nodeB;
+    }
+
+    ++jointCount;
 }
 
 } // namespace spe

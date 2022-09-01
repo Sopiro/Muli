@@ -268,10 +268,8 @@ void Game::Render()
     points.clear();
     lines.clear();
 
-    const std::vector<Joint*>& joints = world->GetJoints();
-    for (uint32_t i = 0; i < joints.size(); i++)
+    for (Joint* j = world->GetJoints(); j; j = j->GetNext())
     {
-        Joint* j = joints[i];
         Joint::Type type = j->GetType();
 
         switch (type)

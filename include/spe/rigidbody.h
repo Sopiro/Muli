@@ -10,6 +10,7 @@ namespace spe
 
 struct Node;
 struct ContactEdge;
+struct JointEdge;
 
 // Children: Polygon, Circle
 class RigidBody : public Entity
@@ -52,8 +53,6 @@ public:
     RigidBody(RigidBody&& _other) noexcept;
     RigidBody& operator=(RigidBody&& _other) = delete;
 
-    const Node* GetNode() const;
-
     virtual void SetDensity(float d) = 0;
     virtual void SetMass(float m) = 0;
     virtual float GetArea() const = 0;
@@ -86,6 +85,7 @@ public:
 
     uint32_t GetID() const;
     uint32_t GetIslandID() const;
+    const Node* GetNode() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
 
@@ -121,7 +121,7 @@ private:
     uint32_t islandID = 0;
 
     ContactEdge* contactList = nullptr;
-    std::vector<Joint*> joints{}; // ids of the joint containing this body
+    JointEdge* jointList = nullptr;
 
     float resting = 0.0f;
     bool sleeping = false;
@@ -130,35 +130,6 @@ private:
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
 };
-
-inline RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
-    : Entity()
-    , type{ std::move(_type) }
-    , shape{ std::move(_shape) }
-{
-    if (type == Static)
-    {
-        density = FLT_MAX;
-        mass = FLT_MAX;
-        invMass = 0.0f;
-        inertia = FLT_MAX;
-        invInertia = 0.0f;
-    }
-    else
-    {
-        // This part is implemented by children.
-    }
-}
-
-inline RigidBody::~RigidBody()
-{
-    if (moved) return;
-
-    world = nullptr;
-    id = 0;
-
-    if (OnDestroy != nullptr) OnDestroy(this);
-}
 
 inline float RigidBody::GetDensity() const
 {

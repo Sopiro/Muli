@@ -34,6 +34,7 @@ public:
 
     void Update();
     Contact* GetNext() const;
+    Contact* GetPrev() const;
 
     virtual void Prepare() override;
     virtual void Solve() override;
@@ -61,6 +62,11 @@ inline Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _s
     : Constraint(_bodyA, _bodyB, _settings)
 {
     manifold.numContacts = 0;
+}
+
+inline Contact* Contact::GetPrev() const
+{
+    return prev;
 }
 
 inline Contact* Contact::GetNext() const

@@ -7,6 +7,7 @@
 #include "detection.h"
 #include "distance_joint.h"
 #include "grab_joint.h"
+#include "joint.h"
 #include "polygon.h"
 #include "revolute_joint.h"
 #include "rigidbody.h"
@@ -70,11 +71,12 @@ public:
     void Add(const std::vector<RigidBody*>& bodies);
     void Destroy(RigidBody* body);
     void Destroy(const std::vector<RigidBody*>& bodies);
-    // Buffered body will be destroy at the end of the step
-    void BufferDestroy(RigidBody* body);
-
     void Destroy(Joint* joint);
     void Destroy(const std::vector<Joint*>& joints);
+
+    // Buffered body will be destroy at the end of the step
+    void BufferDestroy(RigidBody* body);
+    void BufferDestroy(Joint* joint);
 
     Box* CreateBox(float size, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
@@ -117,7 +119,7 @@ public:
                                        float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const glm::vec2& point) const;
-    std::vector<RigidBody*> Query(const AABB& region) const;
+    std::vector<RigidBody*> Query(const AABB& aabb) const;
 
     RigidBody* GetBodyList();
     RigidBody* GetBodyListTail();
@@ -125,9 +127,10 @@ public:
     uint32_t GetSleepingBodyCount() const;
     uint32_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
-    const Contact* GetContacts() const;
-    std::vector<Joint*>& GetJoints();
+    Contact* GetContacts() const;
+    Joint* GetJoints() const;
     uint32_t GetContactCount() const;
+    uint32_t GetJointCount() const;
 
     void Awake();
 
@@ -140,16 +143,21 @@ private:
     // Doubly linked list of all registered rigid bodies
     RigidBody* bodyList = nullptr;
     RigidBody* bodyListTail = nullptr;
+    Joint* jointList = nullptr;
+
     uint32_t bodyCount = 0;
+    uint32_t jointCount = 0;
 
-    std::vector<Joint*> joints{};
-
-    bool forceIntegration = false;
     uint32_t numIslands = 0;
     uint32_t sleepingIslands = 0;
     uint32_t sleepingBodies = 0;
 
-    std::vector<RigidBody*> destroyBuffer;
+    std::vector<RigidBody*> destroyBufferBody;
+    std::vector<Joint*> destroyBufferJoint;
+
+    bool forceIntegration = false;
+
+    void Add(Joint* joint);
 };
 
 inline World::World(const Settings& simulationSettings)
@@ -161,6 +169,14 @@ inline World::World(const Settings& simulationSettings)
 inline World::~World() noexcept
 {
     Reset();
+}
+
+inline void World::Awake()
+{
+    for (RigidBody* b = bodyList; b; b = b->next)
+    {
+        b->Awake();
+    }
 }
 
 inline RigidBody* World::GetBodyList()
@@ -188,32 +204,29 @@ inline const AABBTree& World::GetBVH() const
     return contactManager.broadPhase.tree;
 }
 
-inline const Contact* World::GetContacts() const
+inline Contact* World::GetContacts() const
 {
     return contactManager.contactList;
 }
 
-inline std::vector<Joint*>& World::GetJoints()
+inline Joint* World::GetJoints() const
 {
-    return joints;
-}
-
-inline void World::Awake()
-{
-    for (RigidBody* b = bodyList; b; b = b->next)
-    {
-        b->Awake();
-    }
-}
-
-inline uint32_t World::GetContactCount() const
-{
-    return contactManager.contactCount;
+    return jointList;
 }
 
 inline uint32_t World::GetBodyCount() const
 {
     return bodyCount;
+}
+
+inline uint32_t World::GetJointCount() const
+{
+    return jointCount;
+}
+
+inline uint32_t World::GetContactCount() const
+{
+    return contactManager.contactCount;
 }
 
 } // namespace spe

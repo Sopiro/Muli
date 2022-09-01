@@ -7,6 +7,15 @@ namespace spe
 {
 
 struct Settings;
+class Joint;
+
+struct JointEdge
+{
+    RigidBody* other;
+    Joint* joint;
+    JointEdge* prev;
+    JointEdge* next;
+};
 
 class Joint : public Constraint
 {
@@ -80,6 +89,9 @@ public:
 
     std::function<void(Joint*)> OnDestroy = nullptr;
 
+    Joint* GetPrev() const;
+    Joint* GetNext() const;
+
 protected:
     Joint::Type type;
 
@@ -89,30 +101,18 @@ private:
     float dampingRatio;
     float jointMass;
 
+    Joint* prev;
+    Joint* next;
+
+    JointEdge nodeA;
+    JointEdge nodeB;
+
     // 0 < Frequency
     // 0 <= Damping ratio <= 1
     // 0 < Joint mass
     void SetProperties(float _frequency, float _dampingRatio, float _jointMass);
     void CalculateBetaAndGamma();
 };
-
-inline Joint::Joint(Joint::Type _type,
-                    RigidBody* _bodyA,
-                    RigidBody* _bodyB,
-                    const Settings& _settings,
-                    float _frequency,
-                    float _dampingRatio,
-                    float _jointMass)
-    : Constraint(_bodyA, _bodyB, _settings)
-{
-    type = _type;
-    SetProperties(_frequency, _dampingRatio, _jointMass);
-}
-
-inline Joint::~Joint()
-{
-    if (OnDestroy != nullptr) OnDestroy(this);
-}
 
 inline float Joint::GetFrequency() const
 {
@@ -154,37 +154,14 @@ inline Joint::Type Joint::GetType() const
     return type;
 }
 
-inline void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMass)
+inline Joint* Joint::GetPrev() const
 {
-    // If the frequency is less than or equal to zero, make this joint solid
-    if (_frequency > 0.0f)
-    {
-        frequency = _frequency;
-        dampingRatio = glm::clamp<float>(_dampingRatio, 0.0f, 1.0f);
-        jointMass = glm::clamp<float>(_jointMass, 0.0f, FLT_MAX);
-
-        CalculateBetaAndGamma();
-    }
-    else
-    {
-        frequency = -1.0f;
-        dampingRatio = 0.0f;
-        jointMass = 0.0f;
-
-        beta = 1.0f;
-        gamma = 0.0f;
-    }
+    return prev;
 }
 
-inline void Joint::CalculateBetaAndGamma()
+inline Joint* Joint::GetNext() const
 {
-    float omega = 2.0f * glm::pi<float>() * frequency;
-    float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
-    float k = jointMass * omega * omega;               // Spring constant
-    float h = 1.0f / 144.0f;
-
-    beta = h * k / (d + h * k);
-    gamma = 1.0f / ((d + h * k) * h);
+    return next;
 }
 
 } // namespace spe
