@@ -161,8 +161,6 @@ void World::Destroy(RigidBody* body)
         delete joint;
     }
 
-    joints.clear();
-
     contactManager.Remove(body);
     bodies.erase(it);
 

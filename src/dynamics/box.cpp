@@ -23,7 +23,7 @@ void Box::SetMass(float _mass)
     density = _mass / area;
     mass = _mass;
     invMass = 1.0f / mass;
-    inertia = calculate_box_inertia(width, height, mass);
+    inertia = compute_box_inertia(width, height, mass);
     invInertia = 1.0f / inertia;
 }
 
@@ -35,7 +35,7 @@ void Box::SetDensity(float _density)
     density = _density;
     mass = _density * area;
     invMass = 1.0f / mass;
-    inertia = calculate_box_inertia(width, height, mass);
+    inertia = compute_box_inertia(width, height, mass);
     invInertia = 1.0f / inertia;
 }
 

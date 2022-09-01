@@ -25,14 +25,15 @@ struct UV
     float v;
 };
 
-float calculate_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass, float area);
+// https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+float compute_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass);
 
-inline float calculate_box_inertia(float width, float height, float mass)
+inline float compute_box_inertia(float width, float height, float mass)
 {
     return (width * width + height * height) * mass / 12.0f;
 }
 
-inline float calculate_circle_inertia(float radius, float mass)
+inline float compute_circle_inertia(float radius, float mass)
 {
     return mass * radius * radius / 2.0f;
 }
