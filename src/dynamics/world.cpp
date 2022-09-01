@@ -14,7 +14,7 @@ void World::Step(float dt)
 
     // Build the constraint island
     Island island{ *this };
-    island.bodies.reserve(bodies.size());
+    island.bodies.reserve(bodyCount);
     island.contacts.reserve(contactManager.contactCount);
     island.joints.reserve(joints.size());
     uint32_t restingBodies = 0;
@@ -24,15 +24,13 @@ void World::Step(float dt)
 
     std::unordered_set<uint32_t> visited{};
     std::vector<RigidBody*> stack;
-    visited.reserve(bodies.size());
-    stack.reserve(bodies.size());
+    visited.reserve(bodyCount);
+    stack.reserve(bodyCount);
 
     // Perform a DFS(Depth First Search) on the constraint graph
     // After building island, each island can be solved in parallel because they are independent of each other
-    for (uint32_t i = 0; i < bodies.size(); i++)
+    for (RigidBody* b = bodyList; b; b = b->next)
     {
-        RigidBody* b = bodies[i];
-
         if (b->type == RigidBody::Type::Static || (visited.find(b->id) != visited.end())) continue;
 
         stack.clear();
@@ -102,18 +100,32 @@ void World::Step(float dt)
     }
 
     numIslands = islandID;
+
+    for (RigidBody* b : destroyBuffer)
+    {
+        Destroy(b);
+    }
+    destroyBuffer.clear();
 }
 
 void World::Reset()
 {
     contactManager.Reset();
 
-    for (RigidBody* body : bodies)
-        delete body;
+    RigidBody* b = bodyList;
+    while (b)
+    {
+        RigidBody* b0 = b;
+        b = b->next;
+        delete b0;
+    }
     for (Joint* joint : joints)
         delete joint;
 
-    bodies.clear();
+    bodyList = nullptr;
+    bodyListTail = nullptr;
+    bodyCount = 0;
+
     joints.clear();
 
     uid = 0;
@@ -125,8 +137,21 @@ void World::Add(RigidBody* body)
 
     body->world = this;
     body->id = ++uid;
-    bodies.push_back(body);
+
+    if (bodyList == nullptr && bodyListTail == nullptr)
+    {
+        bodyList = body;
+        bodyListTail = body;
+    }
+    else
+    {
+        bodyListTail->next = body;
+        body->prev = bodyListTail;
+        bodyListTail = body;
+    }
+
     contactManager.Add(body);
+    ++bodyCount;
 }
 
 void World::Add(const std::vector<RigidBody*>& bodies)
@@ -139,8 +164,7 @@ void World::Add(const std::vector<RigidBody*>& bodies)
 
 void World::Destroy(RigidBody* body)
 {
-    auto it = std::find(bodies.begin(), bodies.end(), body);
-    if (it == bodies.end()) throw std::exception("This body is not registered in this world.");
+    if (body->world != this) throw std::exception("This body is not registered in this world");
 
     contactManager.Remove(body);
 
@@ -162,9 +186,19 @@ void World::Destroy(RigidBody* body)
     }
 
     contactManager.Remove(body);
-    bodies.erase(it);
+
+    if (body->next) body->next->prev = body->prev;
+    if (body->prev) body->prev->next = body->next;
+    if (body == bodyList) bodyList = body->next;
+    if (body == bodyListTail) bodyListTail = body->prev;
 
     delete body;
+    --bodyCount;
+}
+
+void World::BufferDestroy(RigidBody* body)
+{
+    destroyBuffer.push_back(body);
 }
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)

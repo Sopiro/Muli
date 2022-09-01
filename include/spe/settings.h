@@ -26,6 +26,4 @@ namespace spe
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
 
-#define DEFAULT_BODY_RESERVE_COUNT 256
-
 } // namespace spe

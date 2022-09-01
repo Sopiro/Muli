@@ -26,7 +26,7 @@ struct Settings
 
     bool IMPULSE_ACCUMULATION = true;
     bool WARM_STARTING = true;
-    bool APPLY_WARM_STARTING_THRESHOLD = true;
+    bool APPLY_WARM_STARTING_THRESHOLD = false;
     float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - glm::epsilon<float>();
 
     bool POSITION_CORRECTION = true;
@@ -70,6 +70,9 @@ public:
     void Add(const std::vector<RigidBody*>& bodies);
     void Destroy(RigidBody* body);
     void Destroy(const std::vector<RigidBody*>& bodies);
+    // Buffered body will be destroy at the end of the step
+    void BufferDestroy(RigidBody* body);
+
     void Destroy(Joint* joint);
     void Destroy(const std::vector<Joint*>& joints);
 
@@ -116,9 +119,11 @@ public:
     std::vector<RigidBody*> Query(const glm::vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& region) const;
 
-    std::vector<RigidBody*>& GetBodies();
-    const uint32_t GetSleepingBodyCount() const;
-    const uint32_t GetSleepingIslandCount() const;
+    RigidBody* GetBodyList();
+    RigidBody* GetBodyListTail();
+    uint32_t GetBodyCount() const;
+    uint32_t GetSleepingBodyCount() const;
+    uint32_t GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
     const Contact* GetContacts() const;
     std::vector<Joint*>& GetJoints();
@@ -132,21 +137,25 @@ private:
 
     ContactManager contactManager;
 
-    // All registered rigid bodies
-    std::vector<RigidBody*> bodies{};
+    // Doubly linked list of all registered rigid bodies
+    RigidBody* bodyList = nullptr;
+    RigidBody* bodyListTail = nullptr;
+    uint32_t bodyCount = 0;
+
     std::vector<Joint*> joints{};
 
     bool forceIntegration = false;
     uint32_t numIslands = 0;
     uint32_t sleepingIslands = 0;
     uint32_t sleepingBodies = 0;
+
+    std::vector<RigidBody*> destroyBuffer;
 };
 
 inline World::World(const Settings& simulationSettings)
     : settings{ simulationSettings }
     , contactManager{ *this }
 {
-    bodies.reserve(DEFAULT_BODY_RESERVE_COUNT);
 }
 
 inline World::~World() noexcept
@@ -154,17 +163,22 @@ inline World::~World() noexcept
     Reset();
 }
 
-inline std::vector<RigidBody*>& World::GetBodies()
+inline RigidBody* World::GetBodyList()
 {
-    return bodies;
+    return bodyList;
 }
 
-inline const uint32_t World::GetSleepingBodyCount() const
+inline RigidBody* World::GetBodyListTail()
+{
+    return bodyListTail;
+}
+
+inline uint32_t World::GetSleepingBodyCount() const
 {
     return sleepingBodies;
 }
 
-inline const uint32_t World::GetSleepingIslandCount() const
+inline uint32_t World::GetSleepingIslandCount() const
 {
     return sleepingIslands;
 }
@@ -186,7 +200,7 @@ inline std::vector<Joint*>& World::GetJoints()
 
 inline void World::Awake()
 {
-    for (RigidBody* b : bodies)
+    for (RigidBody* b = bodyList; b; b = b->next)
     {
         b->Awake();
     }
@@ -195,6 +209,11 @@ inline void World::Awake()
 inline uint32_t World::GetContactCount() const
 {
     return contactManager.contactCount;
+}
+
+inline uint32_t World::GetBodyCount() const
+{
+    return bodyCount;
 }
 
 } // namespace spe

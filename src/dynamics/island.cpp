@@ -94,7 +94,7 @@ void Island::Solve()
 
         if (!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
         {
-            world.Destroy(b);
+            world.BufferDestroy(b);
         }
     }
 }

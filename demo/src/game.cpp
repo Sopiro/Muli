@@ -20,9 +20,8 @@ Game::Game(Application& _app)
     // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
     simulationDeltaTime = 1.0f / 144.0f;
     settings.VALID_REGION.min.y = -20.0f;
-    settings.APPLY_WARM_STARTING_THRESHOLD = false;
 
-    world = std::make_unique<World>(settings);
+    world = new World(settings);
 
     demos = get_demos();
     InitSimulation(0);
@@ -30,6 +29,7 @@ Game::Game(Application& _app)
 
 Game::~Game() noexcept
 {
+    delete world;
 }
 
 void Game::Update(float dt)
@@ -68,7 +68,7 @@ void Game::HandleInput()
             pause = !pause;
         }
 
-        if (Input::IsKeyDown(GLFW_KEY_RIGHT))
+        if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S))
         {
             step = true;
         }
@@ -212,7 +212,7 @@ void Game::HandleInput()
 
                 ImGui::Separator();
                 ImGui::Text(demos[currentDemo].first.data());
-                ImGui::Text("Bodies: %d", world->GetBodies().size());
+                ImGui::Text("Bodies: %d", world->GetBodyCount());
                 ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
                 ImGui::Text("Broad phase contacts: %d", world->GetContactCount());
                 ImGui::EndTabItem();
@@ -392,7 +392,7 @@ void Game::InitSimulation(uint32_t demo)
     demoTitle = demos[currentDemo].first;
     demos[currentDemo].second(*this, *world, settings);
 
-    for (RigidBody* b : world->GetBodies())
+    for (RigidBody* b = world->GetBodyList(); b; b = b->GetNext())
     {
         rRenderer.Register(b);
 

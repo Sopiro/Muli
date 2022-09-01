@@ -9,17 +9,13 @@ namespace spe
 void Contact::Update()
 {
     ContactManifold oldManifold = manifold;
+    float oldNormalImpulse[MAX_CONTACT_POINT];
+    float oldTangentImpulse[MAX_CONTACT_POINT];
 
     bool wasTouching = touching;
     touching = detect_collision(bodyA, bodyB, &manifold);
 
-    if (!touching) return;
-
-    // Warm start the contact solver
-    float oldNormalImpulse[2];
-    float oldTangentImpulse[2];
-
-    for (uint32_t i = 0; i < oldManifold.numContacts; i++)
+    for (uint32_t i = 0; i < MAX_CONTACT_POINT; i++)
     {
         oldNormalImpulse[i] = normalContacts[i].impulseSum;
         normalContacts[i].impulseSum = 0.0f;
@@ -27,6 +23,9 @@ void Contact::Update()
         tangentContacts[i].impulseSum = 0.0f;
     }
 
+    if (!touching) return;
+
+    // Warm start the contact solver
     for (uint32_t n = 0; n < manifold.numContacts; n++)
     {
         uint32_t o = 0;

@@ -86,6 +86,8 @@ public:
 
     uint32_t GetID() const;
     uint32_t GetIslandID() const;
+    RigidBody* GetPrev() const;
+    RigidBody* GetNext() const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
@@ -125,6 +127,8 @@ private:
     bool sleeping = false;
 
     Node* node = nullptr;
+    RigidBody* prev = nullptr;
+    RigidBody* next = nullptr;
 };
 
 inline RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
@@ -285,6 +289,16 @@ inline uint32_t RigidBody::GetID() const
 inline uint32_t RigidBody::GetIslandID() const
 {
     return islandID;
+}
+
+inline RigidBody* RigidBody::GetPrev() const
+{
+    return prev;
+}
+
+inline RigidBody* RigidBody::GetNext() const
+{
+    return next;
 }
 
 } // namespace spe

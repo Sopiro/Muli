@@ -7,10 +7,8 @@ namespace spe
 
 void BroadPhase::UpdateDynamicTree(float dt)
 {
-    for (uint32_t i = 0; i < world.bodies.size(); i++)
+    for (RigidBody* body = world.bodyList; body; body = body->next)
     {
-        RigidBody* body = world.bodies[i];
-
         if (body->sleeping) continue;
         if (body->type == RigidBody::Type::Static) body->sleeping = true;
 
@@ -42,10 +40,8 @@ void BroadPhase::UpdateDynamicTree(float dt)
 
 void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback)
 {
-    for (uint32_t i = 0; i < world.bodies.size(); i++)
+    for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {
-        RigidBody* bodyA = world.bodies[i];
-
         tree.Query(bodyA->node->aabb, [&](const Node* n) -> bool {
             RigidBody* bodyB = n->body;
 

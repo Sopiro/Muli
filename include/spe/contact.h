@@ -5,6 +5,8 @@
 #include "contact_solver.h"
 #include "detection.h"
 
+#define MAX_CONTACT_POINT 2
+
 namespace spe
 {
 class RigidBody;
@@ -50,8 +52,8 @@ private:
 
     ContactManifold manifold;
 
-    ContactSolver tangentContacts[2];
-    ContactSolver normalContacts[2];
+    ContactSolver tangentContacts[MAX_CONTACT_POINT];
+    ContactSolver normalContacts[MAX_CONTACT_POINT];
     BlockSolver blockSolver;
 };
 

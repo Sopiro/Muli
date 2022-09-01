@@ -33,7 +33,7 @@ private:
     Application& app;
 
     Settings settings{};
-    std::unique_ptr<World> world;
+    World* world;
 
     Camera camera{};
     RigidBodyRenderer rRenderer{};
