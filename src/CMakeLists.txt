@@ -9,7 +9,7 @@ set(SOURCE_FILES
     dynamics/util.cpp
 
     collision/aabbtree.cpp
-    collision/detection.cpp
+    collision/collision.cpp
     collision/simplex.cpp
     collision/polytope.cpp
     collision/broad_phase.cpp

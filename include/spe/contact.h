@@ -1,9 +1,9 @@
 #pragma once
 
 #include "block_solver.h"
+#include "collision.h"
 #include "constraint.h"
 #include "contact_solver.h"
-#include "detection.h"
 
 #define MAX_CONTACT_POINT 2
 

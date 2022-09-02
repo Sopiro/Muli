@@ -1,4 +1,4 @@
-#include "spe/detection.h"
+#include "spe/collision.h"
 #include "spe/box.h"
 #include "spe/circle.h"
 #include "spe/edge.h"
@@ -16,10 +16,9 @@ struct SupportResult
 };
 
 // Returns the fardest vertex in the 'dir' direction
+// 'dir' should be normalized
 static SupportResult support(RigidBody* b, glm::vec2 dir)
 {
-    dir = glm::normalize(dir);
-
     RigidBody::Shape shape = b->GetShape();
     if (shape == RigidBody::Shape::ShapePolygon)
     {
@@ -59,6 +58,7 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
  * Minkowski Difference : A ⊖ B = {Pa - Pb| Pa ∈ A, Pb ∈ B}
  * CSO stands for Configuration Space Object
  */
+//'dir' should be normalized
 static glm::vec2 cso_support(RigidBody* b1, RigidBody* b2, glm::vec2 dir)
 {
     const glm::vec2 localDirP1 = glm::mul(b1->GlobalToLocal(), dir, 0);
@@ -76,7 +76,7 @@ struct GJKResult
     Simplex simplex;
 };
 
-static GJKResult gjk(RigidBody* b1, RigidBody* b2)
+static GJKResult gjk(RigidBody* b1, RigidBody* b2, bool earlyReturn = true)
 {
     constexpr glm::vec2 origin{ 0.0f };
     glm::vec2 dir{ 1.0f, 0.0f }; // Random initial direction
@@ -104,11 +104,13 @@ static GJKResult gjk(RigidBody* b1, RigidBody* b2)
         }
 
         dir = origin - closest.point;
+        float dist = glm::length(dir);
+        dir = glm::normalize(dir);
         supportPoint = cso_support(b1, b2, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (glm::length(dir) > glm::dot(glm::normalize(dir), supportPoint - closest.point))
+        if (earlyReturn && dist > glm::dot(dir, supportPoint - closest.point))
         {
             collide = false;
             break;
@@ -422,6 +424,66 @@ bool test_point_inside(RigidBody* body, const glm::vec2& point)
     else
     {
         throw std::exception("Not a supported shape");
+    }
+}
+
+float compute_distance(RigidBody* a, RigidBody* b)
+{
+    GJKResult gr = gjk(a, b, false);
+
+    if (gr.collide)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        ClosestResult cr = gr.simplex.GetClosest({ 0.0f, 0.0f });
+
+        return glm::length(cr.point);
+    }
+}
+
+float compute_distance(RigidBody* b, const glm::vec2& p)
+{
+    return glm::distance(get_closest_point(b, p), p);
+}
+
+glm::vec2 get_closest_point(RigidBody* b, const glm::vec2& p)
+{
+    glm::vec2 localP = b->GlobalToLocal() * p;
+
+    if (test_point_inside(b, localP))
+    {
+        return p;
+    }
+    else
+    {
+        glm::vec2 dir = glm::normalize(localP - b->position);
+
+        if (b->GetType() == RigidBody::Shape::ShapeCircle)
+        {
+            glm::vec2 localR = b->position + dir * static_cast<Circle*>(b)->GetRadius();
+            return b->LocalToGlobal() * localR;
+        }
+        else if (b->GetType() == RigidBody::Shape::ShapePolygon)
+        {
+            Polygon* poly = static_cast<Polygon*>(b);
+            const std::vector<glm::vec2>& v = poly->GetVertices();
+
+            SupportResult sr = support(poly, dir);
+            Simplex s;
+
+            s.AddVertex(v[sr.index]);
+            s.AddVertex(v[(sr.index + 1) % v.size()]);
+            s.AddVertex(v[(sr.index + 2) % v.size()]);
+
+            ClosestResult cr = s.GetClosest(localP);
+            return b->LocalToGlobal() * cr.point;
+        }
+        else
+        {
+            throw std::exception("Not a supported shape");
+        }
     }
 }
 

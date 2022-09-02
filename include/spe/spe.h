@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include "detection.h"
+#include "collision.h"
 
 #include "box.h"
 #include "circle.h"

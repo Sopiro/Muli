@@ -1,7 +1,7 @@
 #include "game.h"
 #include "application.h"
 #include "demo.h"
-#include "spe/detection.h"
+#include "spe/collision.h"
 
 namespace spe
 {
@@ -186,7 +186,7 @@ void Game::HandleInput()
 
                 static int f = Window::Get().GetRefreshRate();
                 ImGui::SetNextItemWidth(120);
-                if (ImGui::SliderInt("Frame rate", &f, 10, 300))
+                if (ImGui::SliderInt("Frame rate", &f, 30, 300))
                 {
                     app.SetFrameRate(f);
                 }

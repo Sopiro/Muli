@@ -2,9 +2,9 @@
 
 #include "box.h"
 #include "circle.h"
+#include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
-#include "detection.h"
 #include "distance_joint.h"
 #include "grab_joint.h"
 #include "joint.h"
