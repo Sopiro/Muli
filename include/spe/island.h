@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "world.h"
 
 namespace spe

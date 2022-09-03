@@ -9,6 +9,19 @@
 
 namespace spe
 {
+
+inline float mix_friction(float f1, float f2)
+{
+    return f1 * f2;
+    // return glm::sqrt(f1, f2);
+}
+
+inline float mix_restitution(float r1, float r2)
+{
+    return r1 * r2;
+    // return glm::max(r1 * r2);
+}
+
 class RigidBody;
 class Contact;
 
@@ -33,13 +46,15 @@ public:
     ~Contact() noexcept = default;
 
     void Update();
-    Contact* GetNext() const;
-    Contact* GetPrev() const;
-
     virtual void Prepare() override;
     virtual void Solve() override;
 
+    Contact* GetNext() const;
+    Contact* GetPrev() const;
+
     const ContactManifold& GetContactManifold() const;
+    float GetRestitution() const;
+    float GetFriction() const;
 
 private:
     Contact* prev;
@@ -53,16 +68,13 @@ private:
 
     ContactManifold manifold;
 
-    ContactSolver tangentContacts[MAX_CONTACT_POINT];
     ContactSolver normalContacts[MAX_CONTACT_POINT];
+    ContactSolver tangentContacts[MAX_CONTACT_POINT];
     BlockSolver blockSolver;
-};
 
-inline Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings)
-    : Constraint(_bodyA, _bodyB, _settings)
-{
-    manifold.numContacts = 0;
-}
+    float restitution;
+    float friction;
+};
 
 inline Contact* Contact::GetPrev() const
 {
@@ -77,6 +89,16 @@ inline Contact* Contact::GetNext() const
 inline const ContactManifold& Contact::GetContactManifold() const
 {
     return manifold;
+}
+
+inline float Contact::GetRestitution() const
+{
+    return restitution;
+}
+
+inline float Contact::GetFriction() const
+{
+    return friction;
 }
 
 } // namespace spe

@@ -397,17 +397,17 @@ bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
-bool test_point_inside(RigidBody* body, const glm::vec2& point)
+bool test_point_inside(RigidBody* b, const glm::vec2& p)
 {
-    glm::vec2 localP = body->GlobalToLocal() * point;
+    glm::vec2 localP = b->GlobalToLocal() * p;
 
-    if (body->GetShape() == RigidBody::Shape::ShapeCircle)
+    if (b->GetShape() == RigidBody::Shape::ShapeCircle)
     {
-        return glm::length(localP) <= static_cast<Circle*>(body)->GetRadius();
+        return glm::length(localP) <= static_cast<Circle*>(b)->GetRadius();
     }
-    else if (body->GetShape() == RigidBody::Shape::ShapePolygon)
+    else if (b->GetShape() == RigidBody::Shape::ShapePolygon)
     {
-        Polygon* p = static_cast<Polygon*>(body);
+        Polygon* p = static_cast<Polygon*>(b);
         const std::vector<glm::vec2>& vertices = p->GetVertices();
 
         float dir = glm::cross(vertices[0] - localP, vertices[1] - localP);

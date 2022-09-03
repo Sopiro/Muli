@@ -25,7 +25,7 @@ public:
      * C = J·v = 0
      * J is depend on constraint
      *
-     * Calculate Jacobian J and effective mass M
+     * Compute Jacobian J and effective mass M
      * M = K^-1 = (J · M^-1 · J^t)^-1
      */
     virtual void Prepare() = 0;

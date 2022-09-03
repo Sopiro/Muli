@@ -12,11 +12,11 @@ struct Jacobian;
 class BlockSolver
 {
 public:
-    void Prepare(Contact* _contact);
+    void Prepare(Contact* contact);
     void Solve();
 
 private:
-    Contact* contact;
+    Contact* c;
 
     ContactSolver* nc1;
     ContactSolver* nc2;

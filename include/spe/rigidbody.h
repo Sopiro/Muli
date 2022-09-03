@@ -18,6 +18,7 @@ class RigidBody : public Entity
     friend class World;
     friend class Island;
 
+    friend class Contact;
     friend class ContactSolver;
     friend class BlockSolver;
 

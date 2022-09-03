@@ -27,7 +27,7 @@ struct ContactManifold
 };
 
 bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
-bool test_point_inside(RigidBody* body, const glm::vec2& point);
+bool test_point_inside(RigidBody* b, const glm::vec2& p);
 float compute_distance(RigidBody* a, RigidBody* b);
 float compute_distance(RigidBody* b, const glm::vec2& p);
 glm::vec2 get_closest_point(RigidBody* b, const glm::vec2& p);

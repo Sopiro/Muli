@@ -6,6 +6,16 @@
 namespace spe
 {
 
+Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings)
+    : Constraint(_bodyA, _bodyB, _settings)
+{
+    manifold.numContacts = 0;
+
+    beta = settings.POSITION_CORRECTION_BETA;
+    restitution = mix_restitution(bodyA->restitution, bodyB->restitution);
+    friction = mix_friction(bodyA->friction, bodyB->friction);
+}
+
 void Contact::Update()
 {
     ContactManifold oldManifold = manifold;
