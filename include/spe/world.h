@@ -25,7 +25,6 @@ struct Settings
     bool APPLY_GRAVITY = true;
     glm::vec2 GRAVITY{ 0.0f, -10.0f };
 
-    bool IMPULSE_ACCUMULATION = true;
     bool WARM_STARTING = true;
     bool APPLY_WARM_STARTING_THRESHOLD = false;
     float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - glm::epsilon<float>();

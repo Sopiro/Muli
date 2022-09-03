@@ -55,6 +55,7 @@ public:
     const ContactManifold& GetContactManifold() const;
     float GetRestitution() const;
     float GetFriction() const;
+    bool IsTouching() const;
 
 private:
     Contact* prev;
@@ -99,6 +100,11 @@ inline float Contact::GetRestitution() const
 inline float Contact::GetFriction() const
 {
     return friction;
+}
+
+inline bool Contact::IsTouching() const
+{
+    return touching;
 }
 
 } // namespace spe

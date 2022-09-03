@@ -1,5 +1,7 @@
 #include "spe/island.h"
 
+#define SOLVE_CONTACTS_FORWARD 0
+
 namespace spe
 {
 
@@ -68,7 +70,9 @@ void Island::Solve()
             joints[i]->Prepare();
     }
 
-    // Iteratively solve the violated velocity constraint
+// Iteratively solve the violated velocity constraint
+// Solving contacts backward converge fast
+#if SOLVE_CONTACTS_FORWARD
     {
         for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
         {
@@ -78,6 +82,17 @@ void Island::Solve()
                 joints[j]->Solve();
         }
     }
+#else
+    {
+        for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
+        {
+            for (size_t j = contacts.size(); j > 0; j--)
+                contacts[j - 1]->Solve();
+            for (size_t j = joints.size(); j > 0; j--)
+                joints[j - 1]->Solve();
+        }
+    }
+#endif
 
     // Update positions using corrected velocities (Semi-implicit euler integration)
     for (uint32_t i = 0; i < bodies.size(); i++)
