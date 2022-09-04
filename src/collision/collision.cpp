@@ -358,6 +358,7 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
         out->bodyA = a;
         out->bodyB = b;
         out->contactNormal = epaResult.contactNormal;
+        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
         out->penetrationDepth = epaResult.penetrationDepth;
         out->featureFlipped = false;
 
@@ -370,13 +371,7 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
             out->featureFlipped = true;
         }
 
-        // Remove floating point error
-        out->contactNormal.x = glm::round((out->contactNormal.x / EPA_TOLERANCE)) * EPA_TOLERANCE;
-        out->contactNormal.y = glm::round((out->contactNormal.y / EPA_TOLERANCE)) * EPA_TOLERANCE;
-
         find_contact_points(out->contactNormal, out->bodyA, out->bodyB, out);
-        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
-
         return true;
     }
 }

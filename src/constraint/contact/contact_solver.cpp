@@ -5,14 +5,14 @@
 namespace spe
 {
 
-void ContactSolver::Prepare(Contact* contact, const glm::vec2& contactPoint, const glm::vec2& dir, Type contactType)
+void ContactSolver::Prepare(Contact* contact, uint32_t index, const glm::vec2& dir, Type contactType)
 {
     // Calculate Jacobian J and effective mass M
     // J = [-dir, -ra × dir, dir, rb × dir] (dir: Contact vector, normal or tangent)
     // M = (J · M^-1 · J^t)^-1
 
     c = contact;
-    p = contactPoint;
+    p = contact->manifold.contactPoints[index].point;
     type = contactType;
 
     ra = p - c->manifold.bodyA->position;
@@ -33,13 +33,8 @@ void ContactSolver::Prepare(Contact* contact, const glm::vec2& contactPoint, con
         // Normal velocity == veclocity constraint: jv
         float normalVelocity = glm::dot(c->manifold.contactNormal, relativeVelocity);
 
-        if (c->settings.POSITION_CORRECTION)
-        {
-            bias = -(c->beta * c->settings.INV_DT) * glm::max(c->manifold.penetrationDepth - c->settings.PENETRATION_SLOP, 0.0f);
-        }
-
 #if 1
-        if (c->settings.RESTITUTION_SLOP < -normalVelocity)
+        if (-c->settings.RESTITUTION_SLOP > normalVelocity)
         {
             bias += c->restitution * normalVelocity;
         }

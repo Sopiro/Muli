@@ -54,9 +54,13 @@ void Game::Update(float dt)
 
 void Game::HandleInput()
 {
+    std::vector<RigidBody*> qr;
+
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
         mpos = rRenderer.Pick(Input::GetMousePosition());
+
+        qr = world->Query(mpos);
 
         if (Input::IsKeyPressed(GLFW_KEY_R))
         {
@@ -150,7 +154,7 @@ void Game::HandleInput()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 360 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 240, 480 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -205,10 +209,19 @@ void Game::HandleInput()
                 ImGui::Checkbox("Show Contact point", &showCP);
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
-                ImGui::SetNextItemWidth(120);
-                static int iteration = settings.SOLVE_ITERATION;
-                ImGui::SliderInt("Solve iteration", &iteration, 1, 50);
-                settings.SOLVE_ITERATION = static_cast<uint32_t>(iteration);
+
+                ImGui::Text("Constraint solve iterations");
+                {
+                    ImGui::SetNextItemWidth(120);
+                    static int velIteration = settings.VELOCITY_SOLVE_ITERATION;
+                    ImGui::SliderInt("Velocity", &velIteration, 1, 50);
+                    settings.VELOCITY_SOLVE_ITERATION = static_cast<uint32_t>(velIteration);
+
+                    ImGui::SetNextItemWidth(120);
+                    static int posIteration = settings.POSITION_SOLVE_ITERATION;
+                    ImGui::SliderInt("Position", &posIteration, 1, 50);
+                    settings.POSITION_SOLVE_ITERATION = static_cast<uint32_t>(posIteration);
+                }
 
                 ImGui::Separator();
                 ImGui::Text(demos[currentDemo].first.data());
@@ -216,6 +229,15 @@ void Game::HandleInput()
                 ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
                 ImGui::Text("Broad phase contacts: %d", world->GetContactCount());
                 ImGui::EndTabItem();
+
+                ImGui::Separator();
+                if (qr.size() > 0)
+                {
+                    RigidBody* t = qr[0];
+                    ImGui::Text("ID: %d", t->GetID());
+                    ImGui::Text("Pos: %.4f, %.4f", t->position.x, t->position.y);
+                    ImGui::Text("Rot: %.4f", t->rotation);
+                }
             }
 
             if (ImGui::BeginTabItem("Demos"))

@@ -74,7 +74,7 @@ void Island::Solve()
 // Solving contacts backward converge fast
 #if SOLVE_CONTACTS_FORWARD
     {
-        for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
+        for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
         {
             for (uint32_t j = 0; j < contacts.size(); j++)
                 contacts[j]->Solve();
@@ -84,7 +84,7 @@ void Island::Solve()
     }
 #else
     {
-        for (uint32_t i = 0; i < world.settings.SOLVE_ITERATION; i++)
+        for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
         {
             for (size_t j = contacts.size(); j > 0; j--)
                 contacts[j - 1]->Solve();
@@ -110,6 +110,17 @@ void Island::Solve()
         if (!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
         {
             world.BufferDestroy(b);
+        }
+    }
+
+    if (world.settings.POSITION_CORRECTION)
+    {
+        for (uint32_t i = 0; i < world.settings.POSITION_SOLVE_ITERATION; i++)
+        {
+            for (size_t j = contacts.size(); j > 0; j--)
+            {
+                contacts[j - 1]->Solve2();
+            }
         }
     }
 }

@@ -19,7 +19,6 @@ static void demo2(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     float start = 0.5f;
     float size = 0.3f;
@@ -39,7 +38,6 @@ static void demo3(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     int32_t rows = 15;
     float boxSize = 0.35f;
@@ -62,7 +60,6 @@ static void demo4(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     Box* b = world.CreateBox(0.3f);
     b->position = glm::vec2(-3.0f, 5.0f);
@@ -116,7 +113,6 @@ static void demo6(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     int rows = 12;
     float size = 0.3f;
@@ -147,7 +143,6 @@ static void demo7(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     Box* seesaw = world.CreateBox(6.0f, 0.1f);
     seesaw->position = { 0.0f, 0.45f };
@@ -171,7 +166,6 @@ static void demo8(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     Box* b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->position = { -0.6f, 5.0f };
@@ -213,18 +207,23 @@ static void demo9(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.7f);
 
-    int count = 7;
-    float gap = 1.0f;
+    int count = 11;
+    float gap = 0.5f;
     float size = 0.3f;
 
     float xStart = -(count - 1) / 2 * gap;
-    float yStart = 6.5f;
+    float yStart = 6.0f;
 
+    bool r = glm::linearRand(0.0f, 1.0f) > 0.5f;
+
+    RigidBody* b;
     for (int i = 0; i < count; i++)
     {
-        Box* b = world.CreateBox(size);
+        if (r)
+            b = world.CreateBox(size);
+        else
+            b = world.CreateCircle(size / 2.0f);
         b->position = { xStart + gap * i, yStart };
         float attenuation = (count - i) / (float)count;
         b->SetRestitution(1.0f - attenuation * attenuation);
@@ -235,7 +234,6 @@ static void demo10(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     float xStart = 0.0f;
     float yStart = 5.0f;
@@ -271,7 +269,6 @@ static void demo11(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     float groundStart = 0.2f;
 
@@ -352,7 +349,6 @@ static void demo12(Game& game, World& world, Settings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
-    ground->SetRestitution(0.45f);
 
     float xStart = -3.0f;
     float yStart = 1.0f;

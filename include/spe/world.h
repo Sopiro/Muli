@@ -30,13 +30,14 @@ struct Settings
     float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - glm::epsilon<float>();
 
     bool POSITION_CORRECTION = true;
-    float POSITION_CORRECTION_BETA = 0.2f;
+    float POSITION_CORRECTION_BETA = 0.1f;
 
     float PENETRATION_SLOP = 0.005f;
-    float RESTITUTION_SLOP = 0.5f;
+    float RESTITUTION_SLOP = 0.15f;
 
     bool BLOCK_SOLVE = true;
-    uint32_t SOLVE_ITERATION = 10;
+    uint32_t VELOCITY_SOLVE_ITERATION = 10;
+    uint32_t POSITION_SOLVE_ITERATION = 3;
 
     float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
     float REST_ANGULAR_TOLERANCE = (0.5f * glm::pi<float>() / 180.0f) * (0.5f * glm::pi<float>() / 180.0f);

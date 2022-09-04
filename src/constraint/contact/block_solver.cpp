@@ -14,8 +14,8 @@ void BlockSolver::Prepare(Contact* contact)
 
     c = contact;
 
-    nc1 = &c->normalContacts[0];
-    nc2 = &c->normalContacts[1];
+    nc1 = &c->normalSolvers[0];
+    nc2 = &c->normalSolvers[1];
 
     j1 = &nc1->j;
     j2 = &nc2->j;

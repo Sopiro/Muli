@@ -27,10 +27,10 @@ void Contact::Update()
 
     for (uint32_t i = 0; i < MAX_CONTACT_POINT; i++)
     {
-        oldNormalImpulse[i] = normalContacts[i].impulseSum;
-        normalContacts[i].impulseSum = 0.0f;
-        oldTangentImpulse[i] = tangentContacts[i].impulseSum;
-        tangentContacts[i].impulseSum = 0.0f;
+        oldNormalImpulse[i] = normalSolvers[i].impulseSum;
+        normalSolvers[i].impulseSum = 0.0f;
+        oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
+        tangentSolvers[i].impulseSum = 0.0f;
     }
 
     if (!touching) return;
@@ -59,8 +59,8 @@ void Contact::Update()
 
         if (o < oldManifold.numContacts)
         {
-            normalContacts[n].impulseSum = oldNormalImpulse[o];
-            tangentContacts[n].impulseSum = oldTangentImpulse[o];
+            normalSolvers[n].impulseSum = oldNormalImpulse[o];
+            tangentSolvers[n].impulseSum = oldTangentImpulse[o];
 
             persistent = true;
         }
@@ -71,8 +71,9 @@ void Contact::Prepare()
 {
     for (uint32_t i = 0; i < manifold.numContacts; i++)
     {
-        normalContacts[i].Prepare(this, manifold.contactPoints[i].point, manifold.contactNormal, ContactSolver::Type::Normal);
-        tangentContacts[i].Prepare(this, manifold.contactPoints[i].point, manifold.contactTangent, ContactSolver::Type::Tangent);
+        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::Normal);
+        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::Tangent);
+        positionSolvers[i].Prepare(this, i);
     }
 
     if (manifold.numContacts == 2 && settings.BLOCK_SOLVE)
@@ -86,20 +87,43 @@ void Contact::Solve()
     // Solve tangential constraint first
     for (uint32_t i = 0; i < manifold.numContacts; i++)
     {
-        tangentContacts[i].Solve(&normalContacts[i]);
+        tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
     if (manifold.numContacts == 1 || !settings.BLOCK_SOLVE)
     {
         for (uint32_t i = 0; i < manifold.numContacts; i++)
         {
-            normalContacts[i].Solve();
+            normalSolvers[i].Solve();
         }
     }
     else // Solve two contact constraint in one shot using block solver
     {
         blockSolver.Solve();
     }
+}
+
+void Contact::Solve2()
+{
+    // cPosA = manifold.bodyA->position;
+    // cRotA = manifold.bodyA->rotation;
+    // cPosB = manifold.bodyB->position;
+    // cRotB = manifold.bodyB->rotation;
+    cPosA = { 0.0f, 0.0f };
+    cRotA = 0.0f;
+    cPosB = { 0.0f, 0.0f };
+    cRotB = 0.0f;
+
+    // Solve position constraint
+    for (uint32_t i = 0; i < manifold.numContacts; i++)
+    {
+        positionSolvers[i].Solve();
+    }
+
+    manifold.bodyA->position += cPosA;
+    manifold.bodyA->rotation += cRotA;
+    manifold.bodyB->position += cPosB;
+    manifold.bodyB->rotation += cRotB;
 }
 
 } // namespace spe

@@ -18,6 +18,7 @@ set(SOURCE_FILES
     constraint/contact/contact.cpp
     constraint/contact/contact_solver.cpp
     constraint/contact/block_solver.cpp
+    constraint/contact/position_solver.cpp
 
     constraint/joint/joint.cpp
     constraint/joint/grab_joint.cpp

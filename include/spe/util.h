@@ -128,9 +128,14 @@ float hue2rgb(float p, float q, float t);
 glm::vec3 hsl2rgb(float h, float s, float l);
 
 template <typename T>
-inline void log(T msg)
+inline void print(T msg)
 {
     std::cout << msg << '\n';
+}
+
+inline void print(glm::vec2 msg)
+{
+    std::cout << *msg << '\n';
 }
 
 } // namespace spe

@@ -21,6 +21,7 @@ class RigidBody : public Entity
     friend class Contact;
     friend class ContactSolver;
     friend class BlockSolver;
+    friend class PositionSolver;
 
     friend class Joint;
     friend class GrabJoint;

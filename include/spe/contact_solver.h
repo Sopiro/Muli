@@ -33,7 +33,7 @@ public:
         Tangent
     };
 
-    void Prepare(Contact* contact, const glm::vec2& contactPoint, const glm::vec2& dir, Type contactType);
+    void Prepare(Contact* contact, uint32_t index, const glm::vec2& dir, Type contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
