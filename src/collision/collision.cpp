@@ -207,18 +207,21 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
     }
 }
 
-static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool remove = false)
+static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool removeClippedPoint = false)
 {
-    const float d1 = glm::dot(edge->p1 - p, dir);
-    const float d2 = glm::dot(edge->p2 - p, dir);
+    float d1 = glm::dot(edge->p1 - p, dir);
+    float d2 = glm::dot(edge->p2 - p, dir);
 
-    if (d1 >= 0 && d2 >= 0) return;
+    if (d1 >= 0 && d2 >= 0)
+    {
+        return;
+    }
 
-    const float per = glm::abs(d1) + glm::abs(d2);
+    float per = glm::abs(d1) + glm::abs(d2);
 
     if (d1 < 0)
     {
-        if (remove)
+        if (removeClippedPoint)
         {
             edge->p1 = edge->p2;
             edge->id1 = edge->id2;
@@ -230,7 +233,7 @@ static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool
     }
     else if (d2 < 0)
     {
-        if (remove)
+        if (removeClippedPoint)
         {
             edge->p2 = edge->p1;
             edge->id2 = edge->id1;
@@ -247,23 +250,29 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
     Edge edgeA = find_farthest_edge(a, n);
     Edge edgeB = find_farthest_edge(b, -n);
 
-    Edge* ref = &edgeA; // Reference edge
-    Edge* inc = &edgeB; // Incidence edge
-    bool flip = false;
+    Edge* ref = &edgeB; // Reference edge
+    Edge* inc = &edgeA; // Incidence edge
+    out->bodyA = a;
+    out->bodyB = b;
+    out->contactNormal = n;
+    out->featureFlipped = false;
 
     float aPerpendicularness = glm::abs(glm::dot(edgeA.dir, n));
     float bPerpendicularness = glm::abs(glm::dot(edgeB.dir, n));
 
-    if (aPerpendicularness >= bPerpendicularness)
+    if (aPerpendicularness <= bPerpendicularness)
     {
-        ref = &edgeB;
-        inc = &edgeA;
-        flip = true;
+        ref = &edgeA;
+        inc = &edgeB;
+        out->bodyA = b;
+        out->bodyB = a;
+        out->contactNormal = -n;
+        out->featureFlipped = true;
     }
 
     clip_edge(inc, ref->p1, ref->dir);
-    clip_edge(inc, ref->p2, -(ref->dir));
-    clip_edge(inc, ref->p1, flip ? n : -n, true);
+    clip_edge(inc, ref->p2, -ref->dir);
+    clip_edge(inc, ref->p1, out->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
     if (inc->Length() <= CONTACT_MERGE_THRESHOLD)
@@ -303,14 +312,6 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;
 
-        if (glm::dot(out->contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
-        {
-            out->bodyA = b;
-            out->bodyB = a;
-            out->contactNormal *= -1;
-            out->featureFlipped = true;
-        }
-
         return true;
     }
 }
@@ -335,9 +336,12 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
         case 1:
         {
             const glm::vec2& v = simplex.vertices[0];
-            glm::vec2 randomSupport = cso_support(a, b, glm::vec2{ 1, 0 });
+            glm::vec2 randomSupport = cso_support(a, b, glm::vec2{ 1.0f, 0.0f });
 
-            if (randomSupport == v) randomSupport = cso_support(a, b, glm::vec2{ -1, 0 });
+            if (randomSupport == v)
+            {
+                randomSupport = cso_support(a, b, glm::vec2{ -1.0f, 0.0f });
+            }
 
             simplex.AddVertex(randomSupport);
         }
@@ -347,31 +351,22 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
             glm::vec2 normalSupport = cso_support(a, b, e.Normal());
 
             if (simplex.ContainsVertex(normalSupport))
+            {
                 simplex.AddVertex(cso_support(a, b, -e.Normal()));
+            }
             else
+            {
                 simplex.AddVertex(normalSupport);
+            }
         }
         }
 
         EPAResult epaResult = epa(a, b, gjkResult.simplex);
 
-        out->bodyA = a;
-        out->bodyB = b;
-        out->contactNormal = epaResult.contactNormal;
+        find_contact_points(epaResult.contactNormal, a, b, out);
         out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
         out->penetrationDepth = epaResult.penetrationDepth;
-        out->featureFlipped = false;
 
-        // Apply axis weight to improve coherence
-        if (glm::dot(epaResult.contactNormal, glm::vec2{ 0.0f, -1.0f }) < 0.0f)
-        {
-            out->bodyA = b;
-            out->bodyB = a;
-            out->contactNormal *= -1;
-            out->featureFlipped = true;
-        }
-
-        find_contact_points(out->contactNormal, out->bodyA, out->bodyB, out);
         return true;
     }
 }

@@ -214,12 +214,12 @@ void Game::HandleInput()
                 {
                     ImGui::SetNextItemWidth(120);
                     static int velIteration = settings.VELOCITY_SOLVE_ITERATION;
-                    ImGui::SliderInt("Velocity", &velIteration, 1, 50);
+                    ImGui::SliderInt("Velocity", &velIteration, 0, 50);
                     settings.VELOCITY_SOLVE_ITERATION = static_cast<uint32_t>(velIteration);
 
                     ImGui::SetNextItemWidth(120);
                     static int posIteration = settings.POSITION_SOLVE_ITERATION;
-                    ImGui::SliderInt("Position", &posIteration, 1, 50);
+                    ImGui::SliderInt("Position", &posIteration, 0, 50);
                     settings.POSITION_SOLVE_ITERATION = static_cast<uint32_t>(posIteration);
                 }
 

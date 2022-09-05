@@ -25,7 +25,7 @@ void PositionSolver::Solve()
     float penetration = glm::dot(pa - pb, normal);
     assert(penetration > 0.0f);
 
-    glm::vec2 ra = pb - c->manifold.bodyA->position;
+    glm::vec2 ra = pa - c->manifold.bodyA->position;
     glm::vec2 rb = pa - c->manifold.bodyB->position;
 
     // Track max constraint error

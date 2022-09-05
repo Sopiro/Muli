@@ -1,6 +1,6 @@
 #include "spe/island.h"
 
-#define SOLVE_CONTACTS_FORWARD 0
+#define SOLVE_CONTACTS_BACKWARD 1
 
 namespace spe
 {
@@ -63,34 +63,28 @@ void Island::Solve()
     if (sleeping) return;
 
     // Prepare for solving
-    {
-        for (uint32_t i = 0; i < contacts.size(); i++)
-            contacts[i]->Prepare();
-        for (uint32_t i = 0; i < joints.size(); i++)
-            joints[i]->Prepare();
-    }
+    for (uint32_t i = 0; i < contacts.size(); i++)
+        contacts[i]->Prepare();
+    for (uint32_t i = 0; i < joints.size(); i++)
+        joints[i]->Prepare();
 
 // Iteratively solve the violated velocity constraint
 // Solving contacts backward converge fast
-#if SOLVE_CONTACTS_FORWARD
+#if SOLVE_CONTACTS_BACKWARD
+    for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
     {
-        for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
-        {
-            for (uint32_t j = 0; j < contacts.size(); j++)
-                contacts[j]->Solve();
-            for (uint32_t j = 0; j < joints.size(); j++)
-                joints[j]->Solve();
-        }
+        for (size_t j = contacts.size(); j > 0; j--)
+            contacts[j - 1]->Solve();
+        for (size_t j = joints.size(); j > 0; j--)
+            joints[j - 1]->Solve();
     }
 #else
+    for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
     {
-        for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
-        {
-            for (size_t j = contacts.size(); j > 0; j--)
-                contacts[j - 1]->Solve();
-            for (size_t j = joints.size(); j > 0; j--)
-                joints[j - 1]->Solve();
-        }
+        for (uint32_t j = 0; j < contacts.size(); j++)
+            contacts[j]->Solve();
+        for (uint32_t j = 0; j < joints.size(); j++)
+            joints[j]->Solve();
     }
 #endif
 

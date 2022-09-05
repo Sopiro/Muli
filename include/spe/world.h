@@ -33,7 +33,7 @@ struct Settings
     float POSITION_CORRECTION_BETA = 0.1f;
 
     float PENETRATION_SLOP = 0.005f;
-    float RESTITUTION_SLOP = 0.15f;
+    float RESTITUTION_SLOP = 0.1f;
 
     bool BLOCK_SOLVE = true;
     uint32_t VELOCITY_SOLVE_ITERATION = 10;

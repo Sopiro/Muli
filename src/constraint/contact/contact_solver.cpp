@@ -33,7 +33,7 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const glm::vec2& d
         // Normal velocity == veclocity constraint: jv
         float normalVelocity = glm::dot(c->manifold.contactNormal, relativeVelocity);
 
-#if 1
+#if 0
         if (-c->settings.RESTITUTION_SLOP > normalVelocity)
         {
             bias += c->restitution * normalVelocity;
