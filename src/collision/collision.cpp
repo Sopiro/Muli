@@ -7,8 +7,12 @@
 #include "spe/rigidbody.h"
 #include "spe/simplex.h"
 
+#define APPLY_AXIS_WEIGHT 1
+
 namespace spe
 {
+static constexpr glm::vec2 weightAxis = { 0.0f, 1.0f };
+
 struct SupportResult
 {
     glm::vec2 vertex;
@@ -306,11 +310,21 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
         out->bodyA = a;
         out->bodyB = b;
         out->contactNormal = glm::normalize(b->position - a->position);
-        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
         out->contactPoints[0] = { a->position + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;
+
+        // Apply axis weight to improve coherence
+        if (APPLY_AXIS_WEIGHT && glm::dot(out->contactNormal, weightAxis) < 0.0f)
+        {
+            RigidBody* tmp = out->bodyA;
+            out->bodyA = out->bodyB;
+            out->bodyB = tmp;
+            out->contactNormal *= -1;
+            out->featureFlipped = out->bodyA != a;
+        }
+        out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
 
         return true;
     }
@@ -364,6 +378,16 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
         EPAResult epaResult = epa(a, b, gjkResult.simplex);
 
         find_contact_points(epaResult.contactNormal, a, b, out);
+
+        // Apply axis weight to improve coherence
+        if (APPLY_AXIS_WEIGHT && glm::dot(out->contactNormal, weightAxis) < 0.0f)
+        {
+            RigidBody* tmp = out->bodyA;
+            out->bodyA = out->bodyB;
+            out->bodyB = tmp;
+            out->contactNormal *= -1;
+            out->featureFlipped = out->bodyA != a;
+        }
         out->contactTangent = glm::vec2(-out->contactNormal.y, out->contactNormal.x);
         out->penetrationDepth = epaResult.penetrationDepth;
 

@@ -33,6 +33,13 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const glm::vec2& d
         // Normal velocity == veclocity constraint: jv
         float normalVelocity = glm::dot(c->manifold.contactNormal, relativeVelocity);
 
+        // Position correction by velocity steering
+        // if (c->settings.POSITION_CORRECTION)
+        // {
+        //     bias = -c->settings.POSITION_CORRECTION_BETA * c->settings.INV_DT *
+        //            glm::max(c->manifold.penetrationDepth - c->settings.PENETRATION_SLOP, 0.0f);
+        // }
+
 #if 0
         if (-c->settings.RESTITUTION_SLOP > normalVelocity)
         {

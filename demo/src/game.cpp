@@ -206,7 +206,8 @@ void Game::HandleInput()
                 ImGui::Checkbox("Camera reset", &resetCamera);
                 ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
                 ImGui::Checkbox("Show BVH", &showBVH);
-                ImGui::Checkbox("Show Contact point", &showCP);
+                ImGui::Checkbox("Show contact point", &showContactPoint);
+                ImGui::Checkbox("Show contact normal", &showContactNormal);
                 ImGui::Separator();
                 if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
 
@@ -364,15 +365,33 @@ void Game::Render()
         });
     }
 
-    if (showCP)
+    if (showContactPoint || showContactNormal)
     {
         const Contact* c = world->GetContacts();
 
         while (c)
         {
-            for (uint32_t j = 0; j < c->GetContactManifold().numContacts; j++)
+            const ContactManifold& m = c->GetContactManifold();
+
+            for (uint32_t j = 0; j < m.numContacts; j++)
             {
-                points.push_back(c->GetContactManifold().contactPoints[j].point);
+                const glm::vec2& cp = m.contactPoints[j].point;
+
+                if (showContactPoint)
+                {
+                    points.push_back(cp);
+                }
+                if (showContactNormal)
+                {
+                    lines.push_back(cp);
+                    lines.push_back(cp + m.contactNormal * 0.15f);
+
+                    lines.push_back(cp + m.contactNormal * 0.15f);
+                    lines.push_back(cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
+
+                    lines.push_back(cp + m.contactNormal * 0.15f);
+                    lines.push_back(cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
+                }
             }
 
             c = c->GetNext();
