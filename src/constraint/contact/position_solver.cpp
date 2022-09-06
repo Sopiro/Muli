@@ -10,10 +10,14 @@ void PositionSolver::Prepare(Contact* contact, uint32_t index)
 {
     c = contact;
 
-    localPA = c->manifold.bodyA->GlobalToLocal() * contact->manifold.contactPoints[index].point;
+    localPA = c->manifold.bodyA->GlobalToLocal() * contact->manifold.contactPoints[index].position;
     localPB = c->manifold.bodyB->GlobalToLocal() *
-              (contact->manifold.contactPoints[index].point - c->manifold.contactNormal * contact->manifold.penetrationDepth);
+              (contact->manifold.contactPoints[index].position - c->manifold.contactNormal * contact->manifold.penetrationDepth);
     localNormal = glm::mul(c->manifold.bodyA->GlobalToLocal(), c->manifold.contactNormal, 0.0f);
+
+    print(c->manifold.referenceEdge.p1, false);
+    print(c->manifold.referenceEdge.p2);
+    print();
 }
 
 void PositionSolver::Solve()

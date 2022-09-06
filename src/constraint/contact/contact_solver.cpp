@@ -12,7 +12,7 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const glm::vec2& d
     // M = (J · M^-1 · J^t)^-1
 
     c = contact;
-    p = contact->manifold.contactPoints[index].point;
+    p = contact->manifold.contactPoints[index].position;
     type = contactType;
 
     ra = p - c->manifold.bodyA->position;

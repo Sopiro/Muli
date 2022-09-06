@@ -128,14 +128,25 @@ float hue2rgb(float p, float q, float t);
 glm::vec3 hsl2rgb(float h, float s, float l);
 
 template <typename T>
-inline void print(T msg)
+inline void print(T msg, bool lineFeed = true)
 {
-    std::cout << msg << '\n';
+    if (lineFeed)
+        std::cout << msg << '\n';
+    else
+        std::cout << msg;
 }
 
-inline void print(glm::vec2 msg)
+inline void print()
 {
-    std::cout << *msg << '\n';
+    std::cout << '\n';
+}
+
+inline void print(glm::vec2 msg, bool lineFeed = true)
+{
+    if (lineFeed)
+        printf("%s\n", (*msg).c_str());
+    else
+        printf("%s", (*msg).c_str());
 }
 
 } // namespace spe

@@ -3,6 +3,8 @@
 namespace spe
 {
 
+#define MAX_CONTACT_POINT 2
+
 // Default broad phase settings
 #define DEFAULT_AABB_MARGIN 0.05f
 #define DEFAULT_VELOCITY_MULTIPLIER 4.0f

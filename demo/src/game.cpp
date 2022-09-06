@@ -83,7 +83,7 @@ void Game::HandleInput()
 
             if (q.size() != 0)
             {
-                gj = world->CreateGrabJoint(q[0], mpos, mpos, 2.0f, 0.5f, q[0]->GetMass());
+                gj = world->CreateGrabJoint(q[0], mpos, mpos, 4.0f, 0.5f, q[0]->GetMass());
                 gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
             }
             else
@@ -375,7 +375,7 @@ void Game::Render()
 
             for (uint32_t j = 0; j < m.numContacts; j++)
             {
-                const glm::vec2& cp = m.contactPoints[j].point;
+                const glm::vec2& cp = m.contactPoints[j].position;
 
                 if (showContactPoint)
                 {

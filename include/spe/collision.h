@@ -1,29 +1,27 @@
 #pragma once
 
 #include "common.h"
+#include "contact_point.h"
+#include "edge.h"
+#include "settings.h"
 
 namespace spe
 {
 
 class RigidBody;
 
-struct ContactPoint
-{
-    glm::vec2 point;
-    int32_t id;
-};
-
 struct ContactManifold
 {
-    RigidBody* bodyA;
-    RigidBody* bodyB;
+    RigidBody* bodyA; // Incidence body
+    RigidBody* bodyB; // Reference body
 
-    ContactPoint contactPoints[2];
+    ContactPoint contactPoints[MAX_CONTACT_POINT];
     uint32_t numContacts;
     float penetrationDepth;
-    glm::vec2 contactNormal;
+    glm::vec2 contactNormal; // Contact normal is always pointing from a to b
     glm::vec2 contactTangent;
     bool featureFlipped;
+    Edge referenceEdge;
 };
 
 bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);

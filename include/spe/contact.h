@@ -6,8 +6,6 @@
 #include "contact_solver.h"
 #include "position_solver.h"
 
-#define MAX_CONTACT_POINT 2
-
 namespace spe
 {
 

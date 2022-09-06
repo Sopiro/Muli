@@ -26,7 +26,48 @@ set(SOURCE_FILES
     constraint/joint/distance_joint.cpp
 )
 
-add_library(spe ${SOURCE_FILES})
+set(HEADER_FILES
+    ../include/spe/aabb.h
+    ../include/spe/aabbtree.h
+    ../include/spe/broad_phase.h
+    ../include/spe/contact_manager.h
+
+    ../include/spe/collision.h
+    ../include/spe/simplex.h
+    ../include/spe/polytope.h
+    ../include/spe/contact_point.h
+    ../include/spe/edge.h
+
+    ../include/spe/block_solver.h
+
+    ../include/spe/rigidbody.h
+    ../include/spe/box.h
+    ../include/spe/circle.h
+    ../include/spe/polygon.h
+
+    ../include/spe/constraint.h
+
+    ../include/spe/joint.h
+    ../include/spe/grab_joint.h
+    ../include/spe/revolute_joint.h
+    ../include/spe/distance_joint.h
+
+    ../include/spe/contact.h
+    ../include/spe/position_solver.h
+    ../include/spe/contact_solver.h
+
+    ../include/spe/entity.h
+    ../include/spe/island.h
+    ../include/spe/world.h
+
+    ../include/spe/settings.h
+    ../include/spe/growable_array.h
+    ../include/spe/common.h
+    ../include/spe/util.h
+    ../include/spe/spe.h
+)
+
+add_library(spe ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(spe
     PUBLIC

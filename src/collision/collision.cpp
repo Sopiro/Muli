@@ -7,7 +7,7 @@
 #include "spe/rigidbody.h"
 #include "spe/simplex.h"
 
-#define APPLY_AXIS_WEIGHT 1
+#define APPLY_AXIS_WEIGHT 0
 
 namespace spe
 {
@@ -202,8 +202,11 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
         curr = localToGlobal * curr;
 
-        return w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
-                 : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
+        Edge edge = w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
+                      : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
+        edge.ComputeDir();
+
+        return edge;
     }
     else
     {
@@ -290,6 +293,8 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
         out->contactPoints[1] = { inc->p2, inc->id2 };
         out->numContacts = 2;
     }
+
+    out->referenceEdge = *ref;
 }
 
 static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
@@ -362,11 +367,11 @@ static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
         case 2:
         {
             Edge e{ simplex.vertices[0], simplex.vertices[1] };
-            glm::vec2 normalSupport = cso_support(a, b, e.Normal());
+            glm::vec2 normalSupport = cso_support(a, b, e.normal);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(cso_support(a, b, -e.Normal()));
+                simplex.AddVertex(cso_support(a, b, -e.normal));
             }
             else
             {
