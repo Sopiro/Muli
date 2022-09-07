@@ -202,11 +202,8 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
         curr = localToGlobal * curr;
 
-        Edge edge = w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
-                      : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
-        edge.ComputeDir();
-
-        return edge;
+        return w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
+                 : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
     }
     else
     {
@@ -216,8 +213,8 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
 static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool removeClippedPoint = false)
 {
-    float d1 = glm::dot(edge->p1 - p, dir);
-    float d2 = glm::dot(edge->p2 - p, dir);
+    float d1 = glm::dot(edge->p1.position - p, dir);
+    float d2 = glm::dot(edge->p2.position - p, dir);
 
     if (d1 >= 0 && d2 >= 0)
     {
@@ -231,11 +228,10 @@ static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool
         if (removeClippedPoint)
         {
             edge->p1 = edge->p2;
-            edge->id1 = edge->id2;
         }
         else
         {
-            edge->p1 = edge->p1 + (edge->p2 - edge->p1) * (-d1 / per);
+            edge->p1.position = edge->p1.position + (edge->p2.position - edge->p1.position) * (-d1 / per);
         }
     }
     else if (d2 < 0)
@@ -243,11 +239,10 @@ static void clip_edge(Edge* edge, const glm::vec2& p, const glm::vec2& dir, bool
         if (removeClippedPoint)
         {
             edge->p2 = edge->p1;
-            edge->id2 = edge->id1;
         }
         else
         {
-            edge->p2 = edge->p2 + (edge->p1 - edge->p2) * (-d2 / per);
+            edge->p2.position = edge->p2.position + (edge->p1.position - edge->p2.position) * (-d2 / per);
         }
     }
 }
@@ -257,8 +252,8 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
     Edge edgeA = find_farthest_edge(a, n);
     Edge edgeB = find_farthest_edge(b, -n);
 
-    Edge* ref = &edgeB; // Reference edge
-    Edge* inc = &edgeA; // Incidence edge
+    Edge* ref = &edgeA; // Reference edge
+    Edge* inc = &edgeB; // Incidence edge
     out->bodyA = a;
     out->bodyB = b;
     out->contactNormal = n;
@@ -267,30 +262,30 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
     float aPerpendicularness = glm::abs(glm::dot(edgeA.dir, n));
     float bPerpendicularness = glm::abs(glm::dot(edgeB.dir, n));
 
-    if (aPerpendicularness <= bPerpendicularness)
+    if (bPerpendicularness < aPerpendicularness)
     {
-        ref = &edgeA;
-        inc = &edgeB;
+        ref = &edgeB;
+        inc = &edgeA;
         out->bodyA = b;
         out->bodyB = a;
         out->contactNormal = -n;
         out->featureFlipped = true;
     }
 
-    clip_edge(inc, ref->p1, ref->dir);
-    clip_edge(inc, ref->p2, -ref->dir);
-    clip_edge(inc, ref->p1, out->contactNormal, true);
+    clip_edge(inc, ref->p1.position, ref->dir);
+    clip_edge(inc, ref->p2.position, -ref->dir);
+    clip_edge(inc, ref->p1.position, -out->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
     if (inc->Length() <= CONTACT_MERGE_THRESHOLD)
     {
-        out->contactPoints[0] = { inc->p1, inc->id1 };
+        out->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
         out->numContacts = 1;
     }
     else
     {
-        out->contactPoints[0] = { inc->p1, inc->id1 };
-        out->contactPoints[1] = { inc->p2, inc->id2 };
+        out->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
+        out->contactPoints[1] = ContactPoint{ inc->p2.position, inc->p2.id };
         out->numContacts = 2;
     }
 
@@ -315,7 +310,9 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
         out->bodyA = a;
         out->bodyB = b;
         out->contactNormal = glm::normalize(b->position - a->position);
-        out->contactPoints[0] = { a->position + (out->contactNormal * a->GetRadius()), -1 };
+        out->contactPoints[0] = ContactPoint{ b->position + (-out->contactNormal * b->GetRadius()), -1 };
+        out->referenceEdge =
+            Edge{ a->position + (out->contactNormal * a->GetRadius()), a->position + (out->contactNormal * a->GetRadius()) };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;

@@ -13,14 +13,14 @@ class PositionSolver
     friend class BlockSolver;
 
 public:
-    void Prepare(Contact* contact, uint32_t index);
+    void Prepare(Contact* _contact, uint32_t _index);
     void Solve();
 
 private:
-    Contact* c;
+    Contact* contact;
 
-    glm::vec2 localPA;
-    glm::vec2 localPB;
+    glm::vec2 localPlainPoint;
+    glm::vec2 localClipPoint;
     glm::vec2 localNormal;
 };
 

@@ -30,7 +30,7 @@ struct Settings
     float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - glm::epsilon<float>();
 
     bool POSITION_CORRECTION = true;
-    float POSITION_CORRECTION_BETA = 0.1f;
+    float POSITION_CORRECTION_BETA = 0.2f;
 
     float PENETRATION_SLOP = 0.005f;
     float RESTITUTION_SLOP = 0.1f;

@@ -108,14 +108,10 @@ void Contact::Solve()
 
 void Contact::Solve2()
 {
-    cPosA = manifold.bodyA->position;
-    cRotA = manifold.bodyA->rotation;
-    cPosB = manifold.bodyB->position;
-    cRotB = manifold.bodyB->rotation;
-    // cPosA = { 0.0f, 0.0f };
-    // cRotA = 0.0f;
-    // cPosB = { 0.0f, 0.0f };
-    // cRotB = 0.0f;
+    cLinearImpulseA = { 0.0f, 0.0f };
+    cAngularImpulseA = 0.0f;
+    cLinearImpulseB = { 0.0f, 0.0f };
+    cAngularImpulseB = 0.0f;
 
     // Solve position constraint
     for (uint32_t i = 0; i < manifold.numContacts; i++)
@@ -123,10 +119,10 @@ void Contact::Solve2()
         positionSolvers[i].Solve();
     }
 
-    manifold.bodyA->position = cPosA;
-    manifold.bodyA->rotation = cRotA;
-    manifold.bodyB->position = cPosB;
-    manifold.bodyB->rotation = cRotB;
+    manifold.bodyA->position += manifold.bodyA->invMass * cLinearImpulseA;
+    manifold.bodyA->rotation += manifold.bodyA->invInertia * cAngularImpulseA;
+    manifold.bodyB->position += manifold.bodyB->invMass * cLinearImpulseB;
+    manifold.bodyB->rotation += manifold.bodyB->invInertia * cAngularImpulseB;
 }
 
 } // namespace spe

@@ -256,10 +256,14 @@ static void demo10(Game& game, World& world, Settings& settings)
         b2->position = { xStart - (gap + sizeW) * (i + 1), yStart };
 
         if (t)
+        {
             j = world.CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, 15.0f, 0.5f);
+        }
         else
+        {
             j = world.CreateDistanceJoint(b1, b2, b1->position - glm::vec2{ sizeW / 2, 0 },
                                           b2->position + glm::vec2{ sizeW / 2, 0 });
+        }
 
         b1 = b2;
     }

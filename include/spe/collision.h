@@ -5,6 +5,15 @@
 #include "edge.h"
 #include "settings.h"
 
+/*
+ *           \        /         ↑
+ *            \      /          | <- Contact normal
+ *   ┌---------\----/-------------------------------  <- Reference edge
+ *   |          \  /
+ *   |           \/  <- Incidence point(Contact point)
+ *   |
+ */
+
 namespace spe
 {
 
@@ -12,16 +21,16 @@ class RigidBody;
 
 struct ContactManifold
 {
-    RigidBody* bodyA; // Incidence body
-    RigidBody* bodyB; // Reference body
+    RigidBody* bodyA; // Reference body
+    RigidBody* bodyB; // Incidence body
 
     ContactPoint contactPoints[MAX_CONTACT_POINT];
     uint32_t numContacts;
     float penetrationDepth;
     glm::vec2 contactNormal; // Contact normal is always pointing from a to b
     glm::vec2 contactTangent;
-    bool featureFlipped;
     Edge referenceEdge;
+    bool featureFlipped;
 };
 
 bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);

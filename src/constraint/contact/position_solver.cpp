@@ -6,53 +6,49 @@
 namespace spe
 {
 
-void PositionSolver::Prepare(Contact* contact, uint32_t index)
+void PositionSolver::Prepare(Contact* _contact, uint32_t index)
 {
-    c = contact;
+    contact = _contact;
 
-    localPA = c->manifold.bodyA->GlobalToLocal() * contact->manifold.contactPoints[index].position;
-    localPB = c->manifold.bodyB->GlobalToLocal() *
-              (contact->manifold.contactPoints[index].position - c->manifold.contactNormal * contact->manifold.penetrationDepth);
-    localNormal = glm::mul(c->manifold.bodyA->GlobalToLocal(), c->manifold.contactNormal, 0.0f);
-
-    print(c->manifold.referenceEdge.p1, false);
-    print(c->manifold.referenceEdge.p2);
-    print();
+    localPlainPoint = contact->manifold.bodyA->GlobalToLocal() * contact->manifold.referenceEdge.p1.position;
+    localClipPoint = contact->manifold.bodyB->GlobalToLocal() * contact->manifold.contactPoints[index].position;
+    localNormal = glm::mul(contact->manifold.bodyA->GlobalToLocal(), contact->manifold.contactNormal, 0.0f);
 }
 
 void PositionSolver::Solve()
 {
-    glm::vec2 normal = glm::mul(c->manifold.bodyA->LocalToGlobal(), localNormal, 0.0f);
-    glm::vec2 pa = c->manifold.bodyA->LocalToGlobal() * localPA; // penetration point
-    glm::vec2 pb = c->manifold.bodyB->LocalToGlobal() * localPB;
+    glm::vec2 normal = glm::mul(contact->manifold.bodyA->LocalToGlobal(), localNormal, 0.0f);
+    glm::vec2 planePoint = contact->manifold.bodyA->LocalToGlobal() * localPlainPoint;
+    glm::vec2 clipPoint = contact->manifold.bodyB->LocalToGlobal() * localClipPoint; // penetration point
 
-    float penetration = glm::dot(pa - pb, normal);
-    assert(penetration > 0.0f);
+    float separation = glm::dot(clipPoint - planePoint, normal);
+    assert(separation < 0.0f);
 
-    glm::vec2 ra = pa - c->manifold.bodyA->position;
-    glm::vec2 rb = pa - c->manifold.bodyB->position;
-
-    // Track max constraint error
-    float correction = glm::max(c->settings.POSITION_CORRECTION_BETA * (penetration - c->settings.PENETRATION_SLOP), 0.0f);
+    glm::vec2 ra = clipPoint - contact->manifold.bodyA->position;
+    glm::vec2 rb = clipPoint - contact->manifold.bodyB->position;
 
     float ran = glm::cross(ra, normal);
     float rbn = glm::cross(rb, normal);
 
     // clang-format off
-    float k = c->manifold.bodyA->invMass
-            + ran * c->manifold.bodyA->invInertia * ran
-            + c->manifold.bodyB->invMass
-            + rbn * c->manifold.bodyB->invInertia * rbn;
+    // effective mass = 1 / k;
+    float k = contact->manifold.bodyA->invMass
+            + ran * contact->manifold.bodyA->invInertia * ran
+            + contact->manifold.bodyB->invMass
+            + rbn * contact->manifold.bodyB->invInertia * rbn;
     // clang-format on
 
-    // Compute normal impulse
-    float impulse = k > 0.0f ? correction / k : 0.0f;
-    glm::vec2 pv = normal * impulse;
+    // Constraint (bias)
+    float c = glm::min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
 
-    c->cPosA -= c->manifold.bodyA->invMass * pv;
-    c->cRotA -= c->manifold.bodyA->invInertia * glm::cross(ra, pv);
-    c->cPosB += c->manifold.bodyB->invMass * pv;
-    c->cRotB += c->manifold.bodyB->invInertia * glm::cross(rb, pv);
+    // Compute normal impulse
+    float lambda = k > 0.0f ? -c / k : 0.0f;
+    glm::vec2 impulse = normal * lambda;
+
+    contact->cLinearImpulseA -= impulse;
+    contact->cAngularImpulseA -= glm::cross(ra, impulse);
+    contact->cLinearImpulseB += impulse;
+    contact->cAngularImpulseB += glm::cross(rb, impulse);
 }
 
 } // namespace spe

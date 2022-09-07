@@ -75,10 +75,11 @@ private:
     PositionSolver positionSolvers[MAX_CONTACT_POINT];
     BlockSolver blockSolver;
 
-    glm::vec2 cPosA;
-    float cRotA;
-    glm::vec2 cPosB;
-    float cRotB;
+    // Impulse for position correction
+    glm::vec2 cLinearImpulseA;
+    float cAngularImpulseA;
+    glm::vec2 cLinearImpulseB;
+    float cAngularImpulseB;
 };
 
 inline Contact* Contact::GetPrev() const
