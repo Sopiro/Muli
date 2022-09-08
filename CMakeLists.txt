@@ -24,11 +24,10 @@ set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
 include(GNUInstallDirs)
 include(ExternalProject)
 
-include(cmake/dep-spe.cmake)
 add_subdirectory(src)
 
 if(BUILD_DEMO_PROJECT)
-    include(cmake/dep-demo.cmake)
+    include(cmake/dependencies.cmake)
     add_subdirectory(demo)
 
     # default startup project for Visual Studio
@@ -37,12 +36,6 @@ if(BUILD_DEMO_PROJECT)
         set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/demo)
     endif()
 endif()
-
-# install glm
-install(
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/include/glm
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
 
 # install spe
 install(

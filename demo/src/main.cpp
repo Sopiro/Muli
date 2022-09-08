@@ -11,7 +11,6 @@ int main(int argc, char** argv)
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
 
-    std::srand(static_cast<uint32_t>(std::time(0)));
     spe::Application* app = spe::Application::Create(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 
     app->Run();

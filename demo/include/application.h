@@ -23,7 +23,7 @@ public:
 
     void Run();
 
-    glm::vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 1.0f };
+    Vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 1.0f };
 
 private:
     static Application* app;

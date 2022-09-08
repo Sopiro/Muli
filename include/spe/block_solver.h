@@ -24,10 +24,10 @@ private:
     Jacobian* j1;
     Jacobian* j2;
 
-    glm::mat2 k;
-    glm::mat2 m;
+    Mat2 k;
+    Mat2 m;
 
-    void ApplyImpulse(const glm::vec2& lambda);
+    void ApplyImpulse(const Vec2& lambda);
 };
 
 } // namespace spe

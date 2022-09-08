@@ -48,7 +48,7 @@ void Contact::Update()
             {
                 if (settings.APPLY_WARM_STARTING_THRESHOLD)
                 {
-                    float dist = glm::distance2(manifold.contactPoints[n].position, oldManifold.contactPoints[o].position);
+                    float dist = dist2(manifold.contactPoints[n].position, oldManifold.contactPoints[o].position);
                     // If contact points are close enough, warm start.
                     // Otherwise, it means it's penetrating too deeply, skip the warm starting to prevent the overshoot
                     if (dist < settings.WARM_STARTING_THRESHOLD) break;

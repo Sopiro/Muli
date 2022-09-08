@@ -12,7 +12,8 @@ static void demo1(Game& game, World& world, Settings& settings)
 
     RigidBody* box = world.CreateBox(0.4f);
     box->SetPosition(0.0f, 5.0f);
-    box->SetAngularVelocity(glm::linearRand(-12.0f, 12.0f));
+    box->SetRestitution(0.3f);
+    box->SetAngularVelocity(spe::linear_rand(-12.0f, 12.0f));
 }
 
 static void demo2(Game& game, World& world, Settings& settings)
@@ -30,7 +31,7 @@ static void demo2(Game& game, World& world, Settings& settings)
     for (uint32_t i = 0; i < 20; i++)
     {
         RigidBody* b = world.CreateBox(size);
-        b->SetPosition(glm::linearRand(-error, error), start + i * (size + gap));
+        b->SetPosition(spe::linear_rand(-error, error), start + i * (size + gap));
     }
 }
 
@@ -64,7 +65,7 @@ static void demo4(Game& game, World& world, Settings& settings)
     Box* b = world.CreateBox(0.3f);
     b->SetPosition(-3.0f, 5.0f);
 
-    world.CreateRevoluteJoint(ground, b, glm::vec2(0.0f, 5.0f), -1.0f);
+    world.CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
 }
 
 static void demo5(Game& game, World& world, Settings& settings)
@@ -92,7 +93,7 @@ static void demo5(Game& game, World& world, Settings& settings)
 
     // Reduce the amplitude by half every second
     float halfLife = 1.0f;
-    float frequency = -glm::log(0.5f) / (halfLife * glm::pi<float>() * 2.0f);
+    float frequency = -spe::log(0.5f) / (halfLife * SPE_PI * 2.0f);
 
     b = world.CreateBox(0.3f);
     b->SetPosition(-3.0f, 3.6f);
@@ -121,8 +122,8 @@ static void demo6(Game& game, World& world, Settings& settings)
         {
             Polygon* b = world.CreateRandomConvexPolygon(size, 6);
             b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
-            b->SetLinearVelocity(b->GetPosition() * glm::linearRand(0.5f, 0.7f));
-            b->SetFriction(glm::linearRand(0.2f, 1.0f));
+            b->SetLinearVelocity(b->GetPosition() * spe::linear_rand(0.5f, 0.7f));
+            b->SetFriction(spe::linear_rand(0.2f, 1.0f));
         }
     }
 
@@ -209,7 +210,7 @@ static void demo9(Game& game, World& world, Settings& settings)
     float xStart = -(count - 1) / 2 * gap;
     float yStart = 6.0f;
 
-    bool r = glm::linearRand(0.0f, 1.0f) > 0.5f;
+    bool r = spe::linear_rand(0.0f, 1.0f) > 0.5f;
 
     RigidBody* b;
     for (int i = 0; i < count; i++)
@@ -241,7 +242,7 @@ static void demo10(Game& game, World& world, Settings& settings)
 
     Joint* j = world.CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
 
-    bool t = glm::linearRand<float>(0.0f, 1.0f) > 0.5;
+    bool t = spe::linear_rand(0.0f, 1.0f) > 0.5;
 
     for (int i = 1; i < 12; i++)
     {
@@ -255,8 +256,8 @@ static void demo10(Game& game, World& world, Settings& settings)
         }
         else
         {
-            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() - glm::vec2{ sizeW / 2, 0 },
-                                          b2->GetPosition() + glm::vec2{ sizeW / 2, 0 });
+            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 },
+                                          b2->GetPosition() + Vec2{ sizeW / 2, 0 });
         }
 
         b1 = b2;
@@ -287,19 +288,19 @@ static void demo11(Game& game, World& world, Settings& settings)
 
     Joint* j;
 
-    bool revoluteBridge = glm::linearRand<float>(0.0f, 1.0f) > 0.5;
+    bool revoluteBridge = spe::linear_rand(0.0f, 1.0f) > 0.5;
     float frequency = 30.0f;
 
     if (revoluteBridge)
     {
-        j = world.CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + glm::vec2(pillarWidth, yStart) / 2.0f, frequency, 1.0f);
+        j = world.CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f);
     }
     else
     {
-        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f),
-                                      b1->GetPosition() + glm::vec2(-sizeX / 2, 0.03), -1.0f, frequency, 1.0f);
-        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + glm::vec2(pillarWidth / 2.0f, yStart / 2.0f),
-                                      b1->GetPosition() + glm::vec2(-sizeX / 2, -0.03), -1.0f, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
+                                      b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.03f }, -1.0f, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
+                                      b1->GetPosition() + Vec2{ -sizeX / 2.0f, -0.03f }, -1.0f, frequency, 1.0f);
     }
 
     for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); i++)
@@ -314,10 +315,10 @@ static void demo11(Game& game, World& world, Settings& settings)
         }
         else
         {
-            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() + glm::vec2(sizeX / 2.0f, 0.03f),
-                                          b2->GetPosition() + glm::vec2(-sizeX / 2.0f, 0.03f), -1.0f, frequency, 1.0f);
-            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() + glm::vec2(sizeX / 2.0f, -0.03f),
-                                          b2->GetPosition() + glm::vec2(-sizeX / 2.0f, -0.03f), -1.0f, frequency, 1.0f);
+            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.03f },
+                                          b2->GetPosition() + Vec2{ -sizeX / 2.0f, 0.03f }, -1.0f, frequency, 1.0f);
+            j = world.CreateDistanceJoint(b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, -0.03f },
+                                          b2->GetPosition() + Vec2{ -sizeX / 2.0f, -0.03f }, -1.0f, frequency, 1.0f);
         }
 
         b1 = b2;
@@ -328,20 +329,19 @@ static void demo11(Game& game, World& world, Settings& settings)
 
     if (revoluteBridge)
     {
-        j = world.CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + glm::vec2(-pillarWidth, yStart) / 2.0f, frequency,
-                                      1.0f);
+        j = world.CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f);
     }
     else
     {
-        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f),
-                                      b1->GetPosition() + glm::vec2(sizeX / 2, 0.03), -1, frequency, 1.0f);
-        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + glm::vec2(-pillarWidth / 2.0f, yStart / 2.0f),
-                                      b1->GetPosition() + glm::vec2(sizeX / 2, -0.03), -1, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
+                                      b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.03f }, -1, frequency, 1.0f);
+        j = world.CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
+                                      b1->GetPosition() + Vec2{ sizeX / 2.0f, -0.03f }, -1, frequency, 1.0f);
     }
 
     Camera& camera = game.GetCamera();
-    camera.position = glm::vec2{ 0, 3.6f + 1.8f };
-    camera.scale = glm::vec2{ 1.5f, 1.5f };
+    camera.position = Vec2{ 0, 3.6f + 1.8f };
+    camera.scale = Vec2{ 1.5f, 1.5f };
 }
 
 static void demo12(Game& game, World& world, Settings& settings)
@@ -388,9 +388,9 @@ static void demo13(Game& game, World& world, Settings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateCircle(r);
-        b->SetPosition(glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
-        b->SetRotation(glm::linearRand<float>(0.0f, glm::pi<float>() * 2.0f));
+        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetRotation(spe::linear_rand(0.0f, SPE_PI * 2.0f));
     }
 
     Camera& c = game.GetCamera();
@@ -419,8 +419,8 @@ static void demo14(Game& game, World& world, Settings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateBox(r);
-        b->SetPosition(glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
     }
 
     Camera& c = game.GetCamera();
@@ -449,8 +449,8 @@ static void demo15(Game& game, World& world, Settings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateRandomConvexPolygon(r, 7);
-        b->SetPosition(glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       glm::linearRand<float>(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
     }
 
     Camera& c = game.GetCamera();

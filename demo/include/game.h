@@ -38,14 +38,14 @@ private:
     Camera camera{};
     RigidBodyRenderer rRenderer{};
 
-    std::vector<glm::vec2> points{};
-    std::vector<glm::vec2> lines{};
+    std::vector<Vec2> points{};
+    std::vector<Vec2> lines{};
     DynamicRenderer dRenderer{};
 
     float time = 0.0f;
     float simulationDeltaTime = 0.0f;
     GrabJoint* gj = nullptr;
-    glm::vec2 mpos{ 0.0f };
+    Vec2 mpos{ 0.0f };
 
     bool pause = false;
     bool step = false;

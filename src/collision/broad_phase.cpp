@@ -21,7 +21,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
             continue;
         }
 
-        glm::vec2 d = body->linearVelocity * dt * velocityMultiplier;
+        Vec2 d = body->linearVelocity * dt * velocityMultiplier;
         if (d.x > 0.0f)
             aabb.max.x += d.x;
         else

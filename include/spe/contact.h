@@ -11,12 +11,12 @@ namespace spe
 
 inline float mix_friction(float f1, float f2)
 {
-    return glm::sqrt(f1 * f2);
+    return spe::sqrt(f1 * f2);
 }
 
 inline float mix_restitution(float r1, float r2)
 {
-    return glm::max(r1, r2);
+    return spe::max(r1, r2);
 }
 
 class RigidBody;
@@ -76,9 +76,9 @@ private:
     BlockSolver blockSolver;
 
     // Impulse for position correction
-    glm::vec2 cLinearImpulseA;
+    Vec2 cLinearImpulseA;
     float cAngularImpulseA;
-    glm::vec2 cLinearImpulseB;
+    Vec2 cLinearImpulseB;
     float cAngularImpulseB;
 };
 

@@ -27,7 +27,7 @@ public:
 
     void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
 
-    glm::ivec2 GetWindowSize() const;
+    Vec2 GetWindowSize() const;
     int32_t GetRefreshRate() const;
 
 private:
@@ -154,9 +154,9 @@ inline void Window::EndFrame() const
     glfwSwapBuffers(glfwWindow);
 }
 
-inline glm::ivec2 Window::GetWindowSize() const
+inline Vec2 Window::GetWindowSize() const
 {
-    return glm::ivec2{ width, height };
+    return Vec2{ (float)width, (float)height };
 }
 
 inline int32_t Window::GetRefreshRate() const

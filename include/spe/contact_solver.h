@@ -15,9 +15,9 @@ enum ContactType : uint8_t
 
 struct Jacobian
 {
-    glm::vec2 va;
+    Vec2 va;
     float wa;
-    glm::vec2 vb;
+    Vec2 vb;
     float wb;
 };
 
@@ -33,16 +33,16 @@ public:
         Tangent
     };
 
-    void Prepare(Contact* contact, uint32_t index, const glm::vec2& dir, Type contactType);
+    void Prepare(Contact* contact, uint32_t index, const Vec2& dir, Type contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
     Contact* c;
     ContactSolver::Type type;
 
-    glm::vec2 p;
-    glm::vec2 ra;
-    glm::vec2 rb;
+    Vec2 p;
+    Vec2 ra;
+    Vec2 rb;
     Jacobian j;
 
     float bias = 0.0f;

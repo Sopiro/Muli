@@ -54,7 +54,7 @@ public:
     void Traverse(std::function<void(const Node*)> callback) const;
     void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
-    std::vector<Node*> Query(const glm::vec2& point) const;
+    std::vector<Node*> Query(const Vec2& point) const;
     std::vector<Node*> Query(const AABB& aabb) const;
     void Query(const AABB& aabb, std::function<bool(const Node*)> callback) const;
 

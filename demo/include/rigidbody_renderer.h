@@ -18,15 +18,15 @@ public:
 
     virtual void Render() override;
 
-    void SetProjectionMatrix(glm::mat4 _projMatrix);
-    void SetViewMatrix(glm::mat4 _viewMatrix);
+    void SetProjectionMatrix(Mat4 _projMatrix);
+    void SetViewMatrix(Mat4 _viewMatrix);
 
     void Register(RigidBody* body);
     void Register(const std::vector<RigidBody*>& bodies);
     void Unregister(RigidBody* body);
     void Unregister(const std::vector<RigidBody*>& bodies);
 
-    glm::vec2 Pick(const glm::vec2& screenPos);
+    Vec2 Pick(const Vec2& screenPos);
 
     void SetDrawOutlined(bool drawOutlineOnly);
     void Reset();
@@ -36,8 +36,8 @@ private:
     std::unique_ptr<RigidBodyShader> shader{};
     std::vector<std::pair<RigidBody*, std::unique_ptr<Mesh>>> bodiesAndMeshes{};
 
-    glm::mat4 viewMatrix;
-    glm::mat4 projMatrix;
+    Mat4 viewMatrix;
+    Mat4 projMatrix;
 
     bool drawOutlineOnly;
 };
@@ -82,13 +82,13 @@ inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
     }
 }
 
-inline void RigidBodyRenderer::SetProjectionMatrix(glm::mat4 _projMatrix)
+inline void RigidBodyRenderer::SetProjectionMatrix(Mat4 _projMatrix)
 {
     shader->Use();
     shader->SetProjectionMatrix(std::move(_projMatrix));
 }
 
-inline void RigidBodyRenderer::SetViewMatrix(glm::mat4 _viewMatrix)
+inline void RigidBodyRenderer::SetViewMatrix(Mat4 _viewMatrix)
 {
     shader->Use();
     shader->SetViewMatrix(std::move(_viewMatrix));

@@ -26,7 +26,7 @@ struct UV
 };
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-float compute_convex_polygon_inertia(const std::vector<glm::vec2>& vertices, float mass);
+float compute_convex_polygon_inertia(const std::vector<Vec2>& vertices, float mass);
 
 inline float compute_box_inertia(float width, float height, float mass)
 {
@@ -39,21 +39,21 @@ inline float compute_circle_inertia(float radius, float mass)
 }
 
 // Project point P to line segment AB, calculate barycentric weights
-inline UV compute_uv(glm::vec2 a, glm::vec2 b, glm::vec2 p)
+inline UV compute_uv(Vec2 a, Vec2 b, Vec2 p)
 {
-    glm::vec2 dir = b - a;
-    float len = glm::length(dir);
-    dir = glm::normalize(dir);
+    Vec2 dir = b - a;
+    float len = spe::length(dir);
+    dir.Normalize();
 
-    float region = glm::dot(dir, p - a) / len;
+    float region = dot(dir, p - a) / len;
 
-    return { 1 - region, region };
+    return UV{ 1 - region, region };
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
-inline glm::vec2 lerp_vector(glm::vec2 a, glm::vec2 b, UV uv)
+inline Vec2 lerp_vector(Vec2 a, Vec2 b, UV uv)
 {
-    return { a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
+    return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }
 
 // Cantor pairing function, ((N, N) -> N) mapping function
@@ -78,11 +78,11 @@ inline bool operator==(PairID lhs, PairID rhs)
 // this guarantees initial pairing order
 inline std::pair<uint32_t, uint32_t> separate_pair(uint32_t p)
 {
-    double w = glm::floor((glm::sqrt(8 * p + 1) - 1) / 2.0);
-    double t = (w * w + w) / 2.0;
+    float w = spe::floor((spe::sqrt(8.0f * p + 1.0f) - 1) / 2.0f);
+    float t = (w * w + w) / 2.0f;
 
-    double y = p - t;
-    double x = w - y;
+    float y = p - t;
+    float x = w - y;
 
     return { static_cast<uint32_t>(x), static_cast<uint32_t>(y) };
 }
@@ -99,11 +99,6 @@ inline float map(float v, float left, float right, float min, float max)
     return lerp(min, max, per);
 }
 
-inline glm::vec2 mid(glm::vec2 a, glm::vec2 b)
-{
-    return (a + b) / 2.0f;
-}
-
 // https://gist.github.com/ciembor/1494530
 /*
  * Converts an RGB color value to HSL. Conversion formula
@@ -111,7 +106,7 @@ inline glm::vec2 mid(glm::vec2 a, glm::vec2 b)
  * Assumes r, g, and b are contained in the set [0, 255] and
  * returns HSL in the set [0, 1].
  */
-glm::vec3 rgb2hsl(float r, float g, float b);
+Vec3 rgb2hsl(float r, float g, float b);
 
 /*
  * Converts an HUE to r, g or b.
@@ -125,7 +120,7 @@ float hue2rgb(float p, float q, float t);
  * Assumes h, s, and l are contained in the set [0, 1] and
  * returns RGB in the set [0, 1].
  */
-glm::vec3 hsl2rgb(float h, float s, float l);
+Vec3 hsl2rgb(float h, float s, float l);
 
 template <typename T>
 inline void print(T msg, bool lineFeed = true)
@@ -141,12 +136,12 @@ inline void print()
     std::cout << '\n';
 }
 
-inline void print(glm::vec2 msg, bool lineFeed = true)
+inline void print(Vec2 v, bool lineFeed = true)
 {
     if (lineFeed)
-        printf("%s\n", (*msg).c_str());
+        printf("%.4f, %.4f\n", v.x, v.y);
     else
-        printf("%s", (*msg).c_str());
+        printf("%.4f, %.4f\n", v.x, v.y);
 }
 
 } // namespace spe

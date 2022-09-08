@@ -7,15 +7,16 @@ namespace spe
 
 struct Camera
 {
-    glm::vec2 position;
+    Vec2 position;
     float rotation;
-    glm::vec2 scale;
+    Vec2 scale;
 
-    glm::mat4 GetCameraMatrix() const
+    Mat4 GetCameraMatrix() const
     {
-        return glm::translate(
-            glm::rotate(glm::scale(glm::mat4{ 1.0f }, { 1.0f / scale.x, 1.0f / scale.y, 1.0f }), -rotation, { 0, 0, 1 }),
-            glm::vec3{ -position, -1 });
+        return Mat4{ 1.0f }
+            .Scale(1.0f / scale.x, 1.0f / scale.y, 1.0f)
+            .Rotate(0.0f, 0.0f, -rotation)
+            .Translate(-position.x, -position.y, 1.0f);
     }
 };
 

@@ -65,7 +65,6 @@ set(DEP_LIST_DEMO
     dep_spdlog
     dep_glfw
     dep_glad
-    dep_glm
     dep_imgui
 )
 

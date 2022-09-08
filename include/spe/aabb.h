@@ -7,8 +7,8 @@ namespace spe
 
 struct AABB
 {
-    glm::vec2 min;
-    glm::vec2 max;
+    Vec2 min;
+    Vec2 max;
 };
 
 inline float area(const AABB& aabb)
@@ -18,16 +18,16 @@ inline float area(const AABB& aabb)
 
 inline float perimeter(const AABB& aabb)
 {
-    glm::vec2 w = aabb.max - aabb.min;
+    Vec2 w = aabb.max - aabb.min;
     return 2.0f * (w.x + w.y);
 }
 
 inline void fix(AABB& aabb)
 {
-    auto a = glm::max(aabb.min, aabb.max);
+    auto a = spe::max(aabb.min, aabb.max);
 
-    glm::vec2 newMin = glm::min(aabb.min, aabb.max);
-    glm::vec2 newMax = glm::max(aabb.min, aabb.max);
+    Vec2 newMin = spe::min(aabb.min, aabb.max);
+    Vec2 newMax = spe::max(aabb.min, aabb.max);
 
     aabb.min = newMin;
     aabb.max = newMax;
@@ -35,13 +35,13 @@ inline void fix(AABB& aabb)
 
 inline AABB union_of(const AABB& b1, const AABB& b2)
 {
-    glm::vec2 min = glm::min(b1.min, b2.min);
-    glm::vec2 max = glm::max(b1.max, b2.max);
+    Vec2 min = spe::min(b1.min, b2.min);
+    Vec2 max = spe::max(b1.max, b2.max);
 
     return AABB{ min, max };
 }
 
-inline bool test_point_inside_AABB(const AABB& aabb, const glm::vec2& point)
+inline bool test_point_inside_AABB(const AABB& aabb, const Vec2& point)
 {
     if (aabb.min.x > point.x || aabb.max.x < point.x) return false;
     if (aabb.min.y > point.y || aabb.max.y < point.y) return false;

@@ -7,7 +7,7 @@ Circle::Circle(float _radius, Type _type, float _density)
     : RigidBody(std::move(_type), Shape::ShapeCircle)
     , radius{ std::move(_radius) }
 {
-    area = glm::pi<float>() * radius * radius;
+    area = SPE_PI * radius * radius;
 
     if (type == RigidBody::Type::Dynamic)
     {

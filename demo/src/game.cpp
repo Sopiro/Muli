@@ -9,8 +9,6 @@ namespace spe
 Game::Game(Application& _app)
     : app{ _app }
 {
-    glm::vec2 windowSize = Window::Get().GetWindowSize();
-
     UpdateProjectionMatrix();
     Window::Get().SetFramebufferSizeChangeCallback([&](int width, int height) -> void {
         glViewport(0, 0, width, height);
@@ -119,15 +117,15 @@ void Game::HandleInput()
 
         if (Input::GetMouseScroll().y != 0)
         {
-            camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1 : 1.0f / 1.1f;
-            camera.scale = glm::clamp(camera.scale, glm::vec2{ 0.1f }, glm::vec2{ FLT_MAX });
+            camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
+            camera.scale = spe::clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
         }
 
         // Camera moving
         {
             static bool cameraMove = false;
-            static glm::vec2 cursorStart;
-            static glm::vec2 cameraPosStart;
+            static Vec2 cursorStart;
+            static Vec2 cameraPosStart;
 
             if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
             {
@@ -142,7 +140,7 @@ void Game::HandleInput()
 
             if (cameraMove)
             {
-                glm::vec2 dist = Input::GetMousePosition() - cursorStart;
+                Vec2 dist = Input::GetMousePosition() - cursorStart;
                 dist.x *= 0.01f * -camera.scale.x;
                 dist.y *= 0.01f * camera.scale.y;
                 camera.position = cameraPosStart + dist;
@@ -200,7 +198,7 @@ void Game::HandleInput()
 
                 ImGui::Separator();
 
-                // ImGui::ColorEdit4("Background color", glm::value_ptr(app.clearColor));
+                // ImGui::ColorEdit4("Background color", &app.clearColor.x);
                 // ImGui::Separator();
 
                 ImGui::Checkbox("Camera reset", &resetCamera);
@@ -302,7 +300,7 @@ void Game::Render()
             RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
 
-            const glm::vec2& anchor = b->GetTransform() * gj->GetLocalAnchor();
+            const Vec2& anchor = b->GetTransform() * gj->GetLocalAnchor();
             points.push_back(anchor);
             points.push_back(gj->GetTarget());
 
@@ -317,8 +315,8 @@ void Game::Render()
             RigidBody* bb = j->GetBodyB();
             RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
 
-            const glm::vec2& anchorA = ba->GetTransform() * rj->GetLocalAnchorA();
-            const glm::vec2& anchorB = bb->GetTransform() * rj->GetLocalAnchorB();
+            const Vec2& anchorA = ba->GetTransform() * rj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * rj->GetLocalAnchorB();
 
             points.push_back(anchorA);
             points.push_back(anchorB);
@@ -335,8 +333,8 @@ void Game::Render()
             RigidBody* bb = j->GetBodyB();
             DistanceJoint* dj = static_cast<DistanceJoint*>(j);
 
-            const glm::vec2& anchorA = ba->GetTransform() * dj->GetLocalAnchorA();
-            const glm::vec2& anchorB = bb->GetTransform() * dj->GetLocalAnchorB();
+            const Vec2& anchorA = ba->GetTransform() * dj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * dj->GetLocalAnchorB();
 
             points.push_back(anchorA);
             points.push_back(anchorB);
@@ -375,7 +373,7 @@ void Game::Render()
 
             for (uint32_t j = 0; j < m.numContacts; j++)
             {
-                const glm::vec2& cp = m.contactPoints[j].position;
+                const Vec2& cp = m.contactPoints[j].position;
 
                 if (showContactPoint)
                 {
@@ -407,11 +405,10 @@ void Game::Render()
 
 void Game::UpdateProjectionMatrix()
 {
-    glm::vec2 windowSize = Window::Get().GetWindowSize();
+    Vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= 100.0f;
 
-    glm::mat4 projMatrix =
-        glm::ortho(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
+    Mat4 projMatrix = spe::orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
     rRenderer.SetProjectionMatrix(projMatrix);
     dRenderer.SetProjectionMatrix(projMatrix);
 }
@@ -421,8 +418,8 @@ void Game::InitSimulation(uint32_t demo)
     time = 0;
     if (resetCamera)
     {
-        camera.position = glm::vec2{ 0, 3.6 };
-        camera.scale = glm::vec2{ 1, 1 };
+        camera.position = Vec2{ 0.0f, 3.6f };
+        camera.scale = Vec2{ 1, 1 };
     }
 
     Reset();

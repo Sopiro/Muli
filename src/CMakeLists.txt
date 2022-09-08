@@ -7,6 +7,7 @@ set(SOURCE_FILES
     dynamics/circle.cpp
     dynamics/box.cpp
     dynamics/util.cpp
+    dynamics/math.cpp
 
     collision/aabbtree.cpp
     collision/collision.cpp

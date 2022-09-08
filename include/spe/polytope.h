@@ -11,13 +11,13 @@ struct ClosestEdgeInfo
 {
     uint32_t index;
     float distance;
-    glm::vec2 normal;
+    Vec2 normal;
 };
 
 class Polytope
 {
 public:
-    GrowableArray<glm::vec2, 8> vertices;
+    GrowableArray<Vec2, 8> vertices;
 
     Polytope(const Simplex& simplex);
 

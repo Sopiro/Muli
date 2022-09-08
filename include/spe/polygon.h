@@ -10,7 +10,7 @@ namespace spe
 class Polygon : public RigidBody
 {
 public:
-    Polygon(std::vector<glm::vec2> _vertices,
+    Polygon(std::vector<Vec2> _vertices,
             RigidBody::Type _type = Dynamic,
             bool _resetPosition = true,
             float _density = DEFAULT_DENSITY);
@@ -22,11 +22,11 @@ public:
     virtual float GetArea() const override final;
     virtual AABB GetAABB() const override;
 
-    const std::vector<glm::vec2>& GetVertices() const;
+    const std::vector<Vec2>& GetVertices() const;
     size_t VertexCount() const;
 
 protected:
-    std::vector<glm::vec2> vertices;
+    std::vector<Vec2> vertices;
     float area;
     float radius;
 };
@@ -41,7 +41,7 @@ inline float Polygon::GetArea() const
     return area;
 }
 
-inline const std::vector<glm::vec2>& Polygon::GetVertices() const
+inline const std::vector<Vec2>& Polygon::GetVertices() const
 {
     return vertices;
 }
@@ -55,15 +55,15 @@ inline AABB Polygon::GetAABB() const
 {
     const Transform& localToGlobal = GetTransform();
 
-    glm::vec2 min = localToGlobal * vertices[0];
-    glm::vec2 max = min;
+    Vec2 min = localToGlobal * vertices[0];
+    Vec2 max = min;
 
     for (size_t i = 1; i < vertices.size(); i++)
     {
-        glm::vec2 v = localToGlobal * vertices[i];
+        Vec2 v = localToGlobal * vertices[i];
 
-        min = glm::min(min, v);
-        max = glm::max(max, v);
+        min = spe::min(min, v);
+        max = spe::max(max, v);
     }
 
     return AABB{ min, max };

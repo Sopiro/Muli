@@ -18,21 +18,21 @@ void Island::Solve()
 
         if (sleeping)
         {
-            glm::clear(b->linearVelocity);
+            b->linearVelocity.SetZero();
             b->angularVelocity = 0.0f;
         }
 
         if (world.forceIntegration)
         {
             // Force / mass * dt
-            glm::vec2 linear_a = b->force * b->invMass * world.settings.DT;
+            Vec2 linear_a = b->force * b->invMass * world.settings.DT;
             b->linearVelocity += linear_a;
 
             // Torque / inertia * dt
             float angular_a = b->torque * b->invInertia * world.settings.DT;
             b->angularVelocity += angular_a;
 
-            if (sleeping && (glm::length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
+            if (sleeping && (length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
                 (angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE))
             {
                 sleeping = false;
@@ -41,7 +41,7 @@ void Island::Solve()
         }
 
         if ((sleeping && !world.forceIntegration) ||
-            ((glm::length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
+            ((length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
              (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
         {
             b->resting += world.settings.DT;
@@ -95,7 +95,7 @@ void Island::Solve()
 
         if (awakeIsland) b->Awake();
 
-        glm::clear(b->force);
+        b->force.SetZero();
         b->torque = 0.0f;
 
         b->transform.position += b->linearVelocity * world.settings.DT;

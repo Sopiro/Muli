@@ -247,7 +247,7 @@ void World::Destroy(const std::vector<Joint*>& joints)
     }
 }
 
-std::vector<RigidBody*> World::Query(const glm::vec2& point) const
+std::vector<RigidBody*> World::Query(const Vec2& point) const
 {
     std::vector<RigidBody*> res;
     std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(point);
@@ -309,7 +309,7 @@ Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
     return c;
 }
 
-spe::Polygon* World::CreatePolygon(std::vector<glm::vec2> vertices, RigidBody::Type type, bool resetPosition, float density)
+spe::Polygon* World::CreatePolygon(std::vector<Vec2> vertices, RigidBody::Type type, bool resetPosition, float density)
 {
     Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
     Add(p);
@@ -320,7 +320,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 {
     if (num_vertices < 3)
     {
-        num_vertices = glm::linearRand<uint32_t>(3, 8);
+        num_vertices = spe::linear_rand(3, 8);
     }
 
     std::vector<float> angles{};
@@ -328,17 +328,17 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
-        angles.push_back(glm::linearRand<float>(0.0f, 1.0f) * glm::pi<float>() * 2.0f);
+        angles.push_back(spe::linear_rand(0.0f, 1.0f) * SPE_PI * 2.0f);
     }
 
     std::sort(angles.begin(), angles.end());
 
-    std::vector<glm::vec2> vertices{};
+    std::vector<Vec2> vertices{};
     vertices.reserve(num_vertices);
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
-        vertices.emplace_back(glm::cos(angles[i]) * radius, glm::sin(angles[i]) * radius);
+        vertices.emplace_back(spe::cos(angles[i]) * radius, spe::sin(angles[i]) * radius);
     }
 
     Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, density);
@@ -350,26 +350,26 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
 {
     if (num_vertices < 3)
     {
-        num_vertices = glm::linearRand<uint32_t>(3, 11);
+        num_vertices = spe::linear_rand(3, 11);
     }
 
     float angleStart = initial_angle;
-    float angle = glm::pi<float>() * 2.0f / num_vertices;
+    float angle = SPE_PI * 2.0f / num_vertices;
 
     if (num_vertices % 2 == 0)
     {
         angleStart += angle / 2.0f;
     }
 
-    std::vector<glm::vec2> vertices;
+    std::vector<Vec2> vertices;
     vertices.reserve(num_vertices);
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
         float currentAngle = angleStart + angle * i;
 
-        glm::vec2 corner = glm::vec2{ glm::cos(currentAngle), glm::sin(currentAngle) };
-        corner *= radius * glm::sqrt(2);
+        Vec2 corner = Vec2{ cosf(currentAngle), sinf(currentAngle) };
+        corner *= radius * sqrtf(2.0f);
 
         vertices.push_back(corner);
     }
@@ -379,8 +379,7 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
     return p;
 }
 
-GrabJoint* World::CreateGrabJoint(
-    RigidBody* body, glm::vec2 anchor, glm::vec2 target, float frequency, float dampingRatio, float jointMass)
+GrabJoint* World::CreateGrabJoint(RigidBody* body, Vec2 anchor, Vec2 target, float frequency, float dampingRatio, float jointMass)
 {
     if (body->world != this)
     {
@@ -394,7 +393,7 @@ GrabJoint* World::CreateGrabJoint(
 }
 
 RevoluteJoint* World::CreateRevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, glm::vec2 anchor, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, Vec2 anchor, float frequency, float dampingRatio, float jointMass)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -409,8 +408,8 @@ RevoluteJoint* World::CreateRevoluteJoint(
 
 DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
                                           RigidBody* bodyB,
-                                          glm::vec2 anchorA,
-                                          glm::vec2 anchorB,
+                                          Vec2 anchorA,
+                                          Vec2 anchorB,
                                           float length,
                                           float frequency,
                                           float dampingRatio,

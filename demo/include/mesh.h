@@ -8,7 +8,7 @@ namespace spe
 class Mesh
 {
 public:
-    Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, std::vector<uint32_t> _indices);
+    Mesh(std::vector<Vec3> _vertices, std::vector<Vec2> _texCoords, std::vector<uint32_t> _indices);
     ~Mesh() noexcept;
 
     Mesh(const Mesh&) noexcept = delete;
@@ -22,8 +22,8 @@ public:
 private:
     bool moved = false;
 
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> texCoords;
+    std::vector<Vec3> vertices;
+    std::vector<Vec2> texCoords;
     std::vector<uint32_t> indices;
 
     uint32_t VBOv;

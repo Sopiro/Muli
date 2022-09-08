@@ -17,17 +17,17 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
         float radius = c.GetRadius();
 
-        float angle = glm::pi<float>() * 2.0f / circle_polygon_count;
+        float angle = SPE_PI * 2.0f / circle_polygon_count;
 
-        std::vector<glm::vec3> vertices;
-        std::vector<glm::vec2> texCoords;
+        std::vector<Vec3> vertices;
+        std::vector<Vec2> texCoords;
         vertices.reserve(circle_polygon_count);
 
         for (uint32_t i = 0; i < circle_polygon_count; i++)
         {
             float currentAngle = angle * i;
 
-            glm::vec3 corner = glm::vec3{ glm::cos(currentAngle), glm::sin(currentAngle), 0.0f };
+            Vec3 corner = Vec3{ spe::cos(currentAngle), spe::sin(currentAngle), 0.0f };
             corner *= radius;
 
             vertices.push_back(corner);
@@ -36,8 +36,8 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
         std::vector<uint32_t> indices = triangulate(texCoords);
 
-        vertices.push_back(glm::vec3(vertices[0]));
-        vertices.push_back(glm::vec3{ 0.0f });
+        vertices.push_back(Vec3(vertices[0]));
+        vertices.push_back(Vec3{ 0.0f });
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
@@ -47,7 +47,7 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
         auto& vertices2 = p.GetVertices();
 
-        std::vector<glm::vec3> vertices3;
+        std::vector<Vec3> vertices3;
         vertices3.reserve(vertices2.size());
 
         for (auto& v = vertices2.begin(); v != vertices2.end(); v++)
@@ -77,7 +77,7 @@ inline static uint32_t get_next(std::unordered_set<uint32_t>& done, uint32_t i, 
     return i1;
 }
 
-std::vector<uint32_t> triangulate(const std::vector<glm::vec2>& vertices)
+std::vector<uint32_t> triangulate(const std::vector<Vec2>& vertices)
 {
     std::vector<uint32_t> indices;
 

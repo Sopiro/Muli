@@ -3,7 +3,7 @@
 namespace spe
 {
 
-Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<glm::vec2> _texCoords, std::vector<uint32_t> _indices)
+Mesh::Mesh(std::vector<Vec3> _vertices, std::vector<Vec2> _texCoords, std::vector<uint32_t> _indices)
     : vertices{ std::move(_vertices) }
     , texCoords{ std::move(_texCoords) }
     , indices{ std::move(_indices) }

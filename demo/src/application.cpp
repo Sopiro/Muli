@@ -62,7 +62,7 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
     glClear(GL_COLOR_BUFFER_BIT);
     // glViewport(0, 0, Window::Width, Window::Height);
 

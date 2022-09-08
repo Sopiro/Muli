@@ -7,19 +7,19 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
 {
     uint32_t minIndex = 0;
     float minDistance = FLT_MAX;
-    glm::vec2 minNormal{ 0.0f };
+    Vec2 minNormal{ 0.0f };
 
     for (uint32_t i = 0; i < vertices.Count(); i++)
     {
         uint32_t j = (i + 1) % vertices.Count();
 
-        const glm::vec2& vertexI = vertices[i];
-        const glm::vec2& vertexJ = vertices[j];
+        const Vec2& vertexI = vertices[i];
+        const Vec2& vertexJ = vertices[j];
 
-        const glm::vec2 edge = vertexJ - vertexI;
+        const Vec2 edge = vertexJ - vertexI;
 
-        glm::vec2 normal = glm::normalize(glm::vec2{ -edge.y, edge.x });
-        float distance = glm::dot(normal, vertexI);
+        Vec2 normal = normalize(Vec2{ -edge.y, edge.x });
+        float distance = dot(normal, vertexI);
 
         if (distance < 0)
         {

@@ -363,7 +363,7 @@ void AABBTree::CheckCollision(Node* a,
     }
 }
 
-std::vector<Node*> AABBTree::Query(const glm::vec2& point) const
+std::vector<Node*> AABBTree::Query(const Vec2& point) const
 {
     std::vector<Node*> res;
 

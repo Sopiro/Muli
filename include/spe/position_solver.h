@@ -19,9 +19,9 @@ public:
 private:
     Contact* contact;
 
-    glm::vec2 localPlainPoint;
-    glm::vec2 localClipPoint;
-    glm::vec2 localNormal;
+    Vec2 localPlainPoint;
+    Vec2 localClipPoint;
+    Vec2 localNormal;
 };
 
 } // namespace spe

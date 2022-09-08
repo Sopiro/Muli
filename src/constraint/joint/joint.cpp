@@ -27,8 +27,8 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
     if (_frequency > 0.0f)
     {
         frequency = _frequency;
-        dampingRatio = glm::clamp<float>(_dampingRatio, 0.0f, 1.0f);
-        jointMass = glm::clamp<float>(_jointMass, 0.0f, FLT_MAX);
+        dampingRatio = spe::clamp<float>(_dampingRatio, 0.0f, 1.0f);
+        jointMass = spe::clamp<float>(_jointMass, 0.0f, FLT_MAX);
 
         CalculateBetaAndGamma();
     }
@@ -45,7 +45,7 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
 
 void Joint::CalculateBetaAndGamma()
 {
-    float omega = 2.0f * glm::pi<float>() * frequency;
+    float omega = 2.0f * SPE_PI * frequency;
     float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
     float k = jointMass * omega * omega;               // Spring constant
     float h = 1.0f / 144.0f;

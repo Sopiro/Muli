@@ -5,7 +5,7 @@ namespace spe
 {
 
 // Returns the closest point to the input q
-ClosestResult Simplex::GetClosest(const glm::vec2& q) const
+ClosestResult Simplex::GetClosest(const Vec2& q) const
 {
     ClosestResult res;
 
@@ -21,8 +21,8 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     }
     case 2: // 1-Simplex: Line segment
     {
-        const glm::vec2 a = vertices[0];
-        const glm::vec2 b = vertices[1];
+        const Vec2 a = vertices[0];
+        const Vec2 b = vertices[1];
         const UV w = compute_uv(a, b, q);
 
         if (w.v <= 0)
@@ -50,9 +50,9 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
     }
     case 3: // 2-Simplex: Triangle
     {
-        const glm::vec2 a = vertices[0];
-        const glm::vec2 b = vertices[1];
-        const glm::vec2 c = vertices[2];
+        const Vec2 a = vertices[0];
+        const Vec2 b = vertices[1];
+        const Vec2 c = vertices[2];
 
         const UV wab = compute_uv(a, b, q);
         const UV wbc = compute_uv(b, c, q);
@@ -80,13 +80,13 @@ ClosestResult Simplex::GetClosest(const glm::vec2& q) const
             return res;
         }
 
-        const float area = glm::cross(b - a, c - a);
+        const float area = cross(b - a, c - a);
 
         // If area == 0, 3 vertices are in collinear position, which means all aligned in a line
 
-        const float u = glm::cross(b - q, c - q);
-        const float v = glm::cross(c - q, a - q);
-        const float w = glm::cross(a - q, b - q);
+        const float u = cross(b - q, c - q);
+        const float v = cross(c - q, a - q);
+        const float w = cross(a - q, b - q);
 
         if (wab.u > 0 && wab.v > 0 && w * area <= 0) // On the AB edge
         {

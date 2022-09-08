@@ -7,7 +7,7 @@ namespace spe
 
 struct ContactPoint
 {
-    glm::vec2 position;
+    Vec2 position;
     int32_t id;
 };
 

@@ -6,7 +6,7 @@ namespace spe
 
 RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
                              RigidBody* _bodyB,
-                             glm::vec2 _anchor,
+                             Vec2 _anchor,
                              const Settings& _settings,
                              float _frequency,
                              float _dampingRatio,
@@ -26,29 +26,29 @@ void RevoluteJoint::Prepare()
     ra = bodyA->GetRotation() * localAnchorA;
     rb = bodyB->GetRotation() * localAnchorB;
 
-    glm::mat2 k{ 1.0f };
+    Mat2 k{ 1.0f };
 
-    k[0][0] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
+    k.ex.x = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
 
-    k[1][0] = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
-    k[0][1] = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
+    k.ey.x = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
+    k.ex.y = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
 
-    k[1][1] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+    k.ey.y = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
 
-    k[0][0] += gamma;
-    k[1][1] += gamma;
+    k.ex.x += gamma;
+    k.ey.y += gamma;
 
-    m = glm::inverse(k);
+    m = k.GetInverse();
 
-    glm::vec2 pa = bodyA->GetPosition() + ra;
-    glm::vec2 pb = bodyB->GetPosition() + rb;
+    Vec2 pa = bodyA->GetPosition() + ra;
+    Vec2 pb = bodyB->GetPosition() + rb;
 
-    glm::vec2 error = pb - pa;
+    Vec2 error = pb - pa;
 
     if (settings.POSITION_CORRECTION)
         bias = error * beta * settings.INV_DT;
     else
-        glm::clear(bias);
+        bias.SetZero();
 
     if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
 }
@@ -59,26 +59,26 @@ void RevoluteJoint::Solve()
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    glm::vec2 jv = (bodyB->linearVelocity + glm::cross(bodyB->angularVelocity, rb)) -
-                   (bodyA->linearVelocity + glm::cross(bodyA->angularVelocity, ra));
+    Vec2 jv =
+        (bodyB->linearVelocity + cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + cross(bodyA->angularVelocity, ra));
 
     // You don't have to clamp the impulse. It's equality constraint!
-    glm::vec2 lambda = m * -(jv + bias + impulseSum * gamma);
+    Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
 
     if (settings.WARM_STARTING) impulseSum += lambda;
 }
 
-void RevoluteJoint::ApplyImpulse(const glm::vec2& lambda)
+void RevoluteJoint::ApplyImpulse(const Vec2& lambda)
 {
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
     bodyA->linearVelocity -= lambda * bodyA->invMass;
-    bodyA->angularVelocity -= bodyA->invInertia * glm::cross(ra, lambda);
+    bodyA->angularVelocity -= bodyA->invInertia * cross(ra, lambda);
     bodyB->linearVelocity += lambda * bodyB->invMass;
-    bodyB->angularVelocity += bodyB->invInertia * glm::cross(rb, lambda);
+    bodyB->angularVelocity += bodyB->invInertia * cross(rb, lambda);
 }
 
 } // namespace spe

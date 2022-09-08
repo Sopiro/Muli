@@ -22,9 +22,9 @@ public:
     static bool IsMouseDown(int button);
     static bool IsMousePressed(int button);
     static bool IsMouseReleased(int button);
-    static glm::vec2 GetMousePosition();
-    static glm::vec2 GetMouseAcceleration();
-    static glm::vec2 GetMouseScroll();
+    static Vec2 GetMousePosition();
+    static Vec2 GetMouseAcceleration();
+    static Vec2 GetMouseScroll();
 
 private:
     static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
@@ -33,11 +33,11 @@ private:
     static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> lastBtns;
     static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currBtns;
 
-    static glm::vec2 currMousePos;
-    static glm::vec2 lastMousePos;
-    static glm::vec2 mouseAcceleration;
+    static Vec2 currMousePos;
+    static Vec2 lastMousePos;
+    static Vec2 mouseAcceleration;
 
-    static glm::vec2 mouseScroll;
+    static Vec2 mouseScroll;
 };
 
 inline void Input::Init()
@@ -57,7 +57,7 @@ inline void Input::Update()
     mouseAcceleration = currMousePos - lastMousePos;
     lastMousePos = currMousePos;
 
-    glm::clear(mouseScroll);
+    mouseScroll.SetZero();
 }
 
 inline bool Input::IsKeyDown(int key)
@@ -90,17 +90,17 @@ inline bool Input::IsMouseReleased(int button)
     return !currBtns[button] && lastBtns[button];
 }
 
-inline glm::vec2 Input::GetMousePosition()
+inline Vec2 Input::GetMousePosition()
 {
     return currMousePos;
 }
 
-inline glm::vec2 Input::GetMouseAcceleration()
+inline Vec2 Input::GetMouseAcceleration()
 {
     return mouseAcceleration;
 }
 
-inline glm::vec2 Input::GetMouseScroll()
+inline Vec2 Input::GetMouseScroll()
 {
     return mouseScroll;
 }

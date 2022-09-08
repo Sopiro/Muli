@@ -46,7 +46,7 @@ public:
     };
 
     RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
-    ~RigidBody() noexcept;
+    virtual ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;
@@ -60,15 +60,15 @@ public:
     virtual AABB GetAABB() const = 0;
 
     const Transform& GetTransform() const;
-    void SetTransform(const glm::vec2& pos, float angle);
-    const glm::vec2 GetPosition() const;
-    void SetPosition(const glm::vec2& _pos);
+    void SetTransform(const Vec2& pos, float angle);
+    const Vec2 GetPosition() const;
+    void SetPosition(const Vec2& _pos);
     void SetPosition(float x, float y);
     const Rotation& GetRotation() const;
     void SetRotation(const Rotation& _rotation);
     void SetRotation(float _angle);
     float GetAngle() const;
-    void Translate(const glm::vec2& d);
+    void Translate(const Vec2& d);
     void Rotate(float a);
 
     void Awake();
@@ -84,12 +84,12 @@ public:
     void SetRestitution(float _restitution);
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float _surfaceSpeed);
-    glm::vec2 GetLinearVelocity() const;
-    void SetLinearVelocity(const glm::vec2& _linearVelocity);
+    Vec2 GetLinearVelocity() const;
+    void SetLinearVelocity(const Vec2& _linearVelocity);
     float GetAngularVelocity() const;
     void SetAngularVelocity(float _angularVelocity);
-    glm::vec2 GetForce() const;
-    void SetForce(const glm::vec2& _force);
+    Vec2 GetForce() const;
+    void SetForce(const Vec2& _force);
     float GetTorque() const;
     void SetTorque(float _torque);
     Type GetType() const;
@@ -110,11 +110,11 @@ protected:
     // Center of mass in local space = (0, 0)
     Transform transform;
 
-    glm::vec2 force{ 0.0f }; // N
-    float torque = 0.0f;     // N⋅m
+    Vec2 force{ 0.0f };  // N
+    float torque = 0.0f; // N⋅m
 
-    glm::vec2 linearVelocity{ 0.0f }; // m/s
-    float angularVelocity = 0.0f;     // rad/s
+    Vec2 linearVelocity{ 0.0f };  // m/s
+    float angularVelocity = 0.0f; // rad/s
 
     float density; // kg/m²
     float mass;    // kg
@@ -152,25 +152,25 @@ inline const Transform& RigidBody::GetTransform() const
     return transform;
 }
 
-inline void RigidBody::SetTransform(const glm::vec2& _pos, float _angle)
+inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
 {
     transform.position = _pos;
     transform.rotation = _angle;
 }
 
-inline const glm::vec2 RigidBody::GetPosition() const
+inline const Vec2 RigidBody::GetPosition() const
 {
     return transform.position;
 }
 
-inline void RigidBody::SetPosition(const glm::vec2& _pos)
+inline void RigidBody::SetPosition(const Vec2& _pos)
 {
     transform.position = _pos;
 }
 
 inline void RigidBody::SetPosition(float x, float y)
 {
-    transform.position = glm::vec2{ x, y };
+    transform.position = Vec2{ x, y };
 }
 
 inline const Rotation& RigidBody::GetRotation() const
@@ -193,7 +193,7 @@ inline float RigidBody::GetAngle() const
     return transform.rotation.angle;
 }
 
-inline void RigidBody::Translate(const glm::vec2& d)
+inline void RigidBody::Translate(const Vec2& d)
 {
     transform.position += d;
 }
@@ -269,12 +269,12 @@ inline void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
     surfaceSpeed = _surfaceSpeed;
 }
 
-inline glm::vec2 RigidBody::GetLinearVelocity() const
+inline Vec2 RigidBody::GetLinearVelocity() const
 {
     return linearVelocity;
 }
 
-inline void RigidBody::SetLinearVelocity(const glm::vec2& _linearVelocity)
+inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 {
     linearVelocity = _linearVelocity;
 }
@@ -289,12 +289,12 @@ inline void RigidBody::SetAngularVelocity(float _angularVelocity)
     angularVelocity = _angularVelocity;
 }
 
-inline glm::vec2 RigidBody::GetForce() const
+inline Vec2 RigidBody::GetForce() const
 {
     return force;
 }
 
-inline void RigidBody::SetForce(const glm::vec2& _force)
+inline void RigidBody::SetForce(const Vec2& _force)
 {
     force = _force;
 }

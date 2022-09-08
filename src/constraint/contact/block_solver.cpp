@@ -20,32 +20,31 @@ void BlockSolver::Prepare(Contact* contact)
     j1 = &nc1->j;
     j2 = &nc2->j;
 
-    k = glm::mat2{ 1.0f };
+    k = Mat2{ 1.0f };
 
     // clang-format off
-    k[0][0]
+    k.ex.x
         = c->manifold.bodyA->invMass
         + j1->wa * c->manifold.bodyA->invInertia * j1->wa
         + c->manifold.bodyB->invMass
         + j1->wb * c->manifold.bodyB->invInertia * j1->wb;
 
-    k[1][1]
+    k.ey.y
         = c->manifold.bodyA->invMass
         + j2->wa * c->manifold.bodyA->invInertia * j2->wa
         + c->manifold.bodyB->invMass
         + j2->wb * c->manifold.bodyB->invInertia * j2->wb;
 
-    k[0][1]
+    k.ex.y
         = c->manifold.bodyA->invMass
         + j1->wa * c->manifold.bodyA->invInertia * j2->wa
         + c->manifold.bodyB->invMass
         + j1->wb * c->manifold.bodyB->invInertia * j2->wb;
 
-    k[1][0] = k[0][1];
+    k.ey.x = k.ex.y;
     // clang-format on
 
-    assert(glm::determinant(k) != 0);
-    m = glm::inverse(k);
+    m = k.GetInverse();
 }
 
 void BlockSolver::Solve()
@@ -87,29 +86,29 @@ void BlockSolver::Solve()
     //     = A * x + b'
     // b' = b - A * a;
 
-    glm::vec2 a = { nc1->impulseSum, nc2->impulseSum }; // old total impulse
+    Vec2 a = { nc1->impulseSum, nc2->impulseSum }; // old total impulse
     assert(a.x >= 0.0f && a.y >= 0.0f);
 
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
-        = glm::dot(j1->va, c->manifold.bodyA->linearVelocity)
+        = dot(j1->va, c->manifold.bodyA->linearVelocity)
         + j1->wa * c->manifold.bodyA->angularVelocity
-        + glm::dot(j1->vb, c->manifold.bodyB->linearVelocity)
+        + dot(j1->vb, c->manifold.bodyB->linearVelocity)
         + j1->wb * c->manifold.bodyB->angularVelocity;
 
     float vn2
-        = glm::dot(j2->va, c->manifold.bodyA->linearVelocity)
+        = dot(j2->va, c->manifold.bodyA->linearVelocity)
         + j2->wa * c->manifold.bodyA->angularVelocity
-        + glm::dot(j2->vb, c->manifold.bodyB->linearVelocity)
+        + dot(j2->vb, c->manifold.bodyB->linearVelocity)
         + j2->wb * c->manifold.bodyB->angularVelocity;
     // clang-format on
 
-    glm::vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
+    Vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
 
     // b' = b - K * a
     b = b - (k * a);
-    glm::vec2 x{ 0.0f }; // Lambda;
+    Vec2 x{ 0.0f }; // Lambda;
 
     while (true)
     {
@@ -137,7 +136,7 @@ void BlockSolver::Solve()
         x.x = nc1->effectiveMass * -b.x;
         x.y = 0.0f;
         vn1 = 0.0f;
-        vn2 = k[1][0] * x.x + b.y;
+        vn2 = k.ey.x * x.x + b.y;
         if (x.x >= 0.0f && vn2 >= 0.0f) break;
 
         //
@@ -149,7 +148,7 @@ void BlockSolver::Solve()
         //
         x.x = 0.0f;
         x.y = nc2->effectiveMass * -b.y;
-        vn1 = k[0][1] * x.y + b.x;
+        vn1 = k.ex.y * x.y + b.x;
         vn2 = 0.0f;
         if (x.y >= 0.0f && vn1 >= 0.0f) break;
 
@@ -167,12 +166,12 @@ void BlockSolver::Solve()
         if (vn1 >= 0.0f && vn2 >= 0.0f) break;
 
         // How did you reach here?! something went wrong!
-        assert(false);
+        // assert(false);
         break;
     }
 
     // Get the incremental impulse
-    glm::vec2 d = x - a;
+    Vec2 d = x - a;
     ApplyImpulse(d);
 
     // Acontactumulate
@@ -180,7 +179,7 @@ void BlockSolver::Solve()
     nc2->impulseSum = x.y;
 }
 
-void BlockSolver::ApplyImpulse(const glm::vec2& lambda)
+void BlockSolver::ApplyImpulse(const Vec2& lambda)
 {
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ

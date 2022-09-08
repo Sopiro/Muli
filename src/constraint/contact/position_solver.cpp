@@ -17,18 +17,17 @@ void PositionSolver::Prepare(Contact* _contact, uint32_t index)
 
 void PositionSolver::Solve()
 {
-    glm::vec2 normal = contact->manifold.bodyA->GetRotation() * localNormal;
-    glm::vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
-    glm::vec2 clipPoint = contact->manifold.bodyB->GetTransform() * localClipPoint; // penetration point
+    Vec2 normal = contact->manifold.bodyA->GetRotation() * localNormal;
+    Vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
+    Vec2 clipPoint = contact->manifold.bodyB->GetTransform() * localClipPoint; // penetration point
 
-    float separation = glm::dot(clipPoint - planePoint, normal);
-    assert(separation < 0.0f);
+    float separation = dot(clipPoint - planePoint, normal);
 
-    glm::vec2 ra = clipPoint - contact->manifold.bodyA->GetPosition();
-    glm::vec2 rb = clipPoint - contact->manifold.bodyB->GetPosition();
+    Vec2 ra = clipPoint - contact->manifold.bodyA->GetPosition();
+    Vec2 rb = clipPoint - contact->manifold.bodyB->GetPosition();
 
-    float ran = glm::cross(ra, normal);
-    float rbn = glm::cross(rb, normal);
+    float ran = cross(ra, normal);
+    float rbn = cross(rb, normal);
 
     // clang-format off
     // effective mass = 1 / k;
@@ -39,16 +38,16 @@ void PositionSolver::Solve()
     // clang-format on
 
     // Constraint (bias)
-    float c = glm::min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
+    float c = spe::min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
-    glm::vec2 impulse = normal * lambda;
+    Vec2 impulse = normal * lambda;
 
     contact->cLinearImpulseA -= impulse;
-    contact->cAngularImpulseA -= glm::cross(ra, impulse);
+    contact->cAngularImpulseA -= cross(ra, impulse);
     contact->cLinearImpulseB += impulse;
-    contact->cAngularImpulseB += glm::cross(rb, impulse);
+    contact->cAngularImpulseB += cross(rb, impulse);
 }
 
 } // namespace spe
