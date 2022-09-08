@@ -53,7 +53,7 @@ inline size_t Polygon::VertexCount() const
 
 inline AABB Polygon::GetAABB() const
 {
-    glm::mat3 localToGlobal = LocalToGlobal();
+    const Transform& localToGlobal = GetTransform();
 
     glm::vec2 min = localToGlobal * vertices[0];
     glm::vec2 max = min;

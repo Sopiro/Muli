@@ -4,8 +4,7 @@ namespace spe
 {
 
 RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
-    : Entity()
-    , type{ std::move(_type) }
+    : type{ std::move(_type) }
     , shape{ std::move(_shape) }
 {
     if (type == Static)
@@ -60,6 +59,8 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     _other.next = nullptr;
 
     // protected member
+    transform = _other.transform;
+
     force = _other.force;
     torque = _other.torque;
 
@@ -81,8 +82,6 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
 
     // public member
     OnDestroy = std::move(_other.OnDestroy);
-
-    Entity::operator=(std::move(_other));
 }
 
 } // namespace spe

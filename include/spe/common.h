@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "growable_array.h"
+#include "math.h"
 
 // Some useful operator overloading for glm containers
 namespace glm

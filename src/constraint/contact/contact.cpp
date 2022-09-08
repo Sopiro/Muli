@@ -119,10 +119,10 @@ void Contact::Solve2()
         positionSolvers[i].Solve();
     }
 
-    manifold.bodyA->position += manifold.bodyA->invMass * cLinearImpulseA;
-    manifold.bodyA->rotation += manifold.bodyA->invInertia * cAngularImpulseA;
-    manifold.bodyB->position += manifold.bodyB->invMass * cLinearImpulseB;
-    manifold.bodyB->rotation += manifold.bodyB->invInertia * cAngularImpulseB;
+    manifold.bodyA->transform.position += manifold.bodyA->invMass * cLinearImpulseA;
+    manifold.bodyA->transform.rotation += manifold.bodyA->invInertia * cAngularImpulseA;
+    manifold.bodyB->transform.position += manifold.bodyB->invMass * cLinearImpulseB;
+    manifold.bodyB->transform.rotation += manifold.bodyB->invInertia * cAngularImpulseB;
 }
 
 } // namespace spe

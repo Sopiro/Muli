@@ -13,8 +13,8 @@ RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
                              float _jointMass)
     : Joint(Joint::Type::JointRevolute, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchorA = bodyA->GlobalToLocal() * _anchor;
-    localAnchorB = bodyB->GlobalToLocal() * _anchor;
+    localAnchorA = mul_t(bodyA->GetTransform(), _anchor);
+    localAnchorB = mul_t(bodyB->GetTransform(), _anchor);
 }
 
 void RevoluteJoint::Prepare()
@@ -23,8 +23,8 @@ void RevoluteJoint::Prepare()
     // J = [-I, -skew(ra), I, skew(rb)]
     // M = (J · M^-1 · J^t)^-1
 
-    ra = glm::mul(bodyA->LocalToGlobal(), localAnchorA, 0.0f);
-    rb = glm::mul(bodyB->LocalToGlobal(), localAnchorB, 0.0f);
+    ra = bodyA->GetRotation() * localAnchorA;
+    rb = bodyB->GetRotation() * localAnchorB;
 
     glm::mat2 k{ 1.0f };
 
@@ -40,8 +40,8 @@ void RevoluteJoint::Prepare()
 
     m = glm::inverse(k);
 
-    glm::vec2 pa = bodyA->position + ra;
-    glm::vec2 pb = bodyB->position + rb;
+    glm::vec2 pa = bodyA->GetPosition() + ra;
+    glm::vec2 pb = bodyB->GetPosition() + rb;
 
     glm::vec2 error = pb - pa;
 

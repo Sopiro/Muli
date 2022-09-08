@@ -2,7 +2,6 @@
 
 #include "aabb.h"
 #include "common.h"
-#include "entity.h"
 #include "settings.h"
 
 namespace spe
@@ -13,7 +12,7 @@ struct ContactEdge;
 struct JointEdge;
 
 // Children: Polygon, Circle
-class RigidBody : public Entity
+class RigidBody
 {
     friend class World;
     friend class Island;
@@ -60,6 +59,18 @@ public:
     virtual float GetArea() const = 0;
     virtual AABB GetAABB() const = 0;
 
+    const Transform& GetTransform() const;
+    void SetTransform(const glm::vec2& pos, float angle);
+    const glm::vec2 GetPosition() const;
+    void SetPosition(const glm::vec2& _pos);
+    void SetPosition(float x, float y);
+    const Rotation& GetRotation() const;
+    void SetRotation(const Rotation& _rotation);
+    void SetRotation(float _angle);
+    float GetAngle() const;
+    void Translate(const glm::vec2& d);
+    void Rotate(float a);
+
     void Awake();
 
     float GetDensity() const;
@@ -74,11 +85,11 @@ public:
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float _surfaceSpeed);
     glm::vec2 GetLinearVelocity() const;
-    void SetLinearVelocity(glm::vec2 _linearVelocity);
+    void SetLinearVelocity(const glm::vec2& _linearVelocity);
     float GetAngularVelocity() const;
     void SetAngularVelocity(float _angularVelocity);
     glm::vec2 GetForce() const;
-    void SetForce(glm::vec2 _force);
+    void SetForce(const glm::vec2& _force);
     float GetTorque() const;
     void SetTorque(float _torque);
     Type GetType() const;
@@ -90,12 +101,15 @@ public:
     const Node* GetNode() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
+    World* GetWorld() const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
 
 protected:
     // Center of mass in local space = (0, 0)
+    Transform transform;
+
     glm::vec2 force{ 0.0f }; // N
     float torque = 0.0f;     // N⋅m
 
@@ -132,6 +146,62 @@ private:
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
 };
+
+inline const Transform& RigidBody::GetTransform() const
+{
+    return transform;
+}
+
+inline void RigidBody::SetTransform(const glm::vec2& _pos, float _angle)
+{
+    transform.position = _pos;
+    transform.rotation = _angle;
+}
+
+inline const glm::vec2 RigidBody::GetPosition() const
+{
+    return transform.position;
+}
+
+inline void RigidBody::SetPosition(const glm::vec2& _pos)
+{
+    transform.position = _pos;
+}
+
+inline void RigidBody::SetPosition(float x, float y)
+{
+    transform.position = glm::vec2{ x, y };
+}
+
+inline const Rotation& RigidBody::GetRotation() const
+{
+    return transform.rotation;
+}
+
+inline void RigidBody::SetRotation(const Rotation& _rotation)
+{
+    transform.rotation = _rotation;
+}
+
+inline void RigidBody::SetRotation(float _angle)
+{
+    transform.rotation = _angle;
+}
+
+inline float RigidBody::GetAngle() const
+{
+    return transform.rotation.angle;
+}
+
+inline void RigidBody::Translate(const glm::vec2& d)
+{
+    transform.position += d;
+}
+
+inline void RigidBody::Rotate(float a)
+{
+    transform.rotation += a;
+}
 
 inline float RigidBody::GetDensity() const
 {
@@ -176,7 +246,7 @@ inline float RigidBody::GetFriction() const
 
 inline void RigidBody::SetFriction(float _friction)
 {
-    friction = std::move(_friction);
+    friction = _friction;
 }
 
 inline float RigidBody::GetRestitution() const
@@ -186,7 +256,7 @@ inline float RigidBody::GetRestitution() const
 
 inline void RigidBody::SetRestitution(float _restitution)
 {
-    restitution = std::move(_restitution);
+    restitution = _restitution;
 }
 
 inline float RigidBody::GetSurfaceSpeed() const
@@ -196,7 +266,7 @@ inline float RigidBody::GetSurfaceSpeed() const
 
 inline void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
 {
-    surfaceSpeed = std::move(_surfaceSpeed);
+    surfaceSpeed = _surfaceSpeed;
 }
 
 inline glm::vec2 RigidBody::GetLinearVelocity() const
@@ -204,9 +274,9 @@ inline glm::vec2 RigidBody::GetLinearVelocity() const
     return linearVelocity;
 }
 
-inline void RigidBody::SetLinearVelocity(glm::vec2 _linearVelocity)
+inline void RigidBody::SetLinearVelocity(const glm::vec2& _linearVelocity)
 {
-    linearVelocity = std::move(_linearVelocity);
+    linearVelocity = _linearVelocity;
 }
 
 inline float RigidBody::GetAngularVelocity() const
@@ -216,7 +286,7 @@ inline float RigidBody::GetAngularVelocity() const
 
 inline void RigidBody::SetAngularVelocity(float _angularVelocity)
 {
-    angularVelocity = std::move(_angularVelocity);
+    angularVelocity = _angularVelocity;
 }
 
 inline glm::vec2 RigidBody::GetForce() const
@@ -224,9 +294,9 @@ inline glm::vec2 RigidBody::GetForce() const
     return force;
 }
 
-inline void RigidBody::SetForce(glm::vec2 _force)
+inline void RigidBody::SetForce(const glm::vec2& _force)
 {
-    force = std::move(_force);
+    force = _force;
 }
 
 inline float RigidBody::GetTorque() const
@@ -236,7 +306,7 @@ inline float RigidBody::GetTorque() const
 
 inline void RigidBody::SetTorque(float _torque)
 {
-    torque = std::move(_torque);
+    torque = _torque;
 }
 
 inline RigidBody::Type RigidBody::GetType() const
@@ -272,6 +342,11 @@ inline RigidBody* RigidBody::GetPrev() const
 inline RigidBody* RigidBody::GetNext() const
 {
     return next;
+}
+
+inline World* RigidBody::GetWorld() const
+{
+    return world;
 }
 
 } // namespace spe

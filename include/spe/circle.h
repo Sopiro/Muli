@@ -38,8 +38,8 @@ inline AABB Circle::GetAABB() const
     // clang-format off
     return AABB
     {
-        glm::vec2(position.x - radius, position.y - radius),
-        glm::vec2(position.x + radius, position.y + radius)
+        glm::vec2(transform.position.x - radius, transform.position.y - radius),
+        glm::vec2(transform.position.x + radius, transform.position.y + radius)
     };
     // clang-format on
 }

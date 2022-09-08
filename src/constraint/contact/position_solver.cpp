@@ -10,22 +10,22 @@ void PositionSolver::Prepare(Contact* _contact, uint32_t index)
 {
     contact = _contact;
 
-    localPlainPoint = contact->manifold.bodyA->GlobalToLocal() * contact->manifold.referenceEdge.p1.position;
-    localClipPoint = contact->manifold.bodyB->GlobalToLocal() * contact->manifold.contactPoints[index].position;
-    localNormal = glm::mul(contact->manifold.bodyA->GlobalToLocal(), contact->manifold.contactNormal, 0.0f);
+    localPlainPoint = mul_t(contact->manifold.bodyA->GetTransform(), contact->manifold.referenceEdge.p1.position);
+    localClipPoint = mul_t(contact->manifold.bodyB->GetTransform(), contact->manifold.contactPoints[index].position);
+    localNormal = mul_t(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
 }
 
 void PositionSolver::Solve()
 {
-    glm::vec2 normal = glm::mul(contact->manifold.bodyA->LocalToGlobal(), localNormal, 0.0f);
-    glm::vec2 planePoint = contact->manifold.bodyA->LocalToGlobal() * localPlainPoint;
-    glm::vec2 clipPoint = contact->manifold.bodyB->LocalToGlobal() * localClipPoint; // penetration point
+    glm::vec2 normal = contact->manifold.bodyA->GetRotation() * localNormal;
+    glm::vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
+    glm::vec2 clipPoint = contact->manifold.bodyB->GetTransform() * localClipPoint; // penetration point
 
     float separation = glm::dot(clipPoint - planePoint, normal);
     assert(separation < 0.0f);
 
-    glm::vec2 ra = clipPoint - contact->manifold.bodyA->position;
-    glm::vec2 rb = clipPoint - contact->manifold.bodyB->position;
+    glm::vec2 ra = clipPoint - contact->manifold.bodyA->GetPosition();
+    glm::vec2 rb = clipPoint - contact->manifold.bodyB->GetPosition();
 
     float ran = glm::cross(ra, normal);
     float rbn = glm::cross(rb, normal);

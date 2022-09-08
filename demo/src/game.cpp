@@ -89,7 +89,7 @@ void Game::HandleInput()
             else
             {
                 RigidBody* b = world->CreateBox(0.5f);
-                b->position = mpos;
+                b->SetPosition(mpos);
                 rRenderer.Register(b);
 
                 b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
@@ -236,8 +236,8 @@ void Game::HandleInput()
                 {
                     RigidBody* t = qr[0];
                     ImGui::Text("ID: %d", t->GetID());
-                    ImGui::Text("Pos: %.4f, %.4f", t->position.x, t->position.y);
-                    ImGui::Text("Rot: %.4f", t->rotation);
+                    ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);
+                    ImGui::Text("Rot: %.4f", t->GetRotation().angle);
                 }
             }
 
@@ -284,7 +284,7 @@ void Game::HandleInput()
 
 void Game::Render()
 {
-    rRenderer.SetViewMatrix(camera.CameraTransform());
+    rRenderer.SetViewMatrix(camera.GetCameraMatrix());
     rRenderer.SetDrawOutlined(drawOutlineOnly);
     rRenderer.Render();
 
@@ -302,7 +302,7 @@ void Game::Render()
             RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
 
-            const glm::vec2& anchor = b->LocalToGlobal() * gj->GetLocalAnchor();
+            const glm::vec2& anchor = b->GetTransform() * gj->GetLocalAnchor();
             points.push_back(anchor);
             points.push_back(gj->GetTarget());
 
@@ -317,16 +317,16 @@ void Game::Render()
             RigidBody* bb = j->GetBodyB();
             RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
 
-            const glm::vec2& anchorA = ba->LocalToGlobal() * rj->GetLocalAnchorA();
-            const glm::vec2& anchorB = bb->LocalToGlobal() * rj->GetLocalAnchorB();
+            const glm::vec2& anchorA = ba->GetTransform() * rj->GetLocalAnchorA();
+            const glm::vec2& anchorB = bb->GetTransform() * rj->GetLocalAnchorB();
 
             points.push_back(anchorA);
             points.push_back(anchorB);
 
             lines.push_back(anchorA);
-            lines.push_back(ba->position);
+            lines.push_back(ba->GetPosition());
             lines.push_back(anchorB);
-            lines.push_back(bb->position);
+            lines.push_back(bb->GetPosition());
         }
         break;
         case Joint::Type::JointDistance:
@@ -335,8 +335,8 @@ void Game::Render()
             RigidBody* bb = j->GetBodyB();
             DistanceJoint* dj = static_cast<DistanceJoint*>(j);
 
-            const glm::vec2& anchorA = ba->LocalToGlobal() * dj->GetLocalAnchorA();
-            const glm::vec2& anchorB = bb->LocalToGlobal() * dj->GetLocalAnchorB();
+            const glm::vec2& anchorA = ba->GetTransform() * dj->GetLocalAnchorA();
+            const glm::vec2& anchorB = bb->GetTransform() * dj->GetLocalAnchorB();
 
             points.push_back(anchorA);
             points.push_back(anchorB);
@@ -398,7 +398,7 @@ void Game::Render()
         }
     }
 
-    dRenderer.SetViewMatrix(camera.CameraTransform());
+    dRenderer.SetViewMatrix(camera.GetCameraMatrix());
     glPointSize(5.0f);
     dRenderer.Draw(points, GL_POINTS);
     glLineWidth(1.0f);

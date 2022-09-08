@@ -65,11 +65,11 @@ static SupportResult support(RigidBody* b, glm::vec2 dir)
 //'dir' should be normalized
 static glm::vec2 cso_support(RigidBody* b1, RigidBody* b2, glm::vec2 dir)
 {
-    const glm::vec2 localDirP1 = glm::mul(b1->GlobalToLocal(), dir, 0);
-    const glm::vec2 localDirP2 = glm::mul(b2->GlobalToLocal(), -dir, 0);
+    const glm::vec2 localDirP1 = mul_t(b1->GetRotation(), dir);
+    const glm::vec2 localDirP2 = mul_t(b2->GetRotation(), -dir);
 
-    const glm::vec2 supportP1 = b1->LocalToGlobal() * support(b1, localDirP1).vertex;
-    const glm::vec2 supportP2 = b2->LocalToGlobal() * support(b2, localDirP2).vertex;
+    const glm::vec2 supportP1 = b1->GetTransform() * support(b1, localDirP1).vertex;
+    const glm::vec2 supportP2 = b2->GetTransform() * support(b2, localDirP2).vertex;
 
     return supportP1 - supportP2;
 }
@@ -169,18 +169,18 @@ static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
 
 static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 {
-    const glm::vec2 localDir = glm::mul(b->GlobalToLocal(), dir, 0);
+    const glm::vec2 localDir = mul_t(b->GetRotation(), dir);
     const SupportResult farthest = support(b, localDir);
 
     glm::vec2 curr = farthest.vertex;
     int32_t idx = farthest.index;
 
-    const glm::mat3 localToGlobal = b->LocalToGlobal();
+    const Transform& t = b->GetTransform();
 
     RigidBody::Shape shape = b->GetShape();
     if (shape == RigidBody::Shape::ShapeCircle)
     {
-        curr = localToGlobal * curr;
+        curr = t * curr;
         const glm::vec2 tangent = glm::cross(1.0f, dir) * TANGENT_MIN_LENGTH;
 
         return Edge{ curr, curr + tangent };
@@ -200,10 +200,10 @@ static Edge find_farthest_edge(RigidBody* b, const glm::vec2& dir)
 
         const bool w = glm::abs(glm::dot(e1, localDir)) <= glm::abs(glm::dot(e2, localDir));
 
-        curr = localToGlobal * curr;
+        curr = t * curr;
 
-        return w ? Edge{ localToGlobal * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
-                 : Edge{ curr, localToGlobal * next, idx, (idx + 1) % vertexCount };
+        return w ? Edge{ t * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
+                 : Edge{ curr, t * next, idx, (idx + 1) % vertexCount };
     }
     else
     {
@@ -294,7 +294,7 @@ static void find_contact_points(const glm::vec2& n, RigidBody* a, RigidBody* b, 
 
 static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
 {
-    float d = glm::distance2(a->position, b->position);
+    float d = glm::distance2(a->GetPosition(), b->GetPosition());
     const float r2 = a->GetRadius() + b->GetRadius();
 
     if (d > r2 * r2)
@@ -309,10 +309,10 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
 
         out->bodyA = a;
         out->bodyB = b;
-        out->contactNormal = glm::normalize(b->position - a->position);
-        out->contactPoints[0] = ContactPoint{ b->position + (-out->contactNormal * b->GetRadius()), -1 };
-        out->referenceEdge =
-            Edge{ a->position + (out->contactNormal * a->GetRadius()), a->position + (out->contactNormal * a->GetRadius()) };
+        out->contactNormal = glm::normalize(b->GetPosition() - a->GetPosition());
+        out->contactPoints[0] = ContactPoint{ b->GetPosition() + (-out->contactNormal * b->GetRadius()), -1 };
+        out->referenceEdge = Edge{ a->GetPosition() + (out->contactNormal * a->GetRadius()),
+                                   a->GetPosition() + (out->contactNormal * a->GetRadius()) };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;
@@ -415,7 +415,7 @@ bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 bool test_point_inside(RigidBody* b, const glm::vec2& p)
 {
-    glm::vec2 localP = b->GlobalToLocal() * p;
+    glm::vec2 localP = mul_t(b->GetTransform(), p);
 
     if (b->GetShape() == RigidBody::Shape::ShapeCircle)
     {
@@ -466,7 +466,7 @@ float compute_distance(RigidBody* b, const glm::vec2& p)
 
 glm::vec2 get_closest_point(RigidBody* b, const glm::vec2& p)
 {
-    glm::vec2 localP = b->GlobalToLocal() * p;
+    glm::vec2 localP = mul_t(b->GetTransform(), p);
 
     if (test_point_inside(b, localP))
     {
@@ -474,12 +474,12 @@ glm::vec2 get_closest_point(RigidBody* b, const glm::vec2& p)
     }
     else
     {
-        glm::vec2 dir = glm::normalize(localP - b->position);
+        glm::vec2 dir = glm::normalize(localP - b->GetPosition());
 
         if (b->GetType() == RigidBody::Shape::ShapeCircle)
         {
-            glm::vec2 localR = b->position + dir * static_cast<Circle*>(b)->GetRadius();
-            return b->LocalToGlobal() * localR;
+            glm::vec2 localR = b->GetPosition() + dir * static_cast<Circle*>(b)->GetRadius();
+            return b->GetTransform() * localR;
         }
         else if (b->GetType() == RigidBody::Shape::ShapePolygon)
         {
@@ -494,7 +494,7 @@ glm::vec2 get_closest_point(RigidBody* b, const glm::vec2& p)
             s.AddVertex(v[(sr.index + 2) % v.size()]);
 
             ClosestResult cr = s.GetClosest(localP);
-            return b->LocalToGlobal() * cr.point;
+            return b->GetTransform() * cr.point;
         }
         else
         {

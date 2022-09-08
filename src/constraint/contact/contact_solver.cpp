@@ -15,8 +15,8 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const glm::vec2& d
     p = contact->manifold.contactPoints[index].position;
     type = contactType;
 
-    ra = p - c->manifold.bodyA->position;
-    rb = p - c->manifold.bodyB->position;
+    ra = p - c->manifold.bodyA->GetPosition();
+    rb = p - c->manifold.bodyB->GetPosition();
 
     j.va = -dir;
     j.wa = glm::cross(-ra, dir);

@@ -15,8 +15,8 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              float _jointMass)
     : Joint(Joint::Type::JointDistance, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchorA = bodyA->GlobalToLocal() * _anchorA;
-    localAnchorB = bodyB->GlobalToLocal() * _anchorB;
+    localAnchorA = mul_t(bodyA->GetTransform(), _anchorA);
+    localAnchorB = mul_t(bodyB->GetTransform(), _anchorB);
     length = _length < 0.0f ? glm::length(_anchorB - _anchorA) : _length;
 }
 
@@ -26,11 +26,11 @@ void DistanceJoint::Prepare()
     // J = [-n, -n·cross(ra), n, n·cross(rb)] ( n = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 
-    ra = glm::mul(bodyA->LocalToGlobal(), localAnchorA, 0.0f);
-    rb = glm::mul(bodyB->LocalToGlobal(), localAnchorB, 0.0f);
+    ra = bodyA->GetRotation() * localAnchorA;
+    rb = bodyB->GetRotation() * localAnchorB;
 
-    glm::vec2 pa = bodyA->position + ra;
-    glm::vec2 pb = bodyB->position + rb;
+    glm::vec2 pa = bodyA->GetPosition() + ra;
+    glm::vec2 pb = bodyB->GetPosition() + rb;
 
     glm::vec2 u = pb - pa;
 

@@ -430,7 +430,8 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
 DistanceJoint* World::CreateDistanceJoint(
     RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass)
 {
-    return CreateDistanceJoint(bodyA, bodyB, bodyA->position, bodyB->position, length, frequency, dampingRatio, jointMass);
+    return CreateDistanceJoint(bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, frequency, dampingRatio,
+                               jointMass);
 }
 
 void World::Add(Joint* joint)

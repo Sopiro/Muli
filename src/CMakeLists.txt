@@ -56,7 +56,6 @@ set(HEADER_FILES
     ../include/spe/position_solver.h
     ../include/spe/contact_solver.h
 
-    ../include/spe/entity.h
     ../include/spe/island.h
     ../include/spe/world.h
 
@@ -65,6 +64,7 @@ set(HEADER_FILES
     ../include/spe/common.h
     ../include/spe/util.h
     ../include/spe/spe.h
+    ../include/spe/math.h
 )
 
 add_library(spe ${SOURCE_FILES} ${HEADER_FILES})

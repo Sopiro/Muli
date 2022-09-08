@@ -20,8 +20,8 @@ void RigidBodyRenderer::Render()
         RigidBody* body = bodiesAndMeshes[i].first;
         std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;
 
-        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(body->position, 0.0f));
-        glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, body->rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 t = glm::translate(glm::mat4(1.0f), glm::vec3(body->GetPosition(), 0.0f));
+        glm::mat4 r = glm::rotate(glm::mat4{ 1.0f }, body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
 
         shader->SetModelMatrix(t * r);
 

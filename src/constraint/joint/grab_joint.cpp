@@ -13,7 +13,7 @@ GrabJoint::GrabJoint(RigidBody* _body,
                      float _jointMass)
     : Joint(type = Joint::Type::JointGrab, _body, _body, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchor = _body->GlobalToLocal() * _anchor;
+    localAnchor = mul_t(_body->GetTransform(), _anchor);
     target = _target;
 }
 
@@ -23,8 +23,8 @@ void GrabJoint::Prepare()
     // J = [I, skew(r)]
     // M = (J · M^-1 · J^t)^-1
 
-    r = glm::mul(bodyA->LocalToGlobal(), localAnchor, 0.0f);
-    glm::vec2 p = bodyA->position + r;
+    r = bodyA->GetRotation() * localAnchor;
+    glm::vec2 p = bodyA->GetPosition() + r;
 
     glm::mat2 k{ 1.0f };
 

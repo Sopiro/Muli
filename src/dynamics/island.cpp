@@ -98,10 +98,10 @@ void Island::Solve()
         glm::clear(b->force);
         b->torque = 0.0f;
 
-        b->position += b->linearVelocity * world.settings.DT;
-        b->rotation += b->angularVelocity * world.settings.DT;
+        b->transform.position += b->linearVelocity * world.settings.DT;
+        b->transform.rotation += b->angularVelocity * world.settings.DT;
 
-        if (!test_point_inside_AABB(world.settings.VALID_REGION, b->position))
+        if (!test_point_inside_AABB(world.settings.VALID_REGION, b->GetPosition()))
         {
             world.BufferDestroy(b);
         }

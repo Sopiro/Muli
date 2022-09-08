@@ -6,7 +6,6 @@
 
 #include "box.h"
 #include "circle.h"
-#include "entity.h"
 #include "polygon.h"
 #include "rigidbody.h"
 #include "world.h"
