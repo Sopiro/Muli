@@ -28,13 +28,13 @@ void GrabJoint::Prepare()
 
     Mat2 k{ 1.0f };
 
-    k.ex.x = bodyA->invMass + bodyA->invInertia * r.y * r.y;
-    k.ey.x = -bodyA->invInertia * r.y * r.x;
-    k.ex.y = -bodyA->invInertia * r.x * r.y;
-    k.ey.y = bodyA->invMass + bodyA->invInertia * r.x * r.x;
+    k[0][0] = bodyA->invMass + bodyA->invInertia * r.y * r.y;
+    k[1][0] = -bodyA->invInertia * r.y * r.x;
+    k[0][1] = -bodyA->invInertia * r.x * r.y;
+    k[1][1] = bodyA->invMass + bodyA->invInertia * r.x * r.x;
 
-    k.ex.x += gamma;
-    k.ey.y += gamma;
+    k[0][0] += gamma;
+    k[1][1] += gamma;
 
     m = k.GetInverse();
 

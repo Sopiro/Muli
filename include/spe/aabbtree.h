@@ -25,7 +25,7 @@ public:
     RigidBody* body = nullptr;
 
 private:
-    Node(uint32_t _id, AABB _aabb, bool _isLeaf);
+    Node(uint32_t _id, const AABB& _aabb, bool _isLeaf);
     ~Node() noexcept = default;
 
     Node(const Node&) noexcept = delete;
@@ -47,7 +47,7 @@ public:
     AABBTree(AABBTree&&) noexcept = delete;
     AABBTree& operator=(AABBTree&&) noexcept = delete;
 
-    const Node* Insert(RigidBody* body, AABB aabb);
+    const Node* Insert(RigidBody* body, const AABB& aabb);
     void Remove(RigidBody* body);
     void Reset();
 

@@ -5,8 +5,7 @@
 
 #include <limits>
 #include <math.h>
-#include <random>
-#include <stdlib.h>
+#include <stdint.h>
 
 #define SPE_PI 3.14159265359f
 
@@ -41,6 +40,11 @@ struct Vec2
     {
         x = _x;
         y = _y;
+    }
+
+    float& operator[](uint32_t i)
+    {
+        return (&x)[i];
     }
 
     Vec2 operator-() const
@@ -130,6 +134,11 @@ struct Vec3
         x = _x;
         y = _y;
         z = _z;
+    }
+
+    float& operator[](uint32_t i)
+    {
+        return (&x)[i];
     }
 
     Vec3 operator-() const
@@ -222,6 +231,11 @@ struct Vec4
         , w{ _w }
     {
     }
+
+    float& operator[](uint32_t i)
+    {
+        return (&x)[i];
+    }
 };
 
 // Column major matrices
@@ -244,6 +258,11 @@ struct Mat2
         : ex{ c1 }
         , ey{ c2 }
     {
+    }
+
+    Vec2& operator[](uint32_t i)
+    {
+        return (&ex)[i];
     }
 
     void SetIdentity()
@@ -313,6 +332,11 @@ struct Mat3
         , ey{ c2 }
         , ez{ c3 }
     {
+    }
+
+    Vec3& operator[](uint32_t i)
+    {
+        return (&ex)[i];
     }
 
     void SetIdentity()
@@ -393,6 +417,11 @@ struct Mat4
         , ez{ c3 }
         , ew{ c4 }
     {
+    }
+
+    Vec4& operator[](uint32_t i)
+    {
+        return (&ex)[i];
     }
 
     void SetIdentity()
@@ -976,29 +1005,6 @@ inline float cos(float s)
 inline float sin(float s)
 {
     return sinf(s);
-}
-
-inline int linear_rand(int _min, int _max)
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::uniform_int_distribution<int> ud(_min, _max);
-
-    return ud(g);
-}
-
-inline float linear_rand(float _min, float _max)
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::uniform_real_distribution<float> ud(_min, _max);
-
-    return ud(g);
-}
-
-inline Vec2 linear_rand(Vec2 _min, Vec2 _max)
-{
-    return Vec2{ linear_rand(_min.x, _max.x), linear_rand(_min.y, _max.y) };
 }
 
 } // namespace spe

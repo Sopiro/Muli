@@ -37,19 +37,19 @@ inline void RigidBodyShader::SetColor(Vec3 _color)
 inline void RigidBodyShader::SetModelMatrix(Mat4 _modelMatrix)
 {
     modelMatrix = std::move(_modelMatrix);
-    glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, &modelMatrix.ex.x);
+    glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, &modelMatrix[0][0]);
 }
 
 inline void RigidBodyShader::SetViewMatrix(Mat4 _viewMatrix)
 {
     viewMatrix = std::move(_viewMatrix);
-    glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, &viewMatrix.ex.x);
+    glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, &viewMatrix[0][0]);
 }
 
 inline void RigidBodyShader::SetProjectionMatrix(Mat4 _projMatrix)
 {
     projMatrix = std::move(_projMatrix);
-    glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix.ex.x);
+    glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix[0][0]);
 }
 
 } // namespace spe

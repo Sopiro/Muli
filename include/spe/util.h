@@ -3,6 +3,7 @@
 #include "common.h"
 #include "rigidbody.h"
 #include "settings.h"
+#include <random>
 
 namespace spe
 {
@@ -19,12 +20,6 @@ union PairID
     uint64_t key;
 };
 
-struct UV
-{
-    float u;
-    float v;
-};
-
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
 float compute_convex_polygon_inertia(const std::vector<Vec2>& vertices, float mass);
 
@@ -36,24 +31,6 @@ inline float compute_box_inertia(float width, float height, float mass)
 inline float compute_circle_inertia(float radius, float mass)
 {
     return mass * radius * radius / 2.0f;
-}
-
-// Project point P to line segment AB, calculate barycentric weights
-inline UV compute_uv(Vec2 a, Vec2 b, Vec2 p)
-{
-    Vec2 dir = b - a;
-    float len = spe::length(dir);
-    dir.Normalize();
-
-    float region = dot(dir, p - a) / len;
-
-    return UV{ 1 - region, region };
-}
-
-// Linearly combine(interpolate) the vector using weights u, v
-inline Vec2 lerp_vector(Vec2 a, Vec2 b, UV uv)
-{
-    return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }
 
 // Cantor pairing function, ((N, N) -> N) mapping function
@@ -87,6 +64,29 @@ inline std::pair<uint32_t, uint32_t> separate_pair(uint32_t p)
     return { static_cast<uint32_t>(x), static_cast<uint32_t>(y) };
 }
 
+inline int linear_rand(int _min, int _max)
+{
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::uniform_int_distribution<int> ud(_min, _max);
+
+    return ud(g);
+}
+
+inline float linear_rand(float _min, float _max)
+{
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::uniform_real_distribution<float> ud(_min, _max);
+
+    return ud(g);
+}
+
+inline Vec2 linear_rand(Vec2 _min, Vec2 _max)
+{
+    return Vec2{ linear_rand(_min.x, _max.x), linear_rand(_min.y, _max.y) };
+}
+
 inline float lerp(float left, float right, float per)
 {
     return left + (right - left) * per;
@@ -99,28 +99,34 @@ inline float map(float v, float left, float right, float min, float max)
     return lerp(min, max, per);
 }
 
-// https://gist.github.com/ciembor/1494530
-/*
- * Converts an RGB color value to HSL. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes r, g, and b are contained in the set [0, 255] and
- * returns HSL in the set [0, 1].
- */
-Vec3 rgb2hsl(float r, float g, float b);
+struct UV
+{
+    float u;
+    float v;
+};
 
-/*
- * Converts an HUE to r, g or b.
- * returns float in the set [0, 1].
- */
-float hue2rgb(float p, float q, float t);
+// Project point P to line segment AB, calculate barycentric weights
+inline UV compute_uv(Vec2 a, Vec2 b, Vec2 p)
+{
+    Vec2 dir = b - a;
+    float len = dir.Length();
+    dir.Normalize();
 
-/*
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
- * returns RGB in the set [0, 1].
- */
-Vec3 hsl2rgb(float h, float s, float l);
+    float region = dot(dir, p - a) / len;
+
+    return UV{ 1 - region, region };
+}
+
+// Linearly combine(interpolate) the vector using weights u, v
+inline Vec2 lerp_vector(Vec2 a, Vec2 b, UV uv)
+{
+    return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
+}
+
+inline void print()
+{
+    std::cout << '\n';
+}
 
 template <typename T>
 inline void print(T msg, bool lineFeed = true)
@@ -129,11 +135,6 @@ inline void print(T msg, bool lineFeed = true)
         std::cout << msg << '\n';
     else
         std::cout << msg;
-}
-
-inline void print()
-{
-    std::cout << '\n';
 }
 
 inline void print(Vec2 v, bool lineFeed = true)

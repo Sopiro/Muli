@@ -23,25 +23,25 @@ void BlockSolver::Prepare(Contact* contact)
     k = Mat2{ 1.0f };
 
     // clang-format off
-    k.ex.x
+    k[0][0]
         = c->manifold.bodyA->invMass
         + j1->wa * c->manifold.bodyA->invInertia * j1->wa
         + c->manifold.bodyB->invMass
         + j1->wb * c->manifold.bodyB->invInertia * j1->wb;
 
-    k.ey.y
+    k[1][1]
         = c->manifold.bodyA->invMass
         + j2->wa * c->manifold.bodyA->invInertia * j2->wa
         + c->manifold.bodyB->invMass
         + j2->wb * c->manifold.bodyB->invInertia * j2->wb;
 
-    k.ex.y
+    k[0][1]
         = c->manifold.bodyA->invMass
         + j1->wa * c->manifold.bodyA->invInertia * j2->wa
         + c->manifold.bodyB->invMass
         + j1->wb * c->manifold.bodyB->invInertia * j2->wb;
 
-    k.ey.x = k.ex.y;
+    k[1][0] = k[0][1];
     // clang-format on
 
     m = k.GetInverse();
@@ -136,7 +136,7 @@ void BlockSolver::Solve()
         x.x = nc1->effectiveMass * -b.x;
         x.y = 0.0f;
         vn1 = 0.0f;
-        vn2 = k.ey.x * x.x + b.y;
+        vn2 = k[1][0] * x.x + b.y;
         if (x.x >= 0.0f && vn2 >= 0.0f) break;
 
         //
@@ -148,7 +148,7 @@ void BlockSolver::Solve()
         //
         x.x = 0.0f;
         x.y = nc2->effectiveMass * -b.y;
-        vn1 = k.ex.y * x.y + b.x;
+        vn1 = k[0][1] * x.y + b.x;
         vn2 = 0.0f;
         if (x.y >= 0.0f && vn1 >= 0.0f) break;
 

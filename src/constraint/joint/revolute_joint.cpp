@@ -28,15 +28,15 @@ void RevoluteJoint::Prepare()
 
     Mat2 k{ 1.0f };
 
-    k.ex.x = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
+    k[0][0] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
 
-    k.ey.x = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
-    k.ex.y = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
+    k[1][0] = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
+    k[0][1] = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
 
-    k.ey.y = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+    k[1][1] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
 
-    k.ex.x += gamma;
-    k.ey.y += gamma;
+    k[0][0] += gamma;
+    k[1][1] += gamma;
 
     m = k.GetInverse();
 

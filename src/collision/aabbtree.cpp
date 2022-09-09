@@ -4,14 +4,14 @@
 namespace spe
 {
 
-Node::Node(uint32_t _id, AABB _aabb, bool _isLeaf)
+Node::Node(uint32_t _id, const AABB& _aabb, bool _isLeaf)
     : id{ _id }
-    , aabb{ std::move(_aabb) }
+    , aabb{ _aabb }
     , isLeaf{ _isLeaf }
 {
 }
 
-const Node* AABBTree::Insert(RigidBody* body, AABB aabb)
+const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
 {
     Node* newNode = new Node(nodeID++, aabb, true);
     newNode->body = body;
