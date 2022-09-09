@@ -86,11 +86,14 @@ struct Vec2
     }
 
     // Optimized to not check length == 0
-    void Normalize()
+    float Normalize()
     {
-        float invLength = 1.0f / Length();
+        float length = Length();
+        float invLength = 1.0f / length;
         x *= invLength;
         y *= invLength;
+
+        return length;
     }
 
     // Optimized to not check length == 0

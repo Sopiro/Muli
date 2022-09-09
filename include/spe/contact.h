@@ -45,8 +45,8 @@ public:
 
     void Update();
     virtual void Prepare() override;
-    virtual void Solve() override;
-    void Solve2();
+    virtual void SolveVelocityConstraint() override;
+    virtual bool SolvePositionConstraint() override;
 
     Contact* GetNext() const;
     Contact* GetPrev() const;

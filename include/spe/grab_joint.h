@@ -20,7 +20,7 @@ public:
               float _jointMass = -1.0f);
 
     virtual void Prepare() override;
-    virtual void Solve() override;
+    virtual void SolveVelocityConstraint() override;
 
     const Vec2& GetLocalAnchor() const;
     const Vec2& GetTarget() const;

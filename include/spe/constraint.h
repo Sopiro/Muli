@@ -44,7 +44,11 @@ public:
      * More reading:
      * https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=4&t=1354
      */
-    virtual void Solve() = 0;
+    virtual void SolveVelocityConstraint() = 0;
+    virtual bool SolvePositionConstraint()
+    {
+        return true;
+    }
 
     RigidBody* GetBodyA() const;
     RigidBody* GetBodyB() const;

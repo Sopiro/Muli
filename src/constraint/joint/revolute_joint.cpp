@@ -26,7 +26,7 @@ void RevoluteJoint::Prepare()
     ra = bodyA->GetRotation() * localAnchorA;
     rb = bodyB->GetRotation() * localAnchorB;
 
-    Mat2 k{ 1.0f };
+    Mat2 k;
 
     k[0][0] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.y * ra.y + bodyB->invInertia * rb.y * rb.y;
 
@@ -50,10 +50,13 @@ void RevoluteJoint::Prepare()
     else
         bias.SetZero();
 
-    if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
+    if (settings.WARM_STARTING)
+    {
+        ApplyImpulse(impulseSum);
+    }
 }
 
-void RevoluteJoint::Solve()
+void RevoluteJoint::SolveVelocityConstraint()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)
@@ -67,7 +70,7 @@ void RevoluteJoint::Solve()
 
     ApplyImpulse(lambda);
 
-    if (settings.WARM_STARTING) impulseSum += lambda;
+    impulseSum += lambda;
 }
 
 void RevoluteJoint::ApplyImpulse(const Vec2& lambda)

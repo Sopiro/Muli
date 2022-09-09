@@ -85,7 +85,7 @@ void Contact::Prepare()
     }
 }
 
-void Contact::Solve()
+void Contact::SolveVelocityConstraint()
 {
     // Solve tangential constraint first
     for (uint32_t i = 0; i < manifold.numContacts; i++)
@@ -106,8 +106,10 @@ void Contact::Solve()
     }
 }
 
-void Contact::Solve2()
+bool Contact::SolvePositionConstraint()
 {
+    bool solved = true;
+
     cLinearImpulseA = { 0.0f, 0.0f };
     cAngularImpulseA = 0.0f;
     cLinearImpulseB = { 0.0f, 0.0f };
@@ -116,13 +118,15 @@ void Contact::Solve2()
     // Solve position constraint
     for (uint32_t i = 0; i < manifold.numContacts; i++)
     {
-        positionSolvers[i].Solve();
+        solved &= positionSolvers[i].Solve();
     }
 
     manifold.bodyA->transform.position += manifold.bodyA->invMass * cLinearImpulseA;
     manifold.bodyA->transform.rotation += manifold.bodyA->invInertia * cAngularImpulseA;
     manifold.bodyB->transform.position += manifold.bodyB->invMass * cLinearImpulseB;
     manifold.bodyB->transform.rotation += manifold.bodyB->invInertia * cAngularImpulseB;
+
+    return solved;
 }
 
 } // namespace spe

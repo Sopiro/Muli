@@ -14,7 +14,7 @@ class PositionSolver
 
 public:
     void Prepare(Contact* _contact, uint32_t _index);
-    void Solve();
+    bool Solve();
 
 private:
     Contact* contact;

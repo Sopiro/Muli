@@ -26,7 +26,7 @@ void GrabJoint::Prepare()
     r = bodyA->GetRotation() * localAnchor;
     Vec2 p = bodyA->GetPosition() + r;
 
-    Mat2 k{ 1.0f };
+    Mat2 k;
 
     k[0][0] = bodyA->invMass + bodyA->invInertia * r.y * r.y;
     k[1][0] = -bodyA->invInertia * r.y * r.x;
@@ -45,10 +45,13 @@ void GrabJoint::Prepare()
     else
         bias.SetZero();
 
-    if (settings.WARM_STARTING) ApplyImpulse(impulseSum);
+    if (settings.WARM_STARTING)
+    {
+        ApplyImpulse(impulseSum);
+    }
 }
 
-void GrabJoint::Solve()
+void GrabJoint::SolveVelocityConstraint()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
@@ -59,7 +62,7 @@ void GrabJoint::Solve()
 
     ApplyImpulse(lambda);
 
-    if (settings.WARM_STARTING) impulseSum += lambda;
+    impulseSum += lambda;
 }
 
 void GrabJoint::ApplyImpulse(const Vec2& lambda)

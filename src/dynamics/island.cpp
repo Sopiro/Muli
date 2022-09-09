@@ -74,17 +74,25 @@ void Island::Solve()
     for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
     {
         for (size_t j = contacts.size(); j > 0; j--)
-            contacts[j - 1]->Solve();
+        {
+            contacts[j - 1]->SolveVelocityConstraint();
+        }
         for (size_t j = joints.size(); j > 0; j--)
-            joints[j - 1]->Solve();
+        {
+            joints[j - 1]->SolveVelocityConstraint();
+        }
     }
 #else
     for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATION; i++)
     {
         for (uint32_t j = 0; j < contacts.size(); j++)
-            contacts[j]->Solve();
+        {
+            contacts[j]->SolveVelocityConstraint();
+        }
         for (uint32_t j = 0; j < joints.size(); j++)
-            joints[j]->Solve();
+        {
+            joints[j]->SolveVelocityConstraint();
+        }
     }
 #endif
 
@@ -111,9 +119,31 @@ void Island::Solve()
     {
         for (uint32_t i = 0; i < world.settings.POSITION_SOLVE_ITERATION; i++)
         {
+            bool contactSolved = true;
+            bool jointSolved = true;
+
+#if SOLVE_CONTACTS_BACKWARD
             for (size_t j = contacts.size(); j > 0; j--)
             {
-                contacts[j - 1]->Solve2();
+                contactSolved &= contacts[j - 1]->SolvePositionConstraint();
+            }
+            for (size_t j = joints.size(); j > 0; j--)
+            {
+                jointSolved &= joints[j - 1]->SolvePositionConstraint();
+            }
+#else
+            for (size_t j = 0; j < contacts.size(); j++)
+            {
+                contactSolved &= contacts[j]->SolvePositionConstraint();
+            }
+            for (size_t j = 0; j < joints.size(); j++)
+            {
+                jointSolved &= joints[j]->SolvePositionConstraint();
+            }
+#endif
+            if (contactSolved && jointSolved)
+            {
+                break;
             }
         }
     }

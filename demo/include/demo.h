@@ -12,7 +12,6 @@ static void demo1(Game& game, World& world, Settings& settings)
 
     RigidBody* box = world.CreateBox(0.4f);
     box->SetPosition(0.0f, 5.0f);
-    box->SetRestitution(0.3f);
     box->SetAngularVelocity(spe::linear_rand(-12.0f, 12.0f));
 }
 
@@ -244,7 +243,8 @@ static void demo10(Game& game, World& world, Settings& settings)
 
     bool t = spe::linear_rand(0.0f, 1.0f) > 0.5;
 
-    for (int i = 1; i < 12; i++)
+    int count = 12;
+    for (int i = 1; i < count; i++)
     {
         RigidBody* b2 = world.CreateBox(sizeW, sizeH);
         b2->SetMass(1.0f);
@@ -458,27 +458,6 @@ static void demo15(Game& game, World& world, Settings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void demo16(Game& game, World& world, Settings& settings)
-{
-    settings.APPLY_GRAVITY = true;
-
-    float size = 15.0f;
-    float wallSize = 0.4f;
-
-    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, -size / 2.0f);
-    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, size / 2.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(-size / 2.0f, 0.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(size / 2.0f, 0.0f);
-
-    Camera& c = game.GetCamera();
-    c.position = { 0.0f, 0.0f };
-    c.scale = { 3.f, 3.f };
-}
-
 std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
@@ -499,7 +478,6 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>
     demos.push_back({ "1000 circles", demo13 });
     demos.push_back({ "1000 boxes", demo14 });
     demos.push_back({ "1000 convex shapes", demo15 });
-    demos.push_back({ "test", demo16 });
 
     return demos;
 }

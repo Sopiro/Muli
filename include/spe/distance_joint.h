@@ -22,7 +22,7 @@ public:
                   float _jointMass = 1.0f);
 
     virtual void Prepare() override;
-    virtual void Solve() override;
+    virtual void SolveVelocityConstraint() override;
 
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
@@ -38,8 +38,9 @@ private:
     Vec2 ra{ 0.0f };
     Vec2 rb{ 0.0f };
 
+    Vec2 u{ 0.0 };
+
     float m = 1.0f;
-    Vec2 n{ 0.0 };
     float bias = 0.0f;
     float impulseSum = 0.0f;
 

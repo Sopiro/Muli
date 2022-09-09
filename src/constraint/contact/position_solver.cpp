@@ -15,7 +15,7 @@ void PositionSolver::Prepare(Contact* _contact, uint32_t index)
     localNormal = mul_t(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
 }
 
-void PositionSolver::Solve()
+bool PositionSolver::Solve()
 {
     Vec2 normal = contact->manifold.bodyA->GetRotation() * localNormal;
     Vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
@@ -48,6 +48,10 @@ void PositionSolver::Solve()
     contact->cAngularImpulseA -= cross(ra, impulse);
     contact->cLinearImpulseB += impulse;
     contact->cAngularImpulseB += cross(rb, impulse);
+
+    // We can't expect speparation >= -PENETRATION_SLOP
+    // because we don't push the separation above -PENETRATION_SLOP
+    return -separation <= contact->settings.PENETRATION_SLOP * 2.0f;
 }
 
 } // namespace spe

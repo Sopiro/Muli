@@ -8,10 +8,10 @@
 /*
  *           \        /         ↑
  *            \      /          | <- Contact normal
- *   ┌---------\----/-------------------------------  <- Reference edge
- *   |          \  /
- *   |           \/  <- Incidence point(Contact point)
- *   |
+ *    ---------\----/-------------------------------  <- Reference edge
+ *              \  /
+ *               \/  <- Incidence point(Contact point)
+ *
  */
 
 namespace spe
