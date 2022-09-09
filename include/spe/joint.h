@@ -6,7 +6,7 @@
 namespace spe
 {
 
-struct Settings;
+struct WorldSettings;
 class Joint;
 
 struct JointEdge
@@ -65,7 +65,7 @@ public:
     Joint(Joint::Type _type,
           RigidBody* _bodyA,
           RigidBody* _bodyB,
-          const Settings& _settings,
+          const WorldSettings& _settings,
           float _frequency = DEFAULT_FREQUENCY,
           float _dampingRatio = DEFAULT_DAMPING_RATIO,
           float _jointMass = DEFAULT_JOINT_MASS);

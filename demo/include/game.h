@@ -32,7 +32,7 @@ public:
 private:
     Application& app;
 
-    Settings settings{};
+    WorldSettings settings{};
     World* world;
 
     Camera camera{};
@@ -55,7 +55,7 @@ private:
     bool showContactNormal = false;
     bool resetCamera = true;
 
-    std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> demos;
+    std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> demos;
     uint32_t currentDemo;
     std::string demoTitle;
 

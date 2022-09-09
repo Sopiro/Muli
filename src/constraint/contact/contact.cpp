@@ -6,7 +6,7 @@
 namespace spe
 {
 
-Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings)
+Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
     : Constraint(_bodyA, _bodyB, _settings)
 {
     manifold.numContacts = 0;

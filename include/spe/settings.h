@@ -1,7 +1,6 @@
 #pragma once
 
-namespace spe
-{
+#include "aabb.h"
 
 #define MAX_CONTACT_POINT 2
 
@@ -27,5 +26,40 @@ namespace spe
 #define EPA_TOLERANCE 1e-13f
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
+
+namespace spe
+{
+
+// Simulation settings
+struct WorldSettings
+{
+    mutable float DT = 1.0f / 60.0f;
+    mutable float INV_DT = 60.0f;
+
+    bool APPLY_GRAVITY = true;
+    Vec2 GRAVITY{ 0.0f, -10.0f };
+
+    bool WARM_STARTING = true;
+    bool APPLY_WARM_STARTING_THRESHOLD = false;
+    float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - FLT_EPSILON;
+
+    bool POSITION_CORRECTION = true;
+    float POSITION_CORRECTION_BETA = 0.2f;
+
+    float PENETRATION_SLOP = 0.005f;
+    float RESTITUTION_SLOP = 0.1f;
+
+    bool BLOCK_SOLVE = true;
+    uint32_t VELOCITY_SOLVE_ITERATIONS = 10;
+    uint32_t POSITION_SOLVE_ITERATIONS = 3;
+
+    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
+    float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f);
+
+    bool SLEEPING_ENABLED = true;
+    float SLEEPING_TRESHOLD = 0.5f;
+
+    AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
+};
 
 } // namespace spe

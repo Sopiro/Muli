@@ -61,7 +61,7 @@ public:
 
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
-    const Vec2 GetPosition() const;
+    const Vec2& GetPosition() const;
     void SetPosition(const Vec2& _pos);
     void SetPosition(float x, float y);
     const Rotation& GetRotation() const;
@@ -84,11 +84,11 @@ public:
     void SetRestitution(float _restitution);
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float _surfaceSpeed);
-    Vec2 GetLinearVelocity() const;
+    const Vec2& GetLinearVelocity() const;
     void SetLinearVelocity(const Vec2& _linearVelocity);
     float GetAngularVelocity() const;
     void SetAngularVelocity(float _angularVelocity);
-    Vec2 GetForce() const;
+    const Vec2& GetForce() const;
     void SetForce(const Vec2& _force);
     float GetTorque() const;
     void SetTorque(float _torque);
@@ -158,7 +158,7 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
     transform.rotation = _angle;
 }
 
-inline const Vec2 RigidBody::GetPosition() const
+inline const Vec2& RigidBody::GetPosition() const
 {
     return transform.position;
 }
@@ -269,7 +269,7 @@ inline void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
     surfaceSpeed = _surfaceSpeed;
 }
 
-inline Vec2 RigidBody::GetLinearVelocity() const
+inline const Vec2& RigidBody::GetLinearVelocity() const
 {
     return linearVelocity;
 }
@@ -289,7 +289,7 @@ inline void RigidBody::SetAngularVelocity(float _angularVelocity)
     angularVelocity = _angularVelocity;
 }
 
-inline Vec2 RigidBody::GetForce() const
+inline const Vec2& RigidBody::GetForce() const
 {
     return force;
 }

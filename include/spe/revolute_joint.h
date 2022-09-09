@@ -6,7 +6,7 @@
 namespace spe
 {
 
-struct Settings;
+struct WorldSettings;
 
 class RevoluteJoint : public Joint
 {
@@ -14,7 +14,7 @@ public:
     RevoluteJoint(RigidBody* _bodyA,
                   RigidBody* _bodyB,
                   Vec2 _anchor,
-                  const Settings& _settings,
+                  const WorldSettings& _settings,
                   float _frequency = 10.0f,
                   float _dampingRatio = 1.0f,
                   float _jointMass = -1.0f);

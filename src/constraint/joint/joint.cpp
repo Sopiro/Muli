@@ -6,7 +6,7 @@ namespace spe
 Joint::Joint(Joint::Type _type,
              RigidBody* _bodyA,
              RigidBody* _bodyB,
-             const Settings& _settings,
+             const WorldSettings& _settings,
              float _frequency,
              float _dampingRatio,
              float _jointMass)

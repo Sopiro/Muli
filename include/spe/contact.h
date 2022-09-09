@@ -40,7 +40,7 @@ class Contact : Constraint
     friend class PositionSolver;
 
 public:
-    Contact(RigidBody* _bodyA, RigidBody* _bodyB, const Settings& _settings);
+    Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings);
     ~Contact() noexcept = default;
 
     void Update();

@@ -5,7 +5,7 @@
 namespace spe
 {
 
-static void demo1(Game& game, World& world, Settings& settings)
+static void demo1(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -15,7 +15,7 @@ static void demo1(Game& game, World& world, Settings& settings)
     box->SetAngularVelocity(spe::linear_rand(-12.0f, 12.0f));
 }
 
-static void demo2(Game& game, World& world, Settings& settings)
+static void demo2(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -34,7 +34,7 @@ static void demo2(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo3(Game& game, World& world, Settings& settings)
+static void demo3(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -56,7 +56,7 @@ static void demo3(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo4(Game& game, World& world, Settings& settings)
+static void demo4(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -67,7 +67,7 @@ static void demo4(Game& game, World& world, Settings& settings)
     world.CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
 }
 
-static void demo5(Game& game, World& world, Settings& settings)
+static void demo5(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
@@ -103,7 +103,7 @@ static void demo5(Game& game, World& world, Settings& settings)
     world.CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 2.0f, 0.01f, b->GetMass());
 }
 
-static void demo6(Game& game, World& world, Settings& settings)
+static void demo6(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -133,7 +133,7 @@ static void demo6(Game& game, World& world, Settings& settings)
     pillar->SetPosition(-(xStart - 0.2f), 3.0f);
 }
 
-static void demo7(Game& game, World& world, Settings& settings)
+static void demo7(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -156,7 +156,7 @@ static void demo7(Game& game, World& world, Settings& settings)
     b->SetMass(30.0f);
 }
 
-static void demo8(Game& game, World& world, Settings& settings)
+static void demo8(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -197,7 +197,7 @@ static void demo8(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo9(Game& game, World& world, Settings& settings)
+static void demo9(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -224,7 +224,7 @@ static void demo9(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo10(Game& game, World& world, Settings& settings)
+static void demo10(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -264,7 +264,7 @@ static void demo10(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo11(Game& game, World& world, Settings& settings)
+static void demo11(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -344,7 +344,7 @@ static void demo11(Game& game, World& world, Settings& settings)
     camera.scale = Vec2{ 1.5f, 1.5f };
 }
 
-static void demo12(Game& game, World& world, Settings& settings)
+static void demo12(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -367,7 +367,7 @@ static void demo12(Game& game, World& world, Settings& settings)
     }
 }
 
-static void demo13(Game& game, World& world, Settings& settings)
+static void demo13(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -398,7 +398,7 @@ static void demo13(Game& game, World& world, Settings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void demo14(Game& game, World& world, Settings& settings)
+static void demo14(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -428,7 +428,7 @@ static void demo14(Game& game, World& world, Settings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void demo15(Game& game, World& world, Settings& settings)
+static void demo15(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -458,7 +458,7 @@ static void demo15(Game& game, World& world, Settings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-std::vector<std::pair<std::string, std::function<void(Game&, World&, Settings&)>>> get_demos()
+std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> get_demos()
 {
     decltype(get_demos()) demos;
     demos.reserve(12);

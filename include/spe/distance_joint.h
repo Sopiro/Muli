@@ -6,7 +6,7 @@
 namespace spe
 {
 
-struct Settings;
+struct WorldSettings;
 
 class DistanceJoint : public Joint
 {
@@ -16,7 +16,7 @@ public:
                   Vec2 _anchorA,
                   Vec2 _anchorB,
                   float _length,
-                  const Settings& _settings,
+                  const WorldSettings& _settings,
                   float _frequency = 10.0f,
                   float _dampingRatio = 1.0f,
                   float _jointMass = 1.0f);

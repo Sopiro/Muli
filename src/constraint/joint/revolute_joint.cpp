@@ -7,7 +7,7 @@ namespace spe
 RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
                              RigidBody* _bodyB,
                              Vec2 _anchor,
-                             const Settings& _settings,
+                             const WorldSettings& _settings,
                              float _frequency,
                              float _dampingRatio,
                              float _jointMass)

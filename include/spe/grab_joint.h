@@ -6,7 +6,7 @@
 namespace spe
 {
 
-struct Settings;
+struct WorldSettings;
 
 class GrabJoint : public Joint
 {
@@ -14,7 +14,7 @@ public:
     GrabJoint(RigidBody* _body,
               Vec2 _anchor,
               Vec2 _target,
-              const Settings& _settings,
+              const WorldSettings& _settings,
               float _frequency = 1.0f,
               float _dampingRatio = 0.5f,
               float _jointMass = -1.0f);

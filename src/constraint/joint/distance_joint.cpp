@@ -9,7 +9,7 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              Vec2 _anchorA,
                              Vec2 _anchorB,
                              float _length,
-                             const Settings& _settings,
+                             const WorldSettings& _settings,
                              float _frequency,
                              float _dampingRatio,
                              float _jointMass)

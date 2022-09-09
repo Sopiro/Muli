@@ -212,14 +212,14 @@ void Game::HandleInput()
                 ImGui::Text("Constraint solve iterations");
                 {
                     ImGui::SetNextItemWidth(120);
-                    static int velIteration = settings.VELOCITY_SOLVE_ITERATION;
-                    ImGui::SliderInt("Velocity", &velIteration, 0, 50);
-                    settings.VELOCITY_SOLVE_ITERATION = static_cast<uint32_t>(velIteration);
+                    static int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
+                    ImGui::SliderInt("Velocity", &velIterations, 0, 50);
+                    settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32_t>(velIterations);
 
                     ImGui::SetNextItemWidth(120);
-                    static int posIteration = settings.POSITION_SOLVE_ITERATION;
-                    ImGui::SliderInt("Position", &posIteration, 0, 50);
-                    settings.POSITION_SOLVE_ITERATION = static_cast<uint32_t>(posIteration);
+                    static int posIterations = settings.POSITION_SOLVE_ITERATIONS;
+                    ImGui::SliderInt("Position", &posIterations, 0, 50);
+                    settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32_t>(posIterations);
                 }
 
                 ImGui::Separator();

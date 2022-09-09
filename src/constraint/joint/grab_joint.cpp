@@ -7,7 +7,7 @@ namespace spe
 GrabJoint::GrabJoint(RigidBody* _body,
                      Vec2 _anchor,
                      Vec2 _target,
-                     const Settings& _settings,
+                     const WorldSettings& _settings,
                      float _frequency,
                      float _dampingRatio,
                      float _jointMass)

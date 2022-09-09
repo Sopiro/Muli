@@ -16,38 +16,6 @@
 namespace spe
 {
 
-// Simulation settings
-struct Settings
-{
-    mutable float DT = 1.0f / 60.0f;
-    mutable float INV_DT = 60.0f;
-
-    bool APPLY_GRAVITY = true;
-    Vec2 GRAVITY{ 0.0f, -10.0f };
-
-    bool WARM_STARTING = true;
-    bool APPLY_WARM_STARTING_THRESHOLD = false;
-    float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - FLT_EPSILON;
-
-    bool POSITION_CORRECTION = true;
-    float POSITION_CORRECTION_BETA = 0.2f;
-
-    float PENETRATION_SLOP = 0.005f;
-    float RESTITUTION_SLOP = 0.1f;
-
-    bool BLOCK_SOLVE = true;
-    uint32_t VELOCITY_SOLVE_ITERATION = 10;
-    uint32_t POSITION_SOLVE_ITERATION = 3;
-
-    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
-    float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f);
-
-    bool SLEEPING_ENABLED = true;
-    float SLEEPING_TRESHOLD = 0.5f;
-
-    AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
-};
-
 class World final
 {
     friend class Island;
@@ -55,7 +23,7 @@ class World final
     friend class ContactManager;
 
 public:
-    World(const Settings& simulationSettings);
+    World(const WorldSettings& simulationSettings);
     ~World() noexcept;
 
     World(const World&) noexcept = delete;
@@ -131,7 +99,7 @@ public:
     void Awake();
 
 private:
-    const Settings& settings;
+    const WorldSettings& settings;
     uint32_t uid{ 0 };
 
     ContactManager contactManager;
@@ -156,7 +124,7 @@ private:
     void Add(Joint* joint);
 };
 
-inline World::World(const Settings& simulationSettings)
+inline World::World(const WorldSettings& simulationSettings)
     : settings{ simulationSettings }
     , contactManager{ *this }
 {
