@@ -20,7 +20,7 @@ struct SupportResult
 };
 
 // Returns the fardest vertex in the 'dir' direction
-// 'dir' should be normalized
+// 'dir' should be normalized and a local vector
 static SupportResult support(RigidBody* b, Vec2 dir)
 {
     RigidBody::Shape shape = b->GetShape();
@@ -168,7 +168,7 @@ static EPAResult epa(RigidBody* b1, RigidBody* b2, Simplex& gjkResult)
     return { closestEdge.distance, closestEdge.normal };
 }
 
-static Edge find_farthest_edge(RigidBody* b, const Vec2& dir)
+static Edge find_featured_edge(Polygon* b, const Vec2& dir)
 {
     const Vec2 localDir = mul_t(b->GetRotation(), dir);
     const SupportResult farthest = support(b, localDir);
@@ -196,15 +196,19 @@ static Edge find_farthest_edge(RigidBody* b, const Vec2& dir)
         const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
         const Vec2& next = vertices[(idx + 1) % vertexCount];
 
-        const Vec2 e1 = (curr - prev).Normalized();
-        const Vec2 e2 = (curr - next).Normalized();
+        Vec2 e1 = (curr - prev).Normalized();
+        Vec2 e2 = (curr - next).Normalized();
 
-        const bool w = spe::abs(dot(e1, localDir)) <= spe::abs(dot(e2, localDir));
+        bool w = dot(e1, localDir) <= dot(e2, localDir);
 
-        curr = t * curr;
-
-        return w ? Edge{ t * prev, curr, (idx - 1 + vertexCount) % vertexCount, idx }
-                 : Edge{ curr, t * next, idx, (idx + 1) % vertexCount };
+        if (w)
+        {
+            return Edge{ t * prev, t * curr, (idx - 1 + vertexCount) % vertexCount, idx };
+        }
+        else
+        {
+            return Edge{ t * curr, t * next, idx, (idx + 1) % vertexCount };
+        }
     }
     else
     {
@@ -222,7 +226,7 @@ static void clip_edge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeCli
         return;
     }
 
-    float per = spe::abs(d1) + spe::abs(d2);
+    float s = spe::abs(d1) + spe::abs(d2);
 
     if (d1 < 0)
     {
@@ -232,7 +236,7 @@ static void clip_edge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeCli
         }
         else
         {
-            edge->p1.position = edge->p1.position + (edge->p2.position - edge->p1.position) * (-d1 / per);
+            edge->p1.position = edge->p1.position + (edge->p2.position - edge->p1.position) * (-d1 / s);
         }
     }
     else if (d2 < 0)
@@ -243,15 +247,15 @@ static void clip_edge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeCli
         }
         else
         {
-            edge->p2.position = edge->p2.position + (edge->p1.position - edge->p2.position) * (-d2 / per);
+            edge->p2.position = edge->p2.position + (edge->p1.position - edge->p2.position) * (-d2 / s);
         }
     }
 }
 
-static void find_contact_points(const Vec2& n, RigidBody* a, RigidBody* b, ContactManifold* out)
+static void find_contact_points(const Vec2& n, Polygon* a, Polygon* b, ContactManifold* out)
 {
-    Edge edgeA = find_farthest_edge(a, n);
-    Edge edgeB = find_farthest_edge(b, -n);
+    Edge edgeA = find_featured_edge(a, n);
+    Edge edgeB = find_featured_edge(b, -n);
 
     Edge* ref = &edgeA; // Reference edge
     Edge* inc = &edgeB; // Incidence edge
@@ -333,7 +337,41 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
     }
 }
 
-static bool convex_vs_convex(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool convex_vs_circle(Polygon* a, Circle* b, ContactManifold* out)
+{
+    const Vec2& pa = a->GetPosition();
+    const Vec2& pb = b->GetPosition();
+
+    Vec2 a2b = (pb - pa).Normalized();
+    out->referenceEdge = get_farthest_edge(a, a2b);
+    UV w = compute_uv(out->referenceEdge.p1.position, out->referenceEdge.p2.position, b->GetPosition());
+
+    const Vec2& closest = w.v <= 0 ? out->referenceEdge.p1.position
+                                   : (w.v >= 1 ? out->referenceEdge.p2.position
+                                               : lerp_vector(out->referenceEdge.p1.position, out->referenceEdge.p2.position, w));
+
+    Vec2 d = pb - closest;
+    float distance = d.Length();
+
+    if (distance > b->GetRadius())
+    {
+        return false;
+    }
+    else
+    {
+        out->bodyA = a;
+        out->bodyB = b;
+        out->contactNormal = -out->referenceEdge.normal;
+        out->contactTangent = out->contactNormal.Skew();
+        out->penetrationDepth = b->GetRadius() - distance;
+        out->contactPoints[0] = ContactPoint{ b->GetPosition() + out->contactNormal * -b->GetRadius(), -1 };
+        out->numContacts = 1;
+
+        return true;
+    }
+}
+
+static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
 {
     GJKResult gjkResult = gjk(a, b);
 
@@ -403,14 +441,27 @@ bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
     out->numContacts = 0;
     out->penetrationDepth = 0.0f;
 
+    RigidBody::Shape shapeA = a->GetShape();
+    RigidBody::Shape shapeB = b->GetShape();
+
     // Circle vs. Circle collision
-    if (a->GetShape() == RigidBody::Shape::ShapeCircle && b->GetShape() == RigidBody::Shape::ShapeCircle)
+    if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCircle)
     {
         return circle_vs_circle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
     }
+    // Convex vs. Circle collision
+    else if (shapeA == RigidBody::Shape::ShapePolygon && shapeB == RigidBody::Shape::ShapeCircle)
+    {
+        return convex_vs_circle(static_cast<Polygon*>(a), static_cast<Circle*>(b), out);
+    }
+    else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapePolygon)
+    {
+        return convex_vs_circle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
+        out->featureFlipped = true;
+    }
     else
     {
-        return convex_vs_convex(a, b, out);
+        return convex_vs_convex(static_cast<Polygon*>(a), static_cast<Polygon*>(b), out);
     }
 }
 
@@ -501,6 +552,34 @@ Vec2 get_closest_point(RigidBody* b, const Vec2& p)
         {
             throw std::exception("Not a supported shape");
         }
+    }
+}
+
+Edge get_farthest_edge(Polygon* p, const Vec2& dir)
+{
+    const Vec2 localDir = mul_t(p->GetRotation(), dir);
+    const SupportResult farthest = support(p, localDir);
+
+    Vec2 curr = farthest.vertex;
+    int32_t idx = farthest.index;
+
+    const Transform& t = p->GetTransform();
+
+    const std::vector<Vec2>& vertices = p->GetVertices();
+    int32_t vertexCount = static_cast<int32_t>(p->VertexCount());
+
+    const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
+    const Vec2& next = vertices[(idx + 1) % vertexCount];
+
+    bool w = cross(localDir, curr) > 0;
+
+    if (w)
+    {
+        return Edge{ t * prev, t * curr, (idx - 1 + vertexCount) % vertexCount, idx };
+    }
+    else
+    {
+        return Edge{ t * curr, t * next, idx, (idx + 1) % vertexCount };
     }
 }
 

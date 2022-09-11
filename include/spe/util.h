@@ -106,7 +106,7 @@ struct UV
 };
 
 // Project point P to line segment AB, calculate barycentric weights
-inline UV compute_uv(Vec2 a, Vec2 b, Vec2 p)
+inline UV compute_uv(const Vec2& a, const Vec2& b, const Vec2& p)
 {
     Vec2 dir = b - a;
     float len = dir.Length();
@@ -118,7 +118,7 @@ inline UV compute_uv(Vec2 a, Vec2 b, Vec2 p)
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
-inline Vec2 lerp_vector(Vec2 a, Vec2 b, UV uv)
+inline Vec2 lerp_vector(const Vec2& a, const Vec2& b, const UV& uv)
 {
     return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }
@@ -137,7 +137,7 @@ inline void print(T msg, bool lineFeed = true)
         std::cout << msg;
 }
 
-inline void print(Vec2 v, bool lineFeed = true)
+inline void print(const Vec2& v, bool lineFeed = true)
 {
     if (lineFeed)
         printf("%.4f, %.4f\n", v.x, v.y);

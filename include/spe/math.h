@@ -103,6 +103,13 @@ struct Vec2
 
         return Vec2{ x * invLength, y * invLength };
     }
+
+    // Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
+    // return cross(1, *this);
+    Vec2 Skew() const
+    {
+        return Vec2{ -y, x };
+    }
 };
 
 struct Vec3

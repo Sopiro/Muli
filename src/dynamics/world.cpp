@@ -328,7 +328,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
-        angles.push_back(spe::linear_rand(0.0f, 1.0f) * SPE_PI * 2.0f);
+        angles.push_back(spe::linear_rand(0.0f, 1.0f) * (SPE_PI * 2.0f - FLT_EPSILON));
     }
 
     std::sort(angles.begin(), angles.end());
