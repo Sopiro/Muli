@@ -3,6 +3,76 @@
 namespace spe
 {
 
+Mat3 Mat3::GetInverse() const
+{
+    Mat3 t;
+
+    float det = ex.x * (ey.y * ez.z - ey.z * ez.y) - ey.x * (ex.y * ez.z - ez.y * ex.z) + ez.x * (ex.y * ey.z - ey.y * ex.z);
+
+    if (det != 0)
+    {
+        det = 1.0f / det;
+    }
+
+    t.ex.x = (ey.y * ez.z - ey.z * ez.y) * det;
+    t.ey.x = (ez.x * ey.z - ey.x * ez.z) * det;
+    t.ez.x = (ey.x * ez.y - ez.x * ey.y) * det;
+    t.ex.y = (ez.y * ex.z - ex.y * ez.z) * det;
+    t.ey.y = (ex.x * ez.z - ez.x * ex.z) * det;
+    t.ez.y = (ex.y * ez.x - ex.x * ez.y) * det;
+    t.ex.z = (ex.y * ey.z - ex.z * ey.y) * det;
+    t.ey.z = (ex.z * ey.x - ex.x * ey.z) * det;
+    t.ez.z = (ex.x * ey.y - ex.y * ey.x) * det;
+
+    return t;
+}
+
+Mat3 Mat3::Scale(float x, float y)
+{
+    Mat3 t{ 1.0f };
+
+    t.ex.x = x;
+    t.ey.y = y;
+
+    return Mul(*this, t);
+}
+
+Mat3 Mat3::Rotate(float z)
+{
+    float sin = sinf(z);
+    float cos = cosf(z);
+
+    Mat3 t;
+
+    // clang-format off
+    t.ex.x = cos; t.ey.x = -sin; t.ez.x = 0;
+    t.ex.y = sin; t.ey.y = cos;  t.ez.y = 0;
+    t.ex.z = 0;   t.ey.z = 0;    t.ez.z = 1;
+    // clang-format on
+
+    return Mul(*this, t);
+}
+
+Mat3 Mat3::Translate(float x, float y)
+{
+    Mat3 t{ 1.0f };
+
+    t.ez.x = x;
+    t.ez.y = y;
+
+    return Mul(*this, t);
+}
+
+Mat3 Mat3::Translate(const Vec2& v)
+{
+    Mat3 t{ 1.0f };
+
+    t.ez.x = v.x;
+    t.ez.y = v.y;
+
+    return Mul(*this, t);
+}
+
 Mat4 Mat4::Scale(float x, float y, float z)
 {
     Mat4 t{ 1.0f };

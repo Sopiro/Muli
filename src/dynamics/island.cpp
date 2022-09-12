@@ -60,7 +60,10 @@ void Island::Solve()
     }
 
     // If island is sleeping, skip the extra computation
-    if (sleeping) return;
+    if (sleeping)
+    {
+        return;
+    }
 
     // Prepare constraints for solving step
     for (uint32_t i = 0; i < contacts.size(); i++)

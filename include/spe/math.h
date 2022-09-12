@@ -380,29 +380,11 @@ struct Mat3
         return t;
     }
 
-    Mat3 GetInverse() const
-    {
-        Mat3 t;
-
-        float det = ex.x * (ey.y * ez.z - ey.z * ez.y) - ey.x * (ex.y * ez.z - ez.y * ex.z) + ez.x * (ex.y * ey.z - ey.y * ex.z);
-
-        if (det != 0)
-        {
-            det = 1.0f / det;
-        }
-
-        t.ex.x = (ey.y * ez.z - ey.z * ez.y) * det;
-        t.ey.x = (ez.x * ey.z - ey.x * ez.z) * det;
-        t.ez.x = (ey.x * ez.y - ez.x * ey.y) * det;
-        t.ex.y = (ez.y * ex.z - ex.y * ez.z) * det;
-        t.ey.y = (ex.x * ez.z - ez.x * ex.z) * det;
-        t.ez.y = (ex.y * ez.x - ex.x * ez.y) * det;
-        t.ex.z = (ex.y * ey.z - ex.z * ey.y) * det;
-        t.ey.z = (ex.z * ey.x - ex.x * ey.z) * det;
-        t.ez.z = (ex.x * ey.y - ex.y * ey.x) * det;
-
-        return t;
-    }
+    Mat3 GetInverse() const;
+    Mat3 Scale(float x, float y);
+    Mat3 Rotate(float z);
+    Mat3 Translate(float x, float y);
+    Mat3 Translate(const Vec2& v);
 };
 
 struct Mat4
@@ -469,13 +451,9 @@ struct Mat4
     }
 
     Mat4 GetInverse();
-
     Mat4 Scale(float x, float y, float z);
-
     Mat4 Rotate(float x, float y, float z);
-
     Mat4 Translate(float x, float y, float z);
-
     Mat4 Translate(const Vec3& v);
 };
 

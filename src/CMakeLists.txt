@@ -1,13 +1,14 @@
 set(SOURCE_FILES
+    common/util.cpp
+    common/math.cpp
+
     dynamics/world.cpp
     dynamics/island.cpp
 
     dynamics/rigidbody.cpp
-    dynamics/polygon.cpp
     dynamics/circle.cpp
+    dynamics/polygon.cpp
     dynamics/box.cpp
-    dynamics/util.cpp
-    dynamics/math.cpp
 
     collision/aabbtree.cpp
     collision/collision.cpp
