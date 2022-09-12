@@ -256,7 +256,7 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
     {
         RigidBody* body = nodes[i]->body;
 
-        if (test_point_inside(body, point))
+        if (TestPointInside(body, point))
         {
             res.push_back(body);
         }
@@ -281,7 +281,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
                    RigidBody::Type::Dynamic,
                    false };
 
-        if (detect_collision(body, &t))
+        if (DetectCollision(body, &t))
         {
             res.push_back(body);
         }
@@ -309,9 +309,9 @@ Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
     return c;
 }
 
-spe::Polygon* World::CreatePolygon(std::vector<Vec2> vertices, RigidBody::Type type, bool resetPosition, float density)
+Polygon* World::CreatePolygon(const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float density)
 {
-    Polygon* p = new Polygon(std::move(vertices), type, resetPosition, density);
+    Polygon* p = new Polygon(vertices, type, resetPosition, density);
     Add(p);
     return p;
 }
@@ -320,7 +320,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 {
     if (num_vertices < 3)
     {
-        num_vertices = spe::linear_rand(3, 8);
+        num_vertices = LinearRand(3, 8);
     }
 
     std::vector<float> angles{};
@@ -328,7 +328,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
-        angles.push_back(spe::linear_rand(0.0f, 1.0f) * (SPE_PI * 2.0f - FLT_EPSILON));
+        angles.push_back(LinearRand(0.0f, 1.0f) * (SPE_PI * 2.0f - FLT_EPSILON));
     }
 
     std::sort(angles.begin(), angles.end());
@@ -338,7 +338,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
 
     for (uint32_t i = 0; i < num_vertices; i++)
     {
-        vertices.emplace_back(spe::cos(angles[i]) * radius, spe::sin(angles[i]) * radius);
+        vertices.emplace_back(Cos(angles[i]) * radius, Sin(angles[i]) * radius);
     }
 
     Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, density);
@@ -350,7 +350,7 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
 {
     if (num_vertices < 3)
     {
-        num_vertices = spe::linear_rand(3, 11);
+        num_vertices = LinearRand(3, 11);
     }
 
     float angleStart = initial_angle;

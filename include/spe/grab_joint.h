@@ -24,7 +24,7 @@ public:
 
     const Vec2& GetLocalAnchor() const;
     const Vec2& GetTarget() const;
-    void SetTarget(Vec2 target);
+    void SetTarget(const Vec2& target);
 
 private:
     Vec2 localAnchor;
@@ -48,9 +48,9 @@ inline const Vec2& GrabJoint::GetTarget() const
     return target;
 }
 
-inline void GrabJoint::SetTarget(Vec2 _target)
+inline void GrabJoint::SetTarget(const Vec2& _target)
 {
-    target = std::move(_target);
+    target = _target;
 }
 
 } // namespace spe

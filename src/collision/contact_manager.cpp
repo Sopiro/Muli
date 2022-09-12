@@ -62,8 +62,6 @@ void ContactManager::Update(float dt)
         ++contactCount;
     });
 
-    int count = 0;
-
     // Narrow phase
     // Evaluate contacts, prepare for solving step
     Contact* c = contactList;

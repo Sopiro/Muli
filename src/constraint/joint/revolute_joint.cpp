@@ -13,8 +13,8 @@ RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
                              float _jointMass)
     : Joint(Joint::Type::JointRevolute, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchorA = mul_t(bodyA->GetTransform(), _anchor);
-    localAnchorB = mul_t(bodyB->GetTransform(), _anchor);
+    localAnchorA = MulT(bodyA->GetTransform(), _anchor);
+    localAnchorB = MulT(bodyB->GetTransform(), _anchor);
 }
 
 void RevoluteJoint::Prepare()
@@ -63,7 +63,7 @@ void RevoluteJoint::SolveVelocityConstraint()
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
     Vec2 jv =
-        (bodyB->linearVelocity + cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + cross(bodyA->angularVelocity, ra));
+        (bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra));
 
     // You don't have to clamp the impulse. It's equality constraint!
     Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
@@ -79,9 +79,9 @@ void RevoluteJoint::ApplyImpulse(const Vec2& lambda)
     // Pc = J^t ⋅ λ
 
     bodyA->linearVelocity -= lambda * bodyA->invMass;
-    bodyA->angularVelocity -= bodyA->invInertia * cross(ra, lambda);
+    bodyA->angularVelocity -= bodyA->invInertia * Cross(ra, lambda);
     bodyB->linearVelocity += lambda * bodyB->invMass;
-    bodyB->angularVelocity += bodyB->invInertia * cross(rb, lambda);
+    bodyB->angularVelocity += bodyB->invInertia * Cross(rb, lambda);
 }
 
 } // namespace spe

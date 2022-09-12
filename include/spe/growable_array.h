@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdlib.h>
+#include "common.h"
 
 namespace spe
 {
@@ -34,7 +34,7 @@ public:
 
     GrowableArray& operator=(const GrowableArray& other) noexcept
     {
-        assert(this != &other);
+        speAssert(this != &other);
         if (other.array == other.stack_array)
         {
             array = stack_array;
@@ -59,7 +59,7 @@ public:
 
     GrowableArray& operator=(GrowableArray&& other) noexcept
     {
-        assert(this != &other);
+        speAssert(this != &other);
         if (other.array == other.stack_array)
         {
             array = stack_array;

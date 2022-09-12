@@ -32,7 +32,7 @@ void Island::Solve()
             float angular_a = b->torque * b->invInertia * world.settings.DT;
             b->angularVelocity += angular_a;
 
-            if (sleeping && (length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
+            if (sleeping && (Length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
                 (angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE))
             {
                 sleeping = false;
@@ -41,7 +41,7 @@ void Island::Solve()
         }
 
         if ((sleeping && !world.forceIntegration) ||
-            ((length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
+            ((Length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
              (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
         {
             b->resting += world.settings.DT;
@@ -62,11 +62,15 @@ void Island::Solve()
     // If island is sleeping, skip the extra computation
     if (sleeping) return;
 
-    // Prepare for solving
+    // Prepare constraints for solving step
     for (uint32_t i = 0; i < contacts.size(); i++)
+    {
         contacts[i]->Prepare();
+    }
     for (uint32_t i = 0; i < joints.size(); i++)
+    {
         joints[i]->Prepare();
+    }
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
@@ -106,7 +110,7 @@ void Island::Solve()
         b->transform.position += b->linearVelocity * world.settings.DT;
         b->transform.rotation += b->angularVelocity * world.settings.DT;
 
-        if (!test_point_inside_AABB(world.settings.VALID_REGION, b->GetPosition()))
+        if (!TestPointInsideAABB(world.settings.VALID_REGION, b->GetPosition()))
         {
             world.BufferDestroy(b);
         }

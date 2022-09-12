@@ -559,22 +559,22 @@ struct Transform
 
 // Vec2 functions begin
 
-inline float dot(const Vec2& a, const Vec2& b)
+inline float Dot(const Vec2& a, const Vec2& b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
-inline float cross(const Vec2& a, const Vec2& b)
+inline float Cross(const Vec2& a, const Vec2& b)
 {
     return a.x * b.y - a.y * b.x;
 }
 
-inline Vec2 cross(float s, const Vec2& v)
+inline Vec2 Cross(float s, const Vec2& v)
 {
     return Vec2{ -s * v.y, s * v.x };
 }
 
-inline Vec2 cross(const Vec2& v, float s)
+inline Vec2 Cross(const Vec2& v, float s)
 {
     return Vec2{ s * v.y, -s * v.x };
 }
@@ -609,27 +609,27 @@ inline bool operator!=(const Vec2& a, const Vec2& b)
     return a.x != b.x || a.y != b.y;
 }
 
-inline float dist(const Vec2& a, const Vec2& b)
+inline float Dist(const Vec2& a, const Vec2& b)
 {
     return (a - b).Length();
 }
 
-inline float dist2(const Vec2& a, const Vec2& b)
+inline float Dist2(const Vec2& a, const Vec2& b)
 {
     return (a - b).Length2();
 }
 
-inline float length(const Vec2& v)
+inline float Length(const Vec2& v)
 {
     return v.Length();
 }
 
-inline float length2(const Vec2& v)
+inline float Length2(const Vec2& v)
 {
     return v.Length2();
 }
 
-inline Vec2 normalize(const Vec2& v)
+inline Vec2 Normalize(const Vec2& v)
 {
     return v.Normalized();
 }
@@ -638,12 +638,12 @@ inline Vec2 normalize(const Vec2& v)
 
 // Vec3 functions begin
 
-inline float dot(const Vec3& a, const Vec3& b)
+inline float Dot(const Vec3& a, const Vec3& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline Vec3 cross(const Vec3& a, const Vec3& b)
+inline Vec3 Cross(const Vec3& a, const Vec3& b)
 {
     return Vec3{ a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };
 }
@@ -678,12 +678,12 @@ inline bool operator!=(const Vec3& a, const Vec3& b)
     return a.x != b.x || a.y != b.y || a.z != b.z;
 }
 
-inline float dist(const Vec3& a, const Vec3& b)
+inline float Dist(const Vec3& a, const Vec3& b)
 {
     return (b - a).Length();
 }
 
-inline float dist2(const Vec3& a, const Vec3& b)
+inline float Dist2(const Vec3& a, const Vec3& b)
 {
     return (b - a).Length2();
 }
@@ -692,7 +692,7 @@ inline float dist2(const Vec3& a, const Vec3& b)
 
 // Vec4 functions begin
 
-inline float dot(const Vec4& a, const Vec4& b)
+inline float Dot(const Vec4& a, const Vec4& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
@@ -727,7 +727,7 @@ inline Mat2 operator+(const Mat2& a, const Mat2& b)
 }
 
 // M * V
-inline Vec2 mul(const Mat2& m, const Vec2& v)
+inline Vec2 Mul(const Mat2& m, const Vec2& v)
 {
     return Vec2{
         m.ex.x * v.x + m.ey.x * v.y,
@@ -744,13 +744,13 @@ inline Vec2 operator*(const Mat2& m, const Vec2& v)
 }
 
 // M^T * V
-inline Vec2 mul_t(const Mat2& m, const Vec2& v)
+inline Vec2 MulT(const Mat2& m, const Vec2& v)
 {
-    return Vec2{ dot(m.ex, v), dot(m.ey, v) };
+    return Vec2{ Dot(m.ex, v), Dot(m.ey, v) };
 }
 
 // A * B
-inline Mat2 mul(const Mat2& a, const Mat2& b)
+inline Mat2 Mul(const Mat2& a, const Mat2& b)
 {
     return Mat2{ a * b.ex, a * b.ey };
 }
@@ -761,10 +761,10 @@ inline Mat2 operator*(const Mat2& a, const Mat2& b)
 }
 
 // A^T * B
-inline Mat2 mul_t(const Mat2& a, const Mat2& b)
+inline Mat2 MulT(const Mat2& a, const Mat2& b)
 {
-    Vec2 c1{ dot(a.ex, b.ex), dot(a.ey, b.ex) };
-    Vec2 c2{ dot(a.ex, b.ey), dot(a.ey, b.ey) };
+    Vec2 c1{ Dot(a.ex, b.ex), Dot(a.ey, b.ex) };
+    Vec2 c2{ Dot(a.ex, b.ey), Dot(a.ey, b.ey) };
 
     return Mat2{ c1, c2 };
 }
@@ -774,7 +774,7 @@ inline Mat2 mul_t(const Mat2& a, const Mat2& b)
 // Mat3 functions begin
 
 // M * V
-inline Vec3 mul(const Mat3& m, const Vec3& v)
+inline Vec3 Mul(const Mat3& m, const Vec3& v)
 {
     return Vec3{
         m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
@@ -793,13 +793,13 @@ inline Vec3 operator*(const Mat3& m, const Vec3& v)
 }
 
 // M^T * V
-inline Vec3 mul_t(const Mat3& m, const Vec3& v)
+inline Vec3 MulT(const Mat3& m, const Vec3& v)
 {
-    return Vec3{ dot(m.ex, v), dot(m.ey, v), dot(m.ez, v) };
+    return Vec3{ Dot(m.ex, v), Dot(m.ey, v), Dot(m.ez, v) };
 }
 
 // A * B
-inline Mat3 mul(const Mat3& a, const Mat3& b)
+inline Mat3 Mul(const Mat3& a, const Mat3& b)
 {
     return Mat3{ a * b.ex, a * b.ey, a * b.ez };
 }
@@ -810,11 +810,11 @@ inline Mat3 operator*(const Mat3& a, const Mat3& b)
 }
 
 // A^T * B
-inline Mat3 mul_t(const Mat3& a, const Mat3& b)
+inline Mat3 MulT(const Mat3& a, const Mat3& b)
 {
-    Vec3 c1{ dot(a.ex, b.ex), dot(a.ey, b.ex), dot(a.ez, b.ex) };
-    Vec3 c2{ dot(a.ex, b.ey), dot(a.ey, b.ey), dot(a.ez, b.ey) };
-    Vec3 c3{ dot(a.ex, b.ez), dot(a.ey, b.ez), dot(a.ez, b.ez) };
+    Vec3 c1{ Dot(a.ex, b.ex), Dot(a.ey, b.ex), Dot(a.ez, b.ex) };
+    Vec3 c2{ Dot(a.ex, b.ey), Dot(a.ey, b.ey), Dot(a.ez, b.ey) };
+    Vec3 c3{ Dot(a.ex, b.ez), Dot(a.ey, b.ez), Dot(a.ez, b.ez) };
 
     return Mat3{ c1, c2, c3 };
 }
@@ -824,7 +824,7 @@ inline Mat3 mul_t(const Mat3& a, const Mat3& b)
 // Mat4 functions begin
 
 // M * V
-inline Vec4 mul(const Mat4& m, const Vec4& v)
+inline Vec4 Mul(const Mat4& m, const Vec4& v)
 {
     return Vec4{
         m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z + m.ew.x * v.w,
@@ -845,13 +845,13 @@ inline Vec4 operator*(const Mat4& m, const Vec4& v)
 }
 
 // M^T * V
-inline Vec4 mul_t(const Mat4& m, const Vec4& v)
+inline Vec4 MulT(const Mat4& m, const Vec4& v)
 {
-    return Vec4{ dot(m.ex, v), dot(m.ey, v), dot(m.ez, v), dot(m.ew, v) };
+    return Vec4{ Dot(m.ex, v), Dot(m.ey, v), Dot(m.ez, v), Dot(m.ew, v) };
 }
 
 // A * B
-inline Mat4 mul(const Mat4& a, const Mat4& b)
+inline Mat4 Mul(const Mat4& a, const Mat4& b)
 {
     return Mat4{ a * b.ex, a * b.ey, a * b.ez, a * b.ew };
 }
@@ -862,17 +862,17 @@ inline Mat4 operator*(const Mat4& a, const Mat4& b)
 }
 
 // A^T * B
-inline Mat4 mul_t(const Mat4& a, const Mat4& b)
+inline Mat4 MulT(const Mat4& a, const Mat4& b)
 {
-    Vec4 c1{ dot(a.ex, b.ex), dot(a.ey, b.ex), dot(a.ez, b.ex), dot(a.ew, b.ex) };
-    Vec4 c2{ dot(a.ex, b.ey), dot(a.ey, b.ey), dot(a.ez, b.ey), dot(a.ew, b.ey) };
-    Vec4 c3{ dot(a.ex, b.ez), dot(a.ey, b.ez), dot(a.ez, b.ez), dot(a.ew, b.ez) };
-    Vec4 c4{ dot(a.ex, b.ew), dot(a.ey, b.ew), dot(a.ez, b.ew), dot(a.ew, b.ew) };
+    Vec4 c1{ Dot(a.ex, b.ex), Dot(a.ey, b.ex), Dot(a.ez, b.ex), Dot(a.ew, b.ex) };
+    Vec4 c2{ Dot(a.ex, b.ey), Dot(a.ey, b.ey), Dot(a.ez, b.ey), Dot(a.ew, b.ey) };
+    Vec4 c3{ Dot(a.ex, b.ez), Dot(a.ey, b.ez), Dot(a.ez, b.ez), Dot(a.ew, b.ez) };
+    Vec4 c4{ Dot(a.ex, b.ew), Dot(a.ey, b.ew), Dot(a.ez, b.ew), Dot(a.ew, b.ew) };
 
     return Mat4{ c1, c2, c3, c4 };
 }
 
-inline Mat4 orth(float left, float right, float bottom, float top, float zNear, float zFar)
+inline Mat4 Orth(float left, float right, float bottom, float top, float zNear, float zFar)
 {
     Mat4 t{ 1.0f };
 
@@ -892,7 +892,7 @@ inline Mat4 orth(float left, float right, float bottom, float top, float zNear, 
 // Mat4 functions end
 
 // Rotate a vector
-inline Vec2 mul(const Rotation& r, const Vec2& v)
+inline Vec2 Mul(const Rotation& r, const Vec2& v)
 {
     return Vec2{ r.c * v.x - r.s * v.y, r.s * v.x + r.c * v.y };
 }
@@ -903,13 +903,13 @@ inline Vec2 operator*(const Rotation& r, const Vec2& v)
 }
 
 // Inverse rotate a vector
-inline Vec2 mul_t(const Rotation& r, const Vec2& v)
+inline Vec2 MulT(const Rotation& r, const Vec2& v)
 {
     return Vec2{ r.c * v.x + r.s * v.y, -r.s * v.x + r.c * v.y };
 }
 
 // Transform a vector: simplified matrix multiplication
-inline Vec2 mul(const Transform& t, const Vec2& v)
+inline Vec2 Mul(const Transform& t, const Vec2& v)
 {
     float x = (t.rotation.c * v.x - t.rotation.s * v.y) + t.position.x;
     float y = (t.rotation.s * v.x + t.rotation.c * v.y) + t.position.y;
@@ -926,7 +926,7 @@ inline Vec2 operator*(const Transform& t, const Vec2& v)
 }
 
 // Inverse transform a vector
-inline Vec2 mul_t(const Transform& t, const Vec2& v)
+inline Vec2 MulT(const Transform& t, const Vec2& v)
 {
     float px = v.x - t.position.x;
     float py = v.y - t.position.y;
@@ -939,80 +939,80 @@ inline Vec2 mul_t(const Transform& t, const Vec2& v)
 // Generals
 
 template <typename T>
-inline T abs(T a)
+inline T Abs(T a)
 {
     return a > T(0) ? a : -a;
 }
 
-inline Vec2 abs(const Vec2& a)
+inline Vec2 Abs(const Vec2& a)
 {
-    return Vec2(abs(a.x), abs(a.y));
+    return Vec2(Abs(a.x), Abs(a.y));
 }
 
-inline Mat2 abs(const Mat2& A)
+inline Mat2 Abs(const Mat2& A)
 {
-    return Mat2(abs(A.ex), abs(A.ey));
+    return Mat2(Abs(A.ex), Abs(A.ey));
 }
 
 template <typename T>
-inline T min(T a, T b)
+inline T Min(T a, T b)
 {
     return a < b ? a : b;
 }
 
-inline Vec2 min(const Vec2& a, const Vec2& b)
+inline Vec2 Min(const Vec2& a, const Vec2& b)
 {
-    return Vec2(min(a.x, b.x), min(a.y, b.y));
+    return Vec2(Min(a.x, b.x), Min(a.y, b.y));
 }
 
 template <typename T>
-inline T max(T a, T b)
+inline T Max(T a, T b)
 {
     return a > b ? a : b;
 }
 
-inline Vec2 max(const Vec2& a, const Vec2& b)
+inline Vec2 Max(const Vec2& a, const Vec2& b)
 {
-    return Vec2(max(a.x, b.x), max(a.y, b.y));
+    return Vec2(Max(a.x, b.x), Max(a.y, b.y));
 }
 
 template <typename T>
-inline T clamp(T v, T _min, T _max)
+inline T Clamp(T v, T _min, T _max)
 {
-    return max(_min, min(v, _max));
+    return Max(_min, Min(v, _max));
 }
 
-inline Vec2 clamp(const Vec2& a, const Vec2& _min, const Vec2& _max)
+inline Vec2 Clamp(const Vec2& a, const Vec2& _min, const Vec2& _max)
 {
-    return max(_min, min(a, _max));
+    return Max(_min, Min(a, _max));
 }
 
-inline float floor(float s)
+inline float Floor(float s)
 {
     return floorf(s);
 }
 
-inline float sqrt(float s)
+inline float Sqrt(float s)
 {
     return sqrtf(s);
 }
 
-inline float log(float s)
+inline float Log(float s)
 {
     return logf(s);
 }
 
-inline float trunc(float s)
+inline float Trunc(float s)
 {
     return truncf(s);
 }
 
-inline float cos(float s)
+inline float Cos(float s)
 {
     return cosf(s);
 }
 
-inline float sin(float s)
+inline float Sin(float s)
 {
     return sinf(s);
 }

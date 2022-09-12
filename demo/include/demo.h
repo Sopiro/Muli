@@ -5,17 +5,17 @@
 namespace spe
 {
 
-static void demo1(Game& game, World& world, WorldSettings& settings)
+static void Demo1(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
 
     RigidBody* box = world.CreateBox(0.4f);
     box->SetPosition(0.0f, 5.0f);
-    box->SetAngularVelocity(spe::linear_rand(-12.0f, 12.0f));
+    box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
 }
 
-static void demo2(Game& game, World& world, WorldSettings& settings)
+static void Demo2(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -30,11 +30,11 @@ static void demo2(Game& game, World& world, WorldSettings& settings)
     for (uint32_t i = 0; i < 20; i++)
     {
         RigidBody* b = world.CreateBox(size);
-        b->SetPosition(spe::linear_rand(-error, error), start + i * (size + gap));
+        b->SetPosition(LinearRand(-error, error), start + i * (size + gap));
     }
 }
 
-static void demo3(Game& game, World& world, WorldSettings& settings)
+static void Demo3(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -56,7 +56,7 @@ static void demo3(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void demo4(Game& game, World& world, WorldSettings& settings)
+static void Demo4(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -67,7 +67,7 @@ static void demo4(Game& game, World& world, WorldSettings& settings)
     world.CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
 }
 
-static void demo5(Game& game, World& world, WorldSettings& settings)
+static void Demo5(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
@@ -92,7 +92,7 @@ static void demo5(Game& game, World& world, WorldSettings& settings)
 
     // Reduce the amplitude by half every second
     float halfLife = 1.0f;
-    float frequency = -spe::log(0.5f) / (halfLife * SPE_PI * 2.0f);
+    float frequency = -Log(0.5f) / (halfLife * SPE_PI * 2.0f);
 
     b = world.CreateBox(0.3f);
     b->SetPosition(-3.0f, 3.6f);
@@ -103,7 +103,7 @@ static void demo5(Game& game, World& world, WorldSettings& settings)
     world.CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 2.0f, 0.01f, b->GetMass());
 }
 
-static void demo6(Game& game, World& world, WorldSettings& settings)
+static void Demo6(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -121,8 +121,8 @@ static void demo6(Game& game, World& world, WorldSettings& settings)
         {
             Polygon* b = world.CreateRandomConvexPolygon(size, 6);
             b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
-            b->SetLinearVelocity(b->GetPosition() * spe::linear_rand(0.5f, 0.7f));
-            b->SetFriction(spe::linear_rand(0.2f, 1.0f));
+            b->SetLinearVelocity(b->GetPosition() * LinearRand(0.5f, 0.7f));
+            b->SetFriction(LinearRand(0.2f, 1.0f));
         }
     }
 
@@ -133,7 +133,7 @@ static void demo6(Game& game, World& world, WorldSettings& settings)
     pillar->SetPosition(-(xStart - 0.2f), 3.0f);
 }
 
-static void demo7(Game& game, World& world, WorldSettings& settings)
+static void Demo7(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -156,7 +156,7 @@ static void demo7(Game& game, World& world, WorldSettings& settings)
     b->SetMass(30.0f);
 }
 
-static void demo8(Game& game, World& world, WorldSettings& settings)
+static void Demo8(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -197,7 +197,7 @@ static void demo8(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void demo9(Game& game, World& world, WorldSettings& settings)
+static void Demo9(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -209,7 +209,7 @@ static void demo9(Game& game, World& world, WorldSettings& settings)
     float xStart = -(count - 1) / 2 * gap;
     float yStart = 6.0f;
 
-    bool r = spe::linear_rand(0.0f, 1.0f) > 0.5f;
+    bool r = LinearRand(0.0f, 1.0f) > 0.5f;
 
     RigidBody* b;
     for (int i = 0; i < count; i++)
@@ -224,7 +224,7 @@ static void demo9(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void demo10(Game& game, World& world, WorldSettings& settings)
+static void Demo10(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -241,7 +241,7 @@ static void demo10(Game& game, World& world, WorldSettings& settings)
 
     Joint* j = world.CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
 
-    bool t = spe::linear_rand(0.0f, 1.0f) > 0.5;
+    bool t = LinearRand(0.0f, 1.0f) > 0.5;
 
     int count = 12;
     for (int i = 1; i < count; i++)
@@ -264,7 +264,7 @@ static void demo10(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void demo11(Game& game, World& world, WorldSettings& settings)
+static void Demo11(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -288,7 +288,7 @@ static void demo11(Game& game, World& world, WorldSettings& settings)
 
     Joint* j;
 
-    bool revoluteBridge = spe::linear_rand(0.0f, 1.0f) > 0.5;
+    bool revoluteBridge = LinearRand(0.0f, 1.0f) > 0.5;
     float frequency = 30.0f;
 
     if (revoluteBridge)
@@ -344,7 +344,7 @@ static void demo11(Game& game, World& world, WorldSettings& settings)
     camera.scale = Vec2{ 1.5f, 1.5f };
 }
 
-static void demo12(Game& game, World& world, WorldSettings& settings)
+static void Demo12(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
@@ -367,7 +367,7 @@ static void demo12(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void demo13(Game& game, World& world, WorldSettings& settings)
+static void Demo13(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -388,9 +388,9 @@ static void demo13(Game& game, World& world, WorldSettings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateCircle(r);
-        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
-        b->SetRotation(spe::linear_rand(0.0f, SPE_PI * 2.0f));
+        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
     }
 
     Camera& c = game.GetCamera();
@@ -398,7 +398,7 @@ static void demo13(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void demo14(Game& game, World& world, WorldSettings& settings)
+static void Demo14(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -419,8 +419,8 @@ static void demo14(Game& game, World& world, WorldSettings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateBox(r);
-        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
     }
 
     Camera& c = game.GetCamera();
@@ -428,7 +428,7 @@ static void demo14(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void demo15(Game& game, World& world, WorldSettings& settings)
+static void Demo15(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -449,8 +449,8 @@ static void demo15(Game& game, World& world, WorldSettings& settings)
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateRandomConvexPolygon(r, 7);
-        b->SetPosition(spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       spe::linear_rand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
+                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
     }
 
     Camera& c = game.GetCamera();
@@ -458,26 +458,26 @@ static void demo15(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> get_demos()
+std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> GetDemos()
 {
-    decltype(get_demos()) demos;
+    decltype(GetDemos()) demos;
     demos.reserve(12);
 
-    demos.push_back({ "Single Box", demo1 });
-    demos.push_back({ "Box stacking", demo2 });
-    demos.push_back({ "Pyramid", demo3 });
-    demos.push_back({ "Single pendulum", demo4 });
-    demos.push_back({ "Springs", demo5 });
-    demos.push_back({ "Random convex shapes", demo6 });
-    demos.push_back({ "Seesaw", demo7 });
-    demos.push_back({ "Friction test", demo8 });
-    demos.push_back({ "Restitution test", demo9 });
-    demos.push_back({ "Multi pendulum", demo10 });
-    demos.push_back({ "Suspension bridge", demo11 });
-    demos.push_back({ "Circle stacking", demo12 });
-    demos.push_back({ "1000 circles", demo13 });
-    demos.push_back({ "1000 boxes", demo14 });
-    demos.push_back({ "1000 convex shapes", demo15 });
+    demos.push_back({ "Single Box", Demo1 });
+    demos.push_back({ "Box stacking", Demo2 });
+    demos.push_back({ "Pyramid", Demo3 });
+    demos.push_back({ "Single pendulum", Demo4 });
+    demos.push_back({ "Springs", Demo5 });
+    demos.push_back({ "Random convex shapes", Demo6 });
+    demos.push_back({ "Seesaw", Demo7 });
+    demos.push_back({ "Friction test", Demo8 });
+    demos.push_back({ "Restitution test", Demo9 });
+    demos.push_back({ "Multi pendulum", Demo10 });
+    demos.push_back({ "Suspension bridge", Demo11 });
+    demos.push_back({ "Circle stacking", Demo12 });
+    demos.push_back({ "1000 circles", Demo13 });
+    demos.push_back({ "1000 boxes", Demo14 });
+    demos.push_back({ "1000 convex shapes", Demo15 });
 
     return demos;
 }

@@ -9,14 +9,14 @@
 namespace spe
 {
 
-inline float mix_friction(float f1, float f2)
+inline float MixFriction(float f1, float f2)
 {
-    return spe::sqrt(f1 * f2);
+    return Sqrt(f1 * f2);
 }
 
-inline float mix_restitution(float r1, float r2)
+inline float MixRestitution(float r1, float r2)
 {
-    return spe::max(r1, r2);
+    return Max(r1, r2);
 }
 
 class RigidBody;

@@ -34,11 +34,11 @@ struct ContactManifold
     bool featureFlipped;
 };
 
-bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
-bool test_point_inside(RigidBody* b, const Vec2& p);
-float compute_distance(RigidBody* a, RigidBody* b);
-float compute_distance(RigidBody* b, const Vec2& p);
-Vec2 get_closest_point(RigidBody* b, const Vec2& p);
-Edge get_farthest_edge(Polygon* p, const Vec2& dir);
+bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
+bool TestPointInside(RigidBody* b, const Vec2& p);
+float ComputeDistance(RigidBody* a, RigidBody* b);
+float ComputeDistance(RigidBody* b, const Vec2& p);
+Vec2 GetClosestPoint(RigidBody* b, const Vec2& p);
+Edge GetFarthestEdge(Polygon* p, const Vec2& dir);
 
 } // namespace spe

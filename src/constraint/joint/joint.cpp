@@ -27,8 +27,8 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
     if (_frequency > 0.0f)
     {
         frequency = _frequency;
-        dampingRatio = spe::clamp<float>(_dampingRatio, 0.0f, 1.0f);
-        jointMass = spe::clamp<float>(_jointMass, 0.0f, FLT_MAX);
+        dampingRatio = Clamp<float>(_dampingRatio, 0.0f, 1.0f);
+        jointMass = Clamp<float>(_jointMass, 0.0f, FLT_MAX);
 
         CalculateBetaAndGamma();
     }

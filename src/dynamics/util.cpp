@@ -6,7 +6,7 @@
 namespace spe
 {
 
-float spe::compute_convex_polygon_inertia(const std::vector<Vec2>& vertices, float mass)
+float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
 {
     float numerator = 0.0f;
     float denominator = 0.0f;
@@ -18,9 +18,9 @@ float spe::compute_convex_polygon_inertia(const std::vector<Vec2>& vertices, flo
         const Vec2& vi = vertices[i];
         const Vec2& vj = vertices[j];
 
-        float crs = abs(cross(vj, vi));
+        float crs = Abs(Cross(vj, vi));
 
-        numerator += crs * (dot(vj, vj) + dot(vj, vi) + dot(vi, vi));
+        numerator += crs * (Dot(vj, vj) + Dot(vj, vi) + Dot(vi, vi));
         denominator += crs;
     }
 

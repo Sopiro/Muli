@@ -13,10 +13,10 @@ class RigidBodyShader final : public Shader
 public:
     static std::unique_ptr<RigidBodyShader> RigidBodyShader::Create();
 
-    void SetColor(Vec3 _color);
-    void SetViewMatrix(Mat4 _viewMatrix);
-    void SetProjectionMatrix(Mat4 _projMatrix);
-    void SetModelMatrix(Mat4 _modelMatrix);
+    void SetColor(const Vec3& _color);
+    void SetViewMatrix(const Mat4& _viewMatrix);
+    void SetProjectionMatrix(const Mat4& _projMatrix);
+    void SetModelMatrix(const Mat4& _modelMatrix);
 
 private:
     RigidBodyShader();
@@ -28,27 +28,27 @@ private:
     Mat4 modelMatrix{ 1.0f };
 };
 
-inline void RigidBodyShader::SetColor(Vec3 _color)
+inline void RigidBodyShader::SetColor(const Vec3& _color)
 {
-    color = std::move(_color);
+    color = _color;
     glUniform3fv(uniformMap["color"], 1, &color.x);
 }
 
-inline void RigidBodyShader::SetModelMatrix(Mat4 _modelMatrix)
+inline void RigidBodyShader::SetModelMatrix(const Mat4& _modelMatrix)
 {
-    modelMatrix = std::move(_modelMatrix);
+    modelMatrix = _modelMatrix;
     glUniformMatrix4fv(uniformMap["model"], 1, GL_FALSE, &modelMatrix[0][0]);
 }
 
-inline void RigidBodyShader::SetViewMatrix(Mat4 _viewMatrix)
+inline void RigidBodyShader::SetViewMatrix(const Mat4& _viewMatrix)
 {
-    viewMatrix = std::move(_viewMatrix);
+    viewMatrix = _viewMatrix;
     glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, &viewMatrix[0][0]);
 }
 
-inline void RigidBodyShader::SetProjectionMatrix(Mat4 _projMatrix)
+inline void RigidBodyShader::SetProjectionMatrix(const Mat4& _projMatrix)
 {
-    projMatrix = std::move(_projMatrix);
+    projMatrix = _projMatrix;
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix[0][0]);
 }
 

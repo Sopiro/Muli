@@ -15,8 +15,8 @@ public:
     DynamicRenderer();
     virtual ~DynamicRenderer();
 
-    void SetProjectionMatrix(Mat4 _projMatrix);
-    void SetViewMatrix(Mat4 _viewMatrix);
+    void SetProjectionMatrix(const Mat4& _projMatrix);
+    void SetViewMatrix(const Mat4& _viewMatrix);
 
     virtual void Render() override;
     void DynamicRenderer::Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
@@ -38,16 +38,16 @@ inline void DynamicRenderer::Render()
 {
 }
 
-inline void DynamicRenderer::SetProjectionMatrix(Mat4 _projMatrix)
+inline void DynamicRenderer::SetProjectionMatrix(const Mat4& _projMatrix)
 {
     shader->Use();
-    shader->SetProjectionMatrix(std::move(_projMatrix));
+    shader->SetProjectionMatrix(_projMatrix);
 }
 
-inline void DynamicRenderer::SetViewMatrix(Mat4 _viewMatrix)
+inline void DynamicRenderer::SetViewMatrix(const Mat4& _viewMatrix)
 {
     shader->Use();
-    shader->SetViewMatrix(std::move(_viewMatrix));
+    shader->SetViewMatrix(_viewMatrix);
 }
 
 } // namespace spe

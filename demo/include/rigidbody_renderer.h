@@ -18,8 +18,8 @@ public:
 
     virtual void Render() override;
 
-    void SetProjectionMatrix(Mat4 _projMatrix);
-    void SetViewMatrix(Mat4 _viewMatrix);
+    void SetProjectionMatrix(const Mat4& _projMatrix);
+    void SetViewMatrix(const Mat4& _viewMatrix);
 
     void Register(RigidBody* body);
     void Register(const std::vector<RigidBody*>& bodies);
@@ -44,7 +44,7 @@ private:
 
 inline void RigidBodyRenderer::Register(RigidBody* body)
 {
-    bodiesAndMeshes.push_back(std::pair(body, generate_mesh_from_rigidbody(*body)));
+    bodiesAndMeshes.push_back(std::pair(body, GenerateMesh(*body)));
 }
 
 inline void RigidBodyRenderer::Register(const std::vector<RigidBody*>& bodies)
@@ -82,21 +82,21 @@ inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
     }
 }
 
-inline void RigidBodyRenderer::SetProjectionMatrix(Mat4 _projMatrix)
+inline void RigidBodyRenderer::SetProjectionMatrix(const Mat4& _projMatrix)
 {
     shader->Use();
-    shader->SetProjectionMatrix(std::move(_projMatrix));
+    shader->SetProjectionMatrix(_projMatrix);
 }
 
-inline void RigidBodyRenderer::SetViewMatrix(Mat4 _viewMatrix)
+inline void RigidBodyRenderer::SetViewMatrix(const Mat4& _viewMatrix)
 {
     shader->Use();
-    shader->SetViewMatrix(std::move(_viewMatrix));
+    shader->SetViewMatrix(_viewMatrix);
 }
 
 inline void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
 {
-    drawOutlineOnly = std::move(_drawOutlineOnly);
+    drawOutlineOnly = _drawOutlineOnly;
 }
 
 inline void RigidBodyRenderer::Reset()

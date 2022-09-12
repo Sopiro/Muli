@@ -49,9 +49,9 @@ public:
     Box* CreateBox(float size, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Box* CreateBox(float width, float height, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
-    Polygon* CreatePolygon(std::vector<Vec2> vertices,
+    Polygon* CreatePolygon(const std::vector<Vec2>& vertices,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
-                           bool resetPosition = true,
+                           bool resetCenter = true,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
     Polygon* CreateRegularPolygon(float radius,

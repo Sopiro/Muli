@@ -1,5 +1,7 @@
 #include "spe/aabbtree.h"
+#include "spe/growable_array.h"
 #include "spe/util.h"
+
 
 namespace spe
 {
@@ -25,7 +27,7 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
 
     // Find the best sibling for the new leaf
     Node* bestSibling = root;
-    float bestCost = area(union_of(root->aabb, aabb));
+    float bestCost = Area(Union(root->aabb, aabb));
 
     GrowableArray<std::pair<Node*, float>, 16> stack;
     stack.Push({ root, 0.0f });
@@ -36,8 +38,8 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
         float inheritedCost = stack.Back().second;
         stack.Pop();
 
-        AABB combined = union_of(current->aabb, aabb);
-        float directCost = area(combined);
+        AABB combined = Union(current->aabb, aabb);
+        float directCost = Area(combined);
 
         float costForCurrent = directCost + inheritedCost;
         if (costForCurrent < bestCost)
@@ -46,9 +48,9 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
             bestSibling = current;
         }
 
-        inheritedCost += directCost - area(current->aabb);
+        inheritedCost += directCost - Area(current->aabb);
 
-        float lowerBoundCost = area(aabb) + inheritedCost;
+        float lowerBoundCost = Area(aabb) + inheritedCost;
         if (lowerBoundCost < bestCost)
         {
             if (!current->isLeaf)
@@ -61,7 +63,7 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
 
     // Create a new parent
     Node* oldParent = bestSibling->parent;
-    Node* newParent = new Node(nodeID++, union_of(aabb, bestSibling->aabb), false);
+    Node* newParent = new Node(nodeID++, Union(aabb, bestSibling->aabb), false);
     newParent->parent = oldParent;
 
     if (oldParent != nullptr)
@@ -96,7 +98,7 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
         Node* child1 = ancestor->child1;
         Node* child2 = ancestor->child2;
 
-        ancestor->aabb = union_of(child1->aabb, child2->aabb);
+        ancestor->aabb = Union(child1->aabb, child2->aabb);
 
         Rotate(ancestor);
 
@@ -146,7 +148,7 @@ void AABBTree::Remove(RigidBody* body)
             Node* child1 = ancestor->child1;
             Node* child2 = ancestor->child2;
 
-            ancestor->aabb = union_of(child1->aabb, child2->aabb);
+            ancestor->aabb = Union(child1->aabb, child2->aabb);
 
             ancestor = ancestor->parent;
         }
@@ -170,16 +172,16 @@ void AABBTree::Rotate(Node* node)
 
     uint32_t count = 2;
     float costDiffs[4];
-    float nodeArea = area(node->aabb);
+    float nodeArea = Area(node->aabb);
 
-    costDiffs[0] = area(union_of(sibling->aabb, node->child1->aabb)) - nodeArea;
-    costDiffs[1] = area(union_of(sibling->aabb, node->child2->aabb)) - nodeArea;
+    costDiffs[0] = Area(Union(sibling->aabb, node->child1->aabb)) - nodeArea;
+    costDiffs[1] = Area(Union(sibling->aabb, node->child2->aabb)) - nodeArea;
 
     if (!sibling->isLeaf)
     {
-        float siblingArea = area(sibling->aabb);
-        costDiffs[2] = area(union_of(node->aabb, sibling->child1->aabb)) - siblingArea;
-        costDiffs[3] = area(union_of(node->aabb, sibling->child2->aabb)) - siblingArea;
+        float siblingArea = Area(sibling->aabb);
+        costDiffs[2] = Area(Union(node->aabb, sibling->child1->aabb)) - siblingArea;
+        costDiffs[3] = Area(Union(node->aabb, sibling->child2->aabb)) - siblingArea;
 
         count += 2;
     }
@@ -207,7 +209,7 @@ void AABBTree::Rotate(Node* node)
             node->child2 = sibling;
             sibling->parent = node;
 
-            node->aabb = union_of(sibling->aabb, node->child1->aabb);
+            node->aabb = Union(sibling->aabb, node->child1->aabb);
             break;
         case 1: // Swap(sibling, node->child1);
             if (parent->child1 == sibling)
@@ -220,7 +222,7 @@ void AABBTree::Rotate(Node* node)
             node->child1 = sibling;
             sibling->parent = node;
 
-            node->aabb = union_of(sibling->aabb, node->child2->aabb);
+            node->aabb = Union(sibling->aabb, node->child2->aabb);
             break;
         case 2: // Swap(node, sibling->child2);
             if (parent->child1 == node)
@@ -233,7 +235,7 @@ void AABBTree::Rotate(Node* node)
             sibling->child2 = node;
             node->parent = sibling;
 
-            sibling->aabb = union_of(node->aabb, sibling->child2->aabb);
+            sibling->aabb = Union(node->aabb, sibling->child2->aabb);
             break;
         case 3: // Swap(node, sibling->child1);
             if (parent->child1 == node)
@@ -246,7 +248,7 @@ void AABBTree::Rotate(Node* node)
             sibling->child1 = node;
             node->parent = sibling;
 
-            sibling->aabb = union_of(node->aabb, sibling->child1->aabb);
+            sibling->aabb = Union(node->aabb, sibling->child1->aabb);
             break;
         }
     }
@@ -315,7 +317,7 @@ void AABBTree::CheckCollision(Node* a,
                               std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
                               std::unordered_set<uint64_t>& checked) const
 {
-    const uint64_t key = combine_id(a->id, b->id).key;
+    const uint64_t key = CombineID(a->id, b->id).key;
 
     if (checked.find(key) != checked.end()) return;
 
@@ -323,7 +325,7 @@ void AABBTree::CheckCollision(Node* a,
 
     if (a->isLeaf && b->isLeaf)
     {
-        if (test_overlap_aabb(a->aabb, b->aabb))
+        if (TestOverlapAABB(a->aabb, b->aabb))
         {
             pairs.emplace_back(a->body, b->body);
         }
@@ -333,7 +335,7 @@ void AABBTree::CheckCollision(Node* a,
         CheckCollision(a->child1, a->child2, pairs, checked);
         CheckCollision(b->child1, b->child2, pairs, checked);
 
-        if (test_overlap_aabb(a->aabb, b->aabb))
+        if (TestOverlapAABB(a->aabb, b->aabb))
         {
             CheckCollision(a->child1, b->child1, pairs, checked);
             CheckCollision(a->child1, b->child2, pairs, checked);
@@ -345,7 +347,7 @@ void AABBTree::CheckCollision(Node* a,
     {
         CheckCollision(b->child1, b->child2, pairs, checked);
 
-        if (test_overlap_aabb(a->aabb, b->aabb))
+        if (TestOverlapAABB(a->aabb, b->aabb))
         {
             CheckCollision(a, b->child1, pairs, checked);
             CheckCollision(a, b->child2, pairs, checked);
@@ -355,7 +357,7 @@ void AABBTree::CheckCollision(Node* a,
     {
         CheckCollision(a->child1, a->child2, pairs, checked);
 
-        if (test_overlap_aabb(a->aabb, b->aabb))
+        if (TestOverlapAABB(a->aabb, b->aabb))
         {
             CheckCollision(b, a->child1, pairs, checked);
             CheckCollision(b, a->child2, pairs, checked);
@@ -376,7 +378,7 @@ std::vector<Node*> AABBTree::Query(const Vec2& point) const
     {
         Node* current = stack.Pop();
 
-        if (!test_point_inside_AABB(current->aabb, point)) continue;
+        if (!TestPointInsideAABB(current->aabb, point)) continue;
 
         if (current->isLeaf)
         {
@@ -405,7 +407,7 @@ std::vector<Node*> AABBTree::Query(const AABB& aabb) const
     {
         Node* current = stack.Pop();
 
-        if (!test_overlap_aabb(current->aabb, aabb)) continue;
+        if (!TestOverlapAABB(current->aabb, aabb)) continue;
 
         if (current->isLeaf)
         {
@@ -432,7 +434,7 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
     {
         Node* current = stack.Pop();
 
-        if (!test_overlap_aabb(current->aabb, aabb)) continue;
+        if (!TestOverlapAABB(current->aabb, aabb)) continue;
 
         if (current->isLeaf)
         {

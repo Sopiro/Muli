@@ -21,7 +21,7 @@ struct Edge
         , p2{ ContactPoint{ _p2, _id2 } }
     {
         dir = (p1.position == p2.position) ? Vec2{ 0.0f } : (p2.position - p1.position).Normalized();
-        normal = cross(1.0f, dir);
+        normal = dir.Skew();
     }
 
     Edge(const Vec2& _p1, const Vec2& _p2)
@@ -29,9 +29,9 @@ struct Edge
     {
     }
 
-    float Length() const
+    float GetLength() const
     {
-        return spe::length(p2.position - p1.position);
+        return (p2.position - p1.position).Length();
     }
 };
 

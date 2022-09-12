@@ -36,8 +36,8 @@ void RigidBodyRenderer::Render()
                 int32_t hStride = 17;
                 int32_t sStride = 5;
                 int32_t lStride = 3;
-                int32_t period = static_cast<int32_t>(spe::trunc(360.0f / hStride));
-                int32_t cycle = static_cast<int32_t>(spe::trunc((float)id / period));
+                int32_t period = static_cast<int32_t>(Trunc(360.0f / hStride));
+                int32_t cycle = static_cast<int32_t>(Trunc((float)id / period));
 
                 float h = (((id - 1) * hStride) % 360) / 360.0f;
                 float s = (100 - (cycle * sStride) % 21) / 100.0f;

@@ -62,7 +62,7 @@ inline void BroadPhase::Remove(RigidBody* body)
 
 inline bool BroadPhase::TestOverlap(RigidBody* bodyA, RigidBody* bodyB)
 {
-    return test_overlap_aabb(bodyA->node->aabb, bodyB->node->aabb);
+    return TestOverlapAABB(bodyA->node->aabb, bodyB->node->aabb);
 }
 
 } // namespace spe

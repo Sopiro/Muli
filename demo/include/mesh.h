@@ -8,7 +8,7 @@ namespace spe
 class Mesh
 {
 public:
-    Mesh(std::vector<Vec3> _vertices, std::vector<Vec2> _texCoords, std::vector<uint32_t> _indices);
+    Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32_t>& _indices);
     ~Mesh() noexcept;
 
     Mesh(const Mesh&) noexcept = delete;

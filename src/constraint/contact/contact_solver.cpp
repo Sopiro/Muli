@@ -19,25 +19,25 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const Vec2& dir, T
     rb = p - c->manifold.bodyB->GetPosition();
 
     j.va = -dir;
-    j.wa = cross(-ra, dir);
+    j.wa = Cross(-ra, dir);
     j.vb = dir;
-    j.wb = cross(rb, dir);
+    j.wb = Cross(rb, dir);
 
     bias = 0.0f;
     if (type == Normal)
     {
         // Relative velocity at contact point
-        Vec2 relativeVelocity = (c->manifold.bodyB->linearVelocity + cross(c->manifold.bodyB->angularVelocity, rb)) -
-                                (c->manifold.bodyA->linearVelocity + cross(c->manifold.bodyA->angularVelocity, ra));
+        Vec2 relativeVelocity = (c->manifold.bodyB->linearVelocity + Cross(c->manifold.bodyB->angularVelocity, rb)) -
+                                (c->manifold.bodyA->linearVelocity + Cross(c->manifold.bodyA->angularVelocity, ra));
 
         // Normal velocity == veclocity constraint: jv
-        float normalVelocity = dot(c->manifold.contactNormal, relativeVelocity);
+        float normalVelocity = Dot(c->manifold.contactNormal, relativeVelocity);
 
         // Position correction by velocity steering
         // if (c->settings.POSITION_CORRECTION)
         // {
         //     bias = -c->settings.POSITION_CORRECTION_BETA * c->settings.INV_DT *
-        //            spe::max(c->manifold.penetrationDepth - c->settings.PENETRATION_SLOP, 0.0f);
+        //            Max(c->manifold.penetrationDepth - c->settings.PENETRATION_SLOP, 0.0f);
         // }
 
 #if 0
@@ -46,7 +46,7 @@ void ContactSolver::Prepare(Contact* contact, uint32_t index, const Vec2& dir, T
             bias += c->restitution * normalVelocity;
         }
 #else
-        bias += c->restitution * spe::min(normalVelocity + c->settings.RESTITUTION_SLOP, 0.0f);
+        bias += c->restitution * Min(normalVelocity + c->settings.RESTITUTION_SLOP, 0.0f);
 #endif
     }
     else
@@ -83,9 +83,9 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
 
     // clang-format off
     // Jacobian * velocity vector (Normal velocity)
-    float jv = dot(j.va, c->manifold.bodyA->linearVelocity)
+    float jv = Dot(j.va, c->manifold.bodyA->linearVelocity)
              + j.wa * c->manifold.bodyA->angularVelocity
-             + dot(j.vb, c->manifold.bodyB->linearVelocity)
+             + Dot(j.vb, c->manifold.bodyB->linearVelocity)
              + j.wb * c->manifold.bodyB->angularVelocity;
     // clang-format on
 
@@ -96,11 +96,11 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     switch (type)
     {
     case Normal:
-        impulseSum = spe::max(0.0f, impulseSum + lambda);
+        impulseSum = Max(0.0f, impulseSum + lambda);
         break;
     case Tangent:
         float maxFriction = c->friction * normalContact->impulseSum;
-        impulseSum = spe::clamp(impulseSum + lambda, -maxFriction, maxFriction);
+        impulseSum = Clamp(impulseSum + lambda, -maxFriction, maxFriction);
         break;
     }
 

@@ -91,7 +91,7 @@ inline float AABBTree::ComputeTreeCost() const
 {
     float cost = 0.0f;
 
-    Traverse([&](const Node* node) -> void { cost += area(node->aabb); });
+    Traverse([&](const Node* node) -> void { cost += Area(node->aabb); });
 
     return cost;
 }

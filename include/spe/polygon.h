@@ -10,9 +10,9 @@ namespace spe
 class Polygon : public RigidBody
 {
 public:
-    Polygon(std::vector<Vec2> _vertices,
+    Polygon(const std::vector<Vec2>& _vertices,
             RigidBody::Type _type = Dynamic,
-            bool _resetPosition = true,
+            bool _resetCenter = true,
             float _density = DEFAULT_DENSITY);
 
     virtual void SetDensity(float d) override;
@@ -62,8 +62,8 @@ inline AABB Polygon::GetAABB() const
     {
         Vec2 v = localToGlobal * vertices[i];
 
-        min = spe::min(min, v);
-        max = spe::max(max, v);
+        min = Min(min, v);
+        max = Max(max, v);
     }
 
     return AABB{ min, max };

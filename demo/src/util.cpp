@@ -7,7 +7,7 @@
 namespace spe
 {
 
-std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t circle_polygon_count)
+std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
 {
     RigidBody::Shape shape = body.GetShape();
 
@@ -17,24 +17,24 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
 
         float radius = c.GetRadius();
 
-        float angle = SPE_PI * 2.0f / circle_polygon_count;
+        float angle = SPE_PI * 2.0f / circlePolygonCount;
 
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;
-        vertices.reserve(circle_polygon_count);
+        vertices.reserve(circlePolygonCount);
 
-        for (uint32_t i = 0; i < circle_polygon_count; i++)
+        for (uint32_t i = 0; i < circlePolygonCount; i++)
         {
             float currentAngle = angle * i;
 
-            Vec3 corner = Vec3{ spe::cos(currentAngle), spe::sin(currentAngle), 0.0f };
+            Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= radius;
 
             vertices.push_back(corner);
             texCoords.emplace_back(corner.x, corner.y);
         }
 
-        std::vector<uint32_t> indices = triangulate(texCoords);
+        std::vector<uint32_t> indices = Triangulate(texCoords);
 
         vertices.push_back(Vec3(vertices[0]));
         vertices.push_back(Vec3{ 0.0f });
@@ -55,7 +55,7 @@ std::unique_ptr<Mesh> generate_mesh_from_rigidbody(RigidBody& body, uint32_t cir
             vertices3.emplace_back(v->x, v->y, 0.0f);
         }
 
-        std::vector<uint32_t> indices = triangulate(vertices2);
+        std::vector<uint32_t> indices = Triangulate(vertices2);
 
         return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
@@ -77,7 +77,7 @@ inline static uint32_t get_next(std::unordered_set<uint32_t>& done, uint32_t i, 
     return i1;
 }
 
-std::vector<uint32_t> triangulate(const std::vector<Vec2>& vertices)
+std::vector<uint32_t> Triangulate(const std::vector<Vec2>& vertices)
 {
     std::vector<uint32_t> indices;
 
@@ -114,8 +114,8 @@ Vec3 rgb2hsl(float r, float g, float b)
     g /= 255.0f;
     b /= 255.0f;
 
-    float max = spe::max(spe::max(r, g), b);
-    float min = spe::min(spe::min(r, g), b);
+    float max = Max(Max(r, g), b);
+    float min = Min(Min(r, g), b);
 
     Vec3 res{ (max + min) / 2.0f };
 

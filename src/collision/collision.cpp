@@ -21,16 +21,16 @@ struct SupportResult
 
 // Returns the fardest vertex in the 'dir' direction
 // 'dir' should be normalized and a local vector
-static SupportResult support(Polygon* p, Vec2 dir)
+static SupportResult Support(Polygon* p, Vec2 dir)
 {
     const std::vector<Vec2>& vertices = p->GetVertices();
 
     int32_t idx = 0;
-    float maxValue = dot(dir, vertices[idx]);
+    float maxValue = Dot(dir, vertices[idx]);
 
     for (int32_t i = 1; i < vertices.size(); i++)
     {
-        float value = dot(dir, vertices[i]);
+        float value = Dot(dir, vertices[i]);
         if (value > maxValue)
         {
             idx = i;
@@ -48,13 +48,13 @@ static SupportResult support(Polygon* p, Vec2 dir)
  * CSO stands for Configuration Space Object
  */
 //'dir' should be normalized
-static Vec2 cso_support(Polygon* b1, Polygon* b2, Vec2 dir)
+static Vec2 CSOSupport(Polygon* b1, Polygon* b2, Vec2 dir)
 {
-    const Vec2 localDirP1 = mul_t(b1->GetRotation(), dir);
-    const Vec2 localDirP2 = mul_t(b2->GetRotation(), -dir);
+    const Vec2 localDirP1 = MulT(b1->GetRotation(), dir);
+    const Vec2 localDirP2 = MulT(b2->GetRotation(), -dir);
 
-    const Vec2 supportP1 = b1->GetTransform() * support(b1, localDirP1).vertex;
-    const Vec2 supportP2 = b2->GetTransform() * support(b2, localDirP2).vertex;
+    const Vec2 supportP1 = b1->GetTransform() * Support(b1, localDirP1).vertex;
+    const Vec2 supportP2 = b2->GetTransform() * Support(b2, localDirP2).vertex;
 
     return supportP1 - supportP2;
 }
@@ -65,7 +65,7 @@ struct GJKResult
     Simplex simplex;
 };
 
-static GJKResult gjk(Polygon* b1, Polygon* b2, bool earlyReturn = true)
+static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 {
     constexpr Vec2 origin{ 0.0f };
     Vec2 dir(1.0f, 0.0f); // Random initial direction
@@ -73,14 +73,14 @@ static GJKResult gjk(Polygon* b1, Polygon* b2, bool earlyReturn = true)
     bool collide = false;
     Simplex simplex;
 
-    Vec2 supportPoint = cso_support(b1, b2, dir);
+    Vec2 supportPoint = CSOSupport(b1, b2, dir);
     simplex.AddVertex(supportPoint);
 
     for (uint32_t k = 0; k < GJK_MAX_ITERATION; k++)
     {
         ClosestResult closest = simplex.GetClosest(origin);
 
-        if (dist2(closest.point, origin) < GJK_TOLERANCE)
+        if (Dist2(closest.point, origin) < GJK_TOLERANCE)
         {
             collide = true;
             break;
@@ -95,11 +95,11 @@ static GJKResult gjk(Polygon* b1, Polygon* b2, bool earlyReturn = true)
         dir = origin - closest.point;
         float dist = dir.Normalize();
 
-        supportPoint = cso_support(b1, b2, dir);
+        supportPoint = CSOSupport(b1, b2, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && dist > dot(dir, supportPoint - closest.point))
+        if (earlyReturn && dist > Dot(dir, supportPoint - closest.point))
         {
             collide = false;
             break;
@@ -125,7 +125,7 @@ struct EPAResult
     Vec2 contactNormal;
 };
 
-static EPAResult epa(Polygon* b1, Polygon* b2, Simplex& gjkResult)
+static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
 {
     Polytope polytope{ gjkResult };
 
@@ -134,10 +134,10 @@ static EPAResult epa(Polygon* b1, Polygon* b2, Simplex& gjkResult)
     for (uint32_t i = 0; i < EPA_MAX_ITERATION; i++)
     {
         closestEdge = polytope.GetClosestEdge();
-        const Vec2 supportPoint = cso_support(b1, b2, closestEdge.normal);
-        const float newDistance = dot(closestEdge.normal, supportPoint);
+        const Vec2 supportPoint = CSOSupport(b1, b2, closestEdge.normal);
+        const float newDistance = Dot(closestEdge.normal, supportPoint);
 
-        if (spe::abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
+        if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
         {
             // Insert the support vertex so that it expands our polytope
             polytope.vertices.Insert(closestEdge.index + 1, supportPoint);
@@ -152,10 +152,10 @@ static EPAResult epa(Polygon* b1, Polygon* b2, Simplex& gjkResult)
     return EPAResult{ closestEdge.distance, closestEdge.normal };
 }
 
-static Edge find_featured_edge(Polygon* b, const Vec2& dir)
+static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
 {
-    const Vec2 localDir = mul_t(b->GetRotation(), dir);
-    const SupportResult farthest = support(b, localDir);
+    const Vec2 localDir = MulT(b->GetRotation(), dir);
+    const SupportResult farthest = Support(b, localDir);
 
     Vec2 curr = farthest.vertex;
     int32_t idx = farthest.index;
@@ -171,7 +171,7 @@ static Edge find_featured_edge(Polygon* b, const Vec2& dir)
     Vec2 e1 = (curr - prev).Normalized();
     Vec2 e2 = (curr - next).Normalized();
 
-    bool w = dot(e1, localDir) <= dot(e2, localDir);
+    bool w = Dot(e1, localDir) <= Dot(e2, localDir);
 
     if (w)
     {
@@ -183,17 +183,17 @@ static Edge find_featured_edge(Polygon* b, const Vec2& dir)
     }
 }
 
-static void clip_edge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
+static void ClipEdge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
 {
-    float d1 = dot(edge->p1.position - p, dir);
-    float d2 = dot(edge->p2.position - p, dir);
+    float d1 = Dot(edge->p1.position - p, dir);
+    float d2 = Dot(edge->p2.position - p, dir);
 
     if (d1 >= 0 && d2 >= 0)
     {
         return;
     }
 
-    float s = spe::abs(d1) + spe::abs(d2);
+    float s = Abs(d1) + Abs(d2);
 
     if (d1 < 0)
     {
@@ -219,10 +219,10 @@ static void clip_edge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeCli
     }
 }
 
-static void find_contact_points(const Vec2& n, Polygon* a, Polygon* b, ContactManifold* out)
+static void FindContactPoints(const Vec2& n, Polygon* a, Polygon* b, ContactManifold* out)
 {
-    Edge edgeA = find_featured_edge(a, n);
-    Edge edgeB = find_featured_edge(b, -n);
+    Edge edgeA = FindFeaturedEdge(a, n);
+    Edge edgeB = FindFeaturedEdge(b, -n);
 
     Edge* ref = &edgeA; // Reference edge
     Edge* inc = &edgeB; // Incidence edge
@@ -231,8 +231,8 @@ static void find_contact_points(const Vec2& n, Polygon* a, Polygon* b, ContactMa
     out->contactNormal = n;
     out->featureFlipped = false;
 
-    float aPerpendicularness = spe::abs(dot(edgeA.dir, n));
-    float bPerpendicularness = spe::abs(dot(edgeB.dir, n));
+    float aPerpendicularness = Abs(Dot(edgeA.dir, n));
+    float bPerpendicularness = Abs(Dot(edgeB.dir, n));
 
     if (bPerpendicularness < aPerpendicularness)
     {
@@ -244,12 +244,12 @@ static void find_contact_points(const Vec2& n, Polygon* a, Polygon* b, ContactMa
         out->featureFlipped = true;
     }
 
-    clip_edge(inc, ref->p1.position, ref->dir);
-    clip_edge(inc, ref->p2.position, -ref->dir);
-    clip_edge(inc, ref->p1.position, -out->contactNormal, true);
+    ClipEdge(inc, ref->p1.position, ref->dir);
+    ClipEdge(inc, ref->p2.position, -ref->dir);
+    ClipEdge(inc, ref->p1.position, -out->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
-    if (inc->Length() <= CONTACT_MERGE_THRESHOLD)
+    if (inc->GetLength() <= CONTACT_MERGE_THRESHOLD)
     {
         out->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
         out->numContacts = 1;
@@ -264,9 +264,9 @@ static void find_contact_points(const Vec2& n, Polygon* a, Polygon* b, ContactMa
     out->referenceEdge = *ref;
 }
 
-static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
+static bool CircleVsCircle(Circle* a, Circle* b, ContactManifold* out)
 {
-    float d = dist2(a->GetPosition(), b->GetPosition());
+    float d = Dist2(a->GetPosition(), b->GetPosition());
     const float r2 = a->GetRadius() + b->GetRadius();
 
     if (d > r2 * r2)
@@ -277,7 +277,7 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
     {
         if (out == nullptr) return true;
 
-        d = spe::sqrt(d);
+        d = Sqrt(d);
 
         out->bodyA = a;
         out->bodyB = b;
@@ -290,7 +290,7 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
         out->featureFlipped = false;
 
         // Apply axis weight to improve coherence
-        if (APPLY_AXIS_WEIGHT && dot(out->contactNormal, weightAxis) < 0.0f)
+        if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
         {
             RigidBody* tmp = out->bodyA;
             out->bodyA = out->bodyB;
@@ -304,18 +304,18 @@ static bool circle_vs_circle(Circle* a, Circle* b, ContactManifold* out)
     }
 }
 
-static bool convex_vs_circle(Polygon* a, Circle* b, ContactManifold* out)
+static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
 {
     const Vec2& pa = a->GetPosition();
     const Vec2& pb = b->GetPosition();
 
     Vec2 a2b = (pb - pa).Normalized();
-    out->referenceEdge = get_farthest_edge(a, a2b);
-    UV w = compute_uv(out->referenceEdge.p1.position, out->referenceEdge.p2.position, b->GetPosition());
+    out->referenceEdge = GetFarthestEdge(a, a2b);
+    UV w = ComputeWeights(out->referenceEdge.p1.position, out->referenceEdge.p2.position, b->GetPosition());
 
     const Vec2& closest = w.v <= 0 ? out->referenceEdge.p1.position
                                    : (w.v >= 1 ? out->referenceEdge.p2.position
-                                               : lerp_vector(out->referenceEdge.p1.position, out->referenceEdge.p2.position, w));
+                                               : LerpVector(out->referenceEdge.p1.position, out->referenceEdge.p2.position, w));
 
     Vec2 c2b = pb - closest;
     float l = c2b.Length();
@@ -338,9 +338,9 @@ static bool convex_vs_circle(Polygon* a, Circle* b, ContactManifold* out)
     }
 }
 
-static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
+static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
 {
-    GJKResult gjkResult = gjk(a, b);
+    GJKResult gjkResult = GJK(a, b);
 
     if (!gjkResult.collide)
     {
@@ -358,11 +358,11 @@ static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
         case 1:
         {
             const Vec2& v = simplex.vertices[0];
-            Vec2 randomSupport = cso_support(a, b, Vec2{ 1.0f, 0.0f });
+            Vec2 randomSupport = CSOSupport(a, b, Vec2{ 1.0f, 0.0f });
 
             if (randomSupport == v)
             {
-                randomSupport = cso_support(a, b, Vec2{ -1.0f, 0.0f });
+                randomSupport = CSOSupport(a, b, Vec2{ -1.0f, 0.0f });
             }
 
             simplex.AddVertex(randomSupport);
@@ -370,11 +370,11 @@ static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
         case 2:
         {
             Edge e{ simplex.vertices[0], simplex.vertices[1] };
-            Vec2 normalSupport = cso_support(a, b, e.normal);
+            Vec2 normalSupport = CSOSupport(a, b, e.normal);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(cso_support(a, b, -e.normal));
+                simplex.AddVertex(CSOSupport(a, b, -e.normal));
             }
             else
             {
@@ -383,12 +383,12 @@ static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
         }
         }
 
-        EPAResult epaResult = epa(a, b, gjkResult.simplex);
+        EPAResult epaResult = EPA(a, b, gjkResult.simplex);
 
-        find_contact_points(epaResult.contactNormal, a, b, out);
+        FindContactPoints(epaResult.contactNormal, a, b, out);
 
         // Apply axis weight to improve coherence
-        if (APPLY_AXIS_WEIGHT && dot(out->contactNormal, weightAxis) < 0.0f)
+        if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
         {
             RigidBody* tmp = out->bodyA;
             out->bodyA = out->bodyB;
@@ -405,7 +405,7 @@ static bool convex_vs_convex(Polygon* a, Polygon* b, ContactManifold* out)
 
 // Public functions
 
-bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
+bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     out->numContacts = 0;
     out->penetrationDepth = 0.0f;
@@ -416,42 +416,42 @@ bool detect_collision(RigidBody* a, RigidBody* b, ContactManifold* out)
     // Circle vs. Circle collision
     if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCircle)
     {
-        return circle_vs_circle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
+        return CircleVsCircle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
     }
     // Convex vs. Circle collision
     else if (shapeA == RigidBody::Shape::ShapePolygon && shapeB == RigidBody::Shape::ShapeCircle)
     {
-        return convex_vs_circle(static_cast<Polygon*>(a), static_cast<Circle*>(b), out);
+        return ConvexVsCircle(static_cast<Polygon*>(a), static_cast<Circle*>(b), out);
     }
     else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapePolygon)
     {
-        return convex_vs_circle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
+        return ConvexVsCircle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
         out->featureFlipped = true;
     }
     else
     {
-        return convex_vs_convex(static_cast<Polygon*>(a), static_cast<Polygon*>(b), out);
+        return ConvexVsConvex(static_cast<Polygon*>(a), static_cast<Polygon*>(b), out);
     }
 }
 
-bool test_point_inside(RigidBody* b, const Vec2& p)
+bool TestPointInside(RigidBody* b, const Vec2& p)
 {
-    Vec2 localP = mul_t(b->GetTransform(), p);
+    Vec2 localP = MulT(b->GetTransform(), p);
 
     if (b->GetShape() == RigidBody::Shape::ShapeCircle)
     {
-        return spe::length(localP) <= static_cast<Circle*>(b)->GetRadius();
+        return Length(localP) <= static_cast<Circle*>(b)->GetRadius();
     }
     else if (b->GetShape() == RigidBody::Shape::ShapePolygon)
     {
         Polygon* p = static_cast<Polygon*>(b);
         const std::vector<Vec2>& vertices = p->GetVertices();
 
-        float dir = cross(vertices[0] - localP, vertices[1] - localP);
+        float dir = Cross(vertices[0] - localP, vertices[1] - localP);
 
         for (uint32_t i = 1; i < vertices.size(); i++)
         {
-            float nDir = cross(vertices[i] - localP, vertices[(i + 1) % vertices.size()] - localP);
+            float nDir = Cross(vertices[i] - localP, vertices[(i + 1) % vertices.size()] - localP);
 
             if (dir * nDir < 0)
             {
@@ -467,7 +467,7 @@ bool test_point_inside(RigidBody* b, const Vec2& p)
     }
 }
 
-float compute_distance(RigidBody* a, RigidBody* b)
+float ComputeDistance(RigidBody* a, RigidBody* b)
 {
     RigidBody::Shape shapeA = a->GetShape();
     RigidBody::Shape shapeB = b->GetShape();
@@ -478,7 +478,7 @@ float compute_distance(RigidBody* a, RigidBody* b)
         Circle* c1 = static_cast<Circle*>(a);
         Circle* c2 = static_cast<Circle*>(b);
 
-        float d = dist2(c1->GetPosition(), c2->GetPosition());
+        float d = Dist2(c1->GetPosition(), c2->GetPosition());
         float r2 = c1->GetRadius() + c2->GetRadius();
 
         if (d > r2 * r2)
@@ -487,7 +487,7 @@ float compute_distance(RigidBody* a, RigidBody* b)
         }
         else
         {
-            return spe::sqrt(d);
+            return Sqrt(d);
         }
     }
     // Convex vs. Circle distance
@@ -498,11 +498,10 @@ float compute_distance(RigidBody* a, RigidBody* b)
 
         Vec2 p2c = (c->GetPosition() - p->GetPosition()).Normalized();
 
-        Edge e = get_farthest_edge(p, p2c);
-        UV w = compute_uv(e.p1.position, e.p2.position, b->GetPosition());
+        Edge e = GetFarthestEdge(p, p2c);
+        UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
 
-        const Vec2& closest =
-            w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : lerp_vector(e.p1.position, e.p2.position, w));
+        const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
 
         Vec2 d = c->GetPosition() - closest;
         float distance = d.Length();
@@ -523,11 +522,10 @@ float compute_distance(RigidBody* a, RigidBody* b)
 
         Vec2 p2c = (c->GetPosition() - p->GetPosition()).Normalized();
 
-        Edge e = get_farthest_edge(p, p2c);
-        UV w = compute_uv(e.p1.position, e.p2.position, b->GetPosition());
+        Edge e = GetFarthestEdge(p, p2c);
+        UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
 
-        const Vec2& closest =
-            w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : lerp_vector(e.p1.position, e.p2.position, w));
+        const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
 
         Vec2 d = c->GetPosition() - closest;
         float distance = d.Length();
@@ -546,7 +544,7 @@ float compute_distance(RigidBody* a, RigidBody* b)
         Polygon* p1 = static_cast<Polygon*>(a);
         Polygon* p2 = static_cast<Polygon*>(b);
 
-        GJKResult gr = gjk(p1, p2, false);
+        GJKResult gr = GJK(p1, p2, false);
 
         if (gr.collide)
         {
@@ -560,16 +558,16 @@ float compute_distance(RigidBody* a, RigidBody* b)
     }
 }
 
-float compute_distance(RigidBody* b, const Vec2& p)
+float ComputeDistance(RigidBody* b, const Vec2& p)
 {
-    return dist(get_closest_point(b, p), p);
+    return Dist(GetClosestPoint(b, p), p);
 }
 
-Vec2 get_closest_point(RigidBody* b, const Vec2& p)
+Vec2 GetClosestPoint(RigidBody* b, const Vec2& p)
 {
-    Vec2 localP = mul_t(b->GetTransform(), p);
+    Vec2 localP = MulT(b->GetTransform(), p);
 
-    if (test_point_inside(b, localP))
+    if (TestPointInside(b, localP))
     {
         return p;
     }
@@ -587,7 +585,7 @@ Vec2 get_closest_point(RigidBody* b, const Vec2& p)
             Polygon* poly = static_cast<Polygon*>(b);
             const std::vector<Vec2>& v = poly->GetVertices();
 
-            SupportResult sr = support(poly, dir);
+            SupportResult sr = Support(poly, dir);
             Simplex s;
 
             s.AddVertex(v[sr.index]);
@@ -604,10 +602,10 @@ Vec2 get_closest_point(RigidBody* b, const Vec2& p)
     }
 }
 
-Edge get_farthest_edge(Polygon* p, const Vec2& dir)
+Edge GetFarthestEdge(Polygon* p, const Vec2& dir)
 {
-    const Vec2 localDir = mul_t(p->GetRotation(), dir);
-    const SupportResult farthest = support(p, localDir);
+    const Vec2 localDir = MulT(p->GetRotation(), dir);
+    const SupportResult farthest = Support(p, localDir);
 
     Vec2 curr = farthest.vertex;
     int32_t idx = farthest.index;
@@ -620,7 +618,7 @@ Edge get_farthest_edge(Polygon* p, const Vec2& dir)
     const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
     const Vec2& next = vertices[(idx + 1) % vertexCount];
 
-    bool w = cross(localDir, curr) > 0;
+    bool w = Cross(localDir, curr) > 0;
 
     if (w)
     {

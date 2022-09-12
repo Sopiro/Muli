@@ -10,9 +10,9 @@ void PositionSolver::Prepare(Contact* _contact, uint32_t index)
 {
     contact = _contact;
 
-    localPlainPoint = mul_t(contact->manifold.bodyA->GetTransform(), contact->manifold.referenceEdge.p1.position);
-    localClipPoint = mul_t(contact->manifold.bodyB->GetTransform(), contact->manifold.contactPoints[index].position);
-    localNormal = mul_t(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
+    localPlainPoint = MulT(contact->manifold.bodyA->GetTransform(), contact->manifold.referenceEdge.p1.position);
+    localClipPoint = MulT(contact->manifold.bodyB->GetTransform(), contact->manifold.contactPoints[index].position);
+    localNormal = MulT(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
 }
 
 bool PositionSolver::Solve()
@@ -21,13 +21,13 @@ bool PositionSolver::Solve()
     Vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
     Vec2 clipPoint = contact->manifold.bodyB->GetTransform() * localClipPoint; // penetration point
 
-    float separation = dot(clipPoint - planePoint, normal);
+    float separation = Dot(clipPoint - planePoint, normal);
 
     Vec2 ra = clipPoint - contact->manifold.bodyA->GetPosition();
     Vec2 rb = clipPoint - contact->manifold.bodyB->GetPosition();
 
-    float ran = cross(ra, normal);
-    float rbn = cross(rb, normal);
+    float ran = Cross(ra, normal);
+    float rbn = Cross(rb, normal);
 
     // clang-format off
     // effective mass = 1 / k;
@@ -38,16 +38,16 @@ bool PositionSolver::Solve()
     // clang-format on
 
     // Constraint (bias)
-    float c = spe::min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
+    float c = Min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
     Vec2 impulse = normal * lambda;
 
     contact->cLinearImpulseA -= impulse;
-    contact->cAngularImpulseA -= cross(ra, impulse);
+    contact->cAngularImpulseA -= Cross(ra, impulse);
     contact->cLinearImpulseB += impulse;
-    contact->cAngularImpulseB += cross(rb, impulse);
+    contact->cAngularImpulseB += Cross(rb, impulse);
 
     // We can't expect speparation >= -PENETRATION_SLOP
     // because we don't push the separation above -PENETRATION_SLOP

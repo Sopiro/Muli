@@ -21,5 +21,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "growable_array.h"
 #include "math.h"
+
+#define speAssert(A) assert(A)

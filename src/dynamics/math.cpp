@@ -11,7 +11,7 @@ Mat4 Mat4::Scale(float x, float y, float z)
     t.ey.y = y;
     t.ez.z = z;
 
-    return mul(*this, t);
+    return Mul(*this, t);
 }
 
 Mat4 Mat4::Rotate(float x, float y, float z)
@@ -45,7 +45,7 @@ Mat4 Mat4::Rotate(float x, float y, float z)
     t.ew.z = 0;
     t.ew.w = 1;
 
-    return mul(*this, t);
+    return Mul(*this, t);
 }
 
 Mat4 Mat4::Translate(float x, float y, float z)
@@ -56,7 +56,7 @@ Mat4 Mat4::Translate(float x, float y, float z)
     t.ew.y = y;
     t.ew.z = z;
 
-    return mul(*this, t);
+    return Mul(*this, t);
 }
 
 Mat4 Mat4::Translate(const Vec3& v)
@@ -67,7 +67,7 @@ Mat4 Mat4::Translate(const Vec3& v)
     t.ew.y = v.y;
     t.ew.z = v.z;
 
-    return mul(*this, t);
+    return Mul(*this, t);
 }
 
 Mat4 Mat4::GetInverse()

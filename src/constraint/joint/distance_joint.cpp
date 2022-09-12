@@ -15,9 +15,9 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              float _jointMass)
     : Joint(Joint::Type::JointDistance, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchorA = mul_t(bodyA->GetTransform(), _anchorA);
-    localAnchorB = mul_t(bodyB->GetTransform(), _anchorB);
-    length = _length < 0.0f ? spe::length(_anchorB - _anchorA) : _length;
+    localAnchorA = MulT(bodyA->GetTransform(), _anchorA);
+    localAnchorB = MulT(bodyB->GetTransform(), _anchorB);
+    length = _length < 0.0f ? Length(_anchorB - _anchorA) : _length;
 }
 
 void DistanceJoint::Prepare()
@@ -38,8 +38,8 @@ void DistanceJoint::Prepare()
     // clang-format off
     float k
         = bodyA->invMass + bodyB->invMass
-        + bodyA->invInertia * cross(u, ra) * cross(u, ra)
-        + bodyB->invInertia * cross(u, rb) * cross(u, rb)
+        + bodyA->invInertia * Cross(u, ra) * Cross(u, ra)
+        + bodyB->invInertia * Cross(u, rb) * Cross(u, rb)
         + gamma;
     // clang-format on
 
@@ -60,8 +60,8 @@ void DistanceJoint::SolveVelocityConstraint()
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    float jv = dot((bodyB->linearVelocity + cross(bodyB->angularVelocity, rb)) -
-                       (bodyA->linearVelocity + cross(bodyA->angularVelocity, ra)),
+    float jv = Dot((bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) -
+                       (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)),
                    u);
 
     // You don't have to clamp the impulse. It's equality constraint!
@@ -81,9 +81,9 @@ void DistanceJoint::ApplyImpulse(float lambda)
     // Pc = J^t ⋅ λ
 
     bodyA->linearVelocity -= u * (lambda * bodyA->invMass);
-    bodyA->angularVelocity -= dot(u, cross(lambda, ra)) * bodyA->invInertia;
+    bodyA->angularVelocity -= Dot(u, Cross(lambda, ra)) * bodyA->invInertia;
     bodyB->linearVelocity += u * (lambda * bodyB->invMass);
-    bodyB->angularVelocity += dot(u, cross(lambda, rb)) * bodyB->invInertia;
+    bodyB->angularVelocity += Dot(u, Cross(lambda, rb)) * bodyB->invInertia;
 }
 
 } // namespace spe

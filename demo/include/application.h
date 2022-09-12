@@ -39,7 +39,7 @@ private:
 
 inline Application* Application::Create(int width, int height, std::string title)
 {
-    assert(app == nullptr);
+    speAssert(app == nullptr);
 
     Application::app = new Application(width, height, title);
     return Application::app;

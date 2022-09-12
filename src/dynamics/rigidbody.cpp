@@ -4,8 +4,8 @@ namespace spe
 {
 
 RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
-    : type{ std::move(_type) }
-    , shape{ std::move(_shape) }
+    : type{ _type }
+    , shape{ _shape }
 {
     if (type == Static)
     {

@@ -23,7 +23,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
     {
         const Vec2 a = vertices[0];
         const Vec2 b = vertices[1];
-        const UV w = compute_uv(a, b, q);
+        const UV w = ComputeWeights(a, b, q);
 
         if (w.v <= 0)
         {
@@ -41,7 +41,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
         }
         else
         {
-            res.point = lerp_vector(a, b, w);
+            res.point = LerpVector(a, b, w);
             res.count = 2;
             res.contributors[0] = 0;
             res.contributors[1] = 1;
@@ -54,9 +54,9 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
         const Vec2 b = vertices[1];
         const Vec2 c = vertices[2];
 
-        const UV wab = compute_uv(a, b, q);
-        const UV wbc = compute_uv(b, c, q);
-        const UV wca = compute_uv(c, a, q);
+        const UV wab = ComputeWeights(a, b, q);
+        const UV wbc = ComputeWeights(b, c, q);
+        const UV wca = ComputeWeights(c, a, q);
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {
@@ -80,13 +80,13 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
             return res;
         }
 
-        const float area = cross(b - a, c - a);
+        const float area = Cross(b - a, c - a);
 
         // If area == 0, 3 vertices are in collinear position, which means all aligned in a line
 
-        const float u = cross(b - q, c - q);
-        const float v = cross(c - q, a - q);
-        const float w = cross(a - q, b - q);
+        const float u = Cross(b - q, c - q);
+        const float v = Cross(c - q, a - q);
+        const float w = Cross(a - q, b - q);
 
         if (wab.u > 0 && wab.v > 0 && w * area <= 0) // On the AB edge
         {
@@ -104,7 +104,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = lerp_vector(a, b, wab);
+            res.point = LerpVector(a, b, wab);
             return res;
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
@@ -123,7 +123,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = lerp_vector(b, c, wbc);
+            res.point = LerpVector(b, c, wbc);
             return res;
         }
         else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
@@ -142,7 +142,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = lerp_vector(c, a, wca);
+            res.point = LerpVector(c, a, wca);
             return res;
         }
         else // Inside the triangle

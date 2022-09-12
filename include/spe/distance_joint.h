@@ -64,7 +64,7 @@ inline float DistanceJoint::GetJointLength() const
 
 inline void DistanceJoint::SetJointLength(float _length)
 {
-    length = spe::clamp<float>(length, 0, FLT_MAX);
+    length = Clamp<float>(length, 0, FLT_MAX);
 }
 
 } // namespace spe

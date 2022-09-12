@@ -18,8 +18,8 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
 
         const Vec2 edge = vertexJ - vertexI;
 
-        Vec2 normal = normalize(Vec2{ -edge.y, edge.x });
-        float distance = dot(normal, vertexI);
+        Vec2 normal = Normalize(Vec2{ -edge.y, edge.x });
+        float distance = Dot(normal, vertexI);
 
         if (distance < 0)
         {

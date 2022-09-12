@@ -12,8 +12,8 @@ Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _set
     manifold.numContacts = 0;
 
     beta = settings.POSITION_CORRECTION_BETA;
-    restitution = mix_restitution(bodyA->restitution, bodyB->restitution);
-    friction = mix_friction(bodyA->friction, bodyB->friction);
+    restitution = MixRestitution(bodyA->restitution, bodyB->restitution);
+    friction = MixFriction(bodyA->friction, bodyB->friction);
 }
 
 void Contact::Update()
@@ -23,7 +23,7 @@ void Contact::Update()
     float oldTangentImpulse[MAX_CONTACT_POINT];
 
     bool wasTouching = touching;
-    touching = detect_collision(bodyA, bodyB, &manifold);
+    touching = DetectCollision(bodyA, bodyB, &manifold);
 
     for (uint32_t i = 0; i < MAX_CONTACT_POINT; i++)
     {
@@ -48,7 +48,7 @@ void Contact::Update()
             {
                 if (settings.APPLY_WARM_STARTING_THRESHOLD)
                 {
-                    float dist = dist2(manifold.contactPoints[n].position, oldManifold.contactPoints[o].position);
+                    float dist = Dist2(manifold.contactPoints[n].position, oldManifold.contactPoints[o].position);
                     // If contact points are close enough, warm start.
                     // Otherwise, it means it's penetrating too deeply, skip the warm starting to prevent the overshoot
                     if (dist < settings.WARM_STARTING_THRESHOLD) break;

@@ -11,37 +11,37 @@ struct AABB
     Vec2 max;
 };
 
-inline float area(const AABB& aabb)
+inline float Area(const AABB& aabb)
 {
     return (aabb.max.x - aabb.min.x) * (aabb.max.y - aabb.min.y);
 }
 
-inline float perimeter(const AABB& aabb)
+inline float Perimeter(const AABB& aabb)
 {
     Vec2 w = aabb.max - aabb.min;
     return 2.0f * (w.x + w.y);
 }
 
-inline void fix(AABB& aabb)
+inline void Fix(AABB& aabb)
 {
-    auto a = spe::max(aabb.min, aabb.max);
+    auto a = Max(aabb.min, aabb.max);
 
-    Vec2 newMin = spe::min(aabb.min, aabb.max);
-    Vec2 newMax = spe::max(aabb.min, aabb.max);
+    Vec2 newMin = Min(aabb.min, aabb.max);
+    Vec2 newMax = Max(aabb.min, aabb.max);
 
     aabb.min = newMin;
     aabb.max = newMax;
 }
 
-inline AABB union_of(const AABB& b1, const AABB& b2)
+inline AABB Union(const AABB& b1, const AABB& b2)
 {
-    Vec2 min = spe::min(b1.min, b2.min);
-    Vec2 max = spe::max(b1.max, b2.max);
+    Vec2 min = Min(b1.min, b2.min);
+    Vec2 max = Max(b1.max, b2.max);
 
     return AABB{ min, max };
 }
 
-inline bool test_point_inside_AABB(const AABB& aabb, const Vec2& point)
+inline bool TestPointInsideAABB(const AABB& aabb, const Vec2& point)
 {
     if (aabb.min.x > point.x || aabb.max.x < point.x) return false;
     if (aabb.min.y > point.y || aabb.max.y < point.y) return false;
@@ -49,7 +49,7 @@ inline bool test_point_inside_AABB(const AABB& aabb, const Vec2& point)
     return true;
 }
 
-inline bool test_overlap_aabb(const AABB& a, const AABB& b)
+inline bool TestOverlapAABB(const AABB& a, const AABB& b)
 {
     if (a.min.x > b.max.x || a.max.x < b.min.x) return false;
     if (a.min.y > b.max.y || a.max.y < b.min.y) return false;
@@ -57,7 +57,7 @@ inline bool test_overlap_aabb(const AABB& a, const AABB& b)
     return true;
 }
 
-inline bool contains_AABB(const AABB& container, const AABB& testee)
+inline bool ContainsAABB(const AABB& container, const AABB& testee)
 {
     // clang-format off
     return container.min.x <= testee.min.x

@@ -21,7 +21,7 @@ Game::Game(Application& _app)
 
     world = new World(settings);
 
-    demos = get_demos();
+    demos = GetDemos();
     InitSimulation(0);
 }
 
@@ -60,20 +60,12 @@ void Game::HandleInput()
 
         qr = world->Query(mpos);
 
-        if (Input::IsKeyPressed(GLFW_KEY_R))
-        {
-            InitSimulation(currentDemo);
-        }
-
-        if (Input::IsKeyPressed(GLFW_KEY_SPACE))
-        {
-            pause = !pause;
-        }
-
-        if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S))
-        {
-            step = true;
-        }
+        if (Input::IsKeyPressed(GLFW_KEY_R)) InitSimulation(currentDemo);
+        if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
+        if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
+        if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
+        if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
+        if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
@@ -118,7 +110,7 @@ void Game::HandleInput()
         if (Input::GetMouseScroll().y != 0)
         {
             camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
-            camera.scale = spe::clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
+            camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
         }
 
         // Camera moving
@@ -408,7 +400,7 @@ void Game::UpdateProjectionMatrix()
     Vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= 100.0f;
 
-    Mat4 projMatrix = spe::orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
+    Mat4 projMatrix = Orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
     rRenderer.SetProjectionMatrix(projMatrix);
     dRenderer.SetProjectionMatrix(projMatrix);
 }

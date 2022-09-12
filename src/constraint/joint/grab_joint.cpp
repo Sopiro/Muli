@@ -13,7 +13,7 @@ GrabJoint::GrabJoint(RigidBody* _body,
                      float _jointMass)
     : Joint(type = Joint::Type::JointGrab, _body, _body, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    localAnchor = mul_t(_body->GetTransform(), _anchor);
+    localAnchor = MulT(_body->GetTransform(), _anchor);
     target = _target;
 }
 
@@ -57,7 +57,7 @@ void GrabJoint::SolveVelocityConstraint()
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    Vec2 jv = bodyA->linearVelocity + cross(bodyA->angularVelocity, r);
+    Vec2 jv = bodyA->linearVelocity + Cross(bodyA->angularVelocity, r);
     Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
@@ -68,7 +68,7 @@ void GrabJoint::SolveVelocityConstraint()
 void GrabJoint::ApplyImpulse(const Vec2& lambda)
 {
     bodyA->linearVelocity += lambda * bodyA->invMass;
-    bodyA->angularVelocity += bodyA->invInertia * cross(r, lambda);
+    bodyA->angularVelocity += bodyA->invInertia * Cross(r, lambda);
 }
 
 } // namespace spe

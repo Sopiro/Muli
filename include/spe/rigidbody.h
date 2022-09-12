@@ -7,6 +7,7 @@
 namespace spe
 {
 
+class World;
 struct Node;
 struct ContactEdge;
 struct JointEdge;
@@ -14,29 +15,12 @@ struct JointEdge;
 // Children: Polygon, Circle
 class RigidBody
 {
-    friend class World;
-    friend class Island;
-
-    friend class Contact;
-    friend class ContactSolver;
-    friend class BlockSolver;
-    friend class PositionSolver;
-
-    friend class Joint;
-    friend class GrabJoint;
-    friend class RevoluteJoint;
-    friend class DistanceJoint;
-
-    friend class AABBTree;
-    friend class BroadPhase;
-    friend class ContactManager;
-
 public:
     enum Shape : uint8_t
     {
         ShapeCircle,
         ShapePolygon,
-        ShapeEdge,
+        ShapeCapsule,
     };
 
     enum Type : uint8_t
@@ -107,6 +91,23 @@ public:
     std::function<void(RigidBody*)> OnDestroy = nullptr;
 
 protected:
+    friend class World;
+    friend class Island;
+
+    friend class Contact;
+    friend class ContactSolver;
+    friend class BlockSolver;
+    friend class PositionSolver;
+
+    friend class Joint;
+    friend class GrabJoint;
+    friend class RevoluteJoint;
+    friend class DistanceJoint;
+
+    friend class AABBTree;
+    friend class BroadPhase;
+    friend class ContactManager;
+
     // Center of mass in local space = (0, 0)
     Transform transform;
 

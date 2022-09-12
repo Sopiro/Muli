@@ -3,10 +3,10 @@
 namespace spe
 {
 
-Mesh::Mesh(std::vector<Vec3> _vertices, std::vector<Vec2> _texCoords, std::vector<uint32_t> _indices)
-    : vertices{ std::move(_vertices) }
-    , texCoords{ std::move(_texCoords) }
-    , indices{ std::move(_indices) }
+Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32_t>& _indices)
+    : vertices{ _vertices }
+    , texCoords{ _texCoords }
+    , indices{ _indices }
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBOv);

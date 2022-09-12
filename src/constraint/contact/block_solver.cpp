@@ -87,20 +87,20 @@ void BlockSolver::Solve()
     // b' = b - A * a;
 
     Vec2 a = { nc1->impulseSum, nc2->impulseSum }; // old total impulse
-    assert(a.x >= 0.0f && a.y >= 0.0f);
+    speAssert(a.x >= 0.0f && a.y >= 0.0f);
 
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
-        = dot(j1->va, c->manifold.bodyA->linearVelocity)
+        = Dot(j1->va, c->manifold.bodyA->linearVelocity)
         + j1->wa * c->manifold.bodyA->angularVelocity
-        + dot(j1->vb, c->manifold.bodyB->linearVelocity)
+        + Dot(j1->vb, c->manifold.bodyB->linearVelocity)
         + j1->wb * c->manifold.bodyB->angularVelocity;
 
     float vn2
-        = dot(j2->va, c->manifold.bodyA->linearVelocity)
+        = Dot(j2->va, c->manifold.bodyA->linearVelocity)
         + j2->wa * c->manifold.bodyA->angularVelocity
-        + dot(j2->vb, c->manifold.bodyB->linearVelocity)
+        + Dot(j2->vb, c->manifold.bodyB->linearVelocity)
         + j2->wb * c->manifold.bodyB->angularVelocity;
     // clang-format on
 
@@ -166,7 +166,7 @@ void BlockSolver::Solve()
         if (vn1 >= 0.0f && vn2 >= 0.0f) break;
 
         // How did you reach here?! something went wrong!
-        // assert(false);
+        // speAssert(false);
         break;
     }
 

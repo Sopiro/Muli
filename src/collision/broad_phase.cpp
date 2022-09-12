@@ -16,7 +16,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
         AABB treeAABB = node->aabb;
         AABB aabb = body->GetAABB();
 
-        if (contains_AABB(treeAABB, aabb))
+        if (ContainsAABB(treeAABB, aabb))
         {
             continue;
         }
