@@ -9,6 +9,7 @@ set(SOURCE_FILES
     dynamics/circle.cpp
     dynamics/polygon.cpp
     dynamics/box.cpp
+    dynamics/capsule.cpp
 
     collision/aabbtree.cpp
     collision/collision.cpp
@@ -46,6 +47,7 @@ set(HEADER_FILES
     ../include/spe/box.h
     ../include/spe/circle.h
     ../include/spe/polygon.h
+    ../include/spe/capsule.h
 
     ../include/spe/constraint.h
 

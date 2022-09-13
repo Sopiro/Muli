@@ -1,6 +1,7 @@
 #include "util.h"
 #include "common.h"
 #include "spe/box.h"
+#include "spe/capsule.h"
 #include "spe/circle.h"
 #include "spe/polygon.h"
 
@@ -11,7 +12,9 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
 {
     RigidBody::Shape shape = body.GetShape();
 
-    if (shape == RigidBody::Shape::ShapeCircle)
+    switch (shape)
+    {
+    case RigidBody::Shape::ShapeCircle:
     {
         Circle& c = static_cast<Circle&>(body);
 
@@ -41,7 +44,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
-    else if (shape == RigidBody::Shape::ShapePolygon)
+    case RigidBody::Shape::ShapePolygon:
     {
         Polygon& p = static_cast<Polygon&>(body);
 
@@ -59,8 +62,59 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
-    else
+    case RigidBody::Shape::ShapeCapsule:
     {
+        Capsule& c = static_cast<Capsule&>(body);
+
+        float l = c.GetLength();
+        float r = c.GetRadius();
+
+        std::vector<Vec3> vertices;
+        std::vector<Vec2> texCoords;
+        vertices.reserve(4 + circlePolygonCount);
+
+        // Start from bottom right
+        float angle = SPE_PI * 2.0f / circlePolygonCount;
+        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
+        {
+            float currentAngle = -SPE_PI / 2.0f + angle * i;
+
+            Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
+            corner *= r;
+            corner.x += l / 2.0f;
+
+            vertices.push_back(corner);
+            texCoords.emplace_back(corner.x, corner.y);
+        }
+
+        vertices.emplace_back(l / 2.0f, r, 0.0f);
+        texCoords.emplace_back(l / 2.0f, r);
+
+        vertices.emplace_back(-l / 2.0f, r, 0.0f);
+        texCoords.emplace_back(-l / 2.0f, r);
+
+        // Left top to left bottom
+        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
+        {
+            float currentAngle = SPE_PI / 2.0f + angle * i;
+
+            Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
+            corner *= r;
+            corner.x -= l / 2.0f;
+
+            vertices.push_back(corner);
+            texCoords.emplace_back(corner.x, corner.y);
+        }
+
+        vertices.emplace_back(-l / 2.0f, -r, 0.0f);
+        texCoords.emplace_back(-l / 2.0f, -r);
+
+        std::vector<uint32_t> indices = Triangulate(texCoords);
+
+        return std::make_unique<Mesh>(vertices, texCoords, indices);
+    }
+
+    default:
         throw std::exception("Not a supported shape");
     }
 }

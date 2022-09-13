@@ -379,6 +379,20 @@ Polygon* World::CreateRegularPolygon(float radius, uint32 num_vertices, float in
     return p;
 }
 
+Capsule* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
+{
+    Capsule* c = new Capsule(length, radius, horizontal, type, density);
+    Add(c);
+    return c;
+}
+Capsule* World::CreateCapsule(
+    const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, RigidBody::Type type, float density)
+{
+    Capsule* c = new Capsule(p1, p2, radius, resetPosition, type, density);
+    Add(c);
+    return c;
+}
+
 GrabJoint* World::CreateGrabJoint(RigidBody* body, Vec2 anchor, Vec2 target, float frequency, float dampingRatio, float jointMass)
 {
     if (body->world != this)

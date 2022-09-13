@@ -1,6 +1,7 @@
 #pragma once
 
 #include "box.h"
+#include "capsule.h"
 #include "circle.h"
 #include "collision.h"
 #include "common.h"
@@ -58,6 +59,17 @@ public:
                                   uint32 num_vertices = 0,
                                   float initial_angle = 0,
                                   float density = DEFAULT_DENSITY);
+    Capsule* CreateCapsule(float length,
+                           float radius,
+                           bool horizontal = false,
+                           RigidBody::Type type = RigidBody::Type::Dynamic,
+                           float density = DEFAULT_DENSITY);
+    Capsule* CreateCapsule(const Vec2& p1,
+                           const Vec2& p2,
+                           float radius,
+                           bool resetPosition = true,
+                           RigidBody::Type type = RigidBody::Type::Dynamic,
+                           float density = DEFAULT_DENSITY);
 
     GrabJoint* CreateGrabJoint(
         RigidBody* body, Vec2 anchor, Vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);

@@ -7,12 +7,15 @@ namespace spe
 
 static void Demo1(Game& game, World& world, WorldSettings& settings)
 {
-    settings.APPLY_GRAVITY = true;
+    settings.APPLY_GRAVITY = false;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
 
-    RigidBody* box = world.CreateBox(0.4f);
-    box->SetPosition(0.0f, 5.0f);
-    box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
+    // RigidBody* box = world.CreateBox(0.4f);
+    // box->SetPosition(0.0f, 5.0f);
+    // box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
+
+    Capsule* c = world.CreateCapsule(1.0f, 0.5f);
+    c->SetPosition(0.0f, 5.0f);
 }
 
 static void Demo2(Game& game, World& world, WorldSettings& settings)

@@ -1,5 +1,6 @@
 #include "spe/collision.h"
 #include "spe/box.h"
+#include "spe/capsule.h"
 #include "spe/circle.h"
 #include "spe/edge.h"
 #include "spe/polygon.h"
@@ -494,6 +495,35 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
         }
 
         return true;
+    }
+    case RigidBody::Shape::ShapeCapsule:
+    {
+        Capsule* c = static_cast<Capsule*>(b);
+
+        Vec2 localQ = MulT(c->GetTransform(), q);
+
+        float l = c->GetLength();
+        float r = c->GetRadius();
+
+        Vec2 v1 = c->GetV1();
+        Vec2 v2 = c->GetV2();
+
+        UV w = ComputeWeights(v1, v2, localQ);
+        float r2 = r * r;
+
+        if (w.v <= 0.0f)
+        {
+            return Dist2(v1, localQ) < r2;
+        }
+        else if (w.v >= 1.0f)
+        {
+            return Dist2(v2, localQ) < r2;
+        }
+        else
+        {
+            Vec2 p = LerpVector(v1, v2, w);
+            return Dist2(p, localQ) < r2;
+        }
     }
     default:
         throw std::exception("Not a supported shape");
