@@ -1000,4 +1000,9 @@ inline float Atan2(float y, float x)
     return atan2f(y, x);
 }
 
+inline float Round(float s)
+{
+    return roundf(s);
+}
+
 } // namespace spe

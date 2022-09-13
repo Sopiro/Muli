@@ -104,9 +104,16 @@ void Game::HandleInput()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            std::vector<RigidBody*> q = world->Query(mpos);
+            if (gj != nullptr)
+            {
+                gj = nullptr; // Stick to the air!
+            }
+            else
+            {
+                std::vector<RigidBody*> q = world->Query(mpos);
 
-            world->Destroy(q);
+                world->Destroy(q);
+            }
         }
 
         if (Input::GetMouseScroll().y != 0)

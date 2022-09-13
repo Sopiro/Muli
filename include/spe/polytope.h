@@ -21,6 +21,7 @@ public:
 
     Polytope(const Simplex& simplex);
 
+    // Returns the edge closest to the Origin (0, 0)
     ClosestEdgeInfo GetClosestEdge() const;
     uint32_t Count() const;
 };

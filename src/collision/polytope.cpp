@@ -18,7 +18,7 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
 
         const Vec2 edge = vertexJ - vertexI;
 
-        Vec2 normal = Normalize(Vec2{ -edge.y, edge.x });
+        Vec2 normal = Cross(edge, 1.0f).Normalized();
         float distance = Dot(normal, vertexI);
 
         if (distance < 0)
@@ -35,7 +35,7 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
         }
     }
 
-    return { minIndex, minDistance, minNormal };
+    return ClosestEdgeInfo{ minIndex, minDistance, minNormal };
 }
 
 } // namespace spe

@@ -142,9 +142,9 @@ inline void print(T msg, bool lineFeed = true)
 inline void print(const Vec2& v, bool lineFeed = true)
 {
     if (lineFeed)
-        printf("%.4f, %.4f\n", v.x, v.y);
+        printf("%.6f, %.6f\n", v.x, v.y);
     else
-        printf("%.4f, %.4f\n", v.x, v.y);
+        printf("%.6f, %.6f\n", v.x, v.y);
 }
 
 } // namespace spe

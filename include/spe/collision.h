@@ -35,10 +35,10 @@ struct ContactManifold
 };
 
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
-bool TestPointInside(RigidBody* b, const Vec2& p);
+bool TestPointInside(RigidBody* b, const Vec2& q);
 float ComputeDistance(RigidBody* a, RigidBody* b);
-float ComputeDistance(RigidBody* b, const Vec2& p);
-Vec2 GetClosestPoint(RigidBody* b, const Vec2& p);
+float ComputeDistance(RigidBody* b, const Vec2& q);
+Vec2 GetClosestPoint(RigidBody* b, const Vec2& q);
 Edge GetFarthestEdge(Polygon* p, const Vec2& dir);
 
 } // namespace spe
