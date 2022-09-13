@@ -53,9 +53,9 @@ public:
                            RigidBody::Type type = RigidBody::Type::Dynamic,
                            bool resetCenter = true,
                            float density = DEFAULT_DENSITY);
-    Polygon* CreateRandomConvexPolygon(float radius, uint32_t num_vertices = 0, float density = DEFAULT_DENSITY);
+    Polygon* CreateRandomConvexPolygon(float radius, uint32 num_vertices = 0, float density = DEFAULT_DENSITY);
     Polygon* CreateRegularPolygon(float radius,
-                                  uint32_t num_vertices = 0,
+                                  uint32 num_vertices = 0,
                                   float initial_angle = 0,
                                   float density = DEFAULT_DENSITY);
 
@@ -87,20 +87,20 @@ public:
 
     RigidBody* GetBodyList();
     RigidBody* GetBodyListTail();
-    uint32_t GetBodyCount() const;
-    uint32_t GetSleepingBodyCount() const;
-    uint32_t GetSleepingIslandCount() const;
+    uint32 GetBodyCount() const;
+    uint32 GetSleepingBodyCount() const;
+    uint32 GetSleepingIslandCount() const;
     const AABBTree& GetBVH() const;
     Contact* GetContacts() const;
     Joint* GetJoints() const;
-    uint32_t GetContactCount() const;
-    uint32_t GetJointCount() const;
+    uint32 GetContactCount() const;
+    uint32 GetJointCount() const;
 
     void Awake();
 
 private:
     const WorldSettings& settings;
-    uint32_t uid{ 0 };
+    uint32 uid{ 0 };
 
     ContactManager contactManager;
 
@@ -109,12 +109,12 @@ private:
     RigidBody* bodyListTail = nullptr;
     Joint* jointList = nullptr;
 
-    uint32_t bodyCount = 0;
-    uint32_t jointCount = 0;
+    uint32 bodyCount = 0;
+    uint32 jointCount = 0;
 
-    uint32_t numIslands = 0;
-    uint32_t sleepingIslands = 0;
-    uint32_t sleepingBodies = 0;
+    uint32 numIslands = 0;
+    uint32 sleepingIslands = 0;
+    uint32 sleepingBodies = 0;
 
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
@@ -153,12 +153,12 @@ inline RigidBody* World::GetBodyListTail()
     return bodyListTail;
 }
 
-inline uint32_t World::GetSleepingBodyCount() const
+inline uint32 World::GetSleepingBodyCount() const
 {
     return sleepingBodies;
 }
 
-inline uint32_t World::GetSleepingIslandCount() const
+inline uint32 World::GetSleepingIslandCount() const
 {
     return sleepingIslands;
 }
@@ -178,17 +178,17 @@ inline Joint* World::GetJoints() const
     return jointList;
 }
 
-inline uint32_t World::GetBodyCount() const
+inline uint32 World::GetBodyCount() const
 {
     return bodyCount;
 }
 
-inline uint32_t World::GetJointCount() const
+inline uint32 World::GetJointCount() const
 {
     return jointCount;
 }
 
-inline uint32_t World::GetContactCount() const
+inline uint32 World::GetContactCount() const
 {
     return contactManager.contactCount;
 }

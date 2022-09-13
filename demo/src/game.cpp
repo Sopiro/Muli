@@ -215,12 +215,12 @@ void Game::HandleInput()
                     ImGui::SetNextItemWidth(120);
                     static int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
                     ImGui::SliderInt("Velocity", &velIterations, 0, 50);
-                    settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32_t>(velIterations);
+                    settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32>(velIterations);
 
                     ImGui::SetNextItemWidth(120);
                     static int posIterations = settings.POSITION_SOLVE_ITERATIONS;
                     ImGui::SliderInt("Position", &posIterations, 0, 50);
-                    settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32_t>(posIterations);
+                    settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32>(posIterations);
                 }
 
                 ImGui::Separator();
@@ -246,7 +246,7 @@ void Game::HandleInput()
             {
                 if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 17 * ImGui::GetTextLineHeightWithSpacing())))
                 {
-                    for (uint32_t i = 0; i < demos.size(); i++)
+                    for (uint32 i = 0; i < demos.size(); i++)
                     {
                         const bool selected = (currentDemo == i);
 
@@ -374,7 +374,7 @@ void Game::Render()
         {
             const ContactManifold& m = c->GetContactManifold();
 
-            for (uint32_t j = 0; j < m.numContacts; j++)
+            for (uint32 j = 0; j < m.numContacts; j++)
             {
                 const Vec2& cp = m.contactPoints[j].position;
 
@@ -418,7 +418,7 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::InitSimulation(uint32_t demo)
+void Game::InitSimulation(uint32 demo)
 {
     time = 0;
     if (resetCamera)

@@ -11,7 +11,7 @@ void Island::Solve()
     bool awakeIsland = false;
 
     // Integrate forces, yield tentative velocities that possibly violate the constraint
-    for (uint32_t i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
         RigidBody* b = bodies[i];
 
@@ -67,18 +67,18 @@ void Island::Solve()
     }
 
     // Prepare constraints for solving step
-    for (uint32_t i = 0; i < contacts.size(); i++)
+    for (uint32 i = 0; i < contacts.size(); i++)
     {
         contacts[i]->Prepare();
     }
-    for (uint32_t i = 0; i < joints.size(); i++)
+    for (uint32 i = 0; i < joints.size(); i++)
     {
         joints[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
-    for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; i++)
+    for (uint32 i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; i++)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -93,12 +93,12 @@ void Island::Solve()
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32_t j = 0; j < contacts.size(); j++)
+        for (uint32 j = 0; j < contacts.size(); j++)
         {
             contacts[j]->SolveVelocityConstraint();
         }
 #endif
-        for (uint32_t j = 0; j < joints.size(); j++)
+        for (uint32 j = 0; j < joints.size(); j++)
         {
             joints[j]->SolveVelocityConstraint();
         }
@@ -106,7 +106,7 @@ void Island::Solve()
     }
 
     // Update positions using corrected velocities (Semi-implicit euler integration)
-    for (uint32_t i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
         RigidBody* b = bodies[i];
 
@@ -126,7 +126,7 @@ void Island::Solve()
 
     if (world.settings.POSITION_CORRECTION)
     {
-        for (uint32_t i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; i++)
+        for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; i++)
         {
             bool contactSolved = true;
             bool jointSolved = true;

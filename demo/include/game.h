@@ -56,11 +56,11 @@ private:
     bool resetCamera = true;
 
     std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> demos;
-    uint32_t currentDemo;
+    uint32 currentDemo;
     std::string demoTitle;
 
     void UpdateProjectionMatrix();
-    void InitSimulation(uint32_t demo);
+    void InitSimulation(uint32 demo);
     void Reset();
 };
 

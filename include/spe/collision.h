@@ -26,7 +26,7 @@ struct ContactManifold
     RigidBody* bodyB; // Incidence body
 
     ContactPoint contactPoints[MAX_CONTACT_POINT];
-    uint32_t numContacts;
+    uint32 numContacts;
     float penetrationDepth;
     Vec2 contactNormal; // Contact normal is always pointing from a to b
     Vec2 contactTangent;

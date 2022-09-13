@@ -16,14 +16,14 @@ struct JointEdge;
 class RigidBody
 {
 public:
-    enum Shape : uint8_t
+    enum Shape : uint8
     {
         ShapeCircle,
         ShapePolygon,
         ShapeCapsule,
     };
 
-    enum Type : uint8_t
+    enum Type : uint8
     {
         Static,
         Dynamic,
@@ -80,8 +80,8 @@ public:
     Shape GetShape() const;
     bool IsSleeping() const;
 
-    uint32_t GetID() const;
-    uint32_t GetIslandID() const;
+    uint32 GetID() const;
+    uint32 GetIslandID() const;
     const Node* GetNode() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
@@ -134,8 +134,8 @@ private:
     bool moved = false;
 
     World* world = nullptr;
-    uint32_t id = 0;
-    uint32_t islandID = 0;
+    uint32 id = 0;
+    uint32 islandID = 0;
 
     ContactEdge* contactList = nullptr;
     JointEdge* jointList = nullptr;
@@ -325,12 +325,12 @@ inline bool RigidBody::IsSleeping() const
     return sleeping;
 }
 
-inline uint32_t RigidBody::GetID() const
+inline uint32 RigidBody::GetID() const
 {
     return id;
 }
 
-inline uint32_t RigidBody::GetIslandID() const
+inline uint32 RigidBody::GetIslandID() const
 {
     return islandID;
 }

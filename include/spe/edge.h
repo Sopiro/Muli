@@ -16,7 +16,7 @@ struct Edge
 
     Edge() = default;
 
-    Edge(const Vec2 _p1, const Vec2& _p2, int32_t _id1, int32_t _id2)
+    Edge(const Vec2 _p1, const Vec2& _p2, int32 _id1, int32 _id2)
         : p1{ ContactPoint{ _p1, _id1 } }
         , p2{ ContactPoint{ _p2, _id2 } }
     {

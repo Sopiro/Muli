@@ -7,7 +7,7 @@
 namespace spe
 {
 
-std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
+std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
 {
     RigidBody::Shape shape = body.GetShape();
 
@@ -23,7 +23,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
         std::vector<Vec2> texCoords;
         vertices.reserve(circlePolygonCount);
 
-        for (uint32_t i = 0; i < circlePolygonCount; i++)
+        for (uint32 i = 0; i < circlePolygonCount; i++)
         {
             float currentAngle = angle * i;
 
@@ -34,7 +34,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
             texCoords.emplace_back(corner.x, corner.y);
         }
 
-        std::vector<uint32_t> indices = Triangulate(texCoords);
+        std::vector<uint32> indices = Triangulate(texCoords);
 
         vertices.push_back(Vec3(vertices[0]));
         vertices.push_back(Vec3{ 0.0f });
@@ -55,7 +55,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
             vertices3.emplace_back(v->x, v->y, 0.0f);
         }
 
-        std::vector<uint32_t> indices = Triangulate(vertices2);
+        std::vector<uint32> indices = Triangulate(vertices2);
 
         return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
@@ -65,9 +65,9 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32_t circlePolygonCount)
     }
 }
 
-inline static uint32_t get_next(std::unordered_set<uint32_t>& done, uint32_t i, uint32_t count, uint32_t step = 1)
+inline static uint32 get_next(std::unordered_set<uint32>& done, uint32 i, uint32 count, uint32 step = 1)
 {
-    uint32_t i1 = (i + step) % count;
+    uint32 i1 = (i + step) % count;
 
     while (done.find(i1) != done.end())
     {
@@ -77,23 +77,23 @@ inline static uint32_t get_next(std::unordered_set<uint32_t>& done, uint32_t i, 
     return i1;
 }
 
-std::vector<uint32_t> Triangulate(const std::vector<Vec2>& vertices)
+std::vector<uint32> Triangulate(const std::vector<Vec2>& vertices)
 {
-    std::vector<uint32_t> indices;
+    std::vector<uint32> indices;
 
-    uint32_t count = static_cast<uint32_t>(vertices.size());
+    uint32 count = static_cast<uint32>(vertices.size());
 
     indices.reserve((count - 2) * 3);
 
-    std::unordered_set<uint32_t> done;
+    std::unordered_set<uint32> done;
 
-    uint32_t prev = count;
-    uint32_t i0 = 0;
+    uint32 prev = count;
+    uint32 i0 = 0;
 
     while (done.size() < count - 2)
     {
-        uint32_t i1 = get_next(done, i0, count);
-        uint32_t i2 = get_next(done, i1, count);
+        uint32 i1 = get_next(done, i0, count);
+        uint32 i2 = get_next(done, i1, count);
 
         indices.push_back(i0);
         indices.push_back(i1);

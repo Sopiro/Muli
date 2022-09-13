@@ -11,9 +11,9 @@ float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
     float numerator = 0.0f;
     float denominator = 0.0f;
 
-    for (uint32_t i = 0; i < vertices.size(); i++)
+    for (uint32 i = 0; i < vertices.size(); i++)
     {
-        uint32_t j = (i + 1) % vertices.size();
+        uint32 j = (i + 1) % vertices.size();
 
         const Vec2& vi = vertices[i];
         const Vec2& vj = vertices[j];

@@ -3,7 +3,7 @@
 namespace spe
 {
 
-Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32_t>& _indices)
+Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32>& _indices)
     : vertices{ _vertices }
     , texCoords{ _texCoords }
     , indices{ _indices }
@@ -37,14 +37,14 @@ Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoor
 
     // indices for triangle
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
-    std::vector<uint32_t> indices_l(vertices.size());
+    std::vector<uint32> indices_l(vertices.size());
     std::iota(indices_l.begin(), indices_l.end(), 0);
 
     // indices for outline
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_l.size(), indices_l.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * indices_l.size(), indices_l.data(), GL_STATIC_DRAW);
 }
 
 Mesh::~Mesh()

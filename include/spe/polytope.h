@@ -9,7 +9,7 @@ namespace spe
 
 struct ClosestEdgeInfo
 {
-    uint32_t index;
+    uint32 index;
     float distance;
     Vec2 normal;
 };
@@ -23,7 +23,7 @@ public:
 
     // Returns the edge closest to the Origin (0, 0)
     ClosestEdgeInfo GetClosestEdge() const;
-    uint32_t Count() const;
+    uint32 Count() const;
 };
 
 inline Polytope::Polytope(const Simplex& simplex)
@@ -33,7 +33,7 @@ inline Polytope::Polytope(const Simplex& simplex)
     vertices.Push(simplex.vertices[2]);
 }
 
-inline uint32_t Polytope::Count() const
+inline uint32 Polytope::Count() const
 {
     return vertices.Count();
 }

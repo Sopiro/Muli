@@ -67,6 +67,7 @@ set(HEADER_FILES
     ../include/spe/util.h
     ../include/spe/spe.h
     ../include/spe/math.h
+    ../include/spe/types.h
 )
 
 add_library(spe ${SOURCE_FILES} ${HEADER_FILES})

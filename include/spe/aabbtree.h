@@ -14,7 +14,7 @@ struct Node
     friend class BroadPhase;
 
 public:
-    uint32_t id;
+    uint32 id;
     AABB aabb;
     bool isLeaf;
 
@@ -25,7 +25,7 @@ public:
     RigidBody* body = nullptr;
 
 private:
-    Node(uint32_t _id, const AABB& _aabb, bool _isLeaf);
+    Node(uint32 _id, const AABB& _aabb, bool _isLeaf);
     ~Node() noexcept = default;
 
     Node(const Node&) noexcept = delete;
@@ -61,7 +61,7 @@ public:
     float ComputeTreeCost() const;
 
 private:
-    uint32_t nodeID = 0;
+    uint32 nodeID = 0;
 
     Node* root = nullptr;
     float aabbMargin;
@@ -71,7 +71,7 @@ private:
     void CheckCollision(Node* a,
                         Node* b,
                         std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
-                        std::unordered_set<uint64_t>& checked) const;
+                        std::unordered_set<uint64>& checked) const;
 };
 
 inline AABBTree::~AABBTree()

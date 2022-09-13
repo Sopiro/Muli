@@ -19,7 +19,7 @@ public:
     Application(Application&&) noexcept = delete;
     Application& operator=(Application&&) noexcept = delete;
 
-    void SetFrameRate(uint32_t frameRate);
+    void SetFrameRate(uint32 frameRate);
 
     void Run();
 
@@ -45,7 +45,7 @@ inline Application* Application::Create(int width, int height, std::string title
     return Application::app;
 }
 
-inline void Application::SetFrameRate(uint32_t frameRate)
+inline void Application::SetFrameRate(uint32 frameRate)
 {
     frameRate = std::clamp<int>(frameRate, 30, 300);
     frameTime = 1.0 / frameRate;

@@ -22,7 +22,7 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
     vertices[0] -= centerOfMass;
     radius = Length(vertices[0]);
 
-    for (uint32_t i = 1; i < count; i++)
+    for (uint32 i = 1; i < count; i++)
     {
         vertices[i] -= centerOfMass;
         radius = Max(radius, Length(vertices[i]));

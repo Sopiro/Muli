@@ -15,7 +15,7 @@ void RigidBodyRenderer::Render()
 {
     shader->Use();
 
-    for (uint32_t i = 0; i < bodiesAndMeshes.size(); i++)
+    for (uint32 i = 0; i < bodiesAndMeshes.size(); i++)
     {
         RigidBody* body = bodiesAndMeshes[i].first;
         std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;
@@ -31,13 +31,13 @@ void RigidBodyRenderer::Render()
 
             if (body->GetType() == RigidBody::Type::Dynamic)
             {
-                int32_t id = body->GetIslandID();
+                int32 id = body->GetIslandID();
 
-                int32_t hStride = 17;
-                int32_t sStride = 5;
-                int32_t lStride = 3;
-                int32_t period = static_cast<int32_t>(Trunc(360.0f / hStride));
-                int32_t cycle = static_cast<int32_t>(Trunc((float)id / period));
+                int32 hStride = 17;
+                int32 sStride = 5;
+                int32 lStride = 3;
+                int32 period = static_cast<int32>(Trunc(360.0f / hStride));
+                int32 cycle = static_cast<int32>(Trunc((float)id / period));
 
                 float h = (((id - 1) * hStride) % 360) / 360.0f;
                 float s = (100 - (cycle * sStride) % 21) / 100.0f;

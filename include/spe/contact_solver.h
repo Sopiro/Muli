@@ -7,7 +7,7 @@ namespace spe
 
 class Contact;
 
-enum ContactType : uint8_t
+enum ContactType : uint8
 {
     Normal = 0,
     Tangent
@@ -27,13 +27,13 @@ class ContactSolver
     friend class BlockSolver;
 
 public:
-    enum Type : uint8_t
+    enum Type : uint8
     {
         Normal = 0,
         Tangent
     };
 
-    void Prepare(Contact* contact, uint32_t index, const Vec2& dir, Type contactType);
+    void Prepare(Contact* contact, uint32 index, const Vec2& dir, Type contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:

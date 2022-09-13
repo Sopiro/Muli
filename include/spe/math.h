@@ -7,6 +7,8 @@
 #include <math.h>
 #include <stdint.h>
 
+#include "types.h"
+
 #define SPE_PI 3.14159265359f
 
 namespace spe
@@ -42,7 +44,7 @@ struct Vec2
         y = _y;
     }
 
-    float& operator[](uint32_t i)
+    float& operator[](uint32 i)
     {
         return (&x)[i];
     }
@@ -146,7 +148,7 @@ struct Vec3
         z = _z;
     }
 
-    float& operator[](uint32_t i)
+    float& operator[](uint32 i)
     {
         return (&x)[i];
     }
@@ -242,7 +244,7 @@ struct Vec4
     {
     }
 
-    float& operator[](uint32_t i)
+    float& operator[](uint32 i)
     {
         return (&x)[i];
     }
@@ -270,7 +272,7 @@ struct Mat2
     {
     }
 
-    Vec2& operator[](uint32_t i)
+    Vec2& operator[](uint32 i)
     {
         return (&ex)[i];
     }
@@ -344,7 +346,7 @@ struct Mat3
     {
     }
 
-    Vec3& operator[](uint32_t i)
+    Vec3& operator[](uint32 i)
     {
         return (&ex)[i];
     }
@@ -411,7 +413,7 @@ struct Mat4
     {
     }
 
-    Vec4& operator[](uint32_t i)
+    Vec4& operator[](uint32 i)
     {
         return (&ex)[i];
     }

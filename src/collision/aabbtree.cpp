@@ -2,11 +2,10 @@
 #include "spe/growable_array.h"
 #include "spe/util.h"
 
-
 namespace spe
 {
 
-Node::Node(uint32_t _id, const AABB& _aabb, bool _isLeaf)
+Node::Node(uint32 _id, const AABB& _aabb, bool _isLeaf)
     : id{ _id }
     , aabb{ _aabb }
     , isLeaf{ _isLeaf }
@@ -170,7 +169,7 @@ void AABBTree::Rotate(Node* node)
     Node* parent = node->parent;
     Node* sibling = parent->child1 == node ? parent->child2 : parent->child1;
 
-    uint32_t count = 2;
+    uint32 count = 2;
     float costDiffs[4];
     float nodeArea = Area(node->aabb);
 
@@ -186,8 +185,8 @@ void AABBTree::Rotate(Node* node)
         count += 2;
     }
 
-    uint32_t bestDiffIndex = 0;
-    for (uint32_t i = 1; i < count; i++)
+    uint32 bestDiffIndex = 0;
+    for (uint32 i = 1; i < count; i++)
     {
         if (costDiffs[i] < costDiffs[bestDiffIndex]) bestDiffIndex = i;
     }
@@ -304,7 +303,7 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
 {
     if (root == nullptr) return;
 
-    std::unordered_set<uint64_t> checked;
+    std::unordered_set<uint64> checked;
 
     if (!root->isLeaf)
     {
@@ -315,9 +314,9 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
 void AABBTree::CheckCollision(Node* a,
                               Node* b,
                               std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
-                              std::unordered_set<uint64_t>& checked) const
+                              std::unordered_set<uint64>& checked) const
 {
-    const uint64_t key = CombineID(a->id, b->id).key;
+    const uint64 key = CombineID(a->id, b->id).key;
 
     if (checked.find(key) != checked.end()) return;
 

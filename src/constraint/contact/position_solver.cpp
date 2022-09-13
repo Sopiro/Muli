@@ -6,7 +6,7 @@
 namespace spe
 {
 
-void PositionSolver::Prepare(Contact* _contact, uint32_t index)
+void PositionSolver::Prepare(Contact* _contact, uint32 index)
 {
     contact = _contact;
 

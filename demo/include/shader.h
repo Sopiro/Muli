@@ -21,8 +21,8 @@ public:
 protected:
     Shader(const char* vsCode, const char* fsCode);
 
-    std::unordered_map<std::string, uint32_t> uniformMap;
-    uint32_t shaderHandle{ 0 };
+    std::unordered_map<std::string, uint32> uniformMap;
+    uint32 shaderHandle{ 0 };
 };
 
 inline void Shader::Use()

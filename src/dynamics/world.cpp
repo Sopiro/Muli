@@ -18,12 +18,12 @@ void World::Step(float dt)
     island.joints.reserve(jointCount);
     island.contacts.reserve(contactManager.contactCount);
 
-    uint32_t restingBodies = 0;
-    uint32_t islandID = 0;
+    uint32 restingBodies = 0;
+    uint32 islandID = 0;
     sleepingIslands = 0;
     sleepingBodies = 0;
 
-    std::unordered_set<uint32_t> visited{};
+    std::unordered_set<uint32> visited{};
     std::vector<RigidBody*> stack;
     visited.reserve(bodyCount);
     stack.reserve(bodyCount);
@@ -87,7 +87,7 @@ void World::Step(float dt)
 
         if (island.sleeping)
         {
-            sleepingBodies += static_cast<uint32_t>(island.bodies.size());
+            sleepingBodies += static_cast<uint32>(island.bodies.size());
             sleepingIslands++;
         }
 
@@ -201,7 +201,7 @@ void World::BufferDestroy(RigidBody* body)
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32_t i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
         Destroy(bodies[i]);
     }
@@ -241,7 +241,7 @@ void World::BufferDestroy(Joint* joint)
 
 void World::Destroy(const std::vector<Joint*>& joints)
 {
-    for (uint32_t i = 0; i < joints.size(); i++)
+    for (uint32 i = 0; i < joints.size(); i++)
     {
         Destroy(joints[i]);
     }
@@ -252,7 +252,7 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
     std::vector<RigidBody*> res;
     std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(point);
 
-    for (uint32_t i = 0; i < nodes.size(); i++)
+    for (uint32 i = 0; i < nodes.size(); i++)
     {
         RigidBody* body = nodes[i]->body;
 
@@ -270,7 +270,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     std::vector<RigidBody*> res;
     std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(aabb);
 
-    for (uint32_t i = 0; i < nodes.size(); i++)
+    for (uint32 i = 0; i < nodes.size(); i++)
     {
         RigidBody* body = nodes[i]->body;
 
@@ -316,7 +316,7 @@ Polygon* World::CreatePolygon(const std::vector<Vec2>& vertices, RigidBody::Type
     return p;
 }
 
-Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, float density)
+Polygon* World::CreateRandomConvexPolygon(float radius, uint32 num_vertices, float density)
 {
     if (num_vertices < 3)
     {
@@ -326,7 +326,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
     std::vector<float> angles{};
     angles.reserve(num_vertices);
 
-    for (uint32_t i = 0; i < num_vertices; i++)
+    for (uint32 i = 0; i < num_vertices; i++)
     {
         angles.push_back(LinearRand(0.0f, 1.0f) * (SPE_PI * 2.0f - FLT_EPSILON));
     }
@@ -336,7 +336,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
     std::vector<Vec2> vertices{};
     vertices.reserve(num_vertices);
 
-    for (uint32_t i = 0; i < num_vertices; i++)
+    for (uint32 i = 0; i < num_vertices; i++)
     {
         vertices.emplace_back(Cos(angles[i]) * radius, Sin(angles[i]) * radius);
     }
@@ -346,7 +346,7 @@ Polygon* World::CreateRandomConvexPolygon(float radius, uint32_t num_vertices, f
     return p;
 }
 
-Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float initial_angle, float density)
+Polygon* World::CreateRegularPolygon(float radius, uint32 num_vertices, float initial_angle, float density)
 {
     if (num_vertices < 3)
     {
@@ -364,7 +364,7 @@ Polygon* World::CreateRegularPolygon(float radius, uint32_t num_vertices, float 
     std::vector<Vec2> vertices;
     vertices.reserve(num_vertices);
 
-    for (uint32_t i = 0; i < num_vertices; i++)
+    for (uint32 i = 0; i < num_vertices; i++)
     {
         float currentAngle = angleStart + angle * i;
 

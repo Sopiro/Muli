@@ -16,7 +16,7 @@ static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 struct SupportResult
 {
     Vec2 vertex;
-    int32_t index;
+    int32 index;
 };
 
 // Returns the fardest vertex in the 'dir' direction
@@ -25,10 +25,10 @@ static SupportResult Support(Polygon* p, Vec2 dir)
 {
     const std::vector<Vec2>& vertices = p->GetVertices();
 
-    int32_t idx = 0;
+    int32 idx = 0;
     float maxValue = Dot(dir, vertices[idx]);
 
-    for (int32_t i = 1; i < vertices.size(); i++)
+    for (int32 i = 1; i < vertices.size(); i++)
     {
         float value = Dot(dir, vertices[i]);
         if (value > maxValue)
@@ -76,7 +76,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
     Vec2 supportPoint = CSOSupport(b1, b2, dir);
     simplex.AddVertex(supportPoint);
 
-    for (uint32_t k = 0; k < GJK_MAX_ITERATION; k++)
+    for (uint32 k = 0; k < GJK_MAX_ITERATION; k++)
     {
         ClosestResult closest = simplex.GetClosest(origin);
 
@@ -140,7 +140,7 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
 
     ClosestEdgeInfo closestEdge{ 0, FLT_MAX, Vec2{ 0.0f } };
 
-    for (uint32_t i = 0; i < EPA_MAX_ITERATION; i++)
+    for (uint32 i = 0; i < EPA_MAX_ITERATION; i++)
     {
         closestEdge = polytope.GetClosestEdge();
         const Vec2 supportPoint = CSOSupport(b1, b2, closestEdge.normal);
@@ -167,12 +167,12 @@ static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
     const SupportResult farthest = Support(b, localDir);
 
     Vec2 curr = farthest.vertex;
-    int32_t idx = farthest.index;
+    int32 idx = farthest.index;
 
     const Transform& t = b->GetTransform();
 
     const std::vector<Vec2>& vertices = b->GetVertices();
-    int32_t vertexCount = static_cast<int32_t>(b->VertexCount());
+    int32 vertexCount = static_cast<int32>(b->VertexCount());
 
     const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
     const Vec2& next = vertices[(idx + 1) % vertexCount];
@@ -483,7 +483,7 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
         Vec2 localQ = MulT(p->GetTransform(), q);
 
         float dir = Cross(vertices[0] - localQ, vertices[1] - localQ);
-        for (uint32_t i = 1; i < vertices.size(); i++)
+        for (uint32 i = 1; i < vertices.size(); i++)
         {
             float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertices.size()] - localQ);
 
@@ -655,12 +655,12 @@ Edge GetFarthestEdge(Polygon* p, const Vec2& dir)
     const SupportResult farthest = Support(p, localDir);
 
     Vec2 curr = farthest.vertex;
-    int32_t idx = farthest.index;
+    int32 idx = farthest.index;
 
     const Transform& t = p->GetTransform();
 
     const std::vector<Vec2>& vertices = p->GetVertices();
-    int32_t vertexCount = static_cast<int32_t>(p->VertexCount());
+    int32 vertexCount = static_cast<int32>(p->VertexCount());
 
     const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
     const Vec2& next = vertices[(idx + 1) % vertexCount];

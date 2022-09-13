@@ -50,8 +50,8 @@ struct WorldSettings
     float RESTITUTION_SLOP = 0.1f;
 
     bool BLOCK_SOLVE = true;
-    uint32_t VELOCITY_SOLVE_ITERATIONS = 10;
-    uint32_t POSITION_SOLVE_ITERATIONS = 3;
+    uint32 VELOCITY_SOLVE_ITERATIONS = 10;
+    uint32 POSITION_SOLVE_ITERATIONS = 3;
 
     float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
     float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f);

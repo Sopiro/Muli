@@ -55,7 +55,7 @@ class Joint : public Constraint
     friend class World;
 
 public:
-    enum Type : uint8_t
+    enum Type : uint8
     {
         JointGrab,
         JointRevolute,

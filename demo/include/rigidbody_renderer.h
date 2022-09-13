@@ -76,7 +76,7 @@ inline void RigidBodyRenderer::Unregister(RigidBody* body)
 
 inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32_t i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
         Unregister(bodies[i]);
     }

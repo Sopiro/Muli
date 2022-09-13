@@ -8,7 +8,7 @@ namespace spe
 struct ContactPoint
 {
     Vec2 position;
-    int32_t id;
+    int32 id;
 };
 
 } // namespace spe

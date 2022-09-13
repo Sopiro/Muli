@@ -10,14 +10,14 @@ namespace spe
 
 struct BodyPair
 {
-    uint32_t first;
-    uint32_t second;
+    uint32 first;
+    uint32 second;
 };
 
 union PairID
 {
     BodyPair pair;
-    uint64_t key;
+    uint64 key;
 };
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
@@ -37,12 +37,12 @@ inline float ComputeCircleInertia(float radius, float mass)
 
 // Cantor pairing function, ((N, N) -> N) mapping function
 // https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function
-inline uint32_t MakePairNatural(uint32_t a, uint32_t b)
+inline uint32 MakePairNatural(uint32 a, uint32 b)
 {
     return (a + b) * (a + b + 1) / 2 + b;
 }
 
-inline PairID CombineID(uint32_t a, uint32_t b)
+inline PairID CombineID(uint32 a, uint32 b)
 {
     speAssert(a != b);
     return a < b ? PairID{ a, b } : PairID{ b, a };
@@ -55,7 +55,7 @@ inline bool operator==(PairID lhs, PairID rhs)
 
 // Reverse version of pairing function
 // this guarantees initial pairing order
-inline std::pair<uint32_t, uint32_t> SeparatePair(uint32_t p)
+inline std::pair<uint32, uint32> SeparatePair(uint32 p)
 {
     float w = Floor((Sqrt(8.0f * p + 1.0f) - 1) / 2.0f);
     float t = (w * w + w) / 2.0f;
@@ -63,7 +63,7 @@ inline std::pair<uint32_t, uint32_t> SeparatePair(uint32_t p)
     float y = p - t;
     float x = w - y;
 
-    return { static_cast<uint32_t>(x), static_cast<uint32_t>(y) };
+    return { static_cast<uint32>(x), static_cast<uint32>(y) };
 }
 
 inline int LinearRand(int _min, int _max)

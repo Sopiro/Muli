@@ -22,7 +22,7 @@ public:
     void DynamicRenderer::Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
-    const uint32_t maxVertexCount = 1024; // must be a even number
+    const uint32 maxVertexCount = 1024; // must be a even number
 
     // All registered rigid bodies
     std::unique_ptr<DynamicShader> shader{};
@@ -30,8 +30,8 @@ private:
     Mat4 viewMatrix;
     Mat4 projMatrix;
 
-    uint32_t VAO;
-    uint32_t VBO;
+    uint32 VAO;
+    uint32 VBO;
 };
 
 inline void DynamicRenderer::Render()

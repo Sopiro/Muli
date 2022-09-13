@@ -7,7 +7,7 @@ namespace spe
 
 // Inspired by b2GrowableStack in box2d code
 // Use only element types that don't need a destructor
-template <typename T, uint32_t N>
+template <typename T, uint32 N>
 class GrowableArray
 {
 public:
@@ -112,7 +112,7 @@ public:
     }
 
     // O(n)
-    void Insert(uint32_t index, const T& data)
+    void Insert(uint32 index, const T& data)
     {
         assert(index <= count);
 
@@ -130,7 +130,7 @@ public:
             }
         }
 
-        uint32_t ptr = count;
+        uint32 ptr = count;
         while (index != ptr)
         {
             array[ptr] = array[ptr - 1];
@@ -142,9 +142,9 @@ public:
     }
 
     // O(n)
-    void Remove(uint32_t index)
+    void Remove(uint32 index)
     {
-        uint32_t ptr = index;
+        uint32 ptr = index;
         while (ptr != count)
         {
             array[ptr] = array[ptr + 1];
@@ -154,7 +154,7 @@ public:
         --count;
     }
 
-    uint32_t Count() const
+    uint32 Count() const
     {
         return count;
     }
@@ -174,17 +174,17 @@ public:
         count = 0;
     }
 
-    uint32_t Capacity() const
+    uint32 Capacity() const
     {
         return capacity;
     }
 
-    T& At(uint32_t index) const
+    T& At(uint32 index) const
     {
         return array[index];
     }
 
-    T& operator[](uint32_t index) const
+    T& operator[](uint32 index) const
     {
         return array[index];
     }
@@ -192,8 +192,8 @@ public:
 private:
     T* array;
     T stack_array[N];
-    uint32_t count;
-    uint32_t capacity;
+    uint32 count;
+    uint32 capacity;
 };
 
 } // namespace spe

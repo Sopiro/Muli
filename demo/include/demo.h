@@ -27,7 +27,7 @@ static void Demo2(Game& game, World& world, WorldSettings& settings)
     // float error = 0.015f;
     float error = 0.0f;
 
-    for (uint32_t i = 0; i < 20; i++)
+    for (uint32 i = 0; i < 20; i++)
     {
         RigidBody* b = world.CreateBox(size);
         b->SetPosition(LinearRand(-error, error), start + i * (size + gap));
@@ -39,7 +39,7 @@ static void Demo3(Game& game, World& world, WorldSettings& settings)
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
 
-    int32_t rows = 15;
+    int32 rows = 15;
     float boxSize = 0.4f;
     float xGap = 0.0625f * boxSize / 0.5f;
     float yGap = 0.125f * boxSize / 0.5f;
@@ -188,7 +188,7 @@ static void Demo8(Game& game, World& world, WorldSettings& settings)
 
     std::array<float, 5> frictions = { 0.51f, 0.31f, 0.21f, 0.11f, 0.0f };
 
-    for (uint32_t i = 0; i < frictions.size(); i++)
+    for (uint32 i = 0; i < frictions.size(); i++)
     {
         b = world.CreateBox(size, size);
         b->SetPosition(xStart + (size + gap) * i, yStart);

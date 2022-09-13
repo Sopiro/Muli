@@ -28,7 +28,7 @@ public:
     void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
 
     Vec2 GetWindowSize() const;
-    int32_t GetRefreshRate() const;
+    int32 GetRefreshRate() const;
 
 private:
     static Window* window;
@@ -36,7 +36,7 @@ private:
 
     int width;
     int height;
-    int32_t refreshRate;
+    int32 refreshRate;
 
     GLFWwindow* glfwWindow;
     std::function<void(int width, int height)> framebufferSizeChangeCallback = nullptr;
@@ -159,7 +159,7 @@ inline Vec2 Window::GetWindowSize() const
     return Vec2{ (float)width, (float)height };
 }
 
-inline int32_t Window::GetRefreshRate() const
+inline int32 Window::GetRefreshRate() const
 {
     return refreshRate;
 }

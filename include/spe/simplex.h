@@ -10,8 +10,8 @@ namespace spe
 struct ClosestResult
 {
     Vec2 point;
-    uint32_t contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
-    uint32_t count;
+    uint32 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
+    uint32 count;
 };
 
 class Simplex
@@ -21,20 +21,20 @@ public:
 
     Vec2 vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
-    uint32_t Count() const;
+    uint32 Count() const;
     void Clear();
     void AddVertex(const Vec2& vertex);
     bool ContainsVertex(const Vec2& vertex) const;
-    void Shrink(const uint32_t* _indices, uint32_t _count);
+    void Shrink(const uint32* _indices, uint32 _count);
 
     // Returns the closest point to the input q
     ClosestResult GetClosest(const Vec2& q) const;
 
 private:
-    uint32_t count = 0;
+    uint32 count = 0;
 };
 
-inline uint32_t Simplex::Count() const
+inline uint32 Simplex::Count() const
 {
     return count;
 }
@@ -54,7 +54,7 @@ inline void Simplex::AddVertex(const Vec2& vertex)
 
 inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 {
-    for (uint32_t i = 0; i < count; i++)
+    for (uint32 i = 0; i < count; i++)
     {
         if (vertex == vertices[i]) return true;
     }
@@ -62,11 +62,11 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
     return false;
 }
 
-inline void Simplex::Shrink(const uint32_t* _indices, uint32_t _count)
+inline void Simplex::Shrink(const uint32* _indices, uint32 _count)
 {
     Vec2 tmp[MAX_SIMPLEX_VERTEX_COUNT];
 
-    for (uint32_t i = 0; i < _count; i++)
+    for (uint32 i = 0; i < _count; i++)
     {
         tmp[i] = vertices[_indices[i]];
     }

@@ -5,13 +5,13 @@ namespace spe
 
 ClosestEdgeInfo Polytope::GetClosestEdge() const
 {
-    uint32_t minIndex = 0;
+    uint32 minIndex = 0;
     float minDistance = FLT_MAX;
     Vec2 minNormal{ 0.0f };
 
-    for (uint32_t i = 0; i < vertices.Count(); i++)
+    for (uint32 i = 0; i < vertices.Count(); i++)
     {
-        uint32_t j = (i + 1) % vertices.Count();
+        uint32 j = (i + 1) % vertices.Count();
 
         const Vec2& vertexI = vertices[i];
         const Vec2& vertexJ = vertices[j];

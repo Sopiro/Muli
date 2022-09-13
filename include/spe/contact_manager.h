@@ -19,13 +19,13 @@ public:
     void Add(RigidBody* body);
     void Remove(RigidBody* body);
     void Reset();
-    uint32_t GetContactCount() const;
+    uint32 GetContactCount() const;
 
 private:
     World& world;
     BroadPhase broadPhase;
     Contact* contactList = nullptr;
-    uint32_t contactCount = 0;
+    uint32 contactCount = 0;
 
     void Destroy(Contact* c);
 };
@@ -61,7 +61,7 @@ inline void ContactManager::Remove(RigidBody* body)
     body->contactList = nullptr;
 }
 
-inline uint32_t ContactManager::GetContactCount() const
+inline uint32 ContactManager::GetContactCount() const
 {
     return contactCount;
 }
