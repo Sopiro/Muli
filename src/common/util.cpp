@@ -27,4 +27,23 @@ float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
     return (numerator * mass) / (denominator * 6.0f);
 }
 
+float ComputeCapsuleInertia(float length, float radius, float mass)
+{
+    float width = length;
+    float height = radius * 2.0f;
+
+    float rectArea = width * height;
+    float rectInertia = rectArea * (width * width + height * height) / 12.0f;
+
+    // Inertia of half circle
+    // https://www.efunda.com/math/areas/CircleHalf.cfm
+
+    float circleArea = SPE_PI * radius * radius;
+    float circleInertia = SPE_PI * radius * radius * radius * radius / 4.0f * 2.0f;
+    float dist2 = length * length * 0.25f; // == (length * 0.5)^2
+
+    // Parallel axis theorem applied
+    return mass * (rectInertia + circleInertia + dist2 * circleArea) / (rectArea + circleArea);
+}
+
 } // namespace spe

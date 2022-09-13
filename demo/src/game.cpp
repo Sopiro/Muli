@@ -64,6 +64,8 @@ void Game::HandleInput()
         if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
         if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
         if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
+        if (Input::IsKeyPressed(GLFW_KEY_C)) resetCamera = !resetCamera;
+        if (Input::IsKeyPressed(GLFW_KEY_G)) settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
         if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
         if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
 
@@ -144,7 +146,7 @@ void Game::HandleInput()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 480 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 240, 500 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -226,6 +228,8 @@ void Game::HandleInput()
                 {
                     RigidBody* t = qr[0];
                     ImGui::Text("ID: %d", t->GetID());
+                    ImGui::Text("Mass: %.4f", t->GetMass());
+                    ImGui::Text("Inertia: %.4f", t->GetInertia());
                     ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);
                     ImGui::Text("Rot: %.4f", t->GetRotation().angle);
                 }
@@ -387,6 +391,8 @@ void Game::Render()
             c = c->GetNext();
         }
     }
+
+    // Test(mpos, points, lines);
 
     dRenderer.SetViewMatrix(camera.GetCameraMatrix());
     glPointSize(5.0f);

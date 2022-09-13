@@ -1,6 +1,7 @@
 #include "spe/island.h"
 
 #define SOLVE_CONTACTS_BACKWARD 1
+#define SOLVE_CONTACT_CONSTRAINT 1
 
 namespace spe
 {
@@ -80,19 +81,23 @@ void Island::Solve()
     for (uint32_t i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; i++)
     {
 #if SOLVE_CONTACTS_BACKWARD
+#if SOLVE_CONTACT_CONSTRAINT
         for (size_t j = contacts.size(); j > 0; j--)
         {
             contacts[j - 1]->SolveVelocityConstraint();
         }
+#endif
         for (size_t j = joints.size(); j > 0; j--)
         {
             joints[j - 1]->SolveVelocityConstraint();
         }
 #else
+#if SOLVE_CONTACT_CONSTRAINT
         for (uint32_t j = 0; j < contacts.size(); j++)
         {
             contacts[j]->SolveVelocityConstraint();
         }
+#endif
         for (uint32_t j = 0; j < joints.size(); j++)
         {
             joints[j]->SolveVelocityConstraint();
@@ -127,19 +132,23 @@ void Island::Solve()
             bool jointSolved = true;
 
 #if SOLVE_CONTACTS_BACKWARD
+#if SOLVE_CONTACT_CONSTRAINT
             for (size_t j = contacts.size(); j > 0; j--)
             {
                 contactSolved &= contacts[j - 1]->SolvePositionConstraint();
             }
+#endif
             for (size_t j = joints.size(); j > 0; j--)
             {
                 jointSolved &= joints[j - 1]->SolvePositionConstraint();
             }
 #else
+#if SOLVE_CONTACT_CONSTRAINT
             for (size_t j = 0; j < contacts.size(); j++)
             {
                 contactSolved &= contacts[j]->SolvePositionConstraint();
             }
+#endif
             for (size_t j = 0; j < joints.size(); j++)
             {
                 jointSolved &= joints[j]->SolvePositionConstraint();

@@ -995,4 +995,9 @@ inline float Sin(float s)
     return sinf(s);
 }
 
+inline float Atan2(float y, float x)
+{
+    return atan2f(y, x);
+}
+
 } // namespace spe
