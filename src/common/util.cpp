@@ -35,11 +35,8 @@ float ComputeCapsuleInertia(float length, float radius, float mass)
     float rectArea = width * height;
     float rectInertia = rectArea * (width * width + height * height) / 12.0f;
 
-    // Inertia of half circle
-    // https://www.efunda.com/math/areas/CircleHalf.cfm
-
     float circleArea = SPE_PI * radius * radius;
-    float circleInertia = SPE_PI * radius * radius * radius * radius / 4.0f * 2.0f;
+    float circleInertia = SPE_PI * radius * radius * 0.5f;
     float dist2 = length * length * 0.25f; // == (length * 0.5)^2
 
     // Parallel axis theorem applied

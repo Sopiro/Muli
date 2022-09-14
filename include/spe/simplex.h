@@ -7,9 +7,9 @@
 namespace spe
 {
 
-struct ClosestResult
+struct ClosestPoint
 {
-    Vec2 point;
+    Vec2 position;
     uint32 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
     uint32 count;
 };
@@ -27,8 +27,8 @@ public:
     bool ContainsVertex(const Vec2& vertex) const;
     void Shrink(const uint32* _indices, uint32 _count);
 
-    // Returns the closest point to the input q
-    ClosestResult GetClosest(const Vec2& q) const;
+    // Returns the point closest to the q
+    ClosestPoint GetClosestPoint(const Vec2& q) const;
 
 private:
     uint32 count = 0;
@@ -46,7 +46,7 @@ inline void Simplex::Clear()
 
 inline void Simplex::AddVertex(const Vec2& vertex)
 {
-    if (count == MAX_SIMPLEX_VERTEX_COUNT) throw std::exception("2-simplex can have verticies less than 4");
+    speAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
 
     vertices[count] = vertex;
     count++;

@@ -4,20 +4,19 @@
 namespace spe
 {
 
-// Returns the closest point to the input q
-ClosestResult Simplex::GetClosest(const Vec2& q) const
+ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
 {
-    ClosestResult res;
+    ClosestPoint res;
 
     switch (count)
     {
     case 1: // 0-Simplex: Point
     {
-        res.point = vertices[0];
+        res.position = vertices[0];
         res.count = 1;
         res.contributors[0] = 0;
 
-        return res;
+        break;
     }
     case 2: // 1-Simplex: Line segment
     {
@@ -27,26 +26,25 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
 
         if (w.v <= 0)
         {
-            res.point = a;
+            res.position = a;
             res.count = 1;
             res.contributors[0] = 0;
-            return res;
         }
         else if (w.v >= 1)
         {
-            res.point = b;
+            res.position = b;
             res.count = 1;
             res.contributors[0] = 1;
-            return res;
         }
         else
         {
-            res.point = LerpVector(a, b, w);
+            res.position = LerpVector(a, b, w);
             res.count = 2;
             res.contributors[0] = 0;
             res.contributors[1] = 1;
-            return res;
         }
+
+        break;
     }
     case 3: // 2-Simplex: Triangle
     {
@@ -60,29 +58,29 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {
-            res.point = a;
+            res.position = a;
             res.count = 1;
             res.contributors[0] = 0;
-            return res;
+            break;
         }
         else if (wab.u <= 0 && wbc.v <= 0) // B area
         {
-            res.point = b;
+            res.position = b;
             res.count = 1;
             res.contributors[0] = 1;
-            return res;
+            break;
         }
         else if (wbc.u <= 0 && wca.v <= 0) // C area
         {
-            res.point = c;
+            res.position = c;
             res.count = 1;
             res.contributors[0] = 2;
-            return res;
+            break;
         }
 
         const float area = Cross(b - a, c - a);
 
-        // If area == 0, 3 vertices are in collinear position, which means all aligned in a line
+        // If area == 0, 3 vertices are in the collinear position
 
         const float u = Cross(b - q, c - q);
         const float v = Cross(c - q, a - q);
@@ -104,8 +102,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = LerpVector(a, b, wab);
-            return res;
+            res.position = LerpVector(a, b, wab);
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
         {
@@ -123,8 +120,7 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = LerpVector(b, c, wbc);
-            return res;
+            res.position = LerpVector(b, c, wbc);
         }
         else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
         {
@@ -142,21 +138,19 @@ ClosestResult Simplex::GetClosest(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.point = LerpVector(c, a, wca);
-            return res;
+            res.position = LerpVector(c, a, wca);
         }
         else // Inside the triangle
         {
-            res.point = q;
+            res.position = q;
             res.count = 0;
-            return res;
         }
-    }
-    default:
-    {
-        throw std::exception("Simplex constains vertices more than 3");
+
+        break;
     }
     };
+
+    return res;
 }
 
 } // namespace spe

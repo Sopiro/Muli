@@ -14,15 +14,15 @@ namespace spe
 {
 static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 
-struct SupportResult
+struct SupportPoint
 {
-    Vec2 vertex;
+    Vec2 position;
     int32 index;
 };
 
 // Returns the fardest vertex in the 'dir' direction
 // 'dir' should be normalized and a local vector
-static SupportResult Support(Polygon* p, Vec2 dir)
+static SupportPoint Support(Polygon* p, const Vec2& dir)
 {
     const std::vector<Vec2>& vertices = p->GetVertices();
 
@@ -39,7 +39,7 @@ static SupportResult Support(Polygon* p, Vec2 dir)
         }
     }
 
-    return SupportResult{ vertices[idx], idx };
+    return SupportPoint{ vertices[idx], idx };
 }
 
 /*
@@ -49,15 +49,15 @@ static SupportResult Support(Polygon* p, Vec2 dir)
  * CSO stands for Configuration Space Object
  */
 //'dir' should be normalized
-static Vec2 CSOSupport(Polygon* b1, Polygon* b2, Vec2 dir)
+static Vec2 CSOSupport(Polygon* a, Polygon* b, const Vec2& dir)
 {
-    const Vec2 localDirP1 = MulT(b1->GetRotation(), dir);
-    const Vec2 localDirP2 = MulT(b2->GetRotation(), -dir);
+    Vec2 localDirA = MulT(a->GetRotation(), dir);
+    Vec2 localDirB = MulT(b->GetRotation(), -dir);
 
-    const Vec2 supportP1 = b1->GetTransform() * Support(b1, localDirP1).vertex;
-    const Vec2 supportP2 = b2->GetTransform() * Support(b2, localDirP2).vertex;
+    Vec2 supportA = a->GetTransform() * Support(a, localDirA).position;
+    Vec2 supportB = b->GetTransform() * Support(b, localDirB).position;
 
-    return supportP1 - supportP2;
+    return supportA - supportB;
 }
 
 struct GJKResult
@@ -79,9 +79,9 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; k++)
     {
-        ClosestResult closest = simplex.GetClosest(origin);
+        ClosestPoint closestPoint = simplex.GetClosestPoint(origin);
 
-        if (Dist2(closest.point, origin) < GJK_TOLERANCE)
+        if (Dist2(closestPoint.position, origin) < GJK_TOLERANCE)
         {
             collide = true;
             break;
@@ -90,10 +90,10 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
         if (simplex.Count() != 1)
         {
             // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
-            simplex.Shrink(closest.contributors, closest.count);
+            simplex.Shrink(closestPoint.contributors, closestPoint.count);
         }
 
-        dir = origin - closest.point;
+        dir = origin - closestPoint.position;
         float dist = dir.Normalize();
 
 #if 0
@@ -109,7 +109,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && dist > Dot(dir, supportPoint - closest.point))
+        if (earlyReturn && dist > Dot(dir, supportPoint - closestPoint.position))
         {
             collide = false;
             break;
@@ -165,9 +165,9 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
 static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
 {
     const Vec2 localDir = MulT(b->GetRotation(), dir);
-    const SupportResult farthest = Support(b, localDir);
+    const SupportPoint farthest = Support(b, localDir);
 
-    Vec2 curr = farthest.vertex;
+    Vec2 curr = farthest.position;
     int32 idx = farthest.index;
 
     const Transform& t = b->GetTransform();
@@ -621,8 +621,8 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
         }
         else
         {
-            ClosestResult cr = gr.simplex.GetClosest(Vec2{ 0.0f, 0.0f });
-            return cr.point.Length();
+            ClosestPoint cp = gr.simplex.GetClosestPoint(Vec2{ 0.0f, 0.0f });
+            return cp.position.Length();
         }
     }
 }
@@ -682,9 +682,9 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
 Edge GetFarthestEdge(Polygon* p, const Vec2& dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
-    const SupportResult farthest = Support(p, localDir);
+    const SupportPoint farthest = Support(p, localDir);
 
-    Vec2 curr = farthest.vertex;
+    Vec2 curr = farthest.position;
     int32 idx = farthest.index;
 
     const Transform& t = p->GetTransform();
