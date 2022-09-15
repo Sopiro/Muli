@@ -20,30 +20,24 @@ public:
     virtual void SetMass(float m) override;
     virtual void SetDensity(float d) override;
 
+    virtual float GetArea() const override;
+    virtual AABB GetAABB() const override;
+
     float GetLength() const;
-    float GetRadius() const;
     const Vec2& GetV1() const;
     const Vec2& GetV2() const;
-    virtual float GetArea() const override final;
-    virtual AABB GetAABB() const override;
 
 protected:
     Vec2 v1;
     Vec2 v2;
 
     float length;
-    float radius;
     float area;
 };
 
 inline float Capsule::GetLength() const
 {
     return length;
-}
-
-inline float Capsule::GetRadius() const
-{
-    return radius;
 }
 
 inline const Vec2& Capsule::GetV1() const

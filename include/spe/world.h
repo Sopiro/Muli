@@ -47,16 +47,30 @@ public:
     void BufferDestroy(RigidBody* body);
     void BufferDestroy(Joint* joint);
 
-    Box* CreateBox(float size, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
-    Box* CreateBox(float width, float height, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
+    // Factory functions
+
+    Box* CreateBox(float size,
+                   RigidBody::Type type = RigidBody::Type::Dynamic,
+                   float radius = DEFAULT_RADIUS,
+                   float density = DEFAULT_DENSITY);
+    Box* CreateBox(float width,
+                   float height,
+                   RigidBody::Type type = RigidBody::Type::Dynamic,
+                   float radius = DEFAULT_RADIUS,
+                   float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(const std::vector<Vec2>& vertices,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
                            bool resetCenter = true,
+                           float radius = DEFAULT_RADIUS,
                            float density = DEFAULT_DENSITY);
-    Polygon* CreateRandomConvexPolygon(float radius, uint32 num_vertices = 0, float density = DEFAULT_DENSITY);
-    Polygon* CreateRegularPolygon(float radius,
-                                  uint32 num_vertices = 0,
+    Polygon* CreateRandomConvexPolygon(float length,
+                                       uint32 vertexCount = 0,
+                                       float radius = DEFAULT_RADIUS,
+                                       float density = DEFAULT_DENSITY);
+    Polygon* CreateRegularPolygon(float length,
+                                  uint32 vertexCount = 0,
+                                  float radius = DEFAULT_RADIUS,
                                   float initial_angle = 0,
                                   float density = DEFAULT_DENSITY);
     Capsule* CreateCapsule(float length,

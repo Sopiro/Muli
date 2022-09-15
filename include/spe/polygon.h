@@ -13,12 +13,12 @@ public:
     Polygon(const std::vector<Vec2>& _vertices,
             RigidBody::Type _type = Dynamic,
             bool _resetCenter = true,
+            float _radius = DEFAULT_RADIUS,
             float _density = DEFAULT_DENSITY);
 
     virtual void SetDensity(float d) override;
     virtual void SetMass(float m) override;
 
-    float GetRadius() const;
     virtual float GetArea() const override final;
     virtual AABB GetAABB() const override;
 
@@ -28,13 +28,7 @@ public:
 protected:
     std::vector<Vec2> vertices;
     float area;
-    float radius;
 };
-
-inline float Polygon::GetRadius() const
-{
-    return radius;
-}
 
 inline float Polygon::GetArea() const
 {

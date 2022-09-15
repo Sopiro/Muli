@@ -3,10 +3,12 @@
 namespace spe
 {
 
-Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCenter, float _density)
+Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCenter, float _radius, float _density)
     : RigidBody(_type, RigidBody::Shape::ShapePolygon)
     , vertices{ _vertices }
 {
+    radius = _radius;
+
     Vec2 centerOfMass{ 0.0f };
     size_t count = vertices.size();
 
@@ -20,12 +22,10 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
     float _area = 0;
 
     vertices[0] -= centerOfMass;
-    radius = Length(vertices[0]);
 
     for (uint32 i = 1; i < count; i++)
     {
         vertices[i] -= centerOfMass;
-        radius = Max(radius, Length(vertices[i]));
         _area += Cross(vertices[i - 1], vertices[i]);
     }
     _area += Cross(vertices[count - 1], vertices[0]);

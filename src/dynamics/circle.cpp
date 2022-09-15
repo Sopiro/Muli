@@ -5,8 +5,8 @@ namespace spe
 
 Circle::Circle(float _radius, Type _type, float _density)
     : RigidBody(_type, Shape::ShapeCircle)
-    , radius{ _radius }
 {
+    radius = _radius;
     area = SPE_PI * radius * radius;
 
     if (type == RigidBody::Type::Dynamic)

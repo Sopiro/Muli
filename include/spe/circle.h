@@ -14,19 +14,12 @@ public:
     virtual void SetMass(float m) override;
     virtual void SetDensity(float d) override;
 
-    float GetRadius() const;
     virtual float GetArea() const override final;
     virtual AABB GetAABB() const override;
 
 protected:
-    float radius;
     float area;
 };
-
-inline float Circle::GetRadius() const
-{
-    return radius;
-}
 
 inline float Circle::GetArea() const
 {

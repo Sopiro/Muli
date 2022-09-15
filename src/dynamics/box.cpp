@@ -3,15 +3,15 @@
 namespace spe
 {
 
-Box::Box(float _width, float _height, Type _type, float _density)
-    : Polygon{ { Vec2{ 0, 0 }, Vec2{ _width, 0 }, Vec2{ _width, _height }, Vec2{ 0, _height } }, _type, true, _density }
+Box::Box(float _width, float _height, Type _type, float _radius, float _density)
+    : Polygon{ { Vec2{ 0, 0 }, Vec2{ _width, 0 }, Vec2{ _width, _height }, Vec2{ 0, _height } }, _type, _radius, true, _density }
     , width{ _width }
     , height{ _height }
 {
 }
 
-Box::Box(float _width, Type _type, float _density)
-    : Box{ _width, _width, _type, _density }
+Box::Box(float _size, Type _type, float _radius, float _density)
+    : Box{ _size, _size, _type, _radius, _density }
 {
 }
 

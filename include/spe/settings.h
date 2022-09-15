@@ -9,6 +9,7 @@
 #define DEFAULT_VELOCITY_MULTIPLIER 4.0f
 
 // Default body settings
+#define DEFAULT_RADIUS 0.01f
 #define DEFAULT_DENSITY 12.5f
 #define DEFAULT_FRICTION 0.5f
 #define DEFAULT_RESTITUTION 0.0f

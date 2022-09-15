@@ -57,6 +57,7 @@ public:
 
     void Awake();
 
+    float GetRadius() const;
     float GetDensity() const;
     float GetMass() const;
     float GetInverseMass() const;
@@ -123,6 +124,7 @@ protected:
     float inertia; // kg⋅m²
     float invInertia;
 
+    float radius = DEFAULT_RADIUS;
     float friction = DEFAULT_FRICTION;
     float restitution = DEFAULT_RESTITUTION;
     float surfaceSpeed = DEFAULT_SURFACESPEED; // m/s (Tangential speed)
@@ -202,6 +204,11 @@ inline void RigidBody::Translate(const Vec2& d)
 inline void RigidBody::Rotate(float a)
 {
     transform.rotation += a;
+}
+
+inline float RigidBody::GetRadius() const
+{
+    return radius;
 }
 
 inline float RigidBody::GetDensity() const
