@@ -12,6 +12,7 @@
 
 namespace spe
 {
+
 static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 
 struct SupportPoint
@@ -131,8 +132,8 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 
 struct EPAResult
 {
-    float penetrationDepth;
     Vec2 contactNormal;
+    float penetrationDepth;
 };
 
 static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
@@ -159,7 +160,7 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
         }
     }
 
-    return EPAResult{ closestEdge.distance, closestEdge.normal };
+    return EPAResult{ closestEdge.normal, closestEdge.distance };
 }
 
 static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)

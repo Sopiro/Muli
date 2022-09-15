@@ -27,17 +27,17 @@ public:
     static Vec2 GetMouseScroll();
 
 private:
-    static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
-    static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
+    inline static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
+    inline static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
 
-    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> lastBtns;
-    static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currBtns;
+    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> lastBtns;
+    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currBtns;
 
-    static Vec2 currMousePos;
-    static Vec2 lastMousePos;
-    static Vec2 mouseAcceleration;
+    inline static Vec2 currMousePos{ 0.0f };
+    inline static Vec2 lastMousePos{ 0.0f };
+    inline static Vec2 mouseAcceleration{ 0.0f };
 
-    static Vec2 mouseScroll;
+    inline static Vec2 mouseScroll{ 0.0f };
 };
 
 inline void Input::Init()

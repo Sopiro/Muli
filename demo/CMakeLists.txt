@@ -6,7 +6,6 @@ set(DEMO_SOURCE_FILES
     src/main.cpp
     src/window.cpp
     src/application.cpp
-    src/input.cpp
     src/game.cpp
     src/camera.cpp
     src/util.cpp
