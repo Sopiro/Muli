@@ -70,8 +70,8 @@ public:
                                        float density = DEFAULT_DENSITY);
     Polygon* CreateRegularPolygon(float length,
                                   uint32 vertexCount = 0,
-                                  float radius = DEFAULT_RADIUS,
                                   float initial_angle = 0,
+                                  float radius = DEFAULT_RADIUS,
                                   float density = DEFAULT_DENSITY);
     Capsule* CreateCapsule(float length,
                            float radius,

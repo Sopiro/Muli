@@ -51,7 +51,7 @@ bool PositionSolver::Solve()
 
     // We can't expect speparation >= -PENETRATION_SLOP
     // because we don't push the separation above -PENETRATION_SLOP
-    return -separation <= contact->settings.PENETRATION_SLOP * 2.0f;
+    return -separation <= contact->settings.PENETRATION_SLOP * 3.0f;
 }
 
 } // namespace spe

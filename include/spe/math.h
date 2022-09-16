@@ -66,6 +66,18 @@ struct Vec2
         y -= v.y;
     }
 
+    void operator+=(float s)
+    {
+        x += s;
+        y += s;
+    }
+
+    void operator-=(float s)
+    {
+        x -= s;
+        y -= s;
+    }
+
     void operator*=(float s)
     {
         x *= s;
@@ -170,6 +182,20 @@ struct Vec3
         x -= v.x;
         y -= v.y;
         z -= v.z;
+    }
+
+    void operator+=(float s)
+    {
+        x += s;
+        y += s;
+        z += s;
+    }
+
+    void operator-=(float s)
+    {
+        x -= s;
+        y -= s;
+        z -= s;
     }
 
     void operator*=(float s)

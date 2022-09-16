@@ -329,7 +329,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
 
     std::sort(angles.begin(), angles.end());
 
-    std::vector<Vec2> vertices{};
+    std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);
 
     for (uint32 i = 0; i < vertexCount; i++)
@@ -342,7 +342,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
     return p;
 }
 
-Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float radius, float initial_angle, float density)
+Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float initial_angle, float radius, float density)
 {
     if (vertexCount < 3)
     {
@@ -364,8 +364,8 @@ Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float rad
     {
         float currentAngle = angleStart + angle * i;
 
-        Vec2 corner = Vec2{ cosf(currentAngle), sinf(currentAngle) };
-        corner *= length * sqrtf(2.0f);
+        Vec2 corner = Vec2{ Cos(currentAngle), Sin(currentAngle) };
+        corner *= length * Sqrt(2.0f);
 
         vertices.push_back(corner);
     }

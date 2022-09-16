@@ -4,7 +4,7 @@ namespace spe
 {
 
 Box::Box(float _width, float _height, Type _type, float _radius, float _density)
-    : Polygon{ { Vec2{ 0, 0 }, Vec2{ _width, 0 }, Vec2{ _width, _height }, Vec2{ 0, _height } }, _type, _radius, true, _density }
+    : Polygon{ { Vec2{ 0, 0 }, Vec2{ _width, 0 }, Vec2{ _width, _height }, Vec2{ 0, _height } }, _type, true, _radius, _density }
     , width{ _width }
     , height{ _height }
 {

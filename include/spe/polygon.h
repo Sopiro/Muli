@@ -60,6 +60,9 @@ inline AABB Polygon::GetAABB() const
         max = Max(max, v);
     }
 
+    min -= radius;
+    max += radius;
+
     return AABB{ min, max };
 }
 

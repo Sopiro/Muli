@@ -2,6 +2,7 @@
 #include "spe/box.h"
 #include "spe/capsule.h"
 #include "spe/circle.h"
+#include "spe/contact_point.h"
 #include "spe/edge.h"
 #include "spe/polygon.h"
 #include "spe/polytope.h"
@@ -13,17 +14,12 @@
 namespace spe
 {
 
+static constexpr Vec2 origin{ 0.0f };
 static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
-
-struct SupportPoint
-{
-    Vec2 position;
-    int32 index;
-};
 
 // Returns the fardest vertex in the 'dir' direction
 // 'dir' should be normalized and a local vector
-static SupportPoint Support(Polygon* p, const Vec2& dir)
+static ContactPoint Support(Polygon* p, const Vec2& dir)
 {
     const std::vector<Vec2>& vertices = p->GetVertices();
 
@@ -40,7 +36,7 @@ static SupportPoint Support(Polygon* p, const Vec2& dir)
         }
     }
 
-    return SupportPoint{ vertices[idx], idx };
+    return ContactPoint{ vertices[idx], idx };
 }
 
 /*
@@ -63,17 +59,18 @@ static Vec2 CSOSupport(Polygon* a, Polygon* b, const Vec2& dir)
 
 struct GJKResult
 {
-    bool collide;
     Simplex simplex;
+    float distance;
+    bool collide;
 };
 
 static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 {
-    constexpr Vec2 origin{ 0.0f };
     Vec2 dir(1.0f, 0.0f); // Random initial direction
 
-    bool collide = false;
     Simplex simplex;
+    float distance = 0.0f;
+    bool collide = false;
 
     Vec2 supportPoint = CSOSupport(b1, b2, dir);
     simplex.AddVertex(supportPoint);
@@ -87,15 +84,14 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
             collide = true;
             break;
         }
-
-        if (simplex.Count() != 1)
+        else if (simplex.VertexCount() != 1)
         {
             // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
             simplex.Shrink(closestPoint.contributors, closestPoint.count);
         }
 
         dir = origin - closestPoint.position;
-        float dist = dir.Normalize();
+        distance = dir.Normalize();
 
 #if 0
         // Avoid floating point error
@@ -110,7 +106,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && dist > Dot(dir, supportPoint - closestPoint.position))
+        if (earlyReturn && distance > Dot(dir, supportPoint - closestPoint.position))
         {
             collide = false;
             break;
@@ -127,7 +123,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
         }
     }
 
-    return GJKResult{ collide, simplex };
+    return GJKResult{ simplex, distance, collide };
 }
 
 struct EPAResult
@@ -166,10 +162,10 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
 static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
 {
     const Vec2 localDir = MulT(b->GetRotation(), dir);
-    const SupportPoint farthest = Support(b, localDir);
+    const ContactPoint farthest = Support(b, localDir);
 
     Vec2 curr = farthest.position;
-    int32 idx = farthest.index;
+    int32 idx = farthest.id;
 
     const Transform& t = b->GetTransform();
 
@@ -234,6 +230,9 @@ static void FindContactPoints(const Vec2& n, Polygon* a, Polygon* b, ContactMani
 {
     Edge edgeA = FindFeaturedEdge(a, n);
     Edge edgeB = FindFeaturedEdge(b, -n);
+
+    edgeA.Translate(n * a->GetRadius());
+    edgeB.Translate(-n * b->GetRadius());
 
     Edge* ref = &edgeA; // Reference edge
     Edge* inc = &edgeB; // Incidence edge
@@ -369,11 +368,74 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
 
 static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
 {
-    GJKResult gjkResult = GJK(a, b);
+    GJKResult gjkResult = GJK(a, b, false);
+    Simplex& simplex = gjkResult.simplex;
 
-    if (!gjkResult.collide)
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (gjkResult.collide == false)
     {
-        return false;
+        switch (simplex.VertexCount())
+        {
+        case 1: // vertex vs. vertex collision
+            if (gjkResult.distance < r2)
+            {
+                if (out == nullptr)
+                {
+                    return true;
+                }
+
+                out->bodyA = a;
+                out->bodyB = b;
+                out->contactNormal = (origin - simplex.vertices[0]).Normalized();
+                out->contactTangent = out->contactNormal.Skew();
+
+                Vec2 localDirA = MulT(a->GetRotation(), out->contactNormal);
+                Vec2 localDirB = MulT(b->GetRotation(), -out->contactNormal);
+
+                ContactPoint supportA = Support(a, localDirA);
+                ContactPoint supportB = Support(b, localDirB);
+                supportA.position = a->GetTransform() * supportA.position;
+                supportB.position = b->GetTransform() * supportB.position;
+
+                out->contactPoints[0] = supportB;
+                out->numContacts = 1;
+                out->referenceEdge = Edge{ supportA, supportA };
+                out->penetrationDepth = r2 - gjkResult.distance;
+                out->featureFlipped = false;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        case 2: // vertex vs. edge collision
+            if (gjkResult.distance < r2)
+            {
+                if (out == nullptr)
+                {
+                    return true;
+                }
+
+                out->contactNormal = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
+                Vec2 k = origin - simplex.vertices[0];
+                if (Dot(out->contactNormal, k) < 0)
+                {
+                    out->contactNormal *= -1;
+                }
+                out->penetrationDepth = r2 - gjkResult.distance;
+            }
+            else
+            {
+                return false;
+            }
+
+            break;
+        case 3:
+            // Simplex vertices are in the collinear position
+            return false;
+        }
     }
     else
     {
@@ -383,9 +445,8 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
         }
 
         // If the gjk termination simplex has vertices less than 3, expand to full simplex
-        // Because EPA needs a full n-simplex to get started
-        Simplex& simplex = gjkResult.simplex;
-        switch (simplex.Count())
+        // Because EPA needs a full n-simplex to get started (actually it's pretty rare case)
+        switch (simplex.VertexCount())
         {
         case 1:
         {
@@ -399,14 +460,17 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
 
             simplex.AddVertex(randomSupport);
         }
+
+            [[fallthrough]];
+
         case 2:
         {
-            Edge e{ simplex.vertices[0], simplex.vertices[1] };
-            Vec2 normalSupport = CSOSupport(a, b, e.normal);
+            Vec2 n = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
+            Vec2 normalSupport = CSOSupport(a, b, n);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(CSOSupport(a, b, -e.normal));
+                simplex.AddVertex(CSOSupport(a, b, -n));
             }
             else
             {
@@ -415,24 +479,25 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
         }
         }
 
-        EPAResult epaResult = EPA(a, b, gjkResult.simplex);
-
-        FindContactPoints(epaResult.contactNormal, a, b, out);
-
-        // Apply axis weight to improve coherence
-        if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
-        {
-            RigidBody* tmp = out->bodyA;
-            out->bodyA = out->bodyB;
-            out->bodyB = tmp;
-            out->contactNormal *= -1;
-            out->featureFlipped = out->bodyA != a;
-        }
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
+        EPAResult epaResult = EPA(a, b, simplex);
+        out->contactNormal = epaResult.contactNormal;
         out->penetrationDepth = epaResult.penetrationDepth;
-
-        return true;
     }
+
+    FindContactPoints(out->contactNormal, a, b, out);
+
+    // Apply axis weight to improve coherence
+    if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
+    {
+        RigidBody* tmp = out->bodyA;
+        out->bodyA = out->bodyB;
+        out->bodyB = tmp;
+        out->contactNormal *= -1;
+        out->featureFlipped = out->bodyA != a;
+    }
+    out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
+
+    return true;
 }
 
 // Public functions
@@ -683,10 +748,10 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
 Edge GetFarthestEdge(Polygon* p, const Vec2& dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
-    const SupportPoint farthest = Support(p, localDir);
+    const ContactPoint farthest = Support(p, localDir);
 
     Vec2 curr = farthest.position;
-    int32 idx = farthest.index;
+    int32 idx = farthest.id;
 
     const Transform& t = p->GetTransform();
 

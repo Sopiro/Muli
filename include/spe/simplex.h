@@ -21,7 +21,7 @@ public:
 
     Vec2 vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
-    uint32 Count() const;
+    uint32 VertexCount() const;
     void Clear();
     void AddVertex(const Vec2& vertex);
     bool ContainsVertex(const Vec2& vertex) const;
@@ -34,7 +34,7 @@ private:
     uint32 count = 0;
 };
 
-inline uint32 Simplex::Count() const
+inline uint32 Simplex::VertexCount() const
 {
     return count;
 }
