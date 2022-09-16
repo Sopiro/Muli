@@ -90,17 +90,22 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
             simplex.Shrink(closestPoint.contributors, closestPoint.count);
         }
 
-        dir = origin - closestPoint.position;
-        distance = dir.Normalize();
-
-#if 0
-        // Avoid floating point error
-        if (simplex.Count() == 2)
+        if (simplex.VertexCount() == 2)
         {
-            Vec2 n = (simplex.vertices[0] - simplex.vertices[1]).Skew();
-            dir =  Dot(dir, n) > 0 ? n.Normalized() : -n.Normalized();
+            // Avoid floating point error
+            dir = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
+            distance = Dot(dir, origin - simplex.vertices[0]);
+            if (distance < 0)
+            {
+                distance *= -1;
+                dir *= -1;
+            }
         }
-#endif
+        else
+        {
+            dir = origin - closestPoint.position;
+            distance = dir.Normalize();
+        }
 
         supportPoint = CSOSupport(b1, b2, dir);
 
