@@ -778,13 +778,14 @@ Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
 
     for (int32 i = 0; i < vertices.size(); i++)
     {
+        int32 i2 = (i + 1) % vertices.size();
         const Vec2& v1 = vertices[i];
-        const Vec2& v2 = vertices[(i + 1) % vertices.size()];
+        const Vec2& v2 = vertices[i2];
 
         if (Cross(v1, localDir) > 0 && Cross(v2, localDir) < 0)
         {
             const Transform& t = p->GetTransform();
-            return Edge{ t * v1, t * v2, i, i + 1 };
+            return Edge{ t * v1, t * v2, i, i2 };
         }
     }
 
