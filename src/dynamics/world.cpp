@@ -80,7 +80,10 @@ void World::Step(float dt)
                 stack.push_back(je->other);
             }
 
-            if (t->resting > settings.SLEEPING_TRESHOLD) restingBodies++;
+            if (t->resting > settings.SLEEPING_TRESHOLD)
+            {
+                restingBodies++;
+            }
         }
 
         island.sleeping = settings.SLEEPING_ENABLED && (restingBodies == island.bodies.size());

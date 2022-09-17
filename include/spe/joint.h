@@ -111,7 +111,7 @@ private:
     // 0 <= Damping ratio <= 1
     // 0 < Joint mass
     void SetProperties(float _frequency, float _dampingRatio, float _jointMass);
-    void CalculateBetaAndGamma();
+    void ComputeBetaAndGamma();
 };
 
 inline float Joint::GetFrequency() const

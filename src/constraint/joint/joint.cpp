@@ -18,7 +18,10 @@ Joint::Joint(Joint::Type _type,
 
 Joint::~Joint()
 {
-    if (OnDestroy != nullptr) OnDestroy(this);
+    if (OnDestroy != nullptr)
+    {
+        OnDestroy(this);
+    }
 }
 
 void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMass)
@@ -30,7 +33,7 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
         dampingRatio = Clamp<float>(_dampingRatio, 0.0f, 1.0f);
         jointMass = Clamp<float>(_jointMass, 0.0f, FLT_MAX);
 
-        CalculateBetaAndGamma();
+        ComputeBetaAndGamma();
     }
     else
     {
@@ -43,12 +46,12 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
     }
 }
 
-void Joint::CalculateBetaAndGamma()
+void Joint::ComputeBetaAndGamma()
 {
     float omega = 2.0f * SPE_PI * frequency;
     float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
     float k = jointMass * omega * omega;               // Spring constant
-    float h = 1.0f / 144.0f;
+    float h = settings.DT;
 
     beta = h * k / (d + h * k);
     gamma = 1.0f / ((d + h * k) * h);

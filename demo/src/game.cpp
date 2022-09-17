@@ -52,22 +52,22 @@ void Game::Update(float dt)
 
 void Game::HandleInput()
 {
-    std::vector<RigidBody*> qr;
+    static std::vector<RigidBody*> qr;
+
+    mpos = rRenderer.Pick(Input::GetMousePosition());
+
+    if (Input::IsKeyPressed(GLFW_KEY_R)) InitSimulation(currentDemo);
+    if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
+    if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
+    if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
+    if (Input::IsKeyPressed(GLFW_KEY_C)) resetCamera = !resetCamera;
+    if (Input::IsKeyPressed(GLFW_KEY_G)) settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
+    if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
+    if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
 
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
-        mpos = rRenderer.Pick(Input::GetMousePosition());
-
         qr = world->Query(mpos);
-
-        if (Input::IsKeyPressed(GLFW_KEY_R)) InitSimulation(currentDemo);
-        if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
-        if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
-        if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
-        if (Input::IsKeyPressed(GLFW_KEY_C)) resetCamera = !resetCamera;
-        if (Input::IsKeyPressed(GLFW_KEY_G)) settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
-        if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
-        if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {

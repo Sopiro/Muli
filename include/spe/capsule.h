@@ -24,12 +24,12 @@ public:
     virtual AABB GetAABB() const override;
 
     float GetLength() const;
-    const Vec2& GetV1() const;
-    const Vec2& GetV2() const;
+    const Vec2& GetVertexA() const;
+    const Vec2& GetVertexB() const;
 
 protected:
-    Vec2 v1;
-    Vec2 v2;
+    Vec2 va;
+    Vec2 vb;
 
     float length;
     float area;
@@ -40,14 +40,14 @@ inline float Capsule::GetLength() const
     return length;
 }
 
-inline const Vec2& Capsule::GetV1() const
+inline const Vec2& Capsule::GetVertexA() const
 {
-    return v1;
+    return va;
 }
 
-inline const Vec2& Capsule::GetV2() const
+inline const Vec2& Capsule::GetVertexB() const
 {
-    return v2;
+    return vb;
 }
 
 inline float Capsule::GetArea() const

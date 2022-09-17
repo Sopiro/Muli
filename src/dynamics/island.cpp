@@ -110,7 +110,10 @@ void Island::Solve()
     {
         RigidBody* b = bodies[i];
 
-        if (awakeIsland) b->Awake();
+        if (awakeIsland)
+        {
+            b->Awake();
+        }
 
         b->force.SetZero();
         b->torque = 0.0f;

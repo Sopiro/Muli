@@ -66,10 +66,11 @@ inline std::pair<uint32, uint32> SeparatePair(uint32 p)
     return { static_cast<uint32>(x), static_cast<uint32>(y) };
 }
 
+static std::random_device rd;
+static std::mt19937 g(rd());
+
 inline int LinearRand(int _min, int _max)
 {
-    std::random_device rd;
-    std::mt19937 g(rd());
     std::uniform_int_distribution<int> ud(_min, _max);
 
     return ud(g);
@@ -77,8 +78,6 @@ inline int LinearRand(int _min, int _max)
 
 inline float LinearRand(float _min, float _max)
 {
-    std::random_device rd;
-    std::mt19937 g(rd());
     std::uniform_real_distribution<float> ud(_min, _max);
 
     return ud(g);

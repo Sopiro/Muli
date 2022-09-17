@@ -162,22 +162,25 @@ static void Demo7(Game& game, World& world, WorldSettings& settings)
 static void Demo8(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
+    float groundFriction = 0.5f;
+
     RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    ground->SetFriction(groundFriction);
 
     Box* b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->SetPosition(-0.6f, 5.0f);
     b->SetRotation(-0.15f);
-    b->SetFriction(1.0f);
+    b->SetFriction(groundFriction);
 
     b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->SetPosition(0.0f, 3.0f);
     b->SetRotation(0.15f);
-    b->SetFriction(1.0f);
+    b->SetFriction(groundFriction);
 
     b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
     b->SetPosition(-0.6f, 1.0f);
     b->SetRotation(-0.15f);
-    b->SetFriction(1.0f);
+    b->SetFriction(groundFriction);
 
     b = world.CreateBox(0.1f, 1.1f, RigidBody::Type::Static);
     b->SetPosition(3.1f, 4.3f);
@@ -189,7 +192,7 @@ static void Demo8(Game& game, World& world, WorldSettings& settings)
     float gap = 0.30f;
     float size = 0.30f;
 
-    std::array<float, 5> frictions = { 0.51f, 0.31f, 0.21f, 0.11f, 0.0f };
+    std::array<float, 5> frictions = { 0.4f, 0.3f, 0.2f, 0.1f, 0.0f };
 
     for (uint32 i = 0; i < frictions.size(); i++)
     {
@@ -461,6 +464,30 @@ static void Demo15(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
+static void Demo16(Game& game, World& world, WorldSettings& settings)
+{
+    settings.APPLY_GRAVITY = false;
+
+    float size = 15.0f;
+    float r = 0.25f;
+    float spread = 10.0f;
+
+    Polygon* b = world.CreateRandomConvexPolygon(spread / 2.0f, 7);
+    b->SetPosition(-25.0, 0.0f);
+    b->SetLinearVelocity(12.0f, 0.0f);
+    b->SetAngularVelocity(1.0f);
+
+    for (int i = 0; i < 500; i++)
+    {
+        Circle* c = world.CreateCircle(r);
+        c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);
+    }
+
+    Camera& c = game.GetCamera();
+    c.position = { -5.0f, 0.0f };
+    c.scale = { 6.0f, 6.0f };
+}
+
 std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> GetDemos()
 {
     decltype(GetDemos()) demos;
@@ -481,6 +508,7 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettin
     demos.push_back({ "1000 circles", Demo13 });
     demos.push_back({ "1000 boxes", Demo14 });
     demos.push_back({ "1000 convex shapes", Demo15 });
+    demos.push_back({ "Dense collision", Demo16 });
 
     return demos;
 }

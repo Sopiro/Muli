@@ -177,8 +177,10 @@ static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
     const std::vector<Vec2>& vertices = b->GetVertices();
     int32 vertexCount = static_cast<int32>(b->VertexCount());
 
-    const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
-    const Vec2& next = vertices[(idx + 1) % vertexCount];
+    int32 prevIdx = (idx - 1 + vertexCount) % vertexCount;
+    int32 nextIdx = (idx + 1) % vertexCount;
+    const Vec2& prev = vertices[prevIdx];
+    const Vec2& next = vertices[nextIdx];
 
     Vec2 e1 = (curr - prev).Normalized();
     Vec2 e2 = (curr - next).Normalized();
@@ -187,11 +189,11 @@ static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
 
     if (w)
     {
-        return Edge{ t * prev, t * curr, (idx - 1 + vertexCount) % vertexCount, idx };
+        return Edge{ t * prev, t * curr, prevIdx, idx };
     }
     else
     {
-        return Edge{ t * curr, t * next, idx, (idx + 1) % vertexCount };
+        return Edge{ t * curr, t * next, idx, nextIdx };
     }
 }
 
@@ -330,31 +332,35 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
     const Vec2& pb = b->GetPosition();
 
     Vec2 a2b = (pb - pa).Normalized();
-    out->referenceEdge = GetFarthestEdge(a, a2b);
-    UV w = ComputeWeights(out->referenceEdge.p1.position, out->referenceEdge.p2.position, b->GetPosition());
+    Edge e = GetIntersectingEdge(a, a2b);
+    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
 
     // Find closest point depending on the Voronoi region
     Vec2 closest;
-    if (w.v <= 0) // Region v1
+    Vec2 normal;
+    if (w.v <= 0) // Region A: vertex collision
     {
-        closest = out->referenceEdge.p1.position;
-        out->contactNormal = (pb - out->referenceEdge.p1.position).Normalized();
+        closest = e.p1.position;
+        normal = (pb - e.p1.position).Normalized();
     }
-    else if (w.v >= 1) // Region v2
+    else if (w.v >= 1) // Region B: vertex collision
     {
-        closest = out->referenceEdge.p2.position;
-        out->contactNormal = (pb - out->referenceEdge.p2.position).Normalized();
+        closest = e.p2.position;
+        normal = (pb - e.p2.position).Normalized();
     }
-    else
+    else // Region AB: Edge vs. vertex collision
     {
-        closest = LerpVector(out->referenceEdge.p1.position, out->referenceEdge.p2.position, w);
-        out->contactNormal = -out->referenceEdge.normal;
+        closest = LerpVector(e.p1.position, e.p2.position, w);
+        normal = -e.normal;
     }
 
     Vec2 c2b = pb - closest;
-    float l = c2b.Length();
 
-    if (l > b->GetRadius())
+    // Signed distance along normal
+    float l = Dot(c2b, normal);
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (l > r2)
     {
         return false;
     }
@@ -362,9 +368,11 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
     {
         out->bodyA = a;
         out->bodyB = b;
-        out->contactTangent = out->contactNormal.Skew();
-        out->penetrationDepth = b->GetRadius() - l;
-        out->contactPoints[0] = ContactPoint{ b->GetPosition() + out->contactNormal * -b->GetRadius(), -1 };
+        out->contactNormal = normal;
+        out->contactTangent = normal.Skew();
+        out->penetrationDepth = r2 - l;
+        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+        out->referenceEdge = e;
         out->numContacts = 1;
 
         return true;
@@ -576,21 +584,21 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
         float l = c->GetLength();
         float r = c->GetRadius();
 
-        Vec2 v1 = c->GetV1();
-        Vec2 v2 = c->GetV2();
+        Vec2 v1 = c->GetVertexA();
+        Vec2 v2 = c->GetVertexB();
 
         UV w = ComputeWeights(v1, v2, localQ);
         float r2 = r * r;
 
-        if (w.v <= 0.0f)
+        if (w.v <= 0.0f) // Region A
         {
             return Dist2(v1, localQ) < r2;
         }
-        else if (w.v >= 1.0f)
+        else if (w.v >= 1.0f) // Region B
         {
             return Dist2(v2, localQ) < r2;
         }
-        else
+        else // Region AB
         {
             Vec2 p = LerpVector(v1, v2, w);
             return Dist2(p, localQ) < r2;
@@ -635,15 +643,16 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
 
         Vec2 p2c = (cp - pp).Normalized();
 
-        Edge e = GetFarthestEdge(p, p2c);
+        Edge e = GetIntersectingEdge(p, p2c);
         UV w = ComputeWeights(e.p1.position, e.p2.position, cp);
 
         const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
 
         Vec2 n = cp - closest;
         float dist2 = n.Length2();
+        float r2 = p->GetRadius() + c->GetRadius();
 
-        if (dist2 > c->GetRadius() * c->GetRadius())
+        if (dist2 > r2 * r2)
         {
             return 0.0f;
         }
@@ -662,15 +671,16 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
 
         Vec2 p2c = (cp - pp).Normalized();
 
-        Edge e = GetFarthestEdge(p, p2c);
+        Edge e = GetIntersectingEdge(p, p2c);
         UV w = ComputeWeights(e.p1.position, e.p2.position, cp);
 
         const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
 
         Vec2 n = cp - closest;
         float dist2 = n.Length2();
+        float r2 = p->GetRadius() + c->GetRadius();
 
-        if (dist2 > c->GetRadius() * c->GetRadius())
+        if (dist2 > r2 * r2)
         {
             return 0.0f;
         }
@@ -686,13 +696,13 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
 
         GJKResult gr = GJK(p1, p2, false);
 
-        if (gr.collide)
+        if (gr.collide == true)
         {
             return 0.0f;
         }
         else
         {
-            ClosestPoint cp = gr.simplex.GetClosestPoint(Vec2{ 0.0f, 0.0f });
+            ClosestPoint cp = gr.simplex.GetClosestPoint(origin);
             return cp.position.Length();
         }
     }
@@ -725,22 +735,33 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
         Polygon* p = static_cast<Polygon*>(b);
 
         Vec2 p2q = (q - p->GetPosition()).Normalized();
-        Edge e = GetFarthestEdge(p, p2q);
+        Edge e = GetIntersectingEdge(p, p2q);
 
         UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
 
         Vec2 closest;
-        if (w.v <= 0) // Region v1
+        if (w.v <= 0) // Region p1
         {
             closest = e.p1.position;
         }
-        else if (w.v >= 1) // Region v2
+        else if (w.v >= 1) // Region p2
         {
             closest = e.p2.position;
         }
-        else
+        else // Region middle
         {
-            closest = LerpVector(e.p1.position, e.p2.position, w);
+            // Remove floating point error
+            // such that Dot(q - closest, e.p2 - e.p1) == 0
+
+            Vec2 normal = e.normal;
+            float distance = Dot(q - e.p1.position, normal);
+            if (distance < 0)
+            {
+                normal *= -1;
+                distance *= -1;
+            }
+
+            closest = q + normal * -distance;
         }
 
         return closest;
@@ -750,32 +771,24 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
     }
 }
 
-Edge GetFarthestEdge(Polygon* p, const Vec2& dir)
+Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
-    const ContactPoint farthest = Support(p, localDir);
-
-    Vec2 curr = farthest.position;
-    int32 idx = farthest.id;
-
-    const Transform& t = p->GetTransform();
-
     const std::vector<Vec2>& vertices = p->GetVertices();
-    int32 vertexCount = static_cast<int32>(p->VertexCount());
 
-    const Vec2& prev = vertices[(idx - 1 + vertexCount) % vertexCount];
-    const Vec2& next = vertices[(idx + 1) % vertexCount];
-
-    bool w = Cross(localDir, curr) > 0;
-
-    if (w)
+    for (int32 i = 0; i < vertices.size(); i++)
     {
-        return Edge{ t * prev, t * curr, (idx - 1 + vertexCount) % vertexCount, idx };
+        const Vec2& v1 = vertices[i];
+        const Vec2& v2 = vertices[(i + 1) % vertices.size()];
+
+        if (Cross(v1, localDir) > 0 && Cross(v2, localDir) < 0)
+        {
+            const Transform& t = p->GetTransform();
+            return Edge{ t * v1, t * v2, i, i + 1 };
+        }
     }
-    else
-    {
-        return Edge{ t * curr, t * next, idx, (idx + 1) % vertexCount };
-    }
+
+    throw std::exception("Unreachable");
 }
 
 } // namespace spe

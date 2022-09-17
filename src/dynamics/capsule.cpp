@@ -22,8 +22,8 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
         invInertia = 1.0f / inertia;
     }
 
-    v1 = Vec2{ -length / 2.0f, 0.0f };
-    v2 = Vec2{ length / 2.0f, 0.0f };
+    va = Vec2{ -length / 2.0f, 0.0f };
+    vb = Vec2{ length / 2.0f, 0.0f };
 
     if (_resetPosition == false)
     {
@@ -52,8 +52,8 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
         invInertia = 1.0f / inertia;
     }
 
-    v1 = Vec2{ -length / 2.0f, 0.0f };
-    v2 = Vec2{ length / 2.0f, 0.0f };
+    va = Vec2{ -length / 2.0f, 0.0f };
+    vb = Vec2{ length / 2.0f, 0.0f };
 
     if (_horizontal == false)
     {

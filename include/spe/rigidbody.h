@@ -71,6 +71,7 @@ public:
     void SetSurfaceSpeed(float _surfaceSpeed);
     const Vec2& GetLinearVelocity() const;
     void SetLinearVelocity(const Vec2& _linearVelocity);
+    void SetLinearVelocity(float vx, float vy);
     float GetAngularVelocity() const;
     void SetAngularVelocity(float _angularVelocity);
     const Vec2& GetForce() const;
@@ -285,6 +286,11 @@ inline const Vec2& RigidBody::GetLinearVelocity() const
 inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 {
     linearVelocity = _linearVelocity;
+}
+
+inline void RigidBody::SetLinearVelocity(float vx, float vy)
+{
+    linearVelocity.Set(vx, vy);
 }
 
 inline float RigidBody::GetAngularVelocity() const

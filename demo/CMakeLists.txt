@@ -7,7 +7,6 @@ set(DEMO_SOURCE_FILES
     src/window.cpp
     src/application.cpp
     src/game.cpp
-    src/camera.cpp
     src/util.cpp
 
     src/rendering/shader.cpp
