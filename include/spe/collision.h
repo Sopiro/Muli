@@ -30,7 +30,7 @@ struct ContactManifold
     float penetrationDepth;
     Vec2 contactNormal; // Contact normal is always pointing from a to b
     Vec2 contactTangent;
-    Edge referenceEdge;
+    ContactPoint referencePoint;
     bool featureFlipped;
 };
 

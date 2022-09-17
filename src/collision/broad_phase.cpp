@@ -30,15 +30,15 @@ void BroadPhase::UpdateDynamicTree(float dt)
             aabb.max.y += d.y;
         else
             aabb.min.y += d.y;
-        aabb.max += margin;
-        aabb.min -= margin;
+        aabb.max += aabbMargin;
+        aabb.min -= aabbMargin;
 
         tree.Remove(body);
         tree.Insert(body, aabb);
     }
 }
 
-void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback)
+void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback) const
 {
     for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {

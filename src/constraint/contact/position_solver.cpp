@@ -10,7 +10,7 @@ void PositionSolver::Prepare(Contact* _contact, uint32 index)
 {
     contact = _contact;
 
-    localPlainPoint = MulT(contact->manifold.bodyA->GetTransform(), contact->manifold.referenceEdge.p1.position);
+    localPlainPoint = MulT(contact->manifold.bodyA->GetTransform(), contact->manifold.referencePoint.position);
     localClipPoint = MulT(contact->manifold.bodyB->GetTransform(), contact->manifold.contactPoints[index].position);
     localNormal = MulT(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
 }

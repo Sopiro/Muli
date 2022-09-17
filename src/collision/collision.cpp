@@ -278,7 +278,7 @@ static void FindContactPoints(const Vec2& n, Polygon* a, Polygon* b, ContactMani
         out->numContacts = 2;
     }
 
-    out->referenceEdge = *ref;
+    out->referencePoint = ref->p1;
 }
 
 static bool CircleVsCircle(Circle* a, Circle* b, ContactManifold* out)
@@ -306,7 +306,7 @@ static bool CircleVsCircle(Circle* a, Circle* b, ContactManifold* out)
         out->bodyB = b;
         out->contactNormal = (pb - pa).Normalized();
         out->contactPoints[0] = ContactPoint{ pb + (-out->contactNormal * b->GetRadius()), -1 };
-        out->referenceEdge = Edge{ pa + (out->contactNormal * a->GetRadius()), pa + (out->contactNormal * a->GetRadius()) };
+        out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;
@@ -372,7 +372,7 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
         out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - l;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referenceEdge = e;
+        out->referencePoint = e.p1;
         out->numContacts = 1;
 
         return true;
@@ -413,7 +413,7 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
 
                 out->contactPoints[0] = supportB;
                 out->numContacts = 1;
-                out->referenceEdge = Edge{ supportA, supportA };
+                out->referencePoint = supportA;
                 out->penetrationDepth = r2 - gjkResult.distance;
                 out->featureFlipped = false;
 
