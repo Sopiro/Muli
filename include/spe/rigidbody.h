@@ -18,11 +18,12 @@ struct JointEdge;
 class RigidBody
 {
 public:
+    // Order matters
     enum Shape : uint8
     {
         ShapeCircle,
-        ShapePolygon,
         ShapeCapsule,
+        ShapePolygon,
     };
 
     enum Type : uint8

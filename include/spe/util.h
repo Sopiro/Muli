@@ -25,6 +25,7 @@ float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass);
 
 float ComputeCapsuleInertia(float length, float radius, float mass);
 
+// TODO: Consider polygon skin
 inline float ComputeBoxInertia(float width, float height, float mass)
 {
     return (width * width + height * height) * mass / 12.0f;

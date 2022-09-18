@@ -344,11 +344,13 @@ static bool CapsuleVsCircle(Capsule* a, Circle* b, ContactManifold* out)
     {
         normal = pb - e.p1.position;
         distance = normal.Normalize();
+        out->referencePoint = e.p1;
     }
     else if (w.v >= 1) // Region B: vertex collision
     {
         normal = pb - e.p2.position;
         distance = normal.Normalize();
+        out->referencePoint = e.p2;
     }
     else // Region AB: Edge vs. vertex collision
     {
@@ -359,6 +361,7 @@ static bool CapsuleVsCircle(Capsule* a, Circle* b, ContactManifold* out)
             normal *= -1;
             distance *= -1;
         }
+        out->referencePoint = e.p1;
     }
 
     float r2 = a->GetRadius() + b->GetRadius();
@@ -374,8 +377,7 @@ static bool CapsuleVsCircle(Capsule* a, Circle* b, ContactManifold* out)
         out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - distance;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        e.Translate(normal * a->GetRadius());
-        out->referencePoint = e.p1;
+        out->referencePoint.position += normal * a->GetRadius();
         out->numContacts = 1;
 
         return true;

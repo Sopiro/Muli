@@ -12,7 +12,7 @@ static void single_box(Game& game, World& world, WorldSettings& settings)
 
     RigidBody* box = world.CreateBox(0.4f);
     box->SetPosition(0.0f, 5.0f);
-    // box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
+    box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
 }
 
 static void box_stacking(Game& game, World& world, WorldSettings& settings)
@@ -456,7 +456,7 @@ static void capsules_1000(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void convex_shapes_1000(Game& game, World& world, WorldSettings& settings)
+static void convex_polygons_1000(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
@@ -470,10 +470,52 @@ static void convex_shapes_1000(Game& game, World& world, WorldSettings& settings
     world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
     world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
 
-    float r = 0.28f;
+    float r = 0.27f;
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateRandomConvexPolygon(r, 7);
+        b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                       LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+    }
+
+    Camera& c = game.GetCamera();
+    c.position = { 0.0f, 0.0f };
+    c.scale = { 3.f, 3.f };
+}
+
+static void mix_1000(Game& game, World& world, WorldSettings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+
+    float size = 15.0f;
+    float halfSize = size / 2.0f;
+    float wallWidth = 0.4f;
+    float wallRadius = wallWidth / 2.0f;
+
+    world.CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+
+    float r = 0.24f;
+
+    RigidBody* b;
+    for (int i = 0; i < 1000; i++)
+    {
+        float random = LinearRand(0.0f, 3.0f);
+        if (random < 1.0f)
+        {
+            b = world.CreateRandomConvexPolygon(r, 7);
+        }
+        else if (random < 2.0f)
+        {
+            b = world.CreateCircle(r);
+        }
+        else
+        {
+            b = world.CreateCapsule(r * 1.2f, r * 1.2f / 2.0f);
+        }
+
         b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
                        LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
     }
@@ -527,7 +569,8 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettin
     demos.push_back({ "1000 circles", circles_1000 });
     demos.push_back({ "1000 boxes", boxes_1000 });
     demos.push_back({ "1000 capsules", capsules_1000 });
-    demos.push_back({ "1000 convex shapes", convex_shapes_1000 });
+    demos.push_back({ "1000 convex polygons", convex_polygons_1000 });
+    demos.push_back({ "1000 random shapes", mix_1000 });
     demos.push_back({ "Dense collision", dense_collision });
 
     return demos;
