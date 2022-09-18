@@ -45,9 +45,21 @@ void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bo
         tree.Query(bodyA->node->aabb, [&](const Node* n) -> bool {
             RigidBody* bodyB = n->body;
 
-            if (bodyA == bodyB || (bodyA->id > bodyB->id))
+            if (bodyA == bodyB)
             {
                 return true;
+            }
+
+            if (bodyA->shape < bodyB->shape)
+            {
+                return true;
+            }
+            else if (bodyA->shape == bodyB->shape)
+            {
+                if (bodyA->id < bodyB->id)
+                {
+                    return true;
+                }
             }
 
             callback(bodyA, bodyB);

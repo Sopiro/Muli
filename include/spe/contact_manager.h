@@ -34,6 +34,7 @@ inline ContactManager::ContactManager(World& _world)
     : world{ _world }
     , broadPhase{ _world }
 {
+    Contact::Initialize();
 }
 
 inline ContactManager::~ContactManager()

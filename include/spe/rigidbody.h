@@ -24,6 +24,7 @@ public:
         ShapeCircle,
         ShapeCapsule,
         ShapePolygon,
+        ShapeCount,
     };
 
     enum Type : uint8

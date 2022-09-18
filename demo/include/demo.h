@@ -103,7 +103,7 @@ static void springs(Game& game, World& world, WorldSettings& settings)
     world.CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 2.0f, 0.01f, b->GetMass());
 }
 
-static void random_convex_shapes(Game& game, World& world, WorldSettings& settings)
+static void random_convex_polygons(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -126,11 +126,16 @@ static void random_convex_shapes(Game& game, World& world, WorldSettings& settin
         }
     }
 
-    Box* pillar = world.CreateBox(0.25f, 4.0f, RigidBody::Type::Static);
+    Capsule* pillar = world.CreateCapsule(4.0f, 0.1f, false, RigidBody::Type::Static);
     pillar->SetPosition(xStart - 0.2f, 3.0f);
 
-    pillar = world.CreateBox(0.25f, 4.0f, RigidBody::Type::Static);
+    pillar = world.CreateCapsule(4.0f, 0.1f, false, RigidBody::Type::Static);
     pillar->SetPosition(-(xStart - 0.2f), 3.0f);
+
+    // Capsule* c = world.CreateCapsule(4.0f, 0.1f, true, RigidBody::Type::Dynamic);
+    // c->SetPosition(0.0f, 2.0f);
+
+    // world.CreateGrabJoint(c, c->GetPosition(), c->GetPosition(), -1.0f);
 }
 
 static void seesaw(Game& game, World& world, WorldSettings& settings)
@@ -138,7 +143,7 @@ static void seesaw(Game& game, World& world, WorldSettings& settings)
     settings.APPLY_GRAVITY = true;
     RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
-    Box* seesaw = world.CreateBox(6.0f, 0.1f);
+    RigidBody* seesaw = world.CreateCapsule(6.0f, 0.05f, true);
     seesaw->SetPosition(0.0f, 0.45f);
     seesaw->SetMass(10.0f);
 
@@ -154,6 +159,9 @@ static void seesaw(Game& game, World& world, WorldSettings& settings)
     b = world.CreateBox(0.5f);
     b->SetPosition(2.5f, 5.0f);
     b->SetMass(30.0f);
+
+    b = world.CreateCapsule(1.0f, 0.5f, false, RigidBody::Type::Dynamic);
+    b->SetPosition(-2.5, 250.0f);
 }
 
 static void frictions(Game& game, World& world, WorldSettings& settings)
@@ -164,17 +172,17 @@ static void frictions(Game& game, World& world, WorldSettings& settings)
     RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
     ground->SetFriction(groundFriction);
 
-    Box* b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
+    RigidBody* b = world.CreateCapsule(5.9f, 0.05f, true, RigidBody::Type::Static);
     b->SetPosition(-0.6f, 5.0f);
     b->SetRotation(-0.15f);
     b->SetFriction(groundFriction);
 
-    b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
+    b = world.CreateCapsule(5.9f, 0.05f, true, RigidBody::Type::Static);
     b->SetPosition(0.0f, 3.0f);
     b->SetRotation(0.15f);
     b->SetFriction(groundFriction);
 
-    b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
+    b = world.CreateCapsule(5.9f, 0.05f, true, RigidBody::Type::Static);
     b->SetPosition(-0.6f, 1.0f);
     b->SetRotation(-0.15f);
     b->SetFriction(groundFriction);
@@ -196,7 +204,7 @@ static void frictions(Game& game, World& world, WorldSettings& settings)
         b = world.CreateBox(size, size);
         b->SetPosition(xStart + (size + gap) * i, yStart);
         b->SetFriction(frictions[i]);
-        b->SetLinearVelocity({ 2.0f, 0.0f });
+        b->SetLinearVelocity({ 2.3f, 0.0f });
     }
 }
 
@@ -559,7 +567,7 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettin
     demos.push_back({ "Pyramid", pyramid });
     demos.push_back({ "Single pendulum", single_pendulum });
     demos.push_back({ "Springs", springs });
-    demos.push_back({ "Random convex shapes", random_convex_shapes });
+    demos.push_back({ "Random convex polygons", random_convex_polygons });
     demos.push_back({ "Seesaw", seesaw });
     demos.push_back({ "Friction test", frictions });
     demos.push_back({ "Restitution test", restitutions });
