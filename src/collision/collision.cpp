@@ -42,7 +42,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn = true)
+static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
 {
     Vec2 dir(1.0f, 0.0f); // Random initial direction
 
@@ -324,6 +324,64 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
     }
 }
 
+static bool CapsuleVsCircle(Capsule* a, Circle* b, ContactManifold* out)
+{
+    const Vec2& pa = a->GetPosition();
+    const Vec2& pb = b->GetPosition();
+
+    Vec2 a2b = (pb - pa).Normalized();
+    const Vec2 localDir = MulT(a->GetRotation(), a2b);
+    const Transform& t = a->GetTransform();
+
+    Edge e = Edge{ t * a->GetVertexA(), t * a->GetVertexB(), 0, 1 };
+
+    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
+
+    // Find closest point depending on the Voronoi region
+    Vec2 normal;
+    float distance;
+    if (w.v <= 0) // Region A: vertex collision
+    {
+        normal = pb - e.p1.position;
+        distance = normal.Normalize();
+    }
+    else if (w.v >= 1) // Region B: vertex collision
+    {
+        normal = pb - e.p2.position;
+        distance = normal.Normalize();
+    }
+    else // Region AB: Edge vs. vertex collision
+    {
+        normal = e.normal;
+        distance = Dot(pb - e.p1.position, normal);
+        if (distance < 0.0f)
+        {
+            normal *= -1;
+            distance *= -1;
+        }
+    }
+
+    float r2 = a->GetRadius() + b->GetRadius();
+    if (distance > r2)
+    {
+        return false;
+    }
+    else
+    {
+        out->bodyA = a;
+        out->bodyB = b;
+        out->contactNormal = normal;
+        out->contactTangent = normal.Skew();
+        out->penetrationDepth = r2 - distance;
+        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+        e.Translate(normal * a->GetRadius());
+        out->referencePoint = e.p1;
+        out->numContacts = 1;
+
+        return true;
+    }
+}
+
 static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     GJKResult gjkResult = GJK(a, b, false);
@@ -479,6 +537,17 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     {
         out->featureFlipped = true;
         return ConvexVsCircle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
+    }
+    // Capsule vs. Circle collision
+    else if (shapeA == RigidBody::Shape::ShapeCapsule && shapeB == RigidBody::Shape::ShapeCircle)
+    {
+        out->featureFlipped = false;
+        return CapsuleVsCircle(static_cast<Capsule*>(a), static_cast<Circle*>(b), out);
+    }
+    else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCapsule)
+    {
+        out->featureFlipped = true;
+        return CapsuleVsCircle(static_cast<Capsule*>(b), static_cast<Circle*>(a), out);
     }
     else
     {
