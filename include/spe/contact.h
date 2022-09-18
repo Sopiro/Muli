@@ -9,8 +9,6 @@
 namespace spe
 {
 
-typedef bool CollisionDetectionFcn(RigidBody*, RigidBody*, ContactManifold*);
-
 inline float MixFriction(float f1, float f2)
 {
     return Sqrt(f1 * f2);
@@ -59,11 +57,7 @@ public:
     bool IsTouching() const;
 
 private:
-    static void Initialize();
-    inline static bool initialized = false;
-    inline static CollisionDetectionFcn* detectionFcnMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
-
-    CollisionDetectionFcn* collisionDetectionFcn = nullptr;
+    DetectionFunction* collisionDetectionFunction = nullptr;
 
     Contact* prev;
     Contact* next;

@@ -6,6 +6,7 @@
 namespace spe
 {
 class World;
+extern void InitializeDetectionFunctionMap();
 
 class ContactManager
 {
@@ -34,7 +35,7 @@ inline ContactManager::ContactManager(World& _world)
     : world{ _world }
     , broadPhase{ _world }
 {
-    Contact::Initialize();
+    InitializeDetectionFunctionMap();
 }
 
 inline ContactManager::~ContactManager()

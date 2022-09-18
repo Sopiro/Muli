@@ -17,6 +17,11 @@ namespace spe
 static constexpr Vec2 origin{ 0.0f };
 static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 
+static bool initialized = false;
+DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
+
+void InitializeDetectionFunctionMap();
+
 /*
  * Returns support point in 'Minkowski Difference' set
  * Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
@@ -226,8 +231,11 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
     out->referencePoint = ref->p1;
 }
 
-bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
+    out->numContacts = 0;
+    out->featureFlipped = false;
+
     Vec2 pa = a->GetPosition();
     Vec2 pb = b->GetPosition();
 
@@ -254,7 +262,6 @@ bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
-        out->featureFlipped = false;
 
         // Apply axis weight to improve coherence
         if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
@@ -271,8 +278,11 @@ bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
-bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
+    out->numContacts = 0;
+    out->featureFlipped = false;
+
     const Vec2& pa = a->GetPosition();
     const Vec2& pb = b->GetPosition();
 
@@ -324,8 +334,11 @@ bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
-bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
+    out->numContacts = 0;
+    out->featureFlipped = false;
+
     const Vec2& pa = a->GetPosition();
     const Vec2& pb = b->GetPosition();
 
@@ -384,8 +397,11 @@ bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
-bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
+    out->numContacts = 0;
+    out->featureFlipped = false;
+
     GJKResult gjkResult = GJK(a, b, false);
     Simplex& simplex = gjkResult.simplex;
 
@@ -420,7 +436,6 @@ bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
                 out->numContacts = 1;
                 out->referencePoint = supportA;
                 out->penetrationDepth = r2 - gjkResult.distance;
-                out->featureFlipped = false;
 
                 return true;
             }
@@ -518,41 +533,27 @@ bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    out->numContacts = 0;
-    out->penetrationDepth = 0.0f;
-    out->featureFlipped = false;
+    if (initialized == false)
+    {
+        InitializeDetectionFunctionMap();
+    }
 
     RigidBody::Shape shapeA = a->GetShape();
     RigidBody::Shape shapeB = b->GetShape();
 
-    // Circle vs. Circle collision
-    if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCircle)
+    if (shapeB < shapeA)
     {
-        return CircleVsCircle(static_cast<Circle*>(a), static_cast<Circle*>(b), out);
-    }
-    // Convex vs. Circle collision
-    else if (shapeA == RigidBody::Shape::ShapePolygon && shapeB == RigidBody::Shape::ShapeCircle)
-    {
-        return ConvexVsCircle(static_cast<Polygon*>(a), static_cast<Circle*>(b), out);
-    }
-    else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapePolygon)
-    {
+        speAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
+
+        DetectionFunctionMap[shapeB][shapeA](b, a, out);
         out->featureFlipped = true;
-        return ConvexVsCircle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
-    }
-    // Capsule vs. Circle collision
-    else if (shapeA == RigidBody::Shape::ShapeCapsule && shapeB == RigidBody::Shape::ShapeCircle)
-    {
-        return CapsuleVsCircle(static_cast<Capsule*>(a), static_cast<Circle*>(b), out);
-    }
-    else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCapsule)
-    {
-        out->featureFlipped = true;
-        return CapsuleVsCircle(static_cast<Capsule*>(b), static_cast<Circle*>(a), out);
+        return out->numContacts > 0;
     }
     else
     {
-        return ConvexVsConvex(a, b, out);
+        speAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
+
+        return DetectionFunctionMap[shapeA][shapeB](a, b, out);
     }
 }
 
@@ -802,6 +803,25 @@ Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
     }
 
     throw std::exception("Unreachable");
+}
+
+void InitializeDetectionFunctionMap()
+{
+    if (initialized)
+    {
+        return;
+    }
+
+    memset(DetectionFunctionMap, NULL, sizeof(DetectionFunctionMap));
+
+    DetectionFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &CircleVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &CapsuleVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
+    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &ConvexVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
+    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapePolygon] = &ConvexVsConvex;
+
+    initialized = true;
 }
 
 } // namespace spe

@@ -34,6 +34,8 @@ struct ContactManifold
     bool featureFlipped;
 };
 
+typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
+
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
 bool TestPointInside(RigidBody* b, const Vec2& q);
 float ComputeDistance(RigidBody* a, RigidBody* b);

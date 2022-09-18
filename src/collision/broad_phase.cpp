@@ -56,7 +56,7 @@ void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bo
             }
             else if (bodyA->shape == bodyB->shape)
             {
-                if (bodyA->id < bodyB->id)
+                if (bodyA->id > bodyB->id)
                 {
                     return true;
                 }

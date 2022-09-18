@@ -6,31 +6,12 @@
 namespace spe
 {
 
-extern bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out);
-extern bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out);
-extern bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out);
-extern bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out);
-
-void Contact::Initialize()
-{
-    if (Contact::initialized)
-    {
-        return;
-    }
-
-    memset(detectionFcnMap, NULL, sizeof(detectionFcnMap));
-
-    Contact::detectionFcnMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &CircleVsCircle;
-    Contact::detectionFcnMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &CapsuleVsCircle;
-    Contact::detectionFcnMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &ConvexVsCircle;
-
-    Contact::initialized = true;
-}
+extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
 
 Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
     : Constraint(_bodyA, _bodyB, _settings)
 {
-    speAssert(Contact::initialized == true);
+    speAssert(bodyA->GetShape() >= bodyB->GetShape());
 
     manifold.numContacts = 0;
 
@@ -38,17 +19,8 @@ Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _set
     restitution = MixRestitution(bodyA->restitution, bodyB->restitution);
     friction = MixFriction(bodyA->friction, bodyB->friction);
 
-    speAssert(bodyA->GetShape() >= bodyB->GetShape());
-
-    collisionDetectionFcn = Contact::detectionFcnMap[bodyA->GetShape()][bodyB->GetShape()];
-    if (collisionDetectionFcn == NULL)
-    {
-        // Capsule vs. Capsule
-        // Polygon vs. Capsule
-        // Polygon vs. Polygon
-
-        collisionDetectionFcn = &ConvexVsConvex;
-    }
+    collisionDetectionFunction = DetectionFunctionMap[bodyA->GetShape()][bodyB->GetShape()];
+    speAssert(collisionDetectionFunction != nullptr);
 }
 
 void Contact::Update()
@@ -58,7 +30,7 @@ void Contact::Update()
     float oldTangentImpulse[MAX_CONTACT_POINT];
 
     bool wasTouching = touching;
-    touching = collisionDetectionFcn(bodyA, bodyB, &manifold);
+    touching = collisionDetectionFunction(bodyA, bodyB, &manifold);
 
     for (uint32 i = 0; i < MAX_CONTACT_POINT; i++)
     {
