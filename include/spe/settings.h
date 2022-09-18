@@ -52,7 +52,7 @@ struct WorldSettings
     float RESTITUTION_SLOP = 0.1f;
 
     bool BLOCK_SOLVE = true;
-    uint32 VELOCITY_SOLVE_ITERATIONS = 10;
+    uint32 VELOCITY_SOLVE_ITERATIONS = 8;
     uint32 POSITION_SOLVE_ITERATIONS = 3;
 
     float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;

@@ -22,6 +22,8 @@ public:
 
     virtual float GetArea() const override;
     virtual AABB GetAABB() const override;
+    virtual ContactPoint Support(const Vec2& localDir) const override;
+    virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
 
     float GetLength() const;
     const Vec2& GetVertexA() const;
@@ -61,6 +63,16 @@ inline AABB Capsule::GetAABB() const
     Vec2 v2 = transform * Vec2{ length / 2.0f, 0.0f };
 
     return AABB{ Vec2{ Min(v1, v2) - Vec2{ radius, radius } }, Vec2{ Max(v1, v2) + Vec2{ radius, radius } } };
+}
+
+inline ContactPoint Capsule::Support(const Vec2& localDir) const
+{
+    return localDir.x > 0 ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
+}
+
+inline Edge Capsule::GetFeaturedEdge(const Vec2& dir) const
+{
+    return Edge{ transform * va, transform * vb, 0, 1 };
 }
 
 } // namespace spe

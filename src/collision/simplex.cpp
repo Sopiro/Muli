@@ -115,9 +115,9 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
             else
             {
                 res.count = 3;
-                res.contributors[0] = 0;
-                res.contributors[1] = 1;
-                res.contributors[2] = 2;
+                res.contributors[0] = 1;
+                res.contributors[1] = 2;
+                res.contributors[2] = 0;
             }
 
             res.position = LerpVector(b, c, wbc);
@@ -133,9 +133,9 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
             else
             {
                 res.count = 3;
-                res.contributors[0] = 0;
-                res.contributors[1] = 1;
-                res.contributors[2] = 2;
+                res.contributors[0] = 2;
+                res.contributors[1] = 0;
+                res.contributors[2] = 1;
             }
 
             res.position = LerpVector(c, a, wca);

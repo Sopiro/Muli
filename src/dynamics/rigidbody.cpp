@@ -9,10 +9,10 @@ RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
 {
     if (type == Static)
     {
-        density = FLT_MAX;
-        mass = FLT_MAX;
+        density = 0.0f;
+        mass = 0.0f;
         invMass = 0.0f;
-        inertia = FLT_MAX;
+        inertia = 0.0f;
         invInertia = 0.0f;
     }
     else

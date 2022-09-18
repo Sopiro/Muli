@@ -16,6 +16,8 @@ public:
 
     virtual float GetArea() const override final;
     virtual AABB GetAABB() const override;
+    virtual ContactPoint Support(const Vec2& localDir) const override;
+    virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
 
 protected:
     float area;
@@ -35,6 +37,16 @@ inline AABB Circle::GetAABB() const
         Vec2{transform.position.x + radius, transform.position.y + radius}
     };
     // clang-format on
+}
+
+inline ContactPoint Circle::Support(const Vec2& localDir) const
+{
+    return ContactPoint{ Vec2{ 0.0f, 0.0f }, -1 };
+}
+
+inline Edge Circle::GetFeaturedEdge(const Vec2& dir) const
+{
+    return Edge{ transform.position, transform.position };
 }
 
 } // namespace spe

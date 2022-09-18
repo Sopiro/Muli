@@ -17,28 +17,6 @@ namespace spe
 static constexpr Vec2 origin{ 0.0f };
 static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 
-// Returns the fardest vertex in the 'dir' direction
-// 'dir' should be normalized and a local vector
-static ContactPoint Support(Polygon* p, const Vec2& dir)
-{
-    const std::vector<Vec2>& vertices = p->GetVertices();
-
-    int32 idx = 0;
-    float maxValue = Dot(dir, vertices[idx]);
-
-    for (int32 i = 1; i < vertices.size(); i++)
-    {
-        float value = Dot(dir, vertices[i]);
-        if (value > maxValue)
-        {
-            idx = i;
-            maxValue = value;
-        }
-    }
-
-    return ContactPoint{ vertices[idx], idx };
-}
-
 /*
  * Returns support point in 'Minkowski Difference' set
  * Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
@@ -46,13 +24,13 @@ static ContactPoint Support(Polygon* p, const Vec2& dir)
  * CSO stands for Configuration Space Object
  */
 //'dir' should be normalized
-static Vec2 CSOSupport(Polygon* a, Polygon* b, const Vec2& dir)
+static Vec2 CSOSupport(RigidBody* a, RigidBody* b, const Vec2& dir)
 {
     Vec2 localDirA = MulT(a->GetRotation(), dir);
     Vec2 localDirB = MulT(b->GetRotation(), -dir);
 
-    Vec2 supportA = a->GetTransform() * Support(a, localDirA).position;
-    Vec2 supportB = b->GetTransform() * Support(b, localDirB).position;
+    Vec2 supportA = a->GetTransform() * a->Support(localDirA).position;
+    Vec2 supportB = b->GetTransform() * b->Support(localDirB).position;
 
     return supportA - supportB;
 }
@@ -64,7 +42,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
+static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn = true)
 {
     Vec2 dir(1.0f, 0.0f); // Random initial direction
 
@@ -72,7 +50,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
     float distance = 0.0f;
     bool collide = false;
 
-    Vec2 supportPoint = CSOSupport(b1, b2, dir);
+    Vec2 supportPoint = CSOSupport(a, b, dir);
     simplex.AddVertex(supportPoint);
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; k++)
@@ -107,7 +85,7 @@ static GJKResult GJK(Polygon* b1, Polygon* b2, bool earlyReturn = true)
             distance = dir.Normalize();
         }
 
-        supportPoint = CSOSupport(b1, b2, dir);
+        supportPoint = CSOSupport(a, b, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
@@ -137,7 +115,7 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
+static EPAResult EPA(RigidBody* a, RigidBody* b, Simplex& gjkResult)
 {
     Polytope polytope{ gjkResult };
 
@@ -146,7 +124,7 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
     for (uint32 i = 0; i < EPA_MAX_ITERATION; i++)
     {
         closestEdge = polytope.GetClosestEdge();
-        const Vec2 supportPoint = CSOSupport(b1, b2, closestEdge.normal);
+        const Vec2 supportPoint = CSOSupport(a, b, closestEdge.normal);
         const float newDistance = Dot(closestEdge.normal, supportPoint);
 
         if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
@@ -162,39 +140,6 @@ static EPAResult EPA(Polygon* b1, Polygon* b2, Simplex& gjkResult)
     }
 
     return EPAResult{ closestEdge.normal, closestEdge.distance };
-}
-
-static Edge FindFeaturedEdge(Polygon* b, const Vec2& dir)
-{
-    const Vec2 localDir = MulT(b->GetRotation(), dir);
-    const ContactPoint farthest = Support(b, localDir);
-
-    Vec2 curr = farthest.position;
-    int32 idx = farthest.id;
-
-    const Transform& t = b->GetTransform();
-
-    const std::vector<Vec2>& vertices = b->GetVertices();
-    int32 vertexCount = static_cast<int32>(b->VertexCount());
-
-    int32 prevIdx = (idx - 1 + vertexCount) % vertexCount;
-    int32 nextIdx = (idx + 1) % vertexCount;
-    const Vec2& prev = vertices[prevIdx];
-    const Vec2& next = vertices[nextIdx];
-
-    Vec2 e1 = (curr - prev).Normalized();
-    Vec2 e2 = (curr - next).Normalized();
-
-    bool w = Dot(e1, localDir) <= Dot(e2, localDir);
-
-    if (w)
-    {
-        return Edge{ t * prev, t * curr, prevIdx, idx };
-    }
-    else
-    {
-        return Edge{ t * curr, t * next, idx, nextIdx };
-    }
 }
 
 static void ClipEdge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
@@ -233,10 +178,10 @@ static void ClipEdge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClip
     }
 }
 
-static void FindContactPoints(const Vec2& n, Polygon* a, Polygon* b, ContactManifold* out)
+static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    Edge edgeA = FindFeaturedEdge(a, n);
-    Edge edgeB = FindFeaturedEdge(b, -n);
+    Edge edgeA = a->GetFeaturedEdge(n);
+    Edge edgeB = b->GetFeaturedEdge(-n);
 
     edgeA.Translate(n * a->GetRadius());
     edgeB.Translate(-n * b->GetRadius());
@@ -379,7 +324,7 @@ static bool ConvexVsCircle(Polygon* a, Circle* b, ContactManifold* out)
     }
 }
 
-static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
+static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     GJKResult gjkResult = GJK(a, b, false);
     Simplex& simplex = gjkResult.simplex;
@@ -401,16 +346,16 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
                 out->bodyA = a;
                 out->bodyB = b;
                 out->contactNormal = (origin - simplex.vertices[0]).Normalized();
-                out->contactTangent = out->contactNormal.Skew();
 
                 Vec2 localDirA = MulT(a->GetRotation(), out->contactNormal);
                 Vec2 localDirB = MulT(b->GetRotation(), -out->contactNormal);
 
-                ContactPoint supportA = Support(a, localDirA);
-                ContactPoint supportB = Support(b, localDirB);
-                supportA.position = a->GetTransform() * supportA.position;
-                supportB.position = b->GetTransform() * supportB.position;
+                ContactPoint supportA = a->Support(localDirA);
+                ContactPoint supportB = b->Support(localDirB);
+                supportA.position = a->GetTransform() * (supportA.position + localDirA * a->GetRadius());
+                supportB.position = b->GetTransform() * (supportB.position + localDirB * b->GetRadius());
 
+                out->contactTangent = out->contactNormal.Skew();
                 out->contactPoints[0] = supportB;
                 out->numContacts = 1;
                 out->referencePoint = supportA;
@@ -424,6 +369,7 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
                 return false;
             }
         case 2: // vertex vs. edge collision
+        case 3: // Simplex vertices are in the collinear position
             if (gjkResult.distance < r2)
             {
                 if (out == nullptr)
@@ -443,11 +389,6 @@ static bool ConvexVsConvex(Polygon* a, Polygon* b, ContactManifold* out)
             {
                 return false;
             }
-
-            break;
-        case 3:
-            // Simplex vertices are in the collinear position
-            return false;
         }
     }
     else
@@ -531,16 +472,17 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     // Convex vs. Circle collision
     else if (shapeA == RigidBody::Shape::ShapePolygon && shapeB == RigidBody::Shape::ShapeCircle)
     {
+        out->featureFlipped = false;
         return ConvexVsCircle(static_cast<Polygon*>(a), static_cast<Circle*>(b), out);
     }
     else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapePolygon)
     {
-        return ConvexVsCircle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
         out->featureFlipped = true;
+        return ConvexVsCircle(static_cast<Polygon*>(b), static_cast<Circle*>(a), out);
     }
     else
     {
-        return ConvexVsConvex(static_cast<Polygon*>(a), static_cast<Polygon*>(b), out);
+        return ConvexVsConvex(a, b, out);
     }
 }
 

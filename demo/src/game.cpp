@@ -244,7 +244,7 @@ void Game::HandleInput()
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 17 * ImGui::GetTextLineHeightWithSpacing())))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 22 * ImGui::GetTextLineHeightWithSpacing())))
                 {
                     for (uint32 i = 0; i < demos.size(); i++)
                     {
@@ -398,8 +398,6 @@ void Game::Render()
             c = c->GetNext();
         }
     }
-
-    // Test(mpos, points, lines);
 
     dRenderer.SetViewMatrix(camera.GetCameraMatrix());
     glPointSize(5.0f);

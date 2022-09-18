@@ -2,6 +2,8 @@
 
 #include "aabb.h"
 #include "common.h"
+#include "contact_point.h"
+#include "edge.h"
 #include "settings.h"
 
 namespace spe
@@ -42,6 +44,11 @@ public:
     virtual void SetMass(float m) = 0;
     virtual float GetArea() const = 0;
     virtual AABB GetAABB() const = 0;
+
+    // Returns the fardest vertex in the 'dir' direction
+    // 'locakDir' should be normalized and a local vector
+    virtual ContactPoint Support(const Vec2& localDir) const = 0;
+    virtual Edge GetFeaturedEdge(const Vec2& dir) const = 0;
 
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);

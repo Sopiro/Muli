@@ -71,4 +71,72 @@ void Polygon::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
+AABB Polygon::GetAABB() const
+{
+    const Transform& t = GetTransform();
+
+    Vec2 min = t * vertices[0];
+    Vec2 max = min;
+
+    for (size_t i = 1; i < vertices.size(); i++)
+    {
+        Vec2 v = t * vertices[i];
+
+        min = Min(min, v);
+        max = Max(max, v);
+    }
+
+    min -= radius;
+    max += radius;
+
+    return AABB{ min, max };
+}
+
+ContactPoint Polygon::Support(const Vec2& localDir) const
+{
+    int32 idx = 0;
+    float maxValue = Dot(localDir, vertices[idx]);
+
+    for (int32 i = 1; i < vertices.size(); i++)
+    {
+        float value = Dot(localDir, vertices[i]);
+        if (value > maxValue)
+        {
+            idx = i;
+            maxValue = value;
+        }
+    }
+
+    return ContactPoint{ vertices[idx], idx };
+}
+
+Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
+{
+    const Vec2 localDir = MulT(transform.rotation, dir);
+    const ContactPoint farthest = Support(localDir);
+
+    Vec2 curr = farthest.position;
+    int32 idx = farthest.id;
+
+    int32 vertexCount = static_cast<int32>(vertices.size());
+    int32 prevIdx = (idx - 1 + vertexCount) % vertexCount;
+    int32 nextIdx = (idx + 1) % vertexCount;
+    const Vec2& prev = vertices[prevIdx];
+    const Vec2& next = vertices[nextIdx];
+
+    Vec2 e1 = (curr - prev).Normalized();
+    Vec2 e2 = (curr - next).Normalized();
+
+    bool w = Dot(e1, localDir) <= Dot(e2, localDir);
+
+    if (w)
+    {
+        return Edge{ transform * prev, transform * curr, prevIdx, idx };
+    }
+    else
+    {
+        return Edge{ transform * curr, transform * next, idx, nextIdx };
+    }
+}
+
 } // namespace spe

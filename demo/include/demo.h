@@ -5,23 +5,20 @@
 namespace spe
 {
 
-static void Demo1(Game& game, World& world, WorldSettings& settings)
+static void single_box(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     RigidBody* box = world.CreateBox(0.4f);
     box->SetPosition(0.0f, 5.0f);
-    box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
-
-    // Capsule* c = world.CreateCapsule(1.0f, 0.5f);
-    // c->SetPosition(0.0f, 5.0f);
+    // box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
 }
 
-static void Demo2(Game& game, World& world, WorldSettings& settings)
+static void box_stacking(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     float start = 0.5f;
     float size = 0.3f;
@@ -37,10 +34,10 @@ static void Demo2(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo3(Game& game, World& world, WorldSettings& settings)
+static void pyramid(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     int32 rows = 15;
     float boxSize = 0.4f;
@@ -59,10 +56,10 @@ static void Demo3(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo4(Game& game, World& world, WorldSettings& settings)
+static void single_pendulum(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     Box* b = world.CreateBox(0.3f);
     b->SetPosition(-3.0f, 5.0f);
@@ -70,7 +67,7 @@ static void Demo4(Game& game, World& world, WorldSettings& settings)
     world.CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
 }
 
-static void Demo5(Game& game, World& world, WorldSettings& settings)
+static void springs(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
@@ -106,10 +103,10 @@ static void Demo5(Game& game, World& world, WorldSettings& settings)
     world.CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 2.0f, 0.01f, b->GetMass());
 }
 
-static void Demo6(Game& game, World& world, WorldSettings& settings)
+static void random_convex_shapes(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     int rows = 12;
     float size = 0.25f;
@@ -136,10 +133,10 @@ static void Demo6(Game& game, World& world, WorldSettings& settings)
     pillar->SetPosition(-(xStart - 0.2f), 3.0f);
 }
 
-static void Demo7(Game& game, World& world, WorldSettings& settings)
+static void seesaw(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     Box* seesaw = world.CreateBox(6.0f, 0.1f);
     seesaw->SetPosition(0.0f, 0.45f);
@@ -159,12 +156,12 @@ static void Demo7(Game& game, World& world, WorldSettings& settings)
     b->SetMass(30.0f);
 }
 
-static void Demo8(Game& game, World& world, WorldSettings& settings)
+static void frictions(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
     float groundFriction = 0.5f;
 
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
     ground->SetFriction(groundFriction);
 
     Box* b = world.CreateBox(6.0f, 0.1f, RigidBody::Type::Static);
@@ -203,10 +200,10 @@ static void Demo8(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo9(Game& game, World& world, WorldSettings& settings)
+static void restitutions(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     int count = 11;
     float gap = 0.5f;
@@ -230,10 +227,10 @@ static void Demo9(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo10(Game& game, World& world, WorldSettings& settings)
+static void multi_pendulum(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     float xStart = 0.0f;
     float yStart = 5.0f;
@@ -270,10 +267,10 @@ static void Demo10(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo11(Game& game, World& world, WorldSettings& settings)
+static void suspension_bridge(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     float groundStart = 0.2f;
 
@@ -350,10 +347,10 @@ static void Demo11(Game& game, World& world, WorldSettings& settings)
     camera.scale = Vec2{ 1.5f, 1.5f };
 }
 
-static void Demo12(Game& game, World& world, WorldSettings& settings)
+static void circle_stacking(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
-    RigidBody* ground = world.CreateBox(12.8f * 10.0f, 0.4f, RigidBody::Type::Static);
+    RigidBody* ground = world.CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
     float xStart = -3.0f;
     float yStart = 1.0f;
@@ -373,29 +370,27 @@ static void Demo12(Game& game, World& world, WorldSettings& settings)
     }
 }
 
-static void Demo13(Game& game, World& world, WorldSettings& settings)
+static void circles_1000(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
     float size = 15.0f;
-    float wallSize = 0.4f;
+    float halfSize = size / 2.0f;
+    float wallWidth = 0.4f;
+    float wallRadius = wallWidth / 2.0f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, -size / 2.0f);
-    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, size / 2.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(-size / 2.0f, 0.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(size / 2.0f, 0.0f);
+    world.CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
 
-    float r = 0.2f;
+    float r = 0.22f;
 
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateCircle(r);
-        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                       LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
         b->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
     }
 
@@ -404,29 +399,27 @@ static void Demo13(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void Demo14(Game& game, World& world, WorldSettings& settings)
+static void boxes_1000(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
     float size = 15.0f;
-    float wallSize = 0.4f;
+    float halfSize = size / 2.0f;
+    float wallWidth = 0.4f;
+    float wallRadius = wallWidth / 2.0f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, -size / 2.0f);
-    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, size / 2.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(-size / 2.0f, 0.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(size / 2.0f, 0.0f);
+    world.CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
 
     float r = 0.38f;
 
     for (int i = 0; i < 1000; i++)
     {
         RigidBody* b = world.CreateBox(r);
-        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                       LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
     }
 
     Camera& c = game.GetCamera();
@@ -434,29 +427,28 @@ static void Demo14(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void Demo15(Game& game, World& world, WorldSettings& settings)
+static void capsules_1000(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = true;
 
     float size = 15.0f;
-    float wallSize = 0.4f;
+    float halfSize = size / 2.0f;
+    float wallWidth = 0.4f;
+    float wallRadius = wallWidth / 2.0f;
 
-    RigidBody* wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, -size / 2.0f);
-    wall = world.CreateBox(size, wallSize, RigidBody::Type::Static);
-    wall->SetPosition(0.0f, size / 2.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(-size / 2.0f, 0.0f);
-    wall = world.CreateBox(wallSize, size, RigidBody::Type::Static);
-    wall->SetPosition(size / 2.0f, 0.0f);
+    world.CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
 
-    float r = 0.28f;
+    float r = 0.3f;
 
     for (int i = 0; i < 1000; i++)
     {
-        RigidBody* b = world.CreateRandomConvexPolygon(r, 7);
-        b->SetPosition(LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f,
-                       LinearRand(0.0f, size - wallSize) - (size - wallSize) / 2.0f);
+        Capsule* c = world.CreateCapsule(r, r / 2.0f);
+        c->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                       LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+        c->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
     }
 
     Camera& c = game.GetCamera();
@@ -464,7 +456,34 @@ static void Demo15(Game& game, World& world, WorldSettings& settings)
     c.scale = { 3.f, 3.f };
 }
 
-static void Demo16(Game& game, World& world, WorldSettings& settings)
+static void convex_shapes_1000(Game& game, World& world, WorldSettings& settings)
+{
+    settings.APPLY_GRAVITY = true;
+
+    float size = 15.0f;
+    float halfSize = size / 2.0f;
+    float wallWidth = 0.4f;
+    float wallRadius = wallWidth / 2.0f;
+
+    world.CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, false, RigidBody::Type::Static);
+    world.CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, false, RigidBody::Type::Static);
+
+    float r = 0.28f;
+    for (int i = 0; i < 1000; i++)
+    {
+        RigidBody* b = world.CreateRandomConvexPolygon(r, 7);
+        b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                       LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+    }
+
+    Camera& c = game.GetCamera();
+    c.position = { 0.0f, 0.0f };
+    c.scale = { 3.f, 3.f };
+}
+
+static void dense_collision(Game& game, World& world, WorldSettings& settings)
 {
     settings.APPLY_GRAVITY = false;
 
@@ -493,22 +512,23 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettin
     decltype(GetDemos()) demos;
     demos.reserve(12);
 
-    demos.push_back({ "Single Box", Demo1 });
-    demos.push_back({ "Box stacking", Demo2 });
-    demos.push_back({ "Pyramid", Demo3 });
-    demos.push_back({ "Single pendulum", Demo4 });
-    demos.push_back({ "Springs", Demo5 });
-    demos.push_back({ "Random convex shapes", Demo6 });
-    demos.push_back({ "Seesaw", Demo7 });
-    demos.push_back({ "Friction test", Demo8 });
-    demos.push_back({ "Restitution test", Demo9 });
-    demos.push_back({ "Multi pendulum", Demo10 });
-    demos.push_back({ "Suspension bridge", Demo11 });
-    demos.push_back({ "Circle stacking", Demo12 });
-    demos.push_back({ "1000 circles", Demo13 });
-    demos.push_back({ "1000 boxes", Demo14 });
-    demos.push_back({ "1000 convex shapes", Demo15 });
-    demos.push_back({ "Dense collision", Demo16 });
+    demos.push_back({ "Single Box", single_box });
+    demos.push_back({ "Box stacking", box_stacking });
+    demos.push_back({ "Pyramid", pyramid });
+    demos.push_back({ "Single pendulum", single_pendulum });
+    demos.push_back({ "Springs", springs });
+    demos.push_back({ "Random convex shapes", random_convex_shapes });
+    demos.push_back({ "Seesaw", seesaw });
+    demos.push_back({ "Friction test", frictions });
+    demos.push_back({ "Restitution test", restitutions });
+    demos.push_back({ "Multi pendulum", multi_pendulum });
+    demos.push_back({ "Suspension bridge", suspension_bridge });
+    demos.push_back({ "Circle stacking", circle_stacking });
+    demos.push_back({ "1000 circles", circles_1000 });
+    demos.push_back({ "1000 boxes", boxes_1000 });
+    demos.push_back({ "1000 capsules", capsules_1000 });
+    demos.push_back({ "1000 convex shapes", convex_shapes_1000 });
+    demos.push_back({ "Dense collision", dense_collision });
 
     return demos;
 }
