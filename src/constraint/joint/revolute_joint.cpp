@@ -45,10 +45,7 @@ void RevoluteJoint::Prepare()
 
     Vec2 error = pb - pa;
 
-    if (settings.POSITION_CORRECTION)
-        bias = error * beta * settings.INV_DT;
-    else
-        bias.SetZero();
+    bias = error * beta * settings.INV_DT;
 
     if (settings.WARM_STARTING)
     {

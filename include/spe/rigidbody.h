@@ -158,6 +158,8 @@ private:
     Node* node = nullptr;
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
+
+    void NotifyForceUpdate() const;
 };
 
 inline const Transform& RigidBody::GetTransform() const
@@ -320,6 +322,7 @@ inline const Vec2& RigidBody::GetForce() const
 inline void RigidBody::SetForce(const Vec2& _force)
 {
     force = _force;
+    NotifyForceUpdate();
 }
 
 inline float RigidBody::GetTorque() const
@@ -330,6 +333,7 @@ inline float RigidBody::GetTorque() const
 inline void RigidBody::SetTorque(float _torque)
 {
     torque = _torque;
+    NotifyForceUpdate();
 }
 
 inline RigidBody::Type RigidBody::GetType() const

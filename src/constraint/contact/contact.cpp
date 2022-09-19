@@ -53,17 +53,7 @@ void Contact::Update()
         {
             if (manifold.contactPoints[n].id == oldManifold.contactPoints[o].id)
             {
-                if (settings.APPLY_WARM_STARTING_THRESHOLD)
-                {
-                    float dist = Dist2(manifold.contactPoints[n].position, oldManifold.contactPoints[o].position);
-                    // If contact points are close enough, warm start.
-                    // Otherwise, it means it's penetrating too deeply, skip the warm starting to prevent the overshoot
-                    if (dist < settings.WARM_STARTING_THRESHOLD) break;
-                }
-                else
-                {
-                    break;
-                }
+                break;
             }
         }
 

@@ -58,12 +58,17 @@ void Game::HandleInput()
 
     if (Input::IsKeyPressed(GLFW_KEY_R)) InitSimulation(currentDemo);
     if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
+    if (Input::IsKeyPressed(GLFW_KEY_B)) showAABB = !showAABB;
     if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
     if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
     if (Input::IsKeyPressed(GLFW_KEY_C)) resetCamera = !resetCamera;
-    if (Input::IsKeyPressed(GLFW_KEY_G)) settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
     if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
     if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
+    if (Input::IsKeyPressed(GLFW_KEY_G))
+    {
+        settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
+        world->Awake();
+    }
 
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
@@ -75,8 +80,12 @@ void Game::HandleInput()
 
             if (q.size() != 0)
             {
-                gj = world->CreateGrabJoint(q[0], mpos, mpos, 4.0f, 0.5f, q[0]->GetMass());
-                gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
+                RigidBody* target = q[0];
+                if (target->GetType() != RigidBody::Type::Static)
+                {
+                    gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
+                    gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
+                }
             }
             else
             {
@@ -201,26 +210,35 @@ void Game::HandleInput()
 
                 // ImGui::ColorEdit4("Background color", &app.clearColor.x);
                 // ImGui::Separator();
-
-                ImGui::Checkbox("Camera reset", &resetCamera);
-                ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
-                ImGui::Checkbox("Show BVH", &showBVH);
-                ImGui::Checkbox("Show contact point", &showContactPoint);
-                ImGui::Checkbox("Show contact normal", &showContactNormal);
-                ImGui::Separator();
-                if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
-
-                ImGui::Text("Constraint solve iterations");
+                ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+                if (ImGui::CollapsingHeader("Debug options"))
                 {
-                    ImGui::SetNextItemWidth(120);
-                    static int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
-                    ImGui::SliderInt("Velocity", &velIterations, 0, 50);
-                    settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32>(velIterations);
+                    ImGui::Checkbox("Camera reset", &resetCamera);
+                    ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
+                    ImGui::Checkbox("Show BVH", &showBVH);
+                    ImGui::Checkbox("Show AABB", &showAABB);
+                    ImGui::Checkbox("Show contact point", &showContactPoint);
+                    ImGui::Checkbox("Show contact normal", &showContactNormal);
+                }
 
-                    ImGui::SetNextItemWidth(120);
-                    static int posIterations = settings.POSITION_SOLVE_ITERATIONS;
-                    ImGui::SliderInt("Position", &posIterations, 0, 50);
-                    settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32>(posIterations);
+                if (ImGui::CollapsingHeader("Simulation settings"))
+                {
+                    if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
+                    ImGui::Text("Constraint solve iterations");
+                    {
+                        ImGui::SetNextItemWidth(120);
+                        static int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
+                        ImGui::SliderInt("Velocity", &velIterations, 0, 50);
+                        settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32>(velIterations);
+
+                        ImGui::SetNextItemWidth(120);
+                        static int posIterations = settings.POSITION_SOLVE_ITERATIONS;
+                        ImGui::SliderInt("Position", &posIterations, 0, 50);
+                        settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32>(posIterations);
+                    }
+                    ImGui::Checkbox("Contact block solve", &settings.BLOCK_SOLVE);
+                    ImGui::Checkbox("Warm starting", &settings.WARM_STARTING);
+                    ImGui::Checkbox("Sleeping", &settings.SLEEPING);
                 }
 
                 ImGui::Separator();
@@ -228,7 +246,6 @@ void Game::HandleInput()
                 ImGui::Text("Bodies: %d", world->GetBodyCount());
                 ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
                 ImGui::Text("Broad phase contacts: %d", world->GetContactCount());
-                ImGui::EndTabItem();
 
                 ImGui::Separator();
                 if (qr.size() > 0)
@@ -240,11 +257,13 @@ void Game::HandleInput()
                     ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);
                     ImGui::Text("Rot: %.4f", t->GetRotation().angle);
                 }
+
+                ImGui::EndTabItem();
             }
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 22 * ImGui::GetTextLineHeightWithSpacing())))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 26 * ImGui::GetTextLineHeightWithSpacing())))
                 {
                     for (uint32 i = 0; i < demos.size(); i++)
                     {
@@ -266,8 +285,8 @@ void Game::HandleInput()
             }
             ImGui::EndTabBar();
         }
-        ImGui::End();
     }
+    ImGui::End();
 
     // ImGuiWindowFlags window_flags = 0;
     // // window_flags |= ImGuiWindowFlags_NoBackground;
@@ -281,6 +300,7 @@ void Game::HandleInput()
 
     //     ImGui::End();
     // }
+    // ImGui::End();
 }
 
 void Game::Render()
@@ -351,10 +371,11 @@ void Game::Render()
         }
     }
 
-    if (showBVH)
+    if (showBVH || showAABB)
     {
         const AABBTree& tree = world->GetBVH();
         tree.Traverse([&](const Node* n) -> void {
+            if (!showBVH && !n->isLeaf) return;
             lines.push_back(n->aabb.min);
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });

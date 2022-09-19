@@ -16,7 +16,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
         AABB treeAABB = node->aabb;
         AABB aabb = body->GetAABB();
 
-        if (ContainsAABB(treeAABB, aabb))
+        if (ContainsAABB(treeAABB, aabb) && body->resting < world.settings.SLEEPING_TRESHOLD)
         {
             continue;
         }

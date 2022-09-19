@@ -32,7 +32,10 @@ void World::Step(float dt)
     // After building island, each island can be solved in parallel because they are independent of each other
     for (RigidBody* b = bodyList; b; b = b->next)
     {
-        if (b->type == RigidBody::Type::Static || (visited.find(b->id) != visited.end())) continue;
+        if (b->type == RigidBody::Type::Static || (visited.find(b->id) != visited.end()))
+        {
+            continue;
+        }
 
         stack.clear();
         stack.push_back(b);
@@ -43,7 +46,10 @@ void World::Step(float dt)
             RigidBody* t = stack.back();
             stack.pop_back();
 
-            if (t->type == RigidBody::Type::Static || (visited.find(t->id) != visited.end())) continue;
+            if (t->type == RigidBody::Type::Static || (visited.find(t->id) != visited.end()))
+            {
+                continue;
+            }
 
             visited.insert(t->id);
             t->islandID = islandID;
@@ -86,7 +92,7 @@ void World::Step(float dt)
             }
         }
 
-        island.sleeping = settings.SLEEPING_ENABLED && (restingBodies == island.bodies.size());
+        island.sleeping = settings.SLEEPING && (restingBodies == island.bodies.size());
 
         if (island.sleeping)
         {
@@ -107,6 +113,8 @@ void World::Step(float dt)
         Destroy(j);
     destroyBufferBody.clear();
     destroyBufferJoint.clear();
+
+    integrateForce = false;
 }
 
 void World::Reset()

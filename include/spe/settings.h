@@ -42,24 +42,19 @@ struct WorldSettings
     Vec2 GRAVITY{ 0.0f, -10.0f };
 
     bool WARM_STARTING = true;
-    bool APPLY_WARM_STARTING_THRESHOLD = false;
-    float WARM_STARTING_THRESHOLD = 0.005f * 0.005f - FLT_EPSILON;
+    float POSITION_CORRECTION_BETA = 0.2f; // 0.0 ~ 1.0
 
-    bool POSITION_CORRECTION = true;
-    float POSITION_CORRECTION_BETA = 0.2f;
-
-    float PENETRATION_SLOP = 0.005f;
-    float RESTITUTION_SLOP = 0.1f;
+    float PENETRATION_SLOP = 0.005f; // meter
+    float RESTITUTION_SLOP = 0.1f;   // m/s
 
     bool BLOCK_SOLVE = true;
     uint32 VELOCITY_SOLVE_ITERATIONS = 8;
     uint32 POSITION_SOLVE_ITERATIONS = 3;
 
-    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;
-    float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f);
-
-    bool SLEEPING_ENABLED = true;
-    float SLEEPING_TRESHOLD = 0.5f;
+    bool SLEEPING = true;
+    float SLEEPING_TRESHOLD = 0.5f;                                                     // second
+    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;                                        // (m/s)^2
+    float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f); // (rad/s)^2
 
     AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 };

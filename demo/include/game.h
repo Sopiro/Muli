@@ -51,6 +51,7 @@ private:
     bool step = false;
     bool drawOutlineOnly = false;
     bool showBVH = false;
+    bool showAABB = false;
     bool showContactPoint = false;
     bool showContactNormal = false;
     bool resetCamera = true;

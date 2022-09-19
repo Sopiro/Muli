@@ -1,4 +1,5 @@
 #include "spe/rigidbody.h"
+#include "spe/world.h"
 
 namespace spe
 {
@@ -82,6 +83,14 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
 
     // public member
     OnDestroy = std::move(_other.OnDestroy);
+}
+
+void RigidBody::NotifyForceUpdate() const
+{
+    if (world)
+    {
+        world->integrateForce = true;
+    }
 }
 
 } // namespace spe

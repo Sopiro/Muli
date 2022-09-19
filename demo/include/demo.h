@@ -372,7 +372,6 @@ static void circle_stacking(Game& game, World& world, WorldSettings& settings)
         for (int j = i; j < rows; j++)
         {
             Circle* c = world.CreateCircle(size);
-            c->SetMass((1 + i) + (1 + i) * j + 2.0f);
             c->SetPosition(xStart + (gap + size * 2) * i, yStart + (gap + size * 2) * j);
         }
     }

@@ -23,7 +23,7 @@ void Island::Solve()
             b->angularVelocity = 0.0f;
         }
 
-        if (world.forceIntegration)
+        if (world.integrateForce)
         {
             // Force / mass * dt
             Vec2 linear_a = b->force * b->invMass * world.settings.DT;
@@ -33,17 +33,20 @@ void Island::Solve()
             float angular_a = b->torque * b->invInertia * world.settings.DT;
             b->angularVelocity += angular_a;
 
-            if (sleeping && (Length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE) ||
-                (angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE))
+            bool linearAwake = Length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE;
+            bool angularAwake = angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE;
+
+            if (sleeping && (linearAwake || angularAwake))
             {
                 sleeping = false;
                 awakeIsland = true;
             }
         }
 
-        if ((sleeping && !world.forceIntegration) ||
-            ((Length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE) &&
-             (b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE)))
+        bool linearSleep = Length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE;
+        bool angularSleep = b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE;
+
+        if ((sleeping && !world.integrateForce) || (linearSleep && angularSleep))
         {
             b->resting += world.settings.DT;
         }
@@ -127,40 +130,37 @@ void Island::Solve()
         }
     }
 
-    if (world.settings.POSITION_CORRECTION)
+    for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; i++)
     {
-        for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; i++)
-        {
-            bool contactSolved = true;
-            bool jointSolved = true;
+        bool contactSolved = true;
+        bool jointSolved = true;
 
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
-            for (size_t j = contacts.size(); j > 0; j--)
-            {
-                contactSolved &= contacts[j - 1]->SolvePositionConstraint();
-            }
+        for (size_t j = contacts.size(); j > 0; j--)
+        {
+            contactSolved &= contacts[j - 1]->SolvePositionConstraint();
+        }
 #endif
-            for (size_t j = joints.size(); j > 0; j--)
-            {
-                jointSolved &= joints[j - 1]->SolvePositionConstraint();
-            }
+        for (size_t j = joints.size(); j > 0; j--)
+        {
+            jointSolved &= joints[j - 1]->SolvePositionConstraint();
+        }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-            for (size_t j = 0; j < contacts.size(); j++)
-            {
-                contactSolved &= contacts[j]->SolvePositionConstraint();
-            }
+        for (size_t j = 0; j < contacts.size(); j++)
+        {
+            contactSolved &= contacts[j]->SolvePositionConstraint();
+        }
 #endif
-            for (size_t j = 0; j < joints.size(); j++)
-            {
-                jointSolved &= joints[j]->SolvePositionConstraint();
-            }
+        for (size_t j = 0; j < joints.size(); j++)
+        {
+            jointSolved &= joints[j]->SolvePositionConstraint();
+        }
 #endif
-            if (contactSolved && jointSolved)
-            {
-                break;
-            }
+        if (contactSolved && jointSolved)
+        {
+            break;
         }
     }
 }

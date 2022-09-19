@@ -19,6 +19,7 @@ namespace spe
 
 class World final
 {
+    friend class RigidBody;
     friend class Island;
     friend class BroadPhase;
     friend class ContactManager;
@@ -145,7 +146,7 @@ private:
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
 
-    bool forceIntegration = false;
+    bool integrateForce = false;
 
     void Add(Joint* joint);
 };
@@ -167,6 +168,7 @@ inline void World::Awake()
     {
         b->Awake();
     }
+    integrateForce = true;
 }
 
 inline RigidBody* World::GetBodyList()
