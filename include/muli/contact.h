@@ -59,6 +59,9 @@ public:
 private:
     DetectionFunction* collisionDetectionFunction = nullptr;
 
+    RigidBody* b1; // Reference body
+    RigidBody* b2; // Incident body
+
     Contact* prev;
     Contact* next;
 

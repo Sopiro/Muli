@@ -17,7 +17,29 @@ set(DEMO_SOURCE_FILES
     src/rendering/dynamic_renderer.cpp
 )
 
-add_executable(demo ${DEMO_SOURCE_FILES})
+set(DEMO_HEADER_FILES
+    include/mesh.h
+    include/renderer.h
+    include/shader.h
+    include/dynamic_renderer.h
+    include/dynamic_shader.h
+    include/rigidbody_renderer.h
+    include/rigidbody_shader.h
+
+    include/application.h
+    include/window.h
+    include/camera.h
+    include/common.h
+    include/demo.h
+    include/game.h
+    include/input.h
+    include/util.h
+)
+
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "include" FILES ${DEMO_HEADER_FILES})
+
+add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
 target_compile_definitions(demo PUBLIC
     WINDOW_TITLE="${WINDOW_TITLE}"
     WINDOW_WIDTH=${WINDOW_WIDTH}

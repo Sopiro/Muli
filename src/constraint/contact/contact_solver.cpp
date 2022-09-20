@@ -15,8 +15,8 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     p = contact->manifold.contactPoints[index].position;
     type = contactType;
 
-    ra = p - c->manifold.bodyA->GetPosition();
-    rb = p - c->manifold.bodyB->GetPosition();
+    ra = p - c->b1->GetPosition();
+    rb = p - c->b2->GetPosition();
 
     j.va = -dir;
     j.wa = Cross(-ra, dir);
@@ -27,8 +27,8 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     if (type == Normal)
     {
         // Relative velocity at contact point
-        Vec2 relativeVelocity = (c->manifold.bodyB->linearVelocity + Cross(c->manifold.bodyB->angularVelocity, rb)) -
-                                (c->manifold.bodyA->linearVelocity + Cross(c->manifold.bodyA->angularVelocity, ra));
+        Vec2 relativeVelocity = (c->b2->linearVelocity + Cross(c->b2->angularVelocity, rb)) -
+                                (c->b1->linearVelocity + Cross(c->b1->angularVelocity, ra));
 
         // Normal velocity == veclocity constraint: jv
         float normalVelocity = Dot(c->manifold.contactNormal, relativeVelocity);
@@ -51,20 +51,15 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     }
     else
     {
-        bias = -(c->manifold.bodyB->surfaceSpeed - c->manifold.bodyA->surfaceSpeed);
-
-        if (c->manifold.featureFlipped)
-        {
-            bias *= -1;
-        }
+        bias = -(c->b2->surfaceSpeed - c->b1->surfaceSpeed);
     }
 
     // clang-format off
     float k
-        = c->manifold.bodyA->invMass
-        + j.wa * c->manifold.bodyA->invInertia * j.wa
-        + c->manifold.bodyB->invMass
-        + j.wb * c->manifold.bodyB->invInertia * j.wb;
+        = c->b1->invMass
+        + j.wa * c->b1->invInertia * j.wa
+        + c->b2->invMass
+        + j.wb * c->b2->invInertia * j.wb;
     // clang-format on
 
     effectiveMass = k > 0.0f ? 1.0f / k : 0.0f;
@@ -83,10 +78,10 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
 
     // clang-format off
     // Jacobian * velocity vector (Normal velocity)
-    float jv = Dot(j.va, c->manifold.bodyA->linearVelocity)
-             + j.wa * c->manifold.bodyA->angularVelocity
-             + Dot(j.vb, c->manifold.bodyB->linearVelocity)
-             + j.wb * c->manifold.bodyB->angularVelocity;
+    float jv = Dot(j.va, c->b1->linearVelocity)
+             + j.wa * c->b1->angularVelocity
+             + Dot(j.vb, c->b2->linearVelocity)
+             + j.wb * c->b2->angularVelocity;
     // clang-format on
 
     // Clamp impulse correctly and accumulate it
@@ -114,10 +109,10 @@ inline void ContactSolver::ApplyImpulse(float lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    c->manifold.bodyA->linearVelocity += j.va * (c->manifold.bodyA->invMass * lambda);
-    c->manifold.bodyA->angularVelocity += c->manifold.bodyA->invInertia * j.wa * lambda;
-    c->manifold.bodyB->linearVelocity += j.vb * (c->manifold.bodyB->invMass * lambda);
-    c->manifold.bodyB->angularVelocity += c->manifold.bodyB->invInertia * j.wb * lambda;
+    c->b1->linearVelocity += j.va * (c->b1->invMass * lambda);
+    c->b1->angularVelocity += c->b1->invInertia * j.wa * lambda;
+    c->b2->linearVelocity += j.vb * (c->b2->invMass * lambda);
+    c->b2->angularVelocity += c->b2->invInertia * j.wb * lambda;
 }
 
 } // namespace muli

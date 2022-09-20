@@ -10,31 +10,31 @@ void PositionSolver::Prepare(Contact* _contact, uint32 index)
 {
     contact = _contact;
 
-    localPlainPoint = MulT(contact->manifold.bodyA->GetTransform(), contact->manifold.referencePoint.position);
-    localClipPoint = MulT(contact->manifold.bodyB->GetTransform(), contact->manifold.contactPoints[index].position);
-    localNormal = MulT(contact->manifold.bodyA->GetRotation(), contact->manifold.contactNormal);
+    localPlainPoint = MulT(contact->b1->GetTransform(), contact->manifold.referencePoint.position);
+    localClipPoint = MulT(contact->b2->GetTransform(), contact->manifold.contactPoints[index].position);
+    localNormal = MulT(contact->b1->GetRotation(), contact->manifold.contactNormal);
 }
 
 bool PositionSolver::Solve()
 {
-    Vec2 normal = contact->manifold.bodyA->GetRotation() * localNormal;
-    Vec2 planePoint = contact->manifold.bodyA->GetTransform() * localPlainPoint;
-    Vec2 clipPoint = contact->manifold.bodyB->GetTransform() * localClipPoint; // penetration point
+    Vec2 normal = contact->b1->GetRotation() * localNormal;
+    Vec2 planePoint = contact->b1->GetTransform() * localPlainPoint;
+    Vec2 clipPoint = contact->b2->GetTransform() * localClipPoint; // penetration point
 
     float separation = Dot(clipPoint - planePoint, normal);
 
-    Vec2 ra = clipPoint - contact->manifold.bodyA->GetPosition();
-    Vec2 rb = clipPoint - contact->manifold.bodyB->GetPosition();
+    Vec2 ra = clipPoint - contact->b1->GetPosition();
+    Vec2 rb = clipPoint - contact->b2->GetPosition();
 
     float ran = Cross(ra, normal);
     float rbn = Cross(rb, normal);
 
     // clang-format off
     // effective mass = 1 / k;
-    float k = contact->manifold.bodyA->invMass
-            + ran * contact->manifold.bodyA->invInertia * ran
-            + contact->manifold.bodyB->invMass
-            + rbn * contact->manifold.bodyB->invInertia * rbn;
+    float k = contact->b1->invMass
+            + ran * contact->b1->invInertia * ran
+            + contact->b2->invMass
+            + rbn * contact->b2->invInertia * rbn;
     // clang-format on
 
     // Constraint (bias)

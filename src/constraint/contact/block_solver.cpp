@@ -24,22 +24,22 @@ void BlockSolver::Prepare(Contact* contact)
 
     // clang-format off
     k[0][0]
-        = c->manifold.bodyA->invMass
-        + j1->wa * c->manifold.bodyA->invInertia * j1->wa
-        + c->manifold.bodyB->invMass
-        + j1->wb * c->manifold.bodyB->invInertia * j1->wb;
+        = c->b1->invMass
+        + j1->wa * c->b1->invInertia * j1->wa
+        + c->b2->invMass
+        + j1->wb * c->b2->invInertia * j1->wb;
 
     k[1][1]
-        = c->manifold.bodyA->invMass
-        + j2->wa * c->manifold.bodyA->invInertia * j2->wa
-        + c->manifold.bodyB->invMass
-        + j2->wb * c->manifold.bodyB->invInertia * j2->wb;
+        = c->b1->invMass
+        + j2->wa * c->b1->invInertia * j2->wa
+        + c->b2->invMass
+        + j2->wb * c->b2->invInertia * j2->wb;
 
     k[0][1]
-        = c->manifold.bodyA->invMass
-        + j1->wa * c->manifold.bodyA->invInertia * j2->wa
-        + c->manifold.bodyB->invMass
-        + j1->wb * c->manifold.bodyB->invInertia * j2->wb;
+        = c->b1->invMass
+        + j1->wa * c->b1->invInertia * j2->wa
+        + c->b2->invMass
+        + j1->wb * c->b2->invInertia * j2->wb;
 
     k[1][0] = k[0][1];
     // clang-format on
@@ -92,16 +92,16 @@ void BlockSolver::Solve()
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
     float vn1
-        = Dot(j1->va, c->manifold.bodyA->linearVelocity)
-        + j1->wa * c->manifold.bodyA->angularVelocity
-        + Dot(j1->vb, c->manifold.bodyB->linearVelocity)
-        + j1->wb * c->manifold.bodyB->angularVelocity;
+        = Dot(j1->va, c->b1->linearVelocity)
+        + j1->wa * c->b1->angularVelocity
+        + Dot(j1->vb, c->b2->linearVelocity)
+        + j1->wb * c->b2->angularVelocity;
 
     float vn2
-        = Dot(j2->va, c->manifold.bodyA->linearVelocity)
-        + j2->wa * c->manifold.bodyA->angularVelocity
-        + Dot(j2->vb, c->manifold.bodyB->linearVelocity)
-        + j2->wb * c->manifold.bodyB->angularVelocity;
+        = Dot(j2->va, c->b1->linearVelocity)
+        + j2->wa * c->b1->angularVelocity
+        + Dot(j2->vb, c->b2->linearVelocity)
+        + j2->wb * c->b2->angularVelocity;
     // clang-format on
 
     Vec2 b = { vn1 + nc1->bias, vn2 + nc2->bias };
@@ -186,10 +186,10 @@ void BlockSolver::ApplyImpulse(const Vec2& lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    c->manifold.bodyA->linearVelocity += j1->va * (c->manifold.bodyA->invMass * (lambda.x + lambda.y));
-    c->manifold.bodyA->angularVelocity += c->manifold.bodyA->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
-    c->manifold.bodyB->linearVelocity += j1->vb * (c->manifold.bodyB->invMass * (lambda.x + lambda.y));
-    c->manifold.bodyB->angularVelocity += c->manifold.bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
+    c->b1->linearVelocity += j1->va * (c->b1->invMass * (lambda.x + lambda.y));
+    c->b1->angularVelocity += c->b1->invInertia * (j1->wa * lambda.x + j2->wa * lambda.y);
+    c->b2->linearVelocity += j1->vb * (c->b2->invMass * (lambda.x + lambda.y));
+    c->b2->angularVelocity += c->b2->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
 }
 
 } // namespace muli

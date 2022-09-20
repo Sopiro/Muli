@@ -72,6 +72,9 @@ set(HEADER_FILES
     ../include/muli/types.h
 )
 
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "src" FILES ${SOURCE_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/../include" PREFIX "include" FILES ${HEADER_FILES})
+
 add_library(muli ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(muli

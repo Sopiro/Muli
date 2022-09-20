@@ -10,7 +10,7 @@
  *            \      /          | <- Contact normal
  *    ---------\----/-------------------------------  <- Reference edge
  *              \  /
- *               \/  <- Incidence point(Contact point)
+ *               \/  <- Incident point(Contact point)
  *
  */
 
@@ -20,17 +20,15 @@ namespace muli
 class RigidBody;
 class Polygon;
 
+// 64byte
 struct ContactManifold
 {
-    RigidBody* bodyA; // Reference body
-    RigidBody* bodyB; // Incidence body
-
     ContactPoint contactPoints[MAX_CONTACT_POINT];
-    uint32 numContacts;
-    float penetrationDepth;
+    ContactPoint referencePoint;
     Vec2 contactNormal; // Contact normal is always pointing from a to b
     Vec2 contactTangent;
-    ContactPoint referencePoint;
+    float penetrationDepth;
+    uint32 numContacts;
     bool featureFlipped;
 };
 

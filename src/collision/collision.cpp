@@ -192,9 +192,7 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
     edgeB.Translate(-n * b->GetRadius());
 
     Edge* ref = &edgeA; // Reference edge
-    Edge* inc = &edgeB; // Incidence edge
-    out->bodyA = a;
-    out->bodyB = b;
+    Edge* inc = &edgeB; // Incident edge
     out->contactNormal = n;
     out->featureFlipped = false;
 
@@ -205,8 +203,6 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
     {
         ref = &edgeB;
         inc = &edgeA;
-        out->bodyA = b;
-        out->bodyB = a;
         out->contactNormal = -n;
         out->featureFlipped = true;
     }
@@ -255,8 +251,6 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
         d = Sqrt(d);
 
-        out->bodyA = a;
-        out->bodyB = b;
         out->contactNormal = (pb - pa).Normalized();
         out->contactPoints[0] = ContactPoint{ pb + (-out->contactNormal * b->GetRadius()), -1 };
         out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
@@ -266,11 +260,8 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         // Apply axis weight to improve coherence
         if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
         {
-            RigidBody* tmp = out->bodyA;
-            out->bodyA = out->bodyB;
-            out->bodyB = tmp;
             out->contactNormal *= -1;
-            out->featureFlipped = out->bodyA != a;
+            out->featureFlipped = !out->featureFlipped;
         }
         out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 
@@ -321,8 +312,6 @@ static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
-        out->bodyA = a;
-        out->bodyB = b;
         out->contactNormal = normal;
         out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - l;
@@ -384,8 +373,6 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
-        out->bodyA = a;
-        out->bodyB = b;
         out->contactNormal = normal;
         out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - distance;
@@ -419,8 +406,6 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
                     return true;
                 }
 
-                out->bodyA = a;
-                out->bodyB = b;
                 out->contactNormal = (origin - simplex.vertices[0]).Normalized();
 
                 Vec2 localDirA = MulT(a->GetRotation(), out->contactNormal);
@@ -518,11 +503,8 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
     // Apply axis weight to improve coherence
     if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
     {
-        RigidBody* tmp = out->bodyA;
-        out->bodyA = out->bodyB;
-        out->bodyB = tmp;
         out->contactNormal *= -1;
-        out->featureFlipped = out->bodyA != a;
+        out->featureFlipped = !out->featureFlipped;
     }
     out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 

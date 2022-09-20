@@ -45,6 +45,17 @@ void Contact::Update()
         return;
     }
 
+    if (manifold.featureFlipped)
+    {
+        b1 = bodyB;
+        b2 = bodyA;
+    }
+    else
+    {
+        b1 = bodyA;
+        b2 = bodyB;
+    }
+
     // Warm start the contact solver
     for (uint32 n = 0; n < manifold.numContacts; n++)
     {
@@ -118,10 +129,10 @@ bool Contact::SolvePositionConstraint()
         solved &= positionSolvers[i].Solve();
     }
 
-    manifold.bodyA->transform.position += manifold.bodyA->invMass * cLinearImpulseA;
-    manifold.bodyA->transform.rotation += manifold.bodyA->invInertia * cAngularImpulseA;
-    manifold.bodyB->transform.position += manifold.bodyB->invMass * cLinearImpulseB;
-    manifold.bodyB->transform.rotation += manifold.bodyB->invInertia * cAngularImpulseB;
+    b1->transform.position += b1->invMass * cLinearImpulseA;
+    b1->transform.rotation += b1->invInertia * cAngularImpulseA;
+    b2->transform.position += b2->invMass * cLinearImpulseB;
+    b2->transform.rotation += b2->invInertia * cAngularImpulseB;
 
     return solved;
 }
