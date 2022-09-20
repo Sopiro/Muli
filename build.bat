@@ -3,4 +3,4 @@ mkdir build
 cd build
 cmake ..
 cmake --build . --config Release
-start muil.sln
+start muli.sln

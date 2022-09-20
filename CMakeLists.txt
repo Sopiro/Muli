@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(muil LANGUAGES CXX VERSION 0.1.0)
+project(muli LANGUAGES CXX VERSION 0.1.0)
 
 option(BUILD_DEMO_PROJECT "Build the demo project" ON)
 
@@ -37,8 +37,8 @@ if(BUILD_DEMO_PROJECT)
     endif()
 endif()
 
-# install muil
+# install muli
 install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/muil
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/muli
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
