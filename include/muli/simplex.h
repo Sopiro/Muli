@@ -4,7 +4,7 @@
 
 #define MAX_SIMPLEX_VERTEX_COUNT 3
 
-namespace spe
+namespace muli
 {
 
 struct ClosestPoint
@@ -46,7 +46,7 @@ inline void Simplex::Clear()
 
 inline void Simplex::AddVertex(const Vec2& vertex)
 {
-    speAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
+    muliAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
 
     vertices[count] = vertex;
     count++;
@@ -75,4 +75,4 @@ inline void Simplex::Shrink(const uint32* _indices, uint32 _count)
     count = _count;
 }
 
-} // namespace spe
+} // namespace muli

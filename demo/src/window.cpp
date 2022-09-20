@@ -1,6 +1,6 @@
 #include "window.h"
 
-namespace spe
+namespace muli
 {
 
 Window* Window::window = nullptr;
@@ -12,7 +12,7 @@ static void glfw_error_callback(int error, const char* description)
 
 Window::Window(int width, int height, std::string title)
 {
-    speAssert(window == nullptr);
+    muliAssert(window == nullptr);
     window = this;
 
     SPDLOG_INFO("Initialize glfw");
@@ -110,4 +110,4 @@ Window::~Window()
     glfwTerminate();
 }
 
-} // namespace spe
+} // namespace muli

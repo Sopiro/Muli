@@ -3,7 +3,7 @@
 #include "broad_phase.h"
 #include "contact.h"
 
-namespace spe
+namespace muli
 {
 class World;
 extern void InitializeDetectionFunctionMap();
@@ -68,4 +68,4 @@ inline uint32 ContactManager::GetContactCount() const
     return contactCount;
 }
 
-} // namespace spe
+} // namespace muli

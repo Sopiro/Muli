@@ -1,7 +1,7 @@
-#include "spe/rigidbody.h"
-#include "spe/world.h"
+#include "muli/rigidbody.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
@@ -93,4 +93,4 @@ void RigidBody::NotifyForceUpdate() const
     }
 }
 
-} // namespace spe
+} // namespace muli

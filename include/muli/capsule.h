@@ -3,7 +3,7 @@
 #include "rigidbody.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 class Capsule : public RigidBody
@@ -75,4 +75,4 @@ inline Edge Capsule::GetFeaturedEdge(const Vec2& dir) const
     return Edge{ transform * va, transform * vb, 0, 1 };
 }
 
-} // namespace spe
+} // namespace muli

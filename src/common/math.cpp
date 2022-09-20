@@ -1,6 +1,6 @@
-#include "spe/math.h"
+#include "muli/math.h"
 
-namespace spe
+namespace muli
 {
 
 Mat3 Mat3::GetInverse() const
@@ -191,4 +191,4 @@ Mat4 Mat4::GetInverse()
     return t;
 }
 
-} // namespace spe
+} // namespace muli

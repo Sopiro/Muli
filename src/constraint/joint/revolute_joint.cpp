@@ -1,7 +1,7 @@
-#include "spe/revolute_joint.h"
-#include "spe/world.h"
+#include "muli/revolute_joint.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
@@ -81,4 +81,4 @@ void RevoluteJoint::ApplyImpulse(const Vec2& lambda)
     bodyB->angularVelocity += bodyB->invInertia * Cross(rb, lambda);
 }
 
-} // namespace spe
+} // namespace muli

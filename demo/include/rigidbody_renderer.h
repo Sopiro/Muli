@@ -6,7 +6,7 @@
 #include "rigidbody_shader.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 class RigidBodyRenderer final : public Renderer
@@ -104,4 +104,4 @@ inline void RigidBodyRenderer::Reset()
     bodiesAndMeshes.clear();
 }
 
-} // namespace spe
+} // namespace muli

@@ -3,7 +3,7 @@
 #include "rigidbody.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 // Children: Box
@@ -47,4 +47,4 @@ inline size_t Polygon::VertexCount() const
     return vertices.size();
 }
 
-} // namespace spe
+} // namespace muli

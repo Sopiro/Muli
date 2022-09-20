@@ -1,8 +1,8 @@
-#include "spe/broad_phase.h"
-#include "spe/util.h"
-#include "spe/world.h"
+#include "muli/broad_phase.h"
+#include "muli/util.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 void BroadPhase::UpdateDynamicTree(float dt)
@@ -69,4 +69,4 @@ void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bo
     }
 }
 
-} // namespace spe
+} // namespace muli

@@ -1,7 +1,7 @@
-#include "spe/grab_joint.h"
-#include "spe/world.h"
+#include "muli/grab_joint.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 GrabJoint::GrabJoint(RigidBody* _body,
@@ -68,4 +68,4 @@ void GrabJoint::ApplyImpulse(const Vec2& lambda)
     bodyA->angularVelocity += bodyA->invInertia * Cross(r, lambda);
 }
 
-} // namespace spe
+} // namespace muli

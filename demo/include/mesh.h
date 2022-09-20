@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Mesh
@@ -33,4 +33,4 @@ private:
     uint32 EBOl;
 };
 
-} // namespace spe
+} // namespace muli

@@ -1,6 +1,6 @@
 #include "application.h"
 
-namespace spe
+namespace muli
 {
 
 Application* Application::app = nullptr;
@@ -69,4 +69,4 @@ void Application::Render()
     game->Render();
 }
 
-} // namespace spe
+} // namespace muli

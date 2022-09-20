@@ -1,8 +1,8 @@
-#include "spe/aabbtree.h"
-#include "spe/growable_array.h"
-#include "spe/util.h"
+#include "muli/aabbtree.h"
+#include "muli/growable_array.h"
+#include "muli/util.h"
 
-namespace spe
+namespace muli
 {
 
 Node::Node(uint32 _id, const AABB& _aabb, bool _isLeaf)
@@ -448,4 +448,4 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(const Node*)> callback
     }
 }
 
-} // namespace spe
+} // namespace muli

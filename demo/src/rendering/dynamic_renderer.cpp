@@ -1,6 +1,6 @@
 #include "dynamic_renderer.h"
 
-namespace spe
+namespace muli
 {
 
 DynamicRenderer::DynamicRenderer()
@@ -58,4 +58,4 @@ void DynamicRenderer::Draw(const std::vector<Vec2>& vertices, GLenum drawMode, V
     }
 }
 
-} // namespace spe
+} // namespace muli

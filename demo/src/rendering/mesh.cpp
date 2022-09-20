@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-namespace spe
+namespace muli
 {
 
 Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32>& _indices)
@@ -96,4 +96,4 @@ void Mesh::Draw(GLenum drawMode)
     glBindVertexArray(0);
 }
 
-} // namespace spe
+} // namespace muli

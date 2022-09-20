@@ -1,6 +1,6 @@
 #include "dynamic_shader.h"
 
-namespace spe
+namespace muli
 {
 
 std::unique_ptr<DynamicShader> DynamicShader::Create()
@@ -46,4 +46,4 @@ DynamicShader::DynamicShader()
     uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
-} // namespace spe
+} // namespace muli

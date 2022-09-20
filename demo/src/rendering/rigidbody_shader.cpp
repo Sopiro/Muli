@@ -1,6 +1,6 @@
 #include "rigidbody_shader.h"
 
-namespace spe
+namespace muli
 {
 
 std::unique_ptr<RigidBodyShader> RigidBodyShader::Create()
@@ -55,4 +55,4 @@ RigidBodyShader::RigidBodyShader()
     uniformMap.insert({ "proj", glGetUniformLocation(shaderHandle, "proj") });
 }
 
-} // namespace spe
+} // namespace muli

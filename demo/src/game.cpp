@@ -1,9 +1,8 @@
 #include "game.h"
 #include "application.h"
 #include "demo.h"
-#include "spe/collision.h"
 
-namespace spe
+namespace muli
 {
 
 Game::Game(Application& _app)
@@ -466,4 +465,4 @@ void Game::Reset()
     rRenderer.Reset();
 }
 
-} // namespace spe
+} // namespace muli

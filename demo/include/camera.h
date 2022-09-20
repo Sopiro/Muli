@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 struct Camera
@@ -20,4 +20,4 @@ struct Camera
     }
 };
 
-} // namespace spe
+} // namespace muli

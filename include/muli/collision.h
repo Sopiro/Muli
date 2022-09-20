@@ -14,7 +14,7 @@
  *
  */
 
-namespace spe
+namespace muli
 {
 
 class RigidBody;
@@ -43,4 +43,4 @@ float ComputeDistance(RigidBody* b, const Vec2& q);
 Vec2 GetClosestPoint(RigidBody* b, const Vec2& q);
 Edge GetIntersectingEdge(Polygon* p, const Vec2& dir);
 
-} // namespace spe
+} // namespace muli

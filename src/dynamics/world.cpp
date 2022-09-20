@@ -1,8 +1,8 @@
-#include "spe/world.h"
-#include "spe/island.h"
+#include "muli/world.h"
+#include "muli/island.h"
 #include <iostream>
 
-namespace spe
+namespace muli
 {
 
 void World::Step(float dt)
@@ -497,4 +497,4 @@ void World::Add(Joint* joint)
     ++jointCount;
 }
 
-} // namespace spe
+} // namespace muli

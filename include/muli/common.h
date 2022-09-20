@@ -23,4 +23,4 @@
 
 #include "math.h"
 
-#define speAssert(A) assert(A)
+#define muliAssert(A) assert(A)

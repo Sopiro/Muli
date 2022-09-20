@@ -1,8 +1,8 @@
-#include "spe/contact_solver.h"
-#include "spe/contact.h"
-#include "spe/world.h"
+#include "muli/contact_solver.h"
+#include "muli/contact.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Type contactType)
@@ -120,4 +120,4 @@ inline void ContactSolver::ApplyImpulse(float lambda)
     c->manifold.bodyB->angularVelocity += c->manifold.bodyB->invInertia * j.wb * lambda;
 }
 
-} // namespace spe
+} // namespace muli

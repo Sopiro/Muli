@@ -14,7 +14,7 @@
 #include "rigidbody.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 class World final
@@ -221,4 +221,4 @@ inline uint32 World::GetContactCount() const
     return contactManager.contactCount;
 }
 
-} // namespace spe
+} // namespace muli

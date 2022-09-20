@@ -5,7 +5,7 @@
 #include "settings.h"
 #include <random>
 
-namespace spe
+namespace muli
 {
 
 struct BodyPair
@@ -45,7 +45,7 @@ inline uint32 MakePairNatural(uint32 a, uint32 b)
 
 inline PairID CombineID(uint32 a, uint32 b)
 {
-    speAssert(a != b);
+    muliAssert(a != b);
     return a < b ? PairID{ a, b } : PairID{ b, a };
 }
 
@@ -145,4 +145,4 @@ inline void print(const Vec2& v, bool lineFeed = true)
         printf("%.6f, %.6f\n", v.x, v.y);
 }
 
-} // namespace spe
+} // namespace muli

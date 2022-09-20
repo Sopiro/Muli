@@ -6,7 +6,7 @@
 #include "input.h"
 #include "rigidbody_renderer.h"
 
-namespace spe
+namespace muli
 {
 
 class Application;
@@ -70,4 +70,4 @@ inline Camera& Game::GetCamera()
     return camera;
 }
 
-} // namespace spe
+} // namespace muli

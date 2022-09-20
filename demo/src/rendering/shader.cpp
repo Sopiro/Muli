@@ -1,6 +1,6 @@
 #include "shader.h"
 
-namespace spe
+namespace muli
 {
 
 Shader::Shader(const char* vsCode, const char* fsCode)
@@ -65,4 +65,4 @@ Shader::~Shader()
     if (shaderHandle) glDeleteProgram(shaderHandle);
 }
 
-} // namespace spe
+} // namespace muli

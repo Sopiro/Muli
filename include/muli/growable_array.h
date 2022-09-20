@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 // Inspired by b2GrowableStack in box2d code
@@ -34,7 +34,7 @@ public:
 
     GrowableArray& operator=(const GrowableArray& other) noexcept
     {
-        speAssert(this != &other);
+        muliAssert(this != &other);
         if (other.array == other.stack_array)
         {
             array = stack_array;
@@ -59,7 +59,7 @@ public:
 
     GrowableArray& operator=(GrowableArray&& other) noexcept
     {
-        speAssert(this != &other);
+        muliAssert(this != &other);
         if (other.array == other.stack_array)
         {
             array = stack_array;
@@ -196,4 +196,4 @@ private:
     uint32 capacity;
 };
 
-} // namespace spe
+} // namespace muli

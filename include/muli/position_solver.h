@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Contact;
@@ -24,4 +24,4 @@ private:
     Vec2 localNormal;
 };
 
-} // namespace spe
+} // namespace muli

@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 struct ContactPoint
@@ -11,4 +11,4 @@ struct ContactPoint
     int32 id;
 };
 
-} // namespace spe
+} // namespace muli

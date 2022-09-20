@@ -1,6 +1,6 @@
-#include "spe/box.h"
+#include "muli/box.h"
 
-namespace spe
+namespace muli
 {
 
 Box::Box(float _width, float _height, Type _type, float _radius, float _density)
@@ -18,7 +18,7 @@ Box::Box(float _size, Type _type, float _radius, float _density)
 // This will automatically set the inertia
 void Box::SetMass(float _mass)
 {
-    speAssert(_mass > 0);
+    muliAssert(_mass > 0);
 
     density = _mass / area;
     mass = _mass;
@@ -30,7 +30,7 @@ void Box::SetMass(float _mass)
 // This will automatically set the mass and inertia
 void Box::SetDensity(float _density)
 {
-    speAssert(_density > 0);
+    muliAssert(_density > 0);
 
     density = _density;
     mass = _density * area;
@@ -39,4 +39,4 @@ void Box::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-} // namespace spe
+} // namespace muli

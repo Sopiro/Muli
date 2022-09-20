@@ -1,9 +1,9 @@
-#include "spe/island.h"
+#include "muli/island.h"
 
 #define SOLVE_CONTACTS_BACKWARD 1
 #define SOLVE_CONTACT_CONSTRAINT 1
 
-namespace spe
+namespace muli
 {
 
 void Island::Solve()
@@ -165,4 +165,4 @@ void Island::Solve()
     }
 }
 
-} // namespace spe
+} // namespace muli

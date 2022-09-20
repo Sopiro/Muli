@@ -3,7 +3,7 @@
 #include "game.h"
 #include "window.h"
 
-namespace spe
+namespace muli
 {
 
 class Application final
@@ -39,7 +39,7 @@ private:
 
 inline Application* Application::Create(int width, int height, std::string title)
 {
-    speAssert(app == nullptr);
+    muliAssert(app == nullptr);
 
     Application::app = new Application(width, height, title);
     return Application::app;
@@ -51,4 +51,4 @@ inline void Application::SetFrameRate(uint32 frameRate)
     frameTime = 1.0 / frameRate;
 }
 
-} // namespace spe
+} // namespace muli

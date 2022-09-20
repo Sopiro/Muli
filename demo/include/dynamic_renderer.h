@@ -3,7 +3,7 @@
 #include "dynamic_shader.h"
 #include "renderer.h"
 
-namespace spe
+namespace muli
 {
 
 // Dynamic batch renderer
@@ -50,4 +50,4 @@ inline void DynamicRenderer::SetViewMatrix(const Mat4& _viewMatrix)
     shader->SetViewMatrix(_viewMatrix);
 }
 
-} // namespace spe
+} // namespace muli

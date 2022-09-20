@@ -1,6 +1,6 @@
-#include "spe/joint.h"
+#include "muli/joint.h"
 
-namespace spe
+namespace muli
 {
 
 Joint::Joint(Joint::Type _type,
@@ -57,4 +57,4 @@ void Joint::ComputeBetaAndGamma()
     gamma = 1.0f / ((d + h * k) * h);
 }
 
-} // namespace spe
+} // namespace muli

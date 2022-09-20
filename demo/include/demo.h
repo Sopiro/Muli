@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 static void single_box(Game& game, World& world, WorldSettings& settings)
@@ -583,4 +583,4 @@ std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettin
     return demos;
 }
 
-} // namespace spe
+} // namespace muli

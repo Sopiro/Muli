@@ -1,4 +1,4 @@
-set(WINDOW_TITLE "SPE Demo")
+set(WINDOW_TITLE "Muli Engine Demo")
 set(WINDOW_WIDTH 1280)
 set(WINDOW_HEIGHT 720)
 
@@ -32,6 +32,6 @@ target_include_directories(demo PRIVATE
 )
 
 target_link_directories(demo PRIVATE ${DEP_LIB_DIR})
-target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} spe)
+target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} muli)
 
-add_dependencies(demo ${DEP_LIST_DEMO} spe)
+add_dependencies(demo ${DEP_LIST_DEMO} muli)

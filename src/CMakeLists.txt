@@ -30,51 +30,51 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
-    ../include/spe/aabb.h
-    ../include/spe/aabbtree.h
-    ../include/spe/broad_phase.h
-    ../include/spe/contact_manager.h
+    ../include/muli/aabb.h
+    ../include/muli/aabbtree.h
+    ../include/muli/broad_phase.h
+    ../include/muli/contact_manager.h
 
-    ../include/spe/collision.h
-    ../include/spe/simplex.h
-    ../include/spe/polytope.h
-    ../include/spe/contact_point.h
-    ../include/spe/edge.h
+    ../include/muli/collision.h
+    ../include/muli/simplex.h
+    ../include/muli/polytope.h
+    ../include/muli/contact_point.h
+    ../include/muli/edge.h
 
-    ../include/spe/block_solver.h
+    ../include/muli/block_solver.h
 
-    ../include/spe/rigidbody.h
-    ../include/spe/box.h
-    ../include/spe/circle.h
-    ../include/spe/polygon.h
-    ../include/spe/capsule.h
+    ../include/muli/rigidbody.h
+    ../include/muli/box.h
+    ../include/muli/circle.h
+    ../include/muli/polygon.h
+    ../include/muli/capsule.h
 
-    ../include/spe/constraint.h
+    ../include/muli/constraint.h
 
-    ../include/spe/joint.h
-    ../include/spe/grab_joint.h
-    ../include/spe/revolute_joint.h
-    ../include/spe/distance_joint.h
+    ../include/muli/joint.h
+    ../include/muli/grab_joint.h
+    ../include/muli/revolute_joint.h
+    ../include/muli/distance_joint.h
 
-    ../include/spe/contact.h
-    ../include/spe/position_solver.h
-    ../include/spe/contact_solver.h
+    ../include/muli/contact.h
+    ../include/muli/position_solver.h
+    ../include/muli/contact_solver.h
 
-    ../include/spe/island.h
-    ../include/spe/world.h
+    ../include/muli/island.h
+    ../include/muli/world.h
 
-    ../include/spe/settings.h
-    ../include/spe/growable_array.h
-    ../include/spe/common.h
-    ../include/spe/util.h
-    ../include/spe/spe.h
-    ../include/spe/math.h
-    ../include/spe/types.h
+    ../include/muli/settings.h
+    ../include/muli/growable_array.h
+    ../include/muli/common.h
+    ../include/muli/util.h
+    ../include/muli/muli.h
+    ../include/muli/math.h
+    ../include/muli/types.h
 )
 
-add_library(spe ${SOURCE_FILES} ${HEADER_FILES})
+add_library(muli ${SOURCE_FILES} ${HEADER_FILES})
 
-target_include_directories(spe
+target_include_directories(muli
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -83,27 +83,27 @@ target_include_directories(spe
 )
 
 install(
-    TARGETS spe
-    EXPORT speConfig
+    TARGETS muli
+    EXPORT muliConfig
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(
-    EXPORT speConfig
-    NAMESPACE spe::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spe
+    EXPORT muliConfig
+    NAMESPACE muli::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/muli
 )
 
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/muliConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
 )
 
 install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/speConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spe
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/muliConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/muli
 )

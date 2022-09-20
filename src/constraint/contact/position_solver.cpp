@@ -1,9 +1,9 @@
-#include "spe/position_solver.h"
-#include "spe/contact.h"
-#include "spe/util.h"
-#include "spe/world.h"
+#include "muli/position_solver.h"
+#include "muli/contact.h"
+#include "muli/util.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 void PositionSolver::Prepare(Contact* _contact, uint32 index)
@@ -49,9 +49,9 @@ bool PositionSolver::Solve()
     contact->cLinearImpulseB += impulse;
     contact->cAngularImpulseB += Cross(rb, impulse);
 
-    // We can't expect speparation >= -PENETRATION_SLOP
+    // We can't expect separation >= -PENETRATION_SLOP
     // because we don't push the separation above -PENETRATION_SLOP
     return -separation <= contact->settings.PENETRATION_SLOP * 2.0f;
 }
 
-} // namespace spe
+} // namespace muli

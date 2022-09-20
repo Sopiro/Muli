@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Window;
@@ -105,4 +105,4 @@ inline Vec2 Input::GetMouseScroll()
     return mouseScroll;
 }
 
-} // namespace spe
+} // namespace muli

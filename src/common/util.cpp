@@ -1,9 +1,9 @@
-#include "spe/util.h"
-#include "spe/aabb.h"
-#include "spe/box.h"
-#include "spe/circle.h"
+#include "muli/util.h"
+#include "muli/aabb.h"
+#include "muli/box.h"
+#include "muli/circle.h"
 
-namespace spe
+namespace muli
 {
 
 float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
@@ -46,4 +46,4 @@ float ComputeCapsuleInertia(float length, float radius, float mass)
     return mass * (rectInertia * rectArea + (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f) / (rectArea + circleArea);
 }
 
-} // namespace spe
+} // namespace muli

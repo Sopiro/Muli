@@ -11,7 +11,7 @@
 
 #define SPE_PI 3.14159265359f
 
-namespace spe
+namespace muli
 {
 
 struct Vec2
@@ -1033,4 +1033,4 @@ inline float Round(float s)
     return roundf(s);
 }
 
-} // namespace spe
+} // namespace muli

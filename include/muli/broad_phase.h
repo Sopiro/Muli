@@ -4,7 +4,7 @@
 #include "aabbtree.h"
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class BroadPhase
@@ -67,4 +67,4 @@ inline bool BroadPhase::TestOverlap(RigidBody* bodyA, RigidBody* bodyB) const
     return TestOverlapAABB(bodyA->node->aabb, bodyB->node->aabb);
 }
 
-} // namespace spe
+} // namespace muli

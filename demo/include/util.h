@@ -1,7 +1,7 @@
 #include "common.h"
 #include "mesh.h"
 
-namespace spe
+namespace muli
 {
 
 std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount = 13);
@@ -31,4 +31,4 @@ float hue2rgb(float p, float q, float t);
  */
 Vec3 hsl2rgb(float h, float s, float l);
 
-} // namespace spe
+} // namespace muli

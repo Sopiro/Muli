@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Shader
@@ -30,4 +30,4 @@ inline void Shader::Use()
     glUseProgram(shaderHandle);
 }
 
-} // namespace spe
+} // namespace muli

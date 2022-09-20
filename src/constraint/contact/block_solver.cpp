@@ -1,7 +1,7 @@
-#include "spe/block_solver.h"
-#include "spe/contact.h"
+#include "muli/block_solver.h"
+#include "muli/contact.h"
 
-namespace spe
+namespace muli
 {
 
 void BlockSolver::Prepare(Contact* contact)
@@ -87,7 +87,7 @@ void BlockSolver::Solve()
     // b' = b - A * a;
 
     Vec2 a = { nc1->impulseSum, nc2->impulseSum }; // old total impulse
-    speAssert(a.x >= 0.0f && a.y >= 0.0f);
+    muliAssert(a.x >= 0.0f && a.y >= 0.0f);
 
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
@@ -167,7 +167,7 @@ void BlockSolver::Solve()
 
 // How did you reach here?! something went wrong!
 #ifndef NDEBUG
-        speAssert(false);
+        muliAssert(false);
 #endif
         break;
     }
@@ -192,4 +192,4 @@ void BlockSolver::ApplyImpulse(const Vec2& lambda)
     c->manifold.bodyB->angularVelocity += c->manifold.bodyB->invInertia * (j1->wb * lambda.x + j2->wb * lambda.y);
 }
 
-} // namespace spe
+} // namespace muli

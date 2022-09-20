@@ -3,7 +3,7 @@
 #include "common.h"
 #include "rigidbody.h"
 
-namespace spe
+namespace muli
 {
 
 struct WorldSettings;
@@ -79,4 +79,4 @@ inline RigidBody* Constraint::GetBodyB() const
     return bodyB;
 }
 
-} // namespace spe
+} // namespace muli

@@ -29,7 +29,7 @@
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
 
-namespace spe
+namespace muli
 {
 
 // Simulation settings
@@ -59,4 +59,4 @@ struct WorldSettings
     AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 };
 
-} // namespace spe
+} // namespace muli

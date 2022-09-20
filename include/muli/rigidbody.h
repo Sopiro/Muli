@@ -6,7 +6,7 @@
 #include "edge.h"
 #include "settings.h"
 
-namespace spe
+namespace muli
 {
 
 class World;
@@ -376,4 +376,4 @@ inline World* RigidBody::GetWorld() const
     return world;
 }
 
-} // namespace spe
+} // namespace muli

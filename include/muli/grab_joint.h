@@ -3,7 +3,7 @@
 #include "common.h"
 #include "joint.h"
 
-namespace spe
+namespace muli
 {
 
 struct WorldSettings;
@@ -53,4 +53,4 @@ inline void GrabJoint::SetTarget(const Vec2& _target)
     target = _target;
 }
 
-} // namespace spe
+} // namespace muli

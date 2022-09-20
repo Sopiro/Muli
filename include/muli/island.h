@@ -2,7 +2,7 @@
 
 #include "world.h"
 
-namespace spe
+namespace muli
 {
 
 class Island
@@ -37,4 +37,4 @@ inline void Island::Clear()
     sleeping = false;
 }
 
-} // namespace spe
+} // namespace muli

@@ -3,7 +3,7 @@
 #include "common.h"
 #include "joint.h"
 
-namespace spe
+namespace muli
 {
 
 struct WorldSettings;
@@ -67,4 +67,4 @@ inline void DistanceJoint::SetJointLength(float _length)
     length = Clamp<float>(length, 0, FLT_MAX);
 }
 
-} // namespace spe
+} // namespace muli

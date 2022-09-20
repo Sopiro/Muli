@@ -3,7 +3,7 @@
 #include "common.h"
 #include "constraint.h"
 
-namespace spe
+namespace muli
 {
 
 struct WorldSettings;
@@ -164,4 +164,4 @@ inline Joint* Joint::GetNext() const
     return next;
 }
 
-} // namespace spe
+} // namespace muli

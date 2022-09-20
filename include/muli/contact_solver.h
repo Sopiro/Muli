@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Contact;
@@ -52,4 +52,4 @@ private:
     void ApplyImpulse(float lambda);
 };
 
-} // namespace spe
+} // namespace muli

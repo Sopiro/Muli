@@ -3,7 +3,7 @@
 #include "common.h"
 #include "shader.h"
 
-namespace spe
+namespace muli
 {
 
 class DynamicShader final : public Shader
@@ -52,4 +52,4 @@ inline void DynamicShader::SetProjectionMatrix(const Mat4& _projMatrix)
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix[0][0]);
 }
 
-} // namespace spe
+} // namespace muli

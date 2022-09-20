@@ -1,6 +1,6 @@
-#include "spe/capsule.h"
+#include "muli/capsule.h"
 
-namespace spe
+namespace muli
 {
 
 Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition, Type _type, float _density)
@@ -13,7 +13,7 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
 
     if (type == RigidBody::Type::Dynamic)
     {
-        speAssert(_density > 0);
+        muliAssert(_density > 0);
 
         density = _density;
         mass = _density * area;
@@ -43,7 +43,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
 
     if (type == RigidBody::Type::Dynamic)
     {
-        speAssert(_density > 0);
+        muliAssert(_density > 0);
 
         density = _density;
         mass = _density * area;
@@ -63,7 +63,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
 
 void Capsule::SetMass(float _mass)
 {
-    speAssert(_mass > 0);
+    muliAssert(_mass > 0);
 
     density = _mass / area;
     mass = _mass;
@@ -74,7 +74,7 @@ void Capsule::SetMass(float _mass)
 
 void Capsule::SetDensity(float _density)
 {
-    speAssert(density > 0);
+    muliAssert(density > 0);
 
     density = _density;
     mass = density * area;
@@ -83,4 +83,4 @@ void Capsule::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-} // namespace spe
+} // namespace muli

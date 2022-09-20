@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 class Contact;
@@ -30,4 +30,4 @@ private:
     void ApplyImpulse(const Vec2& lambda);
 };
 
-} // namespace spe
+} // namespace muli

@@ -6,7 +6,7 @@
 #include "contact_solver.h"
 #include "position_solver.h"
 
-namespace spe
+namespace muli
 {
 
 inline float MixFriction(float f1, float f2)
@@ -115,4 +115,4 @@ inline bool Contact::IsTouching() const
     return touching;
 }
 
-} // namespace spe
+} // namespace muli

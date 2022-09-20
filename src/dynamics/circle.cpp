@@ -1,6 +1,6 @@
-#include "spe/circle.h"
+#include "muli/circle.h"
 
-namespace spe
+namespace muli
 {
 
 Circle::Circle(float _radius, Type _type, float _density)
@@ -11,7 +11,7 @@ Circle::Circle(float _radius, Type _type, float _density)
 
     if (type == RigidBody::Type::Dynamic)
     {
-        speAssert(_density > 0);
+        muliAssert(_density > 0);
 
         density = _density;
         mass = _density * area;
@@ -23,7 +23,7 @@ Circle::Circle(float _radius, Type _type, float _density)
 
 void Circle::SetMass(float _mass)
 {
-    speAssert(_mass > 0);
+    muliAssert(_mass > 0);
 
     density = _mass / area;
     mass = _mass;
@@ -34,7 +34,7 @@ void Circle::SetMass(float _mass)
 
 void Circle::SetDensity(float _density)
 {
-    speAssert(density > 0);
+    muliAssert(density > 0);
 
     density = _density;
     mass = density * area;
@@ -43,4 +43,4 @@ void Circle::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
-} // namespace spe
+} // namespace muli

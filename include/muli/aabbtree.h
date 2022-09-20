@@ -5,7 +5,7 @@
 #include "rigidbody.h"
 #include "settings.h"
 
-namespace spe
+namespace muli
 {
 
 struct Node
@@ -96,4 +96,4 @@ inline float AABBTree::ComputeTreeCost() const
     return cost;
 }
 
-} // namespace spe
+} // namespace muli

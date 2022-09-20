@@ -1,9 +1,9 @@
-#include "spe/contact.h"
-#include "spe/block_solver.h"
-#include "spe/contact_solver.h"
-#include "spe/world.h"
+#include "muli/contact.h"
+#include "muli/block_solver.h"
+#include "muli/contact_solver.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
@@ -11,7 +11,7 @@ extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][Rig
 Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
     : Constraint(_bodyA, _bodyB, _settings)
 {
-    speAssert(bodyA->GetShape() >= bodyB->GetShape());
+    muliAssert(bodyA->GetShape() >= bodyB->GetShape());
 
     manifold.numContacts = 0;
 
@@ -20,7 +20,7 @@ Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _set
     friction = MixFriction(bodyA->friction, bodyB->friction);
 
     collisionDetectionFunction = DetectionFunctionMap[bodyA->GetShape()][bodyB->GetShape()];
-    speAssert(collisionDetectionFunction != nullptr);
+    muliAssert(collisionDetectionFunction != nullptr);
 }
 
 void Contact::Update()
@@ -126,4 +126,4 @@ bool Contact::SolvePositionConstraint()
     return solved;
 }
 
-} // namespace spe
+} // namespace muli

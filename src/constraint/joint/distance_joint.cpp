@@ -1,7 +1,7 @@
-#include "spe/distance_joint.h"
-#include "spe/world.h"
+#include "muli/distance_joint.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 DistanceJoint::DistanceJoint(RigidBody* _bodyA,
@@ -86,4 +86,4 @@ void DistanceJoint::ApplyImpulse(float lambda)
     bodyB->angularVelocity += Dot(u, Cross(lambda, rb)) * bodyB->invInertia;
 }
 
-} // namespace spe
+} // namespace muli

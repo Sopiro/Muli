@@ -1,8 +1,8 @@
 #include "rigidbody_renderer.h"
-#include "spe/util.h"
+#include "muli/util.h"
 #include "window.h"
 
-namespace spe
+namespace muli
 {
 
 RigidBodyRenderer::RigidBodyRenderer()
@@ -78,4 +78,4 @@ Vec2 RigidBodyRenderer::Pick(const Vec2& screenPos)
     return { invPos.x, invPos.y };
 }
 
-} // namespace spe
+} // namespace muli

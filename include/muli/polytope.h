@@ -4,7 +4,7 @@
 #include "growable_array.h"
 #include "simplex.h"
 
-namespace spe
+namespace muli
 {
 
 struct ClosestEdgeInfo
@@ -38,4 +38,4 @@ inline uint32 Polytope::Count() const
     return vertices.Count();
 }
 
-} // namespace spe
+} // namespace muli

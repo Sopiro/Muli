@@ -1,11 +1,11 @@
 #include "util.h"
 #include "common.h"
-#include "spe/box.h"
-#include "spe/capsule.h"
-#include "spe/circle.h"
-#include "spe/polygon.h"
+#include "muli/box.h"
+#include "muli/capsule.h"
+#include "muli/circle.h"
+#include "muli/polygon.h"
 
-namespace spe
+namespace muli
 {
 
 std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
@@ -228,4 +228,4 @@ Vec3 hsl2rgb(float h, float s, float l)
     return res;
 }
 
-} // namespace spe
+} // namespace muli

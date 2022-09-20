@@ -1,17 +1,17 @@
-#include "spe/collision.h"
-#include "spe/box.h"
-#include "spe/capsule.h"
-#include "spe/circle.h"
-#include "spe/contact_point.h"
-#include "spe/edge.h"
-#include "spe/polygon.h"
-#include "spe/polytope.h"
-#include "spe/rigidbody.h"
-#include "spe/simplex.h"
+#include "muli/collision.h"
+#include "muli/box.h"
+#include "muli/capsule.h"
+#include "muli/circle.h"
+#include "muli/contact_point.h"
+#include "muli/edge.h"
+#include "muli/polygon.h"
+#include "muli/polytope.h"
+#include "muli/rigidbody.h"
+#include "muli/simplex.h"
 
 #define APPLY_AXIS_WEIGHT 0
 
-namespace spe
+namespace muli
 {
 
 static constexpr Vec2 origin{ 0.0f };
@@ -311,7 +311,7 @@ static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
     Vec2 c2b = pb - closest;
 
-    // Signed distance along normal
+    // Signed distance along the normal
     float l = Dot(c2b, normal);
     float r2 = a->GetRadius() + b->GetRadius();
 
@@ -543,7 +543,7 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
 
     if (shapeB < shapeA)
     {
-        speAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
+        muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
         DetectionFunctionMap[shapeB][shapeA](b, a, out);
         out->featureFlipped = true;
@@ -551,7 +551,7 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
-        speAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
+        muliAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
 
         return DetectionFunctionMap[shapeA][shapeB](a, b, out);
     }
@@ -824,4 +824,4 @@ void InitializeDetectionFunctionMap()
     initialized = true;
 }
 
-} // namespace spe
+} // namespace muli

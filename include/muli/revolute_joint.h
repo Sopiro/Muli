@@ -3,7 +3,7 @@
 #include "common.h"
 #include "joint.h"
 
-namespace spe
+namespace muli
 {
 
 struct WorldSettings;
@@ -49,4 +49,4 @@ inline const Vec2& RevoluteJoint::GetLocalAnchorB() const
     return localAnchorB;
 }
 
-} // namespace spe
+} // namespace muli

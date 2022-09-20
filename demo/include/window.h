@@ -6,7 +6,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-namespace spe
+namespace muli
 {
 
 class Window final
@@ -164,4 +164,4 @@ inline int32 Window::GetRefreshRate() const
     return refreshRate;
 }
 
-} // namespace spe
+} // namespace muli

@@ -1,6 +1,6 @@
-#include "spe/polytope.h"
+#include "muli/polytope.h"
 
-namespace spe
+namespace muli
 {
 
 ClosestEdgeInfo Polytope::GetClosestEdge() const
@@ -38,4 +38,4 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
     return ClosestEdgeInfo{ minIndex, minDistance, minNormal };
 }
 
-} // namespace spe
+} // namespace muli

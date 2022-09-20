@@ -3,4 +3,4 @@ mkdir build
 cd build
 cmake ..
 cmake --build . --config Release
-start spe.sln
+start muil.sln

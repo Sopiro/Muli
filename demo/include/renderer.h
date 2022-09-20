@@ -3,7 +3,7 @@
 #include "common.h"
 #include "shader.h"
 
-namespace spe
+namespace muli
 {
 
 class Renderer
@@ -21,4 +21,4 @@ public:
     virtual void Render() = 0;
 };
 
-} // namespace spe
+} // namespace muli

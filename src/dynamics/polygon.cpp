@@ -1,6 +1,6 @@
-#include "spe/polygon.h"
+#include "muli/polygon.h"
 
-namespace spe
+namespace muli
 {
 
 Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCenter, float _radius, float _density)
@@ -34,7 +34,7 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
 
     if (type == Dynamic)
     {
-        speAssert(_density > 0);
+        muliAssert(_density > 0);
 
         density = _density;
         mass = _density * area;
@@ -51,7 +51,7 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
 
 void Polygon::SetMass(float _mass)
 {
-    speAssert(_mass > 0);
+    muliAssert(_mass > 0);
 
     density = _mass / area;
     mass = _mass;
@@ -62,7 +62,7 @@ void Polygon::SetMass(float _mass)
 
 void Polygon::SetDensity(float _density)
 {
-    speAssert(_density > 0);
+    muliAssert(_density > 0);
 
     density = _density;
     mass = _density * area;
@@ -139,4 +139,4 @@ Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
     }
 }
 
-} // namespace spe
+} // namespace muli

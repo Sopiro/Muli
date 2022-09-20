@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace spe
+namespace muli
 {
 
 struct AABB
@@ -67,4 +67,4 @@ inline bool ContainsAABB(const AABB& container, const AABB& testee)
     // clang-format on
 }
 
-} // namespace spe
+} // namespace muli

@@ -3,7 +3,7 @@
 #include "polygon.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 class Box : public Polygon
@@ -37,4 +37,4 @@ inline float Box::GetHeight() const
     return height;
 }
 
-} // namespace spe
+} // namespace muli

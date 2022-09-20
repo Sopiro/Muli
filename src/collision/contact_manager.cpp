@@ -1,8 +1,8 @@
-#include "spe/contact_manager.h"
-#include "spe/util.h"
-#include "spe/world.h"
+#include "muli/contact_manager.h"
+#include "muli/util.h"
+#include "muli/world.h"
 
-namespace spe
+namespace muli
 {
 
 void ContactManager::Update(float dt)
@@ -134,4 +134,4 @@ void ContactManager::Reset()
     contactCount = 0;
 }
 
-} // namespace spe
+} // namespace muli

@@ -3,7 +3,7 @@
 #include "common.h"
 #include "contact_point.h"
 
-namespace spe
+namespace muli
 {
 
 struct Edge
@@ -61,4 +61,4 @@ struct Edge
     }
 };
 
-} // namespace spe
+} // namespace muli

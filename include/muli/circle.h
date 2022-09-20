@@ -3,7 +3,7 @@
 #include "rigidbody.h"
 #include "util.h"
 
-namespace spe
+namespace muli
 {
 
 class Circle : public RigidBody
@@ -49,4 +49,4 @@ inline Edge Circle::GetFeaturedEdge(const Vec2& dir) const
     return Edge{ transform.position, transform.position };
 }
 
-} // namespace spe
+} // namespace muli

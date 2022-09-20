@@ -1,7 +1,7 @@
-#include "spe/simplex.h"
-#include "spe/util.h"
+#include "muli/simplex.h"
+#include "muli/util.h"
 
-namespace spe
+namespace muli
 {
 
 ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
@@ -153,4 +153,4 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     return res;
 }
 
-} // namespace spe
+} // namespace muli
