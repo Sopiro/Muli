@@ -18,6 +18,23 @@ set(DEMO_SOURCE_FILES
 
     src/demo/demo.cpp
     src/demo/single_box.cpp
+    src/demo/box_stacking.cpp
+    src/demo/pyramid.cpp
+    src/demo/single_pendulum.cpp
+    src/demo/springs.cpp
+    src/demo/random_convex_polygons.cpp
+    src/demo/seesaw.cpp
+    src/demo/frictions.cpp
+    src/demo/restitutions.cpp
+    src/demo/multi_pendulum.cpp
+    src/demo/suspension_bridge.cpp
+    src/demo/circle_stacking.cpp
+    src/demo/circles_1000.cpp
+    src/demo/boxes_1000.cpp
+    src/demo/capsules_1000.cpp
+    src/demo/convex_polygons_1000.cpp
+    src/demo/mix_1000.cpp
+    src/demo/dense_collision.cpp
 )
 
 set(DEMO_HEADER_FILES

@@ -25,126 +25,19 @@ void Game::Update(float dt)
 {
     time += dt;
 
-    mpos = rRenderer.Pick(Input::GetMousePosition());
-
-    HandleInput();
+    UpdateInput();
+    demo->Step(*this);
     UpdateUI();
-
-    if (pause)
-    {
-        if (step)
-        {
-            step = false;
-            demo->Step();
-        }
-    }
-    else
-    {
-        demo->Step();
-    }
 }
 
-void Game::HandleInput()
+void Game::UpdateInput()
 {
-    if (Input::IsKeyPressed(GLFW_KEY_R)) InitDemo(demoIndex);
-    if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
-    if (Input::IsKeyPressed(GLFW_KEY_B)) showAABB = !showAABB;
-    if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
-    if (Input::IsKeyPressed(GLFW_KEY_N)) showContactNormal = !showContactNormal;
-    if (Input::IsKeyPressed(GLFW_KEY_C)) resetCamera = !resetCamera;
-    if (Input::IsKeyPressed(GLFW_KEY_SPACE)) pause = !pause;
-    if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
-    if (Input::IsKeyPressed(GLFW_KEY_G))
+    if (Input::IsKeyPressed(GLFW_KEY_R))
     {
-        demo->GetWorldSettings().APPLY_GRAVITY = !demo->GetWorldSettings().APPLY_GRAVITY;
-        demo->GetWorld().Awake();
+        InitDemo(demoIndex);
     }
 
-    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
-    {
-        qr = demo->GetWorld().Query(mpos);
-
-        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            if (qr.size() != 0)
-            {
-                RigidBody* target = qr[0];
-                if (target->GetType() != RigidBody::Type::Static)
-                {
-                    gj = demo->GetWorld().CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
-                    gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
-                }
-            }
-            else
-            {
-                RigidBody* b = demo->GetWorld().CreateBox(0.5f);
-                b->SetPosition(mpos);
-                rRenderer.Register(b);
-
-                b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
-            }
-        }
-
-        if (gj != nullptr)
-        {
-            gj->SetTarget(mpos);
-        }
-
-        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            if (gj != nullptr)
-            {
-                demo->GetWorld().Destroy(gj);
-                gj = nullptr;
-            }
-        }
-
-        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-        {
-            if (gj != nullptr)
-            {
-                gj = nullptr; // Stick to the air!
-            }
-            else
-            {
-                std::vector<RigidBody*> q = demo->GetWorld().Query(mpos);
-
-                demo->GetWorld().Destroy(q);
-            }
-        }
-
-        if (Input::GetMouseScroll().y != 0)
-        {
-            camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
-            camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
-        }
-
-        // Camera moving
-        {
-            static bool cameraMove = false;
-            static Vec2 cursorStart;
-            static Vec2 cameraPosStart;
-
-            if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-            {
-                cameraMove = true;
-                cursorStart = Input::GetMousePosition();
-                cameraPosStart = camera.position;
-            }
-            else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
-            {
-                cameraMove = false;
-            }
-
-            if (cameraMove)
-            {
-                Vec2 dist = Input::GetMousePosition() - cursorStart;
-                dist.x *= 0.01f * -camera.scale.x;
-                dist.y *= 0.01f * camera.scale.y;
-                camera.position = cameraPosStart + dist;
-            }
-        }
-    }
+    demo->UpdateInput(*this);
 }
 
 void Game::UpdateUI()
@@ -164,22 +57,22 @@ void Game::UpdateUI()
             {
                 // Simulation buttons
                 {
-                    ImGui::BeginDisabled(pause);
-                    if (ImGui::Button("Pause")) pause = true;
+                    ImGui::BeginDisabled(options.pause);
+                    if (ImGui::Button("Pause")) options.pause = true;
                     ImGui::EndDisabled();
 
                     ImGui::SameLine();
 
-                    ImGui::BeginDisabled(!pause);
+                    ImGui::BeginDisabled(!options.pause);
                     ImGui::PushButtonRepeat(true);
-                    if (ImGui::Button("Step")) step = true;
+                    if (ImGui::Button("Step")) options.step = true;
                     ImGui::PopButtonRepeat();
                     ImGui::EndDisabled();
 
                     ImGui::SameLine();
 
-                    ImGui::BeginDisabled(!pause);
-                    if (ImGui::Button("Start")) pause = false;
+                    ImGui::BeginDisabled(!options.pause);
+                    if (ImGui::Button("Start")) options.pause = false;
                     ImGui::EndDisabled();
 
                     ImGui::SameLine();
@@ -204,12 +97,12 @@ void Game::UpdateUI()
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
-                    ImGui::Checkbox("Camera reset", &resetCamera);
-                    ImGui::Checkbox("Draw outline only", &drawOutlineOnly);
-                    ImGui::Checkbox("Show BVH", &showBVH);
-                    ImGui::Checkbox("Show AABB", &showAABB);
-                    ImGui::Checkbox("Show contact point", &showContactPoint);
-                    ImGui::Checkbox("Show contact normal", &showContactNormal);
+                    ImGui::Checkbox("Camera reset", &options.resetCamera);
+                    ImGui::Checkbox("Draw outline only", &options.drawOutlineOnly);
+                    ImGui::Checkbox("Show BVH", &options.showBVH);
+                    ImGui::Checkbox("Show AABB", &options.showAABB);
+                    ImGui::Checkbox("Show contact point", &options.showContactPoint);
+                    ImGui::Checkbox("Show contact normal", &options.showContactNormal);
                 }
 
                 if (ImGui::CollapsingHeader("Simulation settings"))
@@ -241,9 +134,11 @@ void Game::UpdateUI()
                 ImGui::Text("Broad phase contacts: %d", demo->GetWorld().GetContactCount());
 
                 ImGui::Separator();
-                if (qr.size() > 0)
+
+                RigidBody* t = demo->GetTarget();
+
+                if (t)
                 {
-                    RigidBody* t = qr[0];
                     ImGui::Text("ID: %d", t->GetID());
                     ImGui::Text("Mass: %.4f", t->GetMass());
                     ImGui::Text("Inertia: %.4f", t->GetInertia());
@@ -284,8 +179,9 @@ void Game::UpdateUI()
 
 void Game::Render()
 {
+    Camera& camera = demo->GetCamera();
     rRenderer.SetViewMatrix(camera.GetCameraMatrix());
-    rRenderer.SetDrawOutlined(drawOutlineOnly);
+    rRenderer.SetDrawOutlined(options.drawOutlineOnly);
     rRenderer.Render();
 
     points.clear();
@@ -350,11 +246,11 @@ void Game::Render()
         }
     }
 
-    if (showBVH || showAABB)
+    if (options.showBVH || options.showAABB)
     {
         const AABBTree& tree = demo->GetWorld().GetBVH();
         tree.Traverse([&](const Node* n) -> void {
-            if (!showBVH && !n->isLeaf) return;
+            if (!options.showBVH && !n->isLeaf) return;
             lines.push_back(n->aabb.min);
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
@@ -366,7 +262,7 @@ void Game::Render()
         });
     }
 
-    if (showContactPoint || showContactNormal)
+    if (options.showContactPoint || options.showContactNormal)
     {
         const Contact* c = demo->GetWorld().GetContacts();
 
@@ -378,11 +274,11 @@ void Game::Render()
             {
                 const Vec2& cp = m.contactPoints[j].position;
 
-                if (showContactPoint)
+                if (options.showContactPoint)
                 {
                     points.push_back(cp);
                 }
-                if (showContactNormal)
+                if (options.showContactNormal)
                 {
                     lines.push_back(cp);
                     lines.push_back(cp + m.contactNormal * 0.15f);
@@ -421,30 +317,33 @@ void Game::UpdateProjectionMatrix()
 void Game::InitDemo(uint32 index)
 {
     if (index >= demo_count) return;
-    if (demo) delete demo;
 
-    Reset();
+    bool restoreCameraPosition = false;
+    Camera prevCamera;
+
+    if (demo)
+    {
+        restoreCameraPosition = !options.resetCamera;
+        prevCamera = demo->GetCamera();
+        delete demo;
+    }
+
+    time = 0;
+    rRenderer.Reset();
 
     demoIndex = index;
     demo = demos[demoIndex].createFunction();
+
+    if (restoreCameraPosition)
+    {
+        demo->GetCamera() = prevCamera;
+    }
 
     for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())
     {
         rRenderer.Register(b);
 
         b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
-    }
-}
-
-void Game::Reset()
-{
-    time = 0;
-    rRenderer.Reset();
-
-    if (resetCamera)
-    {
-        camera.position = Vec2{ 0.0f, 3.6f };
-        camera.scale = Vec2{ 1, 1 };
     }
 }
 

@@ -12,6 +12,18 @@ namespace muli
 
 class Application;
 
+struct DebugOptions
+{
+    bool pause = false;
+    bool step = false;
+    bool drawOutlineOnly = false;
+    bool showBVH = false;
+    bool showAABB = false;
+    bool showContactPoint = false;
+    bool showContactNormal = false;
+    bool resetCamera = true;
+};
+
 class Game final
 {
 public:
@@ -27,12 +39,11 @@ public:
     void Update(float dt);
     void Render();
 
-    Camera& GetCamera();
+    RigidBodyRenderer& GetRigidBodyRenderer();
+    DebugOptions& GetDebugOptions();
 
 private:
     Application& app;
-
-    Camera camera{};
 
     std::vector<Vec2> points{};
     std::vector<Vec2> lines{};
@@ -40,33 +51,25 @@ private:
     RigidBodyRenderer rRenderer{};
 
     float time = 0.0f;
-    float simulationDeltaTime = 0.0f;
-    GrabJoint* gj = nullptr;
-    Vec2 mpos{ 0.0f };
 
-    bool pause = false;
-    bool step = false;
-    bool drawOutlineOnly = false;
-    bool showBVH = false;
-    bool showAABB = false;
-    bool showContactPoint = false;
-    bool showContactNormal = false;
-    bool resetCamera = true;
-
-    std::vector<RigidBody*> qr;
     uint32 demoIndex;
     Demo* demo = nullptr;
+    DebugOptions options;
 
     void UpdateProjectionMatrix();
     void UpdateUI();
-    void HandleInput();
+    void UpdateInput();
     void InitDemo(uint32 demo);
-    void Reset();
 };
 
-inline Camera& Game::GetCamera()
+inline RigidBodyRenderer& Game::GetRigidBodyRenderer()
 {
-    return camera;
+    return rRenderer;
+}
+
+inline DebugOptions& Game::GetDebugOptions()
+{
+    return options;
 }
 
 } // namespace muli

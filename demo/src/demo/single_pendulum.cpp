@@ -1,0 +1,28 @@
+#include "demo.h"
+
+namespace muli
+{
+
+class SinglePendulum : public Demo
+{
+public:
+    SinglePendulum()
+    {
+        settings.APPLY_GRAVITY = true;
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+
+        Box* b = world->CreateBox(0.3f);
+        b->SetPosition(-3.0f, 5.0f);
+
+        world->CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
+    }
+
+    static Demo* Create()
+    {
+        return new SinglePendulum;
+    }
+};
+
+DemoFrame single_pendulum{ "Single pendulum", SinglePendulum::Create };
+
+} // namespace muli
