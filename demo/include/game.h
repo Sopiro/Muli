@@ -2,6 +2,7 @@
 
 #include "camera.h"
 #include "common.h"
+#include "demo.h"
 #include "dynamic_renderer.h"
 #include "input.h"
 #include "rigidbody_renderer.h"
@@ -24,7 +25,6 @@ public:
     Game& operator=(Game&&) noexcept = delete;
 
     void Update(float dt);
-    void HandleInput();
     void Render();
 
     Camera& GetCamera();
@@ -32,15 +32,12 @@ public:
 private:
     Application& app;
 
-    WorldSettings settings{};
-    World* world;
-
     Camera camera{};
-    RigidBodyRenderer rRenderer{};
 
     std::vector<Vec2> points{};
     std::vector<Vec2> lines{};
     DynamicRenderer dRenderer{};
+    RigidBodyRenderer rRenderer{};
 
     float time = 0.0f;
     float simulationDeltaTime = 0.0f;
@@ -56,12 +53,14 @@ private:
     bool showContactNormal = false;
     bool resetCamera = true;
 
-    std::vector<std::pair<std::string, std::function<void(Game&, World&, WorldSettings&)>>> demos;
-    uint32 currentDemo;
-    std::string demoTitle;
+    std::vector<RigidBody*> qr;
+    uint32 demoIndex;
+    Demo* demo = nullptr;
 
     void UpdateProjectionMatrix();
-    void InitSimulation(uint32 demo);
+    void UpdateUI();
+    void HandleInput();
+    void InitDemo(uint32 demo);
     void Reset();
 };
 

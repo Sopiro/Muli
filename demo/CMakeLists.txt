@@ -15,6 +15,9 @@ set(DEMO_SOURCE_FILES
     src/rendering/mesh.cpp
     src/rendering/dynamic_shader.cpp
     src/rendering/dynamic_renderer.cpp
+
+    src/demo/demo.cpp
+    src/demo/single_box.cpp
 )
 
 set(DEMO_HEADER_FILES

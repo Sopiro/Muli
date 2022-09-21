@@ -1,6 +1,5 @@
 #include "game.h"
 #include "application.h"
-#include "demo.h"
 
 namespace muli
 {
@@ -14,48 +13,40 @@ Game::Game(Application& _app)
         UpdateProjectionMatrix();
     });
 
-    // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
-    simulationDeltaTime = 1.0f / 144.0f;
-    settings.VALID_REGION.min.y = -20.0f;
-
-    world = new World(settings);
-
-    demos = GetDemos();
-    InitSimulation(0);
+    InitDemo(0);
 }
 
 Game::~Game() noexcept
 {
-    delete world;
+    delete demo;
 }
 
 void Game::Update(float dt)
 {
     time += dt;
 
+    mpos = rRenderer.Pick(Input::GetMousePosition());
+
     HandleInput();
+    UpdateUI();
 
     if (pause)
     {
         if (step)
         {
             step = false;
-            world->Step(simulationDeltaTime);
+            demo->Step();
         }
     }
     else
     {
-        world->Step(simulationDeltaTime);
+        demo->Step();
     }
 }
 
 void Game::HandleInput()
 {
-    static std::vector<RigidBody*> qr;
-
-    mpos = rRenderer.Pick(Input::GetMousePosition());
-
-    if (Input::IsKeyPressed(GLFW_KEY_R)) InitSimulation(currentDemo);
+    if (Input::IsKeyPressed(GLFW_KEY_R)) InitDemo(demoIndex);
     if (Input::IsKeyPressed(GLFW_KEY_V)) showBVH = !showBVH;
     if (Input::IsKeyPressed(GLFW_KEY_B)) showAABB = !showAABB;
     if (Input::IsKeyPressed(GLFW_KEY_P)) showContactPoint = !showContactPoint;
@@ -65,30 +56,28 @@ void Game::HandleInput()
     if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) step = true;
     if (Input::IsKeyPressed(GLFW_KEY_G))
     {
-        settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
-        world->Awake();
+        demo->GetWorldSettings().APPLY_GRAVITY = !demo->GetWorldSettings().APPLY_GRAVITY;
+        demo->GetWorld().Awake();
     }
 
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
-        qr = world->Query(mpos);
+        qr = demo->GetWorld().Query(mpos);
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            auto q = world->Query(mpos);
-
-            if (q.size() != 0)
+            if (qr.size() != 0)
             {
-                RigidBody* target = q[0];
+                RigidBody* target = qr[0];
                 if (target->GetType() != RigidBody::Type::Static)
                 {
-                    gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
+                    gj = demo->GetWorld().CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
                     gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
                 }
             }
             else
             {
-                RigidBody* b = world->CreateBox(0.5f);
+                RigidBody* b = demo->GetWorld().CreateBox(0.5f);
                 b->SetPosition(mpos);
                 rRenderer.Register(b);
 
@@ -105,7 +94,7 @@ void Game::HandleInput()
         {
             if (gj != nullptr)
             {
-                world->Destroy(gj);
+                demo->GetWorld().Destroy(gj);
                 gj = nullptr;
             }
         }
@@ -118,9 +107,9 @@ void Game::HandleInput()
             }
             else
             {
-                std::vector<RigidBody*> q = world->Query(mpos);
+                std::vector<RigidBody*> q = demo->GetWorld().Query(mpos);
 
-                world->Destroy(q);
+                demo->GetWorld().Destroy(q);
             }
         }
 
@@ -156,7 +145,10 @@ void Game::HandleInput()
             }
         }
     }
+}
 
+void Game::UpdateUI()
+{
     // ImGui::ShowDemoWindow();
 
     // ImGui Windows
@@ -192,7 +184,7 @@ void Game::HandleInput()
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("Restart")) InitSimulation(currentDemo);
+                    if (ImGui::Button("Restart")) InitDemo(demoIndex);
                 }
 
                 static int f = Window::Get().GetRefreshRate();
@@ -222,7 +214,9 @@ void Game::HandleInput()
 
                 if (ImGui::CollapsingHeader("Simulation settings"))
                 {
-                    if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) world->Awake();
+                    WorldSettings& settings = demo->GetWorldSettings();
+
+                    if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) demo->GetWorld().Awake();
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
@@ -241,10 +235,10 @@ void Game::HandleInput()
                 }
 
                 ImGui::Separator();
-                ImGui::Text(demos[currentDemo].first.data());
-                ImGui::Text("Bodies: %d", world->GetBodyCount());
-                ImGui::Text("Sleeping dynamic bodies: %d", world->GetSleepingBodyCount());
-                ImGui::Text("Broad phase contacts: %d", world->GetContactCount());
+                ImGui::Text(demos[demoIndex].name);
+                ImGui::Text("Bodies: %d", demo->GetWorld().GetBodyCount());
+                ImGui::Text("Sleeping dynamic bodies: %d", demo->GetWorld().GetSleepingBodyCount());
+                ImGui::Text("Broad phase contacts: %d", demo->GetWorld().GetContactCount());
 
                 ImGui::Separator();
                 if (qr.size() > 0)
@@ -262,15 +256,15 @@ void Game::HandleInput()
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 26 * ImGui::GetTextLineHeightWithSpacing())))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 26 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
-                    for (uint32 i = 0; i < demos.size(); i++)
+                    for (uint32 i = 0; i < demo_count; i++)
                     {
-                        const bool selected = (currentDemo == i);
+                        const bool selected = (demoIndex == i);
 
-                        if (ImGui::Selectable(demos[i].first.data(), selected))
+                        if (ImGui::Selectable(demos[i].name, selected))
                         {
-                            InitSimulation(i);
+                            InitDemo(i);
                         }
 
                         if (selected)
@@ -286,20 +280,6 @@ void Game::HandleInput()
         }
     }
     ImGui::End();
-
-    // ImGuiWindowFlags window_flags = 0;
-    // // window_flags |= ImGuiWindowFlags_NoBackground;
-    // window_flags |= ImGuiWindowFlags_NoTitleBar;
-    // window_flags |= ImGuiWindowFlags_NoResize;
-    // // etc.
-    // bool open_ptr = true;
-    // if (ImGui::Begin("", &open_ptr, window_flags))
-    // {
-    //     ImGui::Text("Bodies: %d", bodies.size());
-
-    //     ImGui::End();
-    // }
-    // ImGui::End();
 }
 
 void Game::Render()
@@ -311,7 +291,7 @@ void Game::Render()
     points.clear();
     lines.clear();
 
-    for (Joint* j = world->GetJoints(); j; j = j->GetNext())
+    for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())
     {
         Joint::Type type = j->GetType();
 
@@ -372,7 +352,7 @@ void Game::Render()
 
     if (showBVH || showAABB)
     {
-        const AABBTree& tree = world->GetBVH();
+        const AABBTree& tree = demo->GetWorld().GetBVH();
         tree.Traverse([&](const Node* n) -> void {
             if (!showBVH && !n->isLeaf) return;
             lines.push_back(n->aabb.min);
@@ -388,7 +368,7 @@ void Game::Render()
 
     if (showContactPoint || showContactNormal)
     {
-        const Contact* c = world->GetContacts();
+        const Contact* c = demo->GetWorld().GetContacts();
 
         while (c)
         {
@@ -424,6 +404,8 @@ void Game::Render()
     dRenderer.Draw(points, GL_POINTS);
     glLineWidth(1.0f);
     dRenderer.Draw(lines, GL_LINES);
+
+    demo->Render(dRenderer);
 }
 
 void Game::UpdateProjectionMatrix()
@@ -436,22 +418,17 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::InitSimulation(uint32 demo)
+void Game::InitDemo(uint32 index)
 {
-    time = 0;
-    if (resetCamera)
-    {
-        camera.position = Vec2{ 0.0f, 3.6f };
-        camera.scale = Vec2{ 1, 1 };
-    }
+    if (index >= demo_count) return;
+    if (demo) delete demo;
 
     Reset();
 
-    currentDemo = demo;
-    demoTitle = demos[currentDemo].first;
-    demos[currentDemo].second(*this, *world, settings);
+    demoIndex = index;
+    demo = demos[demoIndex].createFunction();
 
-    for (RigidBody* b = world->GetBodyList(); b; b = b->GetNext())
+    for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())
     {
         rRenderer.Register(b);
 
@@ -461,8 +438,14 @@ void Game::InitSimulation(uint32 demo)
 
 void Game::Reset()
 {
-    world->Reset();
+    time = 0;
     rRenderer.Reset();
+
+    if (resetCamera)
+    {
+        camera.position = Vec2{ 0.0f, 3.6f };
+        camera.scale = Vec2{ 1, 1 };
+    }
 }
 
 } // namespace muli
