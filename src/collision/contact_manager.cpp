@@ -12,6 +12,11 @@ void ContactManager::Update(float dt)
 
     // Find contacts, insert into the contact graph
     broadPhase.FindContacts([&](RigidBody* bodyA, RigidBody* bodyB) -> void {
+        if (bodyA->GetType() != RigidBody::Type::Dynamic && bodyB->GetType() != RigidBody::Type::Dynamic)
+        {
+            return;
+        }
+
         // TODO: Use hash set to remove potential bottleneck
         ContactEdge* e = bodyB->contactList;
         while (e)

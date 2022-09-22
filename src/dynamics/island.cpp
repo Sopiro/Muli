@@ -57,7 +57,7 @@ void Island::Solve()
         }
 
         // Apply gravity
-        if (world.settings.APPLY_GRAVITY && !sleeping)
+        if (world.settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::Dynamic)
         {
             b->linearVelocity += world.settings.GRAVITY * world.settings.DT;
         }

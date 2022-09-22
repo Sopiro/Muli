@@ -13,6 +13,7 @@ private:
     World& world;
     bool sleeping = false;
 
+    // Static body is not included
     std::vector<RigidBody*> bodies{};
 
     std::vector<Contact*> contacts{};

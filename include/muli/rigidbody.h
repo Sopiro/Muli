@@ -30,6 +30,7 @@ public:
     enum Type : uint8
     {
         Static,
+        Kinematic,
         Dynamic,
     };
 
@@ -262,6 +263,7 @@ inline void RigidBody::Awake()
 
 inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
 {
+    if (type != Dynamic) return;
     force += f;
     torque += Cross(transform * localPosition - transform.position, f);
     NotifyForceUpdate();
@@ -304,11 +306,13 @@ inline const Vec2& RigidBody::GetLinearVelocity() const
 
 inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 {
+    if (type == Static) return;
     linearVelocity = _linearVelocity;
 }
 
 inline void RigidBody::SetLinearVelocity(float vx, float vy)
 {
+    if (type == Static) return;
     linearVelocity.Set(vx, vy);
 }
 
@@ -319,6 +323,7 @@ inline float RigidBody::GetAngularVelocity() const
 
 inline void RigidBody::SetAngularVelocity(float _angularVelocity)
 {
+    if (type == Static) return;
     angularVelocity = _angularVelocity;
 }
 
@@ -329,6 +334,7 @@ inline const Vec2& RigidBody::GetForce() const
 
 inline void RigidBody::SetForce(const Vec2& _force)
 {
+    if (type != Dynamic) return;
     force = _force;
     NotifyForceUpdate();
 }
@@ -340,6 +346,7 @@ inline float RigidBody::GetTorque() const
 
 inline void RigidBody::SetTorque(float _torque)
 {
+    if (type != Dynamic) return;
     torque = _torque;
     NotifyForceUpdate();
 }

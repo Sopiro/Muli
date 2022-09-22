@@ -8,7 +8,7 @@ RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
     : type{ _type }
     , shape{ _shape }
 {
-    if (type == Static)
+    if (type != Dynamic)
     {
         density = 0.0f;
         mass = 0.0f;

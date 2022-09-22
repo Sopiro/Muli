@@ -35,6 +35,7 @@ set(DEMO_SOURCE_FILES
     src/demo/convex_polygons_1000.cpp
     src/demo/mix_1000.cpp
     src/demo/dense_collision.cpp
+    src/demo/kinematic_body.cpp
 )
 
 set(DEMO_HEADER_FILES
