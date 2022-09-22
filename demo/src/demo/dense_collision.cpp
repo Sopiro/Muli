@@ -6,7 +6,8 @@ namespace muli
 class DenseCollision : public Demo
 {
 public:
-    DenseCollision()
+    DenseCollision(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = false;
 
@@ -29,9 +30,9 @@ public:
         camera.scale = { 6.0f, 6.0f };
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new DenseCollision;
+        return new DenseCollision(game);
     }
 };
 

@@ -6,7 +6,8 @@ namespace muli
 class RandomConvexPolygons : public Demo
 {
 public:
-    RandomConvexPolygons()
+    RandomConvexPolygons(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -41,9 +42,9 @@ public:
         // world->CreateGrabJoint(c, c->GetPosition(), c->GetPosition(), -1.0f);
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new RandomConvexPolygons;
+        return new RandomConvexPolygons(game);
     }
 };
 

@@ -6,7 +6,8 @@ namespace muli
 class Boxes1000 : public Demo
 {
 public:
-    Boxes1000()
+    Boxes1000(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
 
@@ -35,9 +36,9 @@ public:
         camera.scale = { 3.f, 3.f };
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new Boxes1000;
+        return new Boxes1000(game);
     }
 };
 

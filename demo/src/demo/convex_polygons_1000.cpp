@@ -6,7 +6,8 @@ namespace muli
 class ConvexPolygons1000 : public Demo
 {
 public:
-    ConvexPolygons1000()
+    ConvexPolygons1000(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
 
@@ -34,9 +35,9 @@ public:
         camera.scale = { 3.f, 3.f };
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new ConvexPolygons1000;
+        return new ConvexPolygons1000(game);
     }
 };
 

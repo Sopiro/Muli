@@ -42,7 +42,7 @@ private:
     std::function<void(int width, int height)> framebufferSizeChangeCallback = nullptr;
 
     bool ShouldClose() const;
-    void BeginFrame() const;
+    void BeginFrame(const Vec4& clearColor) const;
     void EndFrame() const;
 
     static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
@@ -134,7 +134,7 @@ inline bool Window::ShouldClose() const
     return glfwWindowShouldClose(glfwWindow);
 }
 
-inline void Window::BeginFrame() const
+inline void Window::BeginFrame(const Vec4& clearColor) const
 {
     Input::Update();
 
@@ -144,6 +144,10 @@ inline void Window::BeginFrame() const
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    // glViewport(0, 0, Window::Width, Window::Height);
 }
 
 inline void Window::EndFrame() const

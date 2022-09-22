@@ -6,7 +6,8 @@ namespace muli
 class Frictions : public Demo
 {
 public:
-    Frictions()
+    Frictions(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
         float groundFriction = 0.5f;
@@ -50,9 +51,9 @@ public:
         }
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new Frictions;
+        return new Frictions(game);
     }
 };
 

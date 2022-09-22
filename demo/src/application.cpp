@@ -40,9 +40,9 @@ void Application::Run()
 
         if (deltaTime > frameTime)
         {
-            window.BeginFrame();
+            window.BeginFrame(clearColor);
 
-            Update((float)deltaTime);
+            Update(static_cast<float>(deltaTime));
             Render();
 
             deltaTime = 0.0f;
@@ -62,10 +62,6 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-    // glViewport(0, 0, Window::Width, Window::Height);
-
     game->Render();
 }
 

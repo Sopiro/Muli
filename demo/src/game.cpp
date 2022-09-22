@@ -26,7 +26,7 @@ void Game::Update(float dt)
     time += dt;
 
     UpdateInput();
-    demo->Step(*this);
+    demo->Step();
     UpdateUI();
 }
 
@@ -37,7 +37,7 @@ void Game::UpdateInput()
         InitDemo(demoIndex);
     }
 
-    demo->UpdateInput(*this);
+    demo->UpdateInput();
 }
 
 void Game::UpdateUI()
@@ -175,6 +175,8 @@ void Game::UpdateUI()
         }
     }
     ImGui::End();
+
+    demo->UpdateUI();
 }
 
 void Game::Render()
@@ -183,9 +185,6 @@ void Game::Render()
     rRenderer.SetViewMatrix(camera.GetCameraMatrix());
     rRenderer.SetDrawOutlined(options.drawOutlineOnly);
     rRenderer.Render();
-
-    points.clear();
-    lines.clear();
 
     for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())
     {
@@ -301,7 +300,10 @@ void Game::Render()
     glLineWidth(1.0f);
     dRenderer.Draw(lines, GL_LINES);
 
-    demo->Render(dRenderer);
+    demo->Render();
+
+    points.clear();
+    lines.clear();
 }
 
 void Game::UpdateProjectionMatrix()
@@ -332,7 +334,7 @@ void Game::InitDemo(uint32 index)
     rRenderer.Reset();
 
     demoIndex = index;
-    demo = demos[demoIndex].createFunction();
+    demo = demos[demoIndex].createFunction(*this);
 
     if (restoreCameraPosition)
     {

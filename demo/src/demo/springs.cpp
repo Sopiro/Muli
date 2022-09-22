@@ -6,7 +6,8 @@ namespace muli
 class Springs : public Demo
 {
 public:
-    Springs()
+    Springs(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = false;
 
@@ -42,9 +43,9 @@ public:
         world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 2.0f, 0.01f, b->GetMass());
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new Springs;
+        return new Springs(game);
     }
 };
 

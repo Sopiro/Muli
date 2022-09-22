@@ -6,7 +6,8 @@ namespace muli
 class Seesaw : public Demo
 {
 public:
-    Seesaw()
+    Seesaw(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -32,9 +33,9 @@ public:
         b->SetPosition(-2.5, 250.0f);
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new Seesaw;
+        return new Seesaw(game);
     }
 };
 

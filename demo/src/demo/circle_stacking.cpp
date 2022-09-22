@@ -6,7 +6,8 @@ namespace muli
 class CircleStacking : public Demo
 {
 public:
-    CircleStacking()
+    CircleStacking(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -28,9 +29,9 @@ public:
         }
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new CircleStacking;
+        return new CircleStacking(game);
     }
 };
 

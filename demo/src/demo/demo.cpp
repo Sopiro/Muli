@@ -4,10 +4,165 @@
 namespace muli
 {
 
-void Demo::UpdateInput(Game& game)
+Demo::Demo(Game& _game)
+    : game{ _game }
+    , options{ game.GetDebugOptions() }
 {
-    DebugOptions& options = game.GetDebugOptions();
+    // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
+    dt = 1.0f / 144.0f;
+    settings.VALID_REGION.min.y = -20.0f;
 
+    world = new World(settings);
+
+    camera.scale.Set(1.0f, 1.0f);
+    camera.rotation = 0.0f;
+    camera.position.Set(0.0f, 3.6f);
+}
+
+void Demo::UpdateInput()
+{
+    ComputeProperty();
+    EnableKeyboardShortcut();
+
+    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+    {
+        EnableBodyCreate();
+        if (!EnableAddForce())
+        {
+            EnableBodyGrab();
+        }
+        EnableCameraControl();
+    }
+}
+
+void Demo::ComputeProperty()
+{
+    mpos = game.GetWorldMousePosition();      // Moust position
+    qr = world->Query(mpos);                  // Query result
+    target = qr.size() > 0 ? qr[0] : nullptr; // Mouseovered body
+}
+
+void Demo::EnableBodyCreate()
+{
+    static bool create;
+    static Vec2 mStart;
+
+    if (!target && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+        {
+            mStart = mpos;
+            create = true;
+        }
+        else
+        {
+            RigidBody* b = world->CreateBox(0.5f);
+            b->SetPosition(mpos);
+            game.RegisterRenderBody(b);
+        }
+    }
+
+    if (target && !gj && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        world->Destroy(qr);
+    }
+
+    if (create)
+    {
+        auto& pl = game.GetPointList();
+        auto& ll = game.GetLineList();
+
+        pl.push_back(mStart);
+        pl.push_back(mpos);
+        ll.push_back(mStart);
+        ll.push_back(mpos);
+
+        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            RigidBody* b = world->CreateBox(0.3f);
+            b->SetPosition(mStart);
+
+            Vec2 f = mStart - mpos;
+            f *= settings.INV_DT * b->GetMass() * 3.0f;
+            b->SetForce(f);
+            create = false;
+            game.RegisterRenderBody(b);
+        }
+    }
+}
+
+bool Demo::EnableBodyGrab()
+{
+    if (target && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        if (target->GetType() != RigidBody::Type::Static)
+        {
+            gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
+            gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
+        }
+    }
+
+    if (gj)
+    {
+        gj->SetTarget(mpos);
+        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            world->Destroy(gj);
+            gj = nullptr;
+        }
+        else if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            gj = nullptr; // Stick to the air!
+        }
+    }
+
+    return gj != nullptr;
+}
+
+bool Demo::EnableAddForce()
+{
+    static RigidBody* ft;
+    static Vec2 mStartLocal;
+
+    if (target && target->GetType() != RigidBody::Type::Static)
+    {
+        if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            ft = target;
+            mStartLocal = MulT(target->GetTransform(), mpos);
+        }
+    }
+
+    if (ft)
+    {
+        auto& pl = game.GetPointList();
+        auto& ll = game.GetLineList();
+
+        pl.push_back(ft->GetTransform() * mStartLocal);
+        pl.push_back(mpos);
+        ll.push_back(ft->GetTransform() * mStartLocal);
+        ll.push_back(mpos);
+
+        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            if (ft->GetWorld())
+            {
+                Vec2 mStartGlobal = ft->GetTransform() * mStartLocal;
+                Vec2 f = mStartGlobal - mpos;
+                f *= settings.INV_DT * ft->GetMass() * 3.0f;
+
+                ft->AddForce(mStartLocal, f);
+            }
+
+            ft = nullptr;
+        }
+    }
+
+    return ft != nullptr;
+}
+
+void Demo::EnableKeyboardShortcut()
+{
     if (Input::IsKeyPressed(GLFW_KEY_V)) options.showBVH = !options.showBVH;
     if (Input::IsKeyPressed(GLFW_KEY_B)) options.showAABB = !options.showAABB;
     if (Input::IsKeyPressed(GLFW_KEY_P)) options.showContactPoint = !options.showContactPoint;
@@ -20,98 +175,41 @@ void Demo::UpdateInput(Game& game)
         settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
         world->Awake();
     }
+}
 
-    RigidBodyRenderer& rRenderer = game.GetRigidBodyRenderer();
-    Vec2 mpos = rRenderer.Pick(Input::GetMousePosition());
-    std::vector<RigidBody*> qr = world->Query(mpos);
-
-    target = qr.size() > 0 ? qr[0] : nullptr;
-
-    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+void Demo::EnableCameraControl()
+{
+    if (Input::GetMouseScroll().y != 0)
     {
-        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            if (target)
-            {
-                if (target->GetType() != RigidBody::Type::Static)
-                {
-                    gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
-                    gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
-                }
-            }
-            else
-            {
-                RigidBody* b = world->CreateBox(0.5f);
-                b->SetPosition(mpos);
+        camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
+        camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
+    }
 
-                b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
-                rRenderer.Register(b);
-            }
-        }
+    static bool cameraMove = false;
+    static Vec2 cursorStart;
+    static Vec2 cameraPosStart;
 
-        if (gj != nullptr)
-        {
-            gj->SetTarget(mpos);
-        }
+    if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        cameraMove = true;
+        cursorStart = Input::GetMousePosition();
+        cameraPosStart = camera.position;
+    }
+    else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        cameraMove = false;
+    }
 
-        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            if (gj != nullptr)
-            {
-                world->Destroy(gj);
-                gj = nullptr;
-            }
-        }
-
-        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-        {
-            if (gj != nullptr)
-            {
-                gj = nullptr; // Stick to the air!
-            }
-            else
-            {
-                std::vector<RigidBody*> q = world->Query(mpos);
-
-                world->Destroy(q);
-            }
-        }
-
-        if (Input::GetMouseScroll().y != 0)
-        {
-            camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
-            camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
-        }
-
-        // Camera moving
-        {
-            static bool cameraMove = false;
-            static Vec2 cursorStart;
-            static Vec2 cameraPosStart;
-
-            if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-            {
-                cameraMove = true;
-                cursorStart = Input::GetMousePosition();
-                cameraPosStart = camera.position;
-            }
-            else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
-            {
-                cameraMove = false;
-            }
-
-            if (cameraMove)
-            {
-                Vec2 dist = Input::GetMousePosition() - cursorStart;
-                dist.x *= 0.01f * -camera.scale.x;
-                dist.y *= 0.01f * camera.scale.y;
-                camera.position = cameraPosStart + dist;
-            }
-        }
+    if (cameraMove)
+    {
+        Vec2 dist = Input::GetMousePosition() - cursorStart;
+        dist.x *= 0.01f * -camera.scale.x;
+        dist.y *= 0.01f * camera.scale.y;
+        camera.position = cameraPosStart + dist;
     }
 }
 
-void Demo::Step(Game& game)
+void Demo::Step()
 {
     DebugOptions& options = game.GetDebugOptions();
 
@@ -120,12 +218,12 @@ void Demo::Step(Game& game)
         if (options.step)
         {
             options.step = false;
-            world->Step(simulationDeltaTime);
+            world->Step(dt);
         }
     }
     else
     {
-        world->Step(simulationDeltaTime);
+        world->Step(dt);
     }
 }
 

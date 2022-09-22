@@ -2,40 +2,28 @@
 
 #include "camera.h"
 #include "common.h"
-#include "dynamic_renderer.h"
 #include "input.h"
 
 namespace muli
 {
+
 class Game;
+struct DebugOptions;
 
 class Demo
 {
 public:
-    Demo()
-    {
-        // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
-        simulationDeltaTime = 1.0f / 144.0f;
-        settings.VALID_REGION.min.y = -20.0f;
-
-        world = new World(settings);
-
-        camera.scale.Set(1.0f, 1.0f);
-        camera.rotation = 0.0f;
-        camera.position.Set(0.0f, 3.6f);
-    }
-
+    Demo(Game& _game);
     virtual ~Demo()
     {
         delete world;
         world = nullptr;
     }
 
-    virtual void UpdateInput(Game& game);
-    virtual void Step(Game& game);
-    virtual void UpdateUI(Game& game){};
-
-    virtual void Render(DynamicRenderer& dRenderer) {}
+    virtual void UpdateInput();
+    virtual void Step();
+    virtual void UpdateUI() {}
+    virtual void Render() {}
 
     World& GetWorld()
     {
@@ -58,17 +46,28 @@ public:
     }
 
 protected:
+    Game& game;
+    DebugOptions& options;
+
+    Camera camera;
     WorldSettings settings;
     World* world;
-    Camera camera;
 
-    float simulationDeltaTime;
-
-    GrabJoint* gj = nullptr;
+    float dt;
+    std::vector<RigidBody*> qr;
+    Vec2 mpos;
     RigidBody* target = nullptr;
+    GrabJoint* gj = nullptr;
+
+    void ComputeProperty();
+    void EnableKeyboardShortcut();
+    void EnableBodyCreate();
+    bool EnableAddForce();
+    bool EnableBodyGrab();
+    void EnableCameraControl();
 };
 
-typedef Demo* DemoCreateFunction();
+typedef Demo* DemoCreateFunction(Game& game);
 
 struct DemoFrame
 {

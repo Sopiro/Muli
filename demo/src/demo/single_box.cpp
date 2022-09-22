@@ -6,7 +6,8 @@ namespace muli
 class SingleBox : public Demo
 {
 public:
-    SingleBox()
+    SingleBox(Game& game)
+        : Demo(game)
     {
         settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -16,9 +17,9 @@ public:
         box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
     }
 
-    static Demo* Create()
+    static Demo* Create(Game& game)
     {
-        return new SingleBox;
+        return new SingleBox(game);
     }
 };
 

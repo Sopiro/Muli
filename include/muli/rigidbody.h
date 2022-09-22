@@ -64,6 +64,7 @@ public:
     void Translate(const Vec2& d);
     void Rotate(float a);
 
+    void AddForce(const Vec2& localPosition, const Vec2& force);
     void Awake();
 
     float GetRadius() const;
@@ -257,6 +258,13 @@ inline void RigidBody::Awake()
 {
     resting = 0.0f;
     sleeping = false;
+}
+
+inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
+{
+    force += f;
+    torque += Cross(transform * localPosition - transform.position, f);
+    NotifyForceUpdate();
 }
 
 inline float RigidBody::GetFriction() const

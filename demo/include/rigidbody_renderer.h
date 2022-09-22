@@ -26,7 +26,7 @@ public:
     void Unregister(RigidBody* body);
     void Unregister(const std::vector<RigidBody*>& bodies);
 
-    Vec2 Pick(const Vec2& screenPos);
+    Vec2 Pick(const Vec2& screenPos) const;
 
     void SetDrawOutlined(bool drawOutlineOnly);
     void Reset();

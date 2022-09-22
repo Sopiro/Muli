@@ -57,7 +57,7 @@ void RigidBodyRenderer::Render()
 }
 
 // Viewport space -> NDC -> world spcae
-Vec2 RigidBodyRenderer::Pick(const Vec2& screenPos)
+Vec2 RigidBodyRenderer::Pick(const Vec2& screenPos) const
 {
     // Viewport space
     Vec2 worldPos = screenPos;

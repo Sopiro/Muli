@@ -39,16 +39,19 @@ public:
     void Update(float dt);
     void Render();
 
-    RigidBodyRenderer& GetRigidBodyRenderer();
+    Vec2 GetWorldMousePosition() const;
     DebugOptions& GetDebugOptions();
+    void RegisterRenderBody(RigidBody* b);
+    std::vector<Vec2>& GetPointList();
+    std::vector<Vec2>& GetLineList();
 
 private:
     Application& app;
 
     std::vector<Vec2> points{};
     std::vector<Vec2> lines{};
-    DynamicRenderer dRenderer{};
     RigidBodyRenderer rRenderer{};
+    DynamicRenderer dRenderer{};
 
     float time = 0.0f;
 
@@ -62,14 +65,30 @@ private:
     void InitDemo(uint32 demo);
 };
 
-inline RigidBodyRenderer& Game::GetRigidBodyRenderer()
-{
-    return rRenderer;
-}
-
 inline DebugOptions& Game::GetDebugOptions()
 {
     return options;
+}
+
+inline std::vector<Vec2>& Game::GetPointList()
+{
+    return points;
+}
+
+inline std::vector<Vec2>& Game::GetLineList()
+{
+    return lines;
+}
+
+inline void Game::RegisterRenderBody(RigidBody* b)
+{
+    b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
+    rRenderer.Register(b);
+}
+
+inline Vec2 Game::GetWorldMousePosition() const
+{
+    return rRenderer.Pick(Input::GetMousePosition());
 }
 
 } // namespace muli
