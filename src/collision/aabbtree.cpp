@@ -26,7 +26,7 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
 
     // Find the best sibling for the new leaf
     Node* bestSibling = root;
-    float bestCost = Area(Union(root->aabb, aabb));
+    float bestCost = SAH(Union(root->aabb, aabb));
 
     GrowableArray<std::pair<Node*, float>, 16> stack;
     stack.Push({ root, 0.0f });
@@ -38,7 +38,7 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
         stack.Pop();
 
         AABB combined = Union(current->aabb, aabb);
-        float directCost = Area(combined);
+        float directCost = SAH(combined);
 
         float costForCurrent = directCost + inheritedCost;
         if (costForCurrent < bestCost)
@@ -47,9 +47,9 @@ const Node* AABBTree::Insert(RigidBody* body, const AABB& aabb)
             bestSibling = current;
         }
 
-        inheritedCost += directCost - Area(current->aabb);
+        inheritedCost += directCost - SAH(current->aabb);
 
-        float lowerBoundCost = Area(aabb) + inheritedCost;
+        float lowerBoundCost = SAH(aabb) + inheritedCost;
         if (lowerBoundCost < bestCost)
         {
             if (!current->isLeaf)
@@ -171,16 +171,16 @@ void AABBTree::Rotate(Node* node)
 
     uint32 count = 2;
     float costDiffs[4];
-    float nodeArea = Area(node->aabb);
+    float nodeArea = SAH(node->aabb);
 
-    costDiffs[0] = Area(Union(sibling->aabb, node->child1->aabb)) - nodeArea;
-    costDiffs[1] = Area(Union(sibling->aabb, node->child2->aabb)) - nodeArea;
+    costDiffs[0] = SAH(Union(sibling->aabb, node->child1->aabb)) - nodeArea;
+    costDiffs[1] = SAH(Union(sibling->aabb, node->child2->aabb)) - nodeArea;
 
     if (!sibling->isLeaf)
     {
-        float siblingArea = Area(sibling->aabb);
-        costDiffs[2] = Area(Union(node->aabb, sibling->child1->aabb)) - siblingArea;
-        costDiffs[3] = Area(Union(node->aabb, sibling->child2->aabb)) - siblingArea;
+        float siblingArea = SAH(sibling->aabb);
+        costDiffs[2] = SAH(Union(node->aabb, sibling->child1->aabb)) - siblingArea;
+        costDiffs[3] = SAH(Union(node->aabb, sibling->child2->aabb)) - siblingArea;
 
         count += 2;
     }
@@ -193,7 +193,7 @@ void AABBTree::Rotate(Node* node)
 
     if (costDiffs[bestDiffIndex] < 0.0)
     {
-        // SPDLOG_INFO("Tree rotation: tpye {}", bestDiffIndex);
+        // printf("Tree rotation: %d\n", bestDiffIndex);
 
         switch (bestDiffIndex)
         {

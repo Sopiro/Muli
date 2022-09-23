@@ -8,6 +8,16 @@
 namespace muli
 {
 
+// You can use Area() or Perimeter() as surface area heuristic(SAH) function
+inline float SAH(const AABB& aabb)
+{
+#if 1
+    return Area(aabb);
+#else
+    return Perimeter(aabb);
+#endif
+}
+
 struct Node
 {
     friend class AABBTree;
@@ -91,7 +101,7 @@ inline float AABBTree::ComputeTreeCost() const
 {
     float cost = 0.0f;
 
-    Traverse([&](const Node* node) -> void { cost += Area(node->aabb); });
+    Traverse([&cost](const Node* node) -> void { cost += SAH(node->aabb); });
 
     return cost;
 }
