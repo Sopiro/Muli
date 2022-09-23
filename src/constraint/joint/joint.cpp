@@ -48,7 +48,7 @@ void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMas
 
 void Joint::ComputeBetaAndGamma()
 {
-    float omega = 2.0f * SPE_PI * frequency;
+    float omega = 2.0f * MULI_PI * frequency;
     float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
     float k = jointMass * omega * omega;               // Spring constant
     float h = settings.DT;

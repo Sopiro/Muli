@@ -9,8 +9,6 @@ public:
     Capsules1000(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
-
         float size = 15.0f;
         float halfSize = size / 2.0f;
         float wallWidth = 0.4f;
@@ -30,7 +28,7 @@ public:
             Capsule* c = world->CreateCapsule(r, r / 2.0f);
             c->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
                            LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            c->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
+            c->SetRotation(LinearRand(0.0f, MULI_PI * 2.0f));
         }
 
         camera.position = { 0.0f, 0.0f };

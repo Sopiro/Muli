@@ -9,8 +9,6 @@ public:
     ConvexPolygons1000(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
-
         float size = 15.0f;
         float halfSize = size / 2.0f;
         float wallWidth = 0.4f;

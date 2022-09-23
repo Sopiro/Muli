@@ -9,7 +9,6 @@ public:
     RandomConvexPolygons(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
         int rows = 12;

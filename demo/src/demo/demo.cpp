@@ -249,6 +249,7 @@ extern DemoFrame convex_polygons_1000;
 extern DemoFrame mix_1000;
 extern DemoFrame dense_collision;
 extern DemoFrame kinematic_body;
+extern DemoFrame collision_detection;
 
 static int32 init_demos()
 {
@@ -271,6 +272,7 @@ static int32 init_demos()
     demos[demo_count++] = mix_1000;
     demos[demo_count++] = dense_collision;
     demos[demo_count++] = kinematic_body;
+    demos[demo_count++] = collision_detection;
 
     return demo_count;
 }

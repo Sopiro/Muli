@@ -9,7 +9,6 @@ public:
     SingleBox(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
         RigidBody* box = world->CreateBox(0.4f);

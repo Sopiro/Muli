@@ -9,8 +9,6 @@ public:
     Circles1000(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
-
         float size = 15.0f;
         float halfSize = size / 2.0f;
         float wallWidth = 0.4f;
@@ -30,7 +28,7 @@ public:
             RigidBody* b = world->CreateCircle(r);
             b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
                            LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            b->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
+            b->SetRotation(LinearRand(0.0f, MULI_PI * 2.0f));
         }
 
         camera.position = { 0.0f, 0.0f };

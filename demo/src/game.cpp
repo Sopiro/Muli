@@ -13,7 +13,7 @@ Game::Game(Application& _app)
         UpdateProjectionMatrix();
     });
 
-    InitDemo(0);
+    InitDemo(demo_count - 1);
 }
 
 Game::~Game() noexcept
@@ -113,12 +113,12 @@ void Game::UpdateUI()
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
-                        static int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
+                        int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
                         ImGui::SliderInt("Velocity", &velIterations, 0, 50);
                         settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32>(velIterations);
 
                         ImGui::SetNextItemWidth(120);
-                        static int posIterations = settings.POSITION_SOLVE_ITERATIONS;
+                        int posIterations = settings.POSITION_SOLVE_ITERATIONS;
                         ImGui::SliderInt("Position", &posIterations, 0, 50);
                         settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32>(posIterations);
                     }

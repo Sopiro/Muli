@@ -33,13 +33,13 @@ float ComputeCapsuleInertia(float length, float radius, float mass)
     float height = radius * 2.0f;
 
     float rectArea = width * height;
-    float circleArea = SPE_PI * radius * radius;
+    float circleArea = MULI_PI * radius * radius;
     float totalArea = rectArea + circleArea;
 
     float rectInertia = (width * width + height * height) / 12.0f;
-    float halfCircleInertia = ((SPE_PI / 4) - 8.0f / (9.0f * SPE_PI)) * radius * radius * radius * radius;
+    float halfCircleInertia = ((MULI_PI / 4) - 8.0f / (9.0f * MULI_PI)) * radius * radius * radius * radius;
 
-    float dist2 = length * 0.5f + (4.0f * radius) / (SPE_PI * 3.0f);
+    float dist2 = length * 0.5f + (4.0f * radius) / (MULI_PI * 3.0f);
     dist2 *= dist2;
 
     // Parallel axis theorem applied

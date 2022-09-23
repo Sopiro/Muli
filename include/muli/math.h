@@ -9,7 +9,7 @@
 
 #include "types.h"
 
-#define SPE_PI 3.14159265359f
+#define MULI_PI 3.14159265359f
 
 namespace muli
 {

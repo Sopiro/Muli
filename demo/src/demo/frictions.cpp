@@ -9,7 +9,6 @@ public:
     Frictions(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
         float groundFriction = 0.5f;
 
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);

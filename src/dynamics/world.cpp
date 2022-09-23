@@ -335,7 +335,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
 
     for (uint32 i = 0; i < vertexCount; i++)
     {
-        angles.push_back(LinearRand(0.0f, 1.0f) * (SPE_PI * 2.0f - FLT_EPSILON));
+        angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - FLT_EPSILON));
     }
 
     std::sort(angles.begin(), angles.end());
@@ -361,7 +361,7 @@ Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float ini
     }
 
     float angleStart = initial_angle;
-    float angle = SPE_PI * 2.0f / vertexCount;
+    float angle = MULI_PI * 2.0f / vertexCount;
 
     if (vertexCount % 2 == 0)
     {

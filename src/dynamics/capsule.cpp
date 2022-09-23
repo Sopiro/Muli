@@ -9,7 +9,7 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
     radius = _radius;
     Vec2 a2b = p2 - p1;
     length = a2b.Length();
-    area = length * radius * 2.0f + SPE_PI * radius * radius;
+    area = length * radius * 2.0f + MULI_PI * radius * radius;
 
     if (type == RigidBody::Type::Dynamic)
     {
@@ -39,7 +39,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
     , length{ _length }
 {
     radius = _radius;
-    area = length * radius * 2 + SPE_PI * radius * radius;
+    area = length * radius * 2 + MULI_PI * radius * radius;
 
     if (type == RigidBody::Type::Dynamic)
     {
@@ -57,7 +57,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
 
     if (_horizontal == false)
     {
-        transform.rotation = SPE_PI / 2.0f;
+        transform.rotation = MULI_PI / 2.0f;
     }
 }
 

@@ -65,15 +65,6 @@ public:
                            bool resetCenter = true,
                            float radius = DEFAULT_RADIUS,
                            float density = DEFAULT_DENSITY);
-    Polygon* CreateRandomConvexPolygon(float length,
-                                       uint32 vertexCount = 0,
-                                       float radius = DEFAULT_RADIUS,
-                                       float density = DEFAULT_DENSITY);
-    Polygon* CreateRegularPolygon(float length,
-                                  uint32 vertexCount = 0,
-                                  float initial_angle = 0,
-                                  float radius = DEFAULT_RADIUS,
-                                  float density = DEFAULT_DENSITY);
     Capsule* CreateCapsule(float length,
                            float radius,
                            bool horizontal = false,
@@ -85,6 +76,15 @@ public:
                            bool resetPosition = true,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
                            float density = DEFAULT_DENSITY);
+    Polygon* CreateRandomConvexPolygon(float length,
+                                       uint32 vertexCount = 0,
+                                       float radius = DEFAULT_RADIUS,
+                                       float density = DEFAULT_DENSITY);
+    Polygon* CreateRegularPolygon(float length,
+                                  uint32 vertexCount = 0,
+                                  float initial_angle = 0,
+                                  float radius = DEFAULT_RADIUS,
+                                  float density = DEFAULT_DENSITY);
 
     GrabJoint* CreateGrabJoint(
         RigidBody* body, Vec2 anchor, Vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);

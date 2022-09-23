@@ -9,8 +9,6 @@ public:
     KinematicBody(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = true;
-
         float size = 15.0f;
         float halfSize = size / 2.0f;
         float wallWidth = 0.4f;
@@ -31,13 +29,13 @@ public:
             RigidBody* b = world->CreateCircle(r);
             b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
                            LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            b->SetRotation(LinearRand(0.0f, SPE_PI * 2.0f));
+            b->SetRotation(LinearRand(0.0f, MULI_PI * 2.0f));
         }
 
         RigidBody* k = world->CreateCapsule(size * 0.9f, 0.15f, true, RigidBody::Type::Kinematic);
-        // k->SetAngularVelocity(SPE_PI / 2.0f);
+        k->SetAngularVelocity(MULI_PI / 2.0f);
         k = world->CreateCapsule(size * 0.9f, 0.15f, false, RigidBody::Type::Kinematic);
-        // k->SetAngularVelocity(SPE_PI / 2.0f);
+        k->SetAngularVelocity(MULI_PI / 2.0f);
 
         camera.position = { 0.0f, 0.0f };
         camera.scale = { 3.f, 3.f };

@@ -9,6 +9,7 @@ public:
     DenseCollision(Game& game)
         : Demo(game)
     {
+        settings.VALID_REGION.min.y = -50.0f;
         settings.APPLY_GRAVITY = false;
 
         float size = 15.0f;

@@ -52,9 +52,9 @@ struct WorldSettings
     uint32 POSITION_SOLVE_ITERATIONS = 3;
 
     bool SLEEPING = true;
-    float SLEEPING_TRESHOLD = 0.5f;                                                     // second
-    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;                                        // (m/s)^2
-    float REST_ANGULAR_TOLERANCE = (0.5f * SPE_PI / 180.0f) * (0.5f * SPE_PI / 180.0f); // (rad/s)^2
+    float SLEEPING_TRESHOLD = 0.5f;                                                       // second
+    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;                                          // (m/s)^2
+    float REST_ANGULAR_TOLERANCE = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
 
     AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 };

@@ -20,7 +20,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
 
         float radius = c.GetRadius();
 
-        float angle = SPE_PI * 2.0f / circlePolygonCount;
+        float angle = MULI_PI * 2.0f / circlePolygonCount;
 
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;
@@ -74,10 +74,10 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
         vertices.reserve(4 + circlePolygonCount);
 
         // Start from bottom right
-        float angle = SPE_PI * 2.0f / circlePolygonCount;
+        float angle = MULI_PI * 2.0f / circlePolygonCount;
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
         {
-            float currentAngle = -SPE_PI / 2.0f + angle * i;
+            float currentAngle = -MULI_PI / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;
@@ -96,7 +96,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
         // Left top to left bottom
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
         {
-            float currentAngle = SPE_PI / 2.0f + angle * i;
+            float currentAngle = MULI_PI / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;
