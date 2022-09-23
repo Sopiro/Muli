@@ -20,6 +20,9 @@ union PairID
     uint64 key;
 };
 
+// Compute CCW Convex hull
+std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
+
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
 float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass);
 

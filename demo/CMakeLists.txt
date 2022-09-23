@@ -38,6 +38,7 @@ set(DEMO_SOURCE_FILES
     src/demo/kinematic_body.cpp
     src/demo/collision_detection.cpp
     src/demo/dynamic_aabb_tree.cpp
+    src/demo/convex_hull.cpp
 )
 
 set(DEMO_HEADER_FILES

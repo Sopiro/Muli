@@ -6,6 +6,89 @@
 namespace muli
 {
 
+std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
+{
+    if (vertices.size() < 3)
+    {
+        return vertices;
+    }
+
+    uint32 bi = 0;
+    for (uint32 i = 1; i < vertices.size(); i++)
+    {
+        if (vertices[i].y < vertices[bi].y)
+        {
+            bi = i;
+        }
+    }
+
+    Vec2 bottom = vertices[bi];
+    std::vector<Vec2> sorted(vertices.size());
+
+    std::partial_sort_copy(vertices.begin(), vertices.end(), sorted.begin(), sorted.end(),
+                           [&](const Vec2& a, const Vec2& b) -> bool {
+                               Vec2 ra = a - bottom;
+                               Vec2 rb = b - bottom;
+
+                               return Atan2(ra.y, ra.x) < Atan2(rb.y, rb.x);
+                           });
+    muliAssert(sorted[0] == bottom);
+
+    // Discard overlapped bottom vertices
+    uint32 i = 0;
+    while (i < sorted.size())
+    {
+        Vec2& v0 = sorted[i];
+        Vec2& v1 = sorted[(i + 1) % sorted.size()];
+
+        if (v0 == v1)
+        {
+            i++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    std::vector<Vec2> s;
+    s.push_back(sorted[i++]);
+    s.push_back(sorted[i++]);
+
+    while (i < sorted.size())
+    {
+        Vec2& v = sorted[i];
+        size_t l = s.size();
+
+        if (v == s[l - 1])
+        {
+            ++i;
+            continue;
+        }
+
+        Vec2 d1 = s[l - 1] - s[l - 2];
+        Vec2 d2 = v - s[l - 1];
+
+        if (Cross(d1, d2) <= 0)
+        {
+            s.pop_back();
+
+            if (l < 3)
+            {
+                s.push_back(v);
+                break;
+            }
+        }
+        else
+        {
+            s.push_back(v);
+            ++i;
+        }
+    }
+
+    return s;
+}
+
 float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
 {
     float numerator = 0.0f;

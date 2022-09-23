@@ -295,12 +295,13 @@ void Game::Render()
     }
 
     dRenderer.SetViewMatrix(camera.GetCameraMatrix());
+
+    demo->Render();
+
     glPointSize(5.0f);
     dRenderer.Draw(points, GL_POINTS);
     glLineWidth(1.0f);
     dRenderer.Draw(lines, GL_LINES);
-
-    demo->Render();
 
     points.clear();
     lines.clear();

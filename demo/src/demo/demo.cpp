@@ -251,6 +251,7 @@ extern DemoFrame dense_collision;
 extern DemoFrame kinematic_body;
 extern DemoFrame collision_detection;
 extern DemoFrame dynamic_aabb_tree;
+extern DemoFrame convex_hull;
 
 static int32 init_demos()
 {
@@ -275,6 +276,7 @@ static int32 init_demos()
     demos[demo_count++] = kinematic_body;
     demos[demo_count++] = collision_detection;
     demos[demo_count++] = dynamic_aabb_tree;
+    demos[demo_count++] = convex_hull;
 
     return demo_count;
 }

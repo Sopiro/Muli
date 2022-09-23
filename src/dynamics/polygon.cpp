@@ -5,7 +5,7 @@ namespace muli
 
 Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCenter, float _radius, float _density)
     : RigidBody(_type, RigidBody::Shape::ShapePolygon)
-    , vertices{ _vertices }
+    , vertices{ ComputeConvexHull(_vertices) }
 {
     radius = _radius;
 
