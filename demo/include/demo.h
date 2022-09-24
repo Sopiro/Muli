@@ -62,6 +62,8 @@ protected:
     void ComputeProperty();
     void EnableKeyboardShortcut();
     void EnableBodyCreate();
+    bool EnablePolygonCreate();
+    void EnableBodyRemove();
     bool EnableAddForce();
     bool EnableBodyGrab();
     void EnableCameraControl();

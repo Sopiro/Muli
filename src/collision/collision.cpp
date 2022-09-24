@@ -229,9 +229,6 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
 
 static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    out->numContacts = 0;
-    out->featureFlipped = false;
-
     Vec2 pa = a->GetPosition();
     Vec2 pb = b->GetPosition();
 
@@ -256,13 +253,16 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
+        out->featureFlipped = false;
 
-        // Apply axis weight to improve coherence
-        if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
+// Apply axis weight to improve coherence
+#if APPLY_AXIS_WEIGHT
+        if (Dot(out->contactNormal, weightAxis) < 0.0f)
         {
             out->contactNormal *= -1;
             out->featureFlipped = !out->featureFlipped;
         }
+#endif
         out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 
         return true;
@@ -271,9 +271,6 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    out->numContacts = 0;
-    out->featureFlipped = false;
-
     const Vec2& pa = a->GetPosition();
     const Vec2& pb = b->GetPosition();
 
@@ -312,12 +309,27 @@ static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
+        if (out == nullptr)
+        {
+            return true;
+        }
+
         out->contactNormal = normal;
-        out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - l;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
         out->referencePoint = e.p1;
         out->numContacts = 1;
+        out->featureFlipped = false;
+
+        // Apply axis weight to improve coherence
+#if APPLY_AXIS_WEIGHT
+        if (Dot(out->contactNormal, weightAxis) < 0.0f)
+        {
+            out->contactNormal *= -1;
+            out->featureFlipped = !out->featureFlipped;
+        }
+#endif
+        out->contactTangent = normal.Skew();
 
         return true;
     }
@@ -325,9 +337,6 @@ static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    out->numContacts = 0;
-    out->featureFlipped = false;
-
     const Vec2& pa = a->GetPosition();
     const Vec2& pb = b->GetPosition();
 
@@ -342,17 +351,18 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     // Find closest point depending on the Voronoi region
     Vec2 normal;
     float distance;
+    ContactPoint rp;
     if (w.v <= 0) // Region A: vertex collision
     {
         normal = pb - e.p1.position;
         distance = normal.Normalize();
-        out->referencePoint = e.p1;
+        rp = e.p1;
     }
     else if (w.v >= 1) // Region B: vertex collision
     {
         normal = pb - e.p2.position;
         distance = normal.Normalize();
-        out->referencePoint = e.p2;
+        rp = e.p2;
     }
     else // Region AB: Edge vs. vertex collision
     {
@@ -363,7 +373,7 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
             normal *= -1;
             distance *= -1;
         }
-        out->referencePoint = e.p1;
+        rp = e.p1;
     }
 
     float r2 = a->GetRadius() + b->GetRadius();
@@ -373,12 +383,27 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
+        if (out == nullptr)
+        {
+            return true;
+        }
+
         out->contactNormal = normal;
-        out->contactTangent = normal.Skew();
         out->penetrationDepth = r2 - distance;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referencePoint.position += normal * a->GetRadius();
+        out->referencePoint = ContactPoint{ rp.position + normal * a->GetRadius(), rp.id };
         out->numContacts = 1;
+        out->featureFlipped = false;
+
+        // Apply axis weight to improve coherence
+#if APPLY_AXIS_WEIGHT
+        if (Dot(out->contactNormal, weightAxis) < 0.0f)
+        {
+            out->contactNormal *= -1;
+            out->featureFlipped = !out->featureFlipped;
+        }
+#endif
+        out->contactTangent = normal.Skew();
 
         return true;
     }
@@ -386,9 +411,6 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    out->numContacts = 0;
-    out->featureFlipped = false;
-
     GJKResult gjkResult = GJK(a, b, false);
     Simplex& simplex = gjkResult.simplex;
 
@@ -421,6 +443,7 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
                 out->numContacts = 1;
                 out->referencePoint = supportA;
                 out->penetrationDepth = r2 - gjkResult.distance;
+                out->featureFlipped = false;
 
                 return true;
             }
@@ -500,12 +523,14 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
 
     FindContactPoints(out->contactNormal, a, b, out);
 
-    // Apply axis weight to improve coherence
-    if (APPLY_AXIS_WEIGHT && Dot(out->contactNormal, weightAxis) < 0.0f)
+// Apply axis weight to improve coherence
+#if APPLY_AXIS_WEIGHT
+    if (Dot(out->contactNormal, weightAxis) < 0.0f)
     {
         out->contactNormal *= -1;
         out->featureFlipped = !out->featureFlipped;
     }
+#endif
     out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 
     return true;
@@ -523,13 +548,16 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     RigidBody::Shape shapeA = a->GetShape();
     RigidBody::Shape shapeB = b->GetShape();
 
-    if (shapeB < shapeA)
+    if (shapeB > shapeA)
     {
         muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
-        DetectionFunctionMap[shapeB][shapeA](b, a, out);
-        out->featureFlipped = true;
-        return out->numContacts > 0;
+        bool collide = DetectionFunctionMap[shapeB][shapeA](b, a, out);
+        if (out)
+        {
+            out->featureFlipped = true;
+        }
+        return collide;
     }
     else
     {

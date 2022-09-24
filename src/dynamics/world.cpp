@@ -205,16 +205,24 @@ void World::Destroy(RigidBody* body)
     --bodyCount;
 }
 
-void World::BufferDestroy(RigidBody* body)
-{
-    destroyBufferBody.push_back(body);
-}
-
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
     for (uint32 i = 0; i < bodies.size(); i++)
     {
         Destroy(bodies[i]);
+    }
+}
+
+void World::BufferDestroy(RigidBody* body)
+{
+    destroyBufferBody.push_back(body);
+}
+
+void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
+{
+    for (uint32 i = 0; i < bodies.size(); i++)
+    {
+        BufferDestroy(bodies[i]);
     }
 }
 
@@ -245,16 +253,24 @@ void World::Destroy(Joint* joint)
     delete joint;
 }
 
-void World::BufferDestroy(Joint* joint)
-{
-    destroyBufferJoint.push_back(joint);
-}
-
 void World::Destroy(const std::vector<Joint*>& joints)
 {
     for (uint32 i = 0; i < joints.size(); i++)
     {
         Destroy(joints[i]);
+    }
+}
+
+void World::BufferDestroy(Joint* joint)
+{
+    destroyBufferJoint.push_back(joint);
+}
+
+void World::BufferDestroy(const std::vector<Joint*>& joints)
+{
+    for (uint32 i = 0; i < joints.size(); i++)
+    {
+        BufferDestroy(joints[i]);
     }
 }
 
@@ -281,7 +297,9 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     std::vector<RigidBody*> res;
     std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(aabb);
 
-    Polygon t{ { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } }, RigidBody::Type::Dynamic, false };
+    Polygon t{
+        { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } }, RigidBody::Type::Dynamic, false, 0.0f
+    };
 
     for (uint32 i = 0; i < nodes.size(); i++)
     {

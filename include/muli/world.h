@@ -46,7 +46,9 @@ public:
 
     // Buffered body will be destroy at the end of the step
     void BufferDestroy(RigidBody* body);
+    void BufferDestroy(const std::vector<RigidBody*>& bodies);
     void BufferDestroy(Joint* joint);
+    void BufferDestroy(const std::vector<Joint*>& joints);
 
     // Factory functions
 

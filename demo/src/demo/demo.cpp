@@ -26,12 +26,18 @@ void Demo::UpdateInput()
 
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {
-        EnableBodyCreate();
-        if (!EnableAddForce())
-        {
-            EnableBodyGrab();
-        }
         EnableCameraControl();
+
+        if (!EnablePolygonCreate())
+        {
+            EnableBodyCreate();
+            EnableBodyRemove();
+
+            if (!EnableAddForce())
+            {
+                EnableBodyGrab();
+            }
+        }
     }
 }
 
@@ -87,6 +93,120 @@ void Demo::EnableBodyCreate()
             b->SetForce(f);
             create = false;
             game.RegisterRenderBody(b);
+        }
+    }
+}
+
+bool Demo::EnablePolygonCreate()
+{
+    static bool creating = false;
+    static bool staticBody;
+    static std::vector<Vec2> points;
+    static std::vector<Vec2> hull;
+
+    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+        {
+            creating = true;
+            staticBody = false;
+        }
+        else if (Input::IsKeyDown(GLFW_KEY_LEFT_ALT))
+        {
+            creating = true;
+            staticBody = true;
+        }
+    }
+
+    if (creating)
+    {
+        std::vector<Vec2>& pl = game.GetPointList();
+        std::vector<Vec2>& ll = game.GetLineList();
+
+        pl = points;
+
+        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            points.push_back(mpos);
+            hull = ComputeConvexHull(points);
+        }
+
+        for (uint32 i = 0; i < hull.size(); i++)
+        {
+            Vec2& v0 = hull[i];
+            Vec2& v1 = hull[(i + 1) % hull.size()];
+            ll.push_back(v0);
+            ll.push_back(v1);
+        }
+
+        auto create_body = [&](RigidBody::Type type) {
+            RigidBody* b;
+
+            switch (hull.size())
+            {
+            case 1:
+                b = world->CreateCircle(0.1f, type);
+                b->SetPosition(hull[0]);
+                break;
+            case 2:
+                b = world->CreateCapsule(hull[0], hull[1], 0.05f, false, type);
+                break;
+            default:
+                b = world->CreatePolygon(hull, type, false);
+                break;
+            }
+
+            game.RegisterRenderBody(b);
+            creating = false;
+            points.clear();
+            hull.clear();
+        };
+
+        if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
+        {
+            create_body(RigidBody::Type::Dynamic);
+        }
+        else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
+        {
+            create_body(RigidBody::Type::Static);
+        }
+    }
+
+    return creating;
+}
+
+void Demo::EnableBodyRemove()
+{
+    static bool draging = false;
+    static Vec2 mStart;
+
+    if (!draging && Input::IsMousePressed(GLFW_MOUSE_BUTTON_MIDDLE))
+    {
+        mStart = mpos;
+        draging = true;
+    }
+
+    if (draging)
+    {
+        auto& ll = game.GetLineList();
+
+        AABB aabb{ Min(mStart, mpos), Max(mStart, mpos) };
+
+        ll.push_back(aabb.min);
+        ll.push_back(Vec2{ aabb.min.x, aabb.max.y });
+        ll.push_back(Vec2{ aabb.min.x, aabb.max.y });
+        ll.push_back(aabb.max);
+        ll.push_back(aabb.max);
+        ll.push_back(Vec2{ aabb.max.x, aabb.min.y });
+        ll.push_back(Vec2{ aabb.max.x, aabb.min.y });
+        ll.push_back(aabb.min);
+
+        if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
+        {
+            auto qr = (aabb.max == aabb.min) ? world->Query(aabb.min) : world->Query(aabb);
+            world->BufferDestroy(qr);
+
+            draging = false;
         }
     }
 }
