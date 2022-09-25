@@ -45,7 +45,7 @@ struct WorldSettings
     float POSITION_CORRECTION_BETA = 0.2f; // 0.0 ~ 1.0
 
     float PENETRATION_SLOP = 0.005f; // meter
-    float RESTITUTION_SLOP = 0.1f;   // m/s
+    float RESTITUTION_SLOP = 0.2f;   // m/s
 
     bool BLOCK_SOLVE = true;
     uint32 VELOCITY_SOLVE_ITERATIONS = 8;

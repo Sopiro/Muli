@@ -29,7 +29,7 @@ public:
         b->SetMass(30.0f);
 
         b = world->CreateCapsule(1.0f, 0.5f, false, RigidBody::Type::Dynamic);
-        b->SetPosition(-2.5, 250.0f);
+        b->SetPosition(-2.5, 240.0f);
     }
 
     static Demo* Create(Game& game)

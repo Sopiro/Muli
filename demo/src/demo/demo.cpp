@@ -1,5 +1,6 @@
 #include "demo.h"
 #include "game.h"
+#include "window.h"
 
 namespace muli
 {
@@ -8,8 +9,8 @@ Demo::Demo(Game& _game)
     : game{ _game }
     , options{ game.GetDebugOptions() }
 {
-    // simulationDeltaTime = 1.0f / Window::Get().GetRefreshRate();
-    dt = 1.0f / 144.0f;
+    dt = 1.0f / Window::Get().GetRefreshRate();
+    // dt = 1.0f / 60.0f;
     settings.VALID_REGION.min.y = -20.0f;
 
     world = new World(settings);

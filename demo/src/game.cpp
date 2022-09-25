@@ -267,6 +267,12 @@ void Game::Render()
 
         while (c)
         {
+            if (c->IsTouching() == false)
+            {
+                c = c->GetNext();
+                continue;
+            }
+
             const ContactManifold& m = c->GetContactManifold();
 
             for (uint32 j = 0; j < m.numContacts; j++)
@@ -319,16 +325,26 @@ void Game::UpdateProjectionMatrix()
 
 void Game::InitDemo(uint32 index)
 {
-    if (index >= demo_count) return;
+    if (index >= demo_count)
+    {
+        return;
+    }
 
     bool restoreCameraPosition = false;
+    bool restoreSettings = demoIndex == index;
     Camera prevCamera;
+    WorldSettings prevSettings;
 
     if (demo)
     {
         restoreCameraPosition = !options.resetCamera;
         prevCamera = demo->GetCamera();
         delete demo;
+    }
+
+    if (restoreSettings)
+    {
+        prevSettings = demo->GetWorldSettings();
     }
 
     time = 0;
@@ -340,6 +356,11 @@ void Game::InitDemo(uint32 index)
     if (restoreCameraPosition)
     {
         demo->GetCamera() = prevCamera;
+    }
+
+    if (restoreSettings)
+    {
+        demo->GetWorldSettings() = prevSettings;
     }
 
     for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())

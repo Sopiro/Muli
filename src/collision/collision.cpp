@@ -9,13 +9,10 @@
 #include "muli/rigidbody.h"
 #include "muli/simplex.h"
 
-#define APPLY_AXIS_WEIGHT 0
-
 namespace muli
 {
 
 static constexpr Vec2 origin{ 0.0f };
-static constexpr Vec2 weightAxis{ 0.0f, 1.0f };
 
 static bool initialized = false;
 DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
@@ -249,21 +246,12 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         d = Sqrt(d);
 
         out->contactNormal = (pb - pa).Normalized();
+        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
         out->contactPoints[0] = ContactPoint{ pb + (-out->contactNormal * b->GetRadius()), -1 };
         out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
         out->numContacts = 1;
         out->penetrationDepth = r2 - d;
         out->featureFlipped = false;
-
-// Apply axis weight to improve coherence
-#if APPLY_AXIS_WEIGHT
-        if (Dot(out->contactNormal, weightAxis) < 0.0f)
-        {
-            out->contactNormal *= -1;
-            out->featureFlipped = !out->featureFlipped;
-        }
-#endif
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 
         return true;
     }
@@ -315,21 +303,12 @@ static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         }
 
         out->contactNormal = normal;
+        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
         out->penetrationDepth = r2 - l;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
         out->referencePoint = e.p1;
         out->numContacts = 1;
         out->featureFlipped = false;
-
-        // Apply axis weight to improve coherence
-#if APPLY_AXIS_WEIGHT
-        if (Dot(out->contactNormal, weightAxis) < 0.0f)
-        {
-            out->contactNormal *= -1;
-            out->featureFlipped = !out->featureFlipped;
-        }
-#endif
-        out->contactTangent = normal.Skew();
 
         return true;
     }
@@ -389,21 +368,12 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         }
 
         out->contactNormal = normal;
+        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
         out->penetrationDepth = r2 - distance;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
         out->referencePoint = ContactPoint{ rp.position + normal * a->GetRadius(), rp.id };
         out->numContacts = 1;
         out->featureFlipped = false;
-
-        // Apply axis weight to improve coherence
-#if APPLY_AXIS_WEIGHT
-        if (Dot(out->contactNormal, weightAxis) < 0.0f)
-        {
-            out->contactNormal *= -1;
-            out->featureFlipped = !out->featureFlipped;
-        }
-#endif
-        out->contactTangent = normal.Skew();
 
         return true;
     }
@@ -522,15 +492,6 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 
     FindContactPoints(out->contactNormal, a, b, out);
-
-// Apply axis weight to improve coherence
-#if APPLY_AXIS_WEIGHT
-    if (Dot(out->contactNormal, weightAxis) < 0.0f)
-    {
-        out->contactNormal *= -1;
-        out->featureFlipped = !out->featureFlipped;
-    }
-#endif
     out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
 
     return true;
