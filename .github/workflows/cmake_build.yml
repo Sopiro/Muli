@@ -44,7 +44,7 @@ jobs:
     - name: Install dependencies
       run: |
           sudo apt-get update
-          sudo apt-get install libpthread-stubs0-dev libx11-dev
+          sudo apt-get install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libpthread-stubs0-dev libx11-dev
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
