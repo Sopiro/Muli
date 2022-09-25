@@ -81,3 +81,9 @@ target_link_directories(demo PRIVATE ${DEP_LIB_DIR})
 target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} muli)
 
 add_dependencies(demo ${DEP_LIST_DEMO} muli)
+
+# default startup project for Visual Studio
+if(MSVC)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT demo)
+    set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/demo)
+endif()

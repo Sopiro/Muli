@@ -11,7 +11,7 @@ class RigidBodyShader final : public Shader
     friend class RigidBodyRenderer;
 
 public:
-    static std::unique_ptr<RigidBodyShader> RigidBodyShader::Create();
+    static std::unique_ptr<RigidBodyShader> Create();
 
     void SetColor(const Vec3& _color);
     void SetViewMatrix(const Mat4& _viewMatrix);

@@ -11,7 +11,7 @@ class DynamicShader final : public Shader
     friend class DynamicRenderer;
 
 public:
-    static std::unique_ptr<DynamicShader> DynamicShader::Create();
+    static std::unique_ptr<DynamicShader> Create();
 
     void SetColor(const Vec3& _color);
     void SetViewMatrix(const Mat4& _viewMatrix);

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <float.h>
 #include <limits>
 #include <math.h>
 #include <stdint.h>

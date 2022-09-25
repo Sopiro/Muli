@@ -19,7 +19,7 @@ public:
     void SetViewMatrix(const Mat4& _viewMatrix);
 
     virtual void Render() override;
-    void DynamicRenderer::Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
+    void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
     const uint32 maxVertexCount = 1024; // must be a even number
@@ -34,9 +34,7 @@ private:
     uint32 VBO;
 };
 
-inline void DynamicRenderer::Render()
-{
-}
+inline void DynamicRenderer::Render() {}
 
 inline void DynamicRenderer::SetProjectionMatrix(const Mat4& _projMatrix)
 {

@@ -59,6 +59,7 @@ add_library(dep_imgui
 )
 
 # imgui need glfw3
+add_dependencies(dep_imgui dep_glfw)
 target_include_directories(dep_imgui PRIVATE ${DEP_INCLUDE_DIR})
 
 set(DEP_LIST_DEMO
@@ -74,3 +75,14 @@ set(DEP_LIBS_DEMO
     glad
     dep_imgui
 )
+
+if(UNIX AND NOT APPLE)
+    find_package(X11 REQUIRED)
+    find_package(Threads REQUIRED)
+
+    set(DEP_LIBS_DEMO ${DEP_LIBS_DEMO} ${CMAKE_DL_LIBS} X11 pthread)
+endif()
+
+if(APPLE)
+    # TODO
+endif()

@@ -589,7 +589,7 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
         }
     }
     default:
-        throw std::exception("Not a supported shape");
+        throw std::runtime_error("Not a supported shape");
     }
 }
 
@@ -751,7 +751,7 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
         return closest;
     }
     default:
-        throw std::exception("Not a supported shape");
+        throw std::runtime_error("Not a supported shape");
     }
 }
 
@@ -773,7 +773,7 @@ Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
         }
     }
 
-    throw std::exception("Unreachable");
+    throw std::runtime_error("Unreachable");
 }
 
 void InitializeDetectionFunctionMap()

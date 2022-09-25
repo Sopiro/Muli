@@ -29,12 +29,6 @@ add_subdirectory(src)
 if(BUILD_DEMO_PROJECT)
     include(cmake/dependencies.cmake)
     add_subdirectory(demo)
-
-    # default startup project for Visual Studio
-    if(MSVC)
-        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT demo)
-        set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/demo)
-    endif()
 endif()
 
 # install muli

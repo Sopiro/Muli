@@ -149,7 +149,10 @@ void World::Reset()
 
 void World::Add(RigidBody* body)
 {
-    if (body->world != nullptr) throw std::exception("This body is already registered.");
+    if (body->world != nullptr)
+    {
+        throw std::runtime_error("This body is already registered.");
+    }
 
     body->world = this;
     body->id = ++uid;
@@ -180,7 +183,10 @@ void World::Add(const std::vector<RigidBody*>& bodies)
 
 void World::Destroy(RigidBody* body)
 {
-    if (body->world != this) throw std::exception("This body is not registered in this world");
+    if (body->world != this)
+    {
+        throw std::runtime_error("This body is not registered in this world");
+    }
 
     contactManager.Remove(body);
 
@@ -422,7 +428,7 @@ GrabJoint* World::CreateGrabJoint(RigidBody* body, Vec2 anchor, Vec2 target, flo
 {
     if (body->world != this)
     {
-        throw std::exception("You should register the rigid bodies before registering the joint");
+        throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
     GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
@@ -436,7 +442,7 @@ RevoluteJoint* World::CreateRevoluteJoint(
 {
     if (bodyA->world != this || bodyB->world != this)
     {
-        throw std::exception("You should register the rigid bodies before registering the joint");
+        throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
     RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
@@ -456,7 +462,7 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
 {
     if (bodyA->world != this || bodyB->world != this)
     {
-        throw std::exception("You should register the rigid bodies before registering the joint");
+        throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
     DistanceJoint* dj = new DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);

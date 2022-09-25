@@ -48,14 +48,15 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
     {
         Polygon& p = static_cast<Polygon&>(body);
 
-        auto& vertices2 = p.GetVertices();
+        const std::vector<Vec2>& vertices2 = p.GetVertices();
 
         std::vector<Vec3> vertices3;
         vertices3.reserve(vertices2.size());
 
-        for (auto& v = vertices2.begin(); v != vertices2.end(); v++)
+        for (uint32 i = 0; i < vertices2.size(); i++)
         {
-            vertices3.emplace_back(v->x, v->y, 0.0f);
+            const Vec2& v = vertices2[i];
+            vertices3.emplace_back(v.x, v.y, 0.0f);
         }
 
         std::vector<uint32> indices = Triangulate(vertices2);
@@ -115,7 +116,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
     }
 
     default:
-        throw std::exception("Not a supported shape");
+        throw std::runtime_error("Not a supported shape");
     }
 }
 
