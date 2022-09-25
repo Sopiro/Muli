@@ -1,5 +1,3 @@
-# TODO: build on another platforms
-
 name: CMake Build
 
 on:

@@ -84,5 +84,5 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
-    # TODO
+    set(DEP_LIBS_DEMO ${DEP_LIBS_DEMO} "-framework Cocoa")
 endif()
