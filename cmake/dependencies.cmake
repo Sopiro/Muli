@@ -84,5 +84,5 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
-    set(DEP_LIBS_DEMO ${DEP_LIBS_DEMO} "-framework Cocoa")
+    set(DEP_LIBS_DEMO ${DEP_LIBS_DEMO} "-framework Cocoa -framework OpenGL -framework IOKit")
 endif()
