@@ -795,40 +795,47 @@ void InitializeDetectionFunctionMap()
     initialized = true;
 }
 
-static bool TestOverlap(Polygon* a, Polygon* b)
+// Compute signed distance between polygons
+static float ComputeOverlap(const std::vector<Vec2>& va, const std::vector<Vec2>& vb)
 {
-    const std::vector<Vec2>& va = a->GetVertices();
-    const std::vector<Vec2>& vb = b->GetVertices();
+    float overlap = -FLT_MAX;
 
     for (uint32 i = 0; i < va.size(); i++)
     {
         const Vec2& va0 = va[i];
         const Vec2& va1 = va[(i + 1) % va.size()];
 
-        Vec2 n = -((va1 - va0).Normalized().Skew());
-        float d0 = Dot(n, vb[0] - va0);
-        bool overlap = false;
+        // Right-hand coordinate system, CCW vertex winding
+        Vec2 normal = (va1 - va0).Normalized();
+        normal = Cross(normal, 1.0f);
 
-        for (uint32 j = 1; j < vb.size(); j++)
+        float separation = FLT_MAX;
+
+        for (uint32 j = 0; j < vb.size(); j++)
         {
             const Vec2& vb0 = vb[j];
 
-            float d1 = Dot(n, vb0 - va0);
-            overlap = overlap || (d0 * d1 < 0);
+            separation = Min(separation, Dot(normal, vb0 - va0));
         }
 
-        if (overlap == false)
-        {
-            return false;
-        }
+        overlap = Max(separation, overlap);
     }
 
-    return true;
+    return overlap;
 }
 
 bool SAT(Polygon* a, Polygon* b)
 {
-    return TestOverlap(a, b) && TestOverlap(b, a);
+    const std::vector<Vec2>& va = a->GetVertices();
+    const std::vector<Vec2>& vb = b->GetVertices();
+
+    std::vector<Vec2> wva(va.size());
+    std::vector<Vec2> wvb(vb.size());
+
+    std::transform(va.begin(), va.end(), wva.begin(), [&](const Vec2& v) { return a->GetTransform() * v; });
+    std::transform(vb.begin(), vb.end(), wvb.begin(), [&](const Vec2& v) { return b->GetTransform() * v; });
+
+    return ComputeOverlap(wva, wvb) < 0 && ComputeOverlap(wvb, wva) < 0;
 }
 
 } // namespace muli

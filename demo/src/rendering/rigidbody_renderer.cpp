@@ -50,7 +50,7 @@ void RigidBodyRenderer::Render()
             mesh->Draw(GL_TRIANGLES);
         }
 
-        glLineWidth(1.5f);
+        glLineWidth(1.0f);
         shader->SetColor({ 0, 0, 0 });
         mesh->Draw(GL_LINE_LOOP);
     }

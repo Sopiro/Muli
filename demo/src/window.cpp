@@ -34,6 +34,8 @@ Window::Window(int width, int height, std::string title)
     Window::width = width;
     Window::height = height;
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!glfwWindow)
     {

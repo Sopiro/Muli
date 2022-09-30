@@ -331,9 +331,14 @@ void Game::InitDemo(uint32 index)
     }
 
     bool restoreCameraPosition = false;
-    bool restoreSettings = demoIndex == index;
+    bool restoreSettings = (demoIndex == index);
     Camera prevCamera;
     WorldSettings prevSettings;
+
+    if (restoreSettings)
+    {
+        prevSettings = demo->GetWorldSettings();
+    }
 
     if (demo)
     {
@@ -342,25 +347,20 @@ void Game::InitDemo(uint32 index)
         delete demo;
     }
 
-    if (restoreSettings)
-    {
-        prevSettings = demo->GetWorldSettings();
-    }
-
     time = 0;
     rRenderer.Reset();
 
     demoIndex = index;
     demo = demos[demoIndex].createFunction(*this);
 
-    if (restoreCameraPosition)
-    {
-        demo->GetCamera() = prevCamera;
-    }
-
     if (restoreSettings)
     {
         demo->GetWorldSettings() = prevSettings;
+    }
+
+    if (restoreCameraPosition)
+    {
+        demo->GetCamera() = prevCamera;
     }
 
     for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())
