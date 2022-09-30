@@ -55,6 +55,20 @@ public:
                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
         ImGui::TextColored(ImColor{ 12, 11, 14 }, "Contact normal is pointing from refernce body to incident body");
         ImGui::End();
+
+        if (world->GetBodyCount() > 1)
+        {
+            RigidBody* b1 = world->GetBodyList();
+            RigidBody* b2 = world->GetBodyList()->GetNext();
+
+            if (b1->GetShape() == RigidBody::Shape::ShapePolygon && b2->GetShape() == RigidBody::Shape::ShapePolygon)
+            {
+                if (SAT(static_cast<Polygon*>(b1), static_cast<Polygon*>(b2)) == true)
+                {
+                    print("Collide!");
+                }
+            }
+        }
     }
 
     ~CollisionDetection()

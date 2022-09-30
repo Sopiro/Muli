@@ -40,5 +40,6 @@ float ComputeDistance(RigidBody* a, RigidBody* b);
 float ComputeDistance(RigidBody* b, const Vec2& q);
 Vec2 GetClosestPoint(RigidBody* b, const Vec2& q);
 Edge GetIntersectingEdge(Polygon* p, const Vec2& dir);
+bool SAT(Polygon* a, Polygon* b);
 
 } // namespace muli

@@ -795,4 +795,40 @@ void InitializeDetectionFunctionMap()
     initialized = true;
 }
 
+static bool TestOverlap(Polygon* a, Polygon* b)
+{
+    const std::vector<Vec2>& va = a->GetVertices();
+    const std::vector<Vec2>& vb = b->GetVertices();
+
+    for (uint32 i = 0; i < va.size(); i++)
+    {
+        const Vec2& va0 = va[i];
+        const Vec2& va1 = va[(i + 1) % va.size()];
+
+        Vec2 n = -((va1 - va0).Normalized().Skew());
+        float d0 = Dot(n, vb[0] - va0);
+        bool overlap = false;
+
+        for (uint32 j = 1; j < vb.size(); j++)
+        {
+            const Vec2& vb0 = vb[j];
+
+            float d1 = Dot(n, vb0 - va0);
+            overlap = overlap || (d0 * d1 < 0);
+        }
+
+        if (overlap == false)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool SAT(Polygon* a, Polygon* b)
+{
+    return TestOverlap(a, b) && TestOverlap(b, a);
+}
+
 } // namespace muli
