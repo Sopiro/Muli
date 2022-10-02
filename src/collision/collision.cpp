@@ -46,7 +46,7 @@ struct GJKResult
 
 static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
 {
-    Vec2 dir(1.0f, 0.0f); // Random initial direction
+    Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
     Simplex simplex;
     float distance = 0.0f;
@@ -783,8 +783,6 @@ void InitializeDetectionFunctionMap()
         return;
     }
 
-    memset(DetectionFunctionMap, NULL, sizeof(DetectionFunctionMap));
-
     DetectionFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &CircleVsCircle;
     DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &CapsuleVsCircle;
     DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
@@ -796,9 +794,9 @@ void InitializeDetectionFunctionMap()
 }
 
 // Compute signed distance between polygons
-static float ComputeOverlap(const std::vector<Vec2>& va, const std::vector<Vec2>& vb)
+static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Vec2>& vb)
 {
-    float overlap = -FLT_MAX;
+    float maxSeparation = -FLT_MAX;
 
     for (uint32 i = 0; i < va.size(); i++)
     {
@@ -806,9 +804,7 @@ static float ComputeOverlap(const std::vector<Vec2>& va, const std::vector<Vec2>
         const Vec2& va1 = va[(i + 1) % va.size()];
 
         // Right-hand coordinate system, CCW vertex winding
-        Vec2 normal = (va1 - va0).Normalized();
-        normal = Cross(normal, 1.0f);
-
+        Vec2 normal = Cross((va1 - va0).Normalized(), 1.0f);
         float separation = FLT_MAX;
 
         for (uint32 j = 0; j < vb.size(); j++)
@@ -818,10 +814,10 @@ static float ComputeOverlap(const std::vector<Vec2>& va, const std::vector<Vec2>
             separation = Min(separation, Dot(normal, vb0 - va0));
         }
 
-        overlap = Max(separation, overlap);
+        maxSeparation = Max(separation, maxSeparation);
     }
 
-    return overlap;
+    return maxSeparation;
 }
 
 bool SAT(Polygon* a, Polygon* b)
@@ -835,7 +831,7 @@ bool SAT(Polygon* a, Polygon* b)
     std::transform(va.begin(), va.end(), wva.begin(), [&](const Vec2& v) { return a->GetTransform() * v; });
     std::transform(vb.begin(), vb.end(), wvb.begin(), [&](const Vec2& v) { return b->GetTransform() * v; });
 
-    return ComputeOverlap(wva, wvb) < 0 && ComputeOverlap(wvb, wva) < 0;
+    return ComputeSeparation(wva, wvb) < 0 && ComputeSeparation(wvb, wva) < 0;
 }
 
 } // namespace muli
