@@ -33,11 +33,12 @@ struct ContactManifold
 };
 
 typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
+typedef float DistanceFunction(RigidBody*, RigidBody*);
 
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
-bool TestPointInside(RigidBody* b, const Vec2& q);
 float ComputeDistance(RigidBody* a, RigidBody* b);
 float ComputeDistance(RigidBody* b, const Vec2& q);
+bool TestPointInside(RigidBody* b, const Vec2& q);
 Vec2 GetClosestPoint(RigidBody* b, const Vec2& q);
 Edge GetIntersectingEdge(Polygon* p, const Vec2& dir);
 bool SAT(Polygon* a, Polygon* b);

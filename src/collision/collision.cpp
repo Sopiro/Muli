@@ -14,18 +14,22 @@ namespace muli
 
 static constexpr Vec2 origin{ 0.0f };
 
-static bool initialized = false;
+static bool dectectionFunctionInitialized = false;
 DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
-
 void InitializeDetectionFunctionMap();
+
+static bool distanceFunctionInitialized = false;
+DistanceFunction* DistanceFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
+void InitializeDistanceFunctionMap();
 
 /*
  * Returns support point in 'Minkowski Difference' set
  * Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
  * Minkowski Difference : A ⊖ B = {Pa - Pb| Pa ∈ A, Pb ∈ B}
  * CSO stands for Configuration Space Object
+ *
+ * 'dir' should be normalized
  */
-//'dir' should be normalized
 static Vec2 CSOSupport(RigidBody* a, RigidBody* b, const Vec2& dir)
 {
     Vec2 localDirA = MulT(a->GetRotation(), dir);
@@ -144,10 +148,10 @@ static EPAResult EPA(RigidBody* a, RigidBody* b, Simplex& gjkResult)
     return EPAResult{ closestEdge.normal, closestEdge.distance };
 }
 
-static void ClipEdge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
+static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
 {
-    float d1 = Dot(edge->p1.position - p, dir);
-    float d2 = Dot(edge->p2.position - p, dir);
+    float d1 = Dot(e->p1.position - p, dir);
+    float d2 = Dot(e->p2.position - p, dir);
 
     if (d1 >= 0 && d2 >= 0)
     {
@@ -160,22 +164,22 @@ static void ClipEdge(Edge* edge, const Vec2& p, const Vec2& dir, bool removeClip
     {
         if (removeClippedPoint)
         {
-            edge->p1 = edge->p2;
+            e->p1 = e->p2;
         }
         else
         {
-            edge->p1.position = edge->p1.position + (edge->p2.position - edge->p1.position) * (-d1 / s);
+            e->p1.position = e->p1.position + (e->p2.position - e->p1.position) * (-d1 / s);
         }
     }
     else if (d2 < 0)
     {
         if (removeClippedPoint)
         {
-            edge->p2 = edge->p1;
+            e->p2 = e->p1;
         }
         else
         {
-            edge->p2.position = edge->p2.position + (edge->p1.position - edge->p2.position) * (-d2 / s);
+            e->p2.position = e->p2.position + (e->p1.position - e->p2.position) * (-d2 / s);
         }
     }
 }
@@ -257,63 +261,6 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
-static bool ConvexVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
-{
-    const Vec2& pa = a->GetPosition();
-    const Vec2& pb = b->GetPosition();
-
-    Vec2 a2b = (pb - pa).Normalized();
-    Edge e = GetIntersectingEdge(static_cast<Polygon*>(a), a2b);
-    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
-
-    // Find closest point depending on the Voronoi region
-    Vec2 closest;
-    Vec2 normal;
-    if (w.v <= 0) // Region A: vertex collision
-    {
-        closest = e.p1.position;
-        normal = (pb - e.p1.position).Normalized();
-    }
-    else if (w.v >= 1) // Region B: vertex collision
-    {
-        closest = e.p2.position;
-        normal = (pb - e.p2.position).Normalized();
-    }
-    else // Region AB: Edge vs. vertex collision
-    {
-        closest = LerpVector(e.p1.position, e.p2.position, w);
-        normal = -e.normal;
-    }
-
-    Vec2 c2b = pb - closest;
-
-    // Signed distance along the normal
-    float l = Dot(c2b, normal);
-    float r2 = a->GetRadius() + b->GetRadius();
-
-    if (l > r2)
-    {
-        return false;
-    }
-    else
-    {
-        if (out == nullptr)
-        {
-            return true;
-        }
-
-        out->contactNormal = normal;
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
-        out->penetrationDepth = r2 - l;
-        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referencePoint = e.p1;
-        out->numContacts = 1;
-        out->featureFlipped = false;
-
-        return true;
-    }
-}
-
 static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     const Vec2& pa = a->GetPosition();
@@ -372,6 +319,63 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         out->penetrationDepth = r2 - distance;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
         out->referencePoint = ContactPoint{ rp.position + normal * a->GetRadius(), rp.id };
+        out->numContacts = 1;
+        out->featureFlipped = false;
+
+        return true;
+    }
+}
+
+static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+{
+    const Vec2& pa = a->GetPosition();
+    const Vec2& pb = b->GetPosition();
+
+    Vec2 a2b = (pb - pa).Normalized();
+    Edge e = GetIntersectingEdge(static_cast<Polygon*>(a), a2b);
+    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
+
+    // Find closest point depending on the Voronoi region
+    Vec2 closest;
+    Vec2 normal;
+    if (w.v <= 0) // Region A: vertex collision
+    {
+        closest = e.p1.position;
+        normal = (pb - e.p1.position).Normalized();
+    }
+    else if (w.v >= 1) // Region B: vertex collision
+    {
+        closest = e.p2.position;
+        normal = (pb - e.p2.position).Normalized();
+    }
+    else // Region AB: Edge vs. vertex collision
+    {
+        closest = LerpVector(e.p1.position, e.p2.position, w);
+        normal = -e.normal;
+    }
+
+    Vec2 c2b = pb - closest;
+
+    // Signed distance along the normal
+    float l = Dot(c2b, normal);
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (l > r2)
+    {
+        return false;
+    }
+    else
+    {
+        if (out == nullptr)
+        {
+            return true;
+        }
+
+        out->contactNormal = normal;
+        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
+        out->penetrationDepth = r2 - l;
+        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+        out->referencePoint = e.p1;
         out->numContacts = 1;
         out->featureFlipped = false;
 
@@ -497,11 +501,9 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
     return true;
 }
 
-// Public functions
-
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    if (initialized == false)
+    if (dectectionFunctionInitialized == false)
     {
         InitializeDetectionFunctionMap();
     }
@@ -528,6 +530,127 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 }
 
+static float ComputeDistanceCircleVsCircle(RigidBody* a, RigidBody* b)
+{
+    float d2 = Dist2(a->GetPosition(), b->GetPosition());
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (d2 > r2 * r2)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return Sqrt(d2);
+    }
+}
+
+static float ComputeDistanceCapsuleVsCircle(RigidBody* a, RigidBody* b)
+{
+    Vec2 localP = MulT(a->GetTransform(), b->GetPosition());
+
+    Capsule* c = static_cast<Capsule*>(a);
+    const Vec2& va = c->GetVertexA();
+    const Vec2& vb = c->GetVertexB();
+
+    UV w = ComputeWeights(va, vb, localP);
+
+    const Vec2& closest = w.v <= 0.0f ? va : (w.v >= 1.0f ? vb : LerpVector(va, vb, w));
+
+    float d2 = Dist2(closest, localP);
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (d2 > r2 * r2)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return Sqrt(d2);
+    }
+}
+
+static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
+{
+    Vec2 pa = a->GetPosition();
+    Vec2 pb = b->GetPosition();
+
+    Vec2 a2b = (pb - pa).Normalized();
+
+    Edge e = GetIntersectingEdge(static_cast<Polygon*>(a), a2b);
+    UV w = ComputeWeights(e.p1.position, e.p2.position, pb);
+
+    const Vec2& closest =
+        w.v <= 0.0f ? e.p1.position : (w.v >= 1.0f ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
+
+    Vec2 n = pb - closest;
+    float d2 = n.Length2();
+    float r2 = a->GetRadius() + b->GetRadius();
+
+    if (d2 > r2 * r2)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return Sqrt(d2);
+    }
+}
+
+static float ComputeDistanceConvexVsConvex(RigidBody* a, RigidBody* b)
+{
+    GJKResult gr = GJK(a, b, false);
+
+    if (gr.collide == true)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        ClosestPoint cp = gr.simplex.GetClosestPoint(origin);
+
+        float d = cp.position.Length();
+
+        if (d <= a->GetRadius() + b->GetRadius())
+        {
+            return 0.0f;
+        }
+        else
+        {
+            return d;
+        }
+    }
+}
+
+float ComputeDistance(RigidBody* a, RigidBody* b)
+{
+    if (distanceFunctionInitialized == false)
+    {
+        InitializeDistanceFunctionMap();
+    }
+
+    RigidBody::Shape shapeA = a->GetShape();
+    RigidBody::Shape shapeB = b->GetShape();
+
+    if (shapeB > shapeA)
+    {
+        muliAssert(DistanceFunctionMap[shapeB][shapeA] != nullptr);
+
+        return DistanceFunctionMap[shapeB][shapeA](b, a);
+    }
+    else
+    {
+        muliAssert(DistanceFunctionMap[shapeA][shapeB] != nullptr);
+
+        return DistanceFunctionMap[shapeA][shapeB](a, b);
+    }
+}
+
+float ComputeDistance(RigidBody* b, const Vec2& q)
+{
+    return Dist(GetClosestPoint(b, q), q);
+}
+
 bool TestPointInside(RigidBody* b, const Vec2& q)
 {
     RigidBody::Shape shape = b->GetShape();
@@ -538,6 +661,35 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
         Circle* c = static_cast<Circle*>(b);
 
         return Dist2(c->GetPosition(), q) < c->GetRadius() * c->GetRadius();
+    }
+    case RigidBody::Shape::ShapeCapsule:
+    {
+        Capsule* c = static_cast<Capsule*>(b);
+
+        Vec2 localQ = MulT(c->GetTransform(), q);
+
+        float l = c->GetLength();
+        float r = c->GetRadius();
+
+        Vec2 va = c->GetVertexA();
+        Vec2 vb = c->GetVertexB();
+
+        UV w = ComputeWeights(va, vb, localQ);
+        float r2 = r * r;
+
+        if (w.v <= 0.0f) // Region A
+        {
+            return Dist2(va, localQ) < r2;
+        }
+        else if (w.v >= 1.0f) // Region B
+        {
+            return Dist2(vb, localQ) < r2;
+        }
+        else // Region AB
+        {
+            Vec2 p = LerpVector(va, vb, w);
+            return Dist2(p, localQ) < r2;
+        }
     }
     case RigidBody::Shape::ShapePolygon:
     {
@@ -559,142 +711,9 @@ bool TestPointInside(RigidBody* b, const Vec2& q)
 
         return true;
     }
-    case RigidBody::Shape::ShapeCapsule:
-    {
-        Capsule* c = static_cast<Capsule*>(b);
-
-        Vec2 localQ = MulT(c->GetTransform(), q);
-
-        float l = c->GetLength();
-        float r = c->GetRadius();
-
-        Vec2 v1 = c->GetVertexA();
-        Vec2 v2 = c->GetVertexB();
-
-        UV w = ComputeWeights(v1, v2, localQ);
-        float r2 = r * r;
-
-        if (w.v <= 0.0f) // Region A
-        {
-            return Dist2(v1, localQ) < r2;
-        }
-        else if (w.v >= 1.0f) // Region B
-        {
-            return Dist2(v2, localQ) < r2;
-        }
-        else // Region AB
-        {
-            Vec2 p = LerpVector(v1, v2, w);
-            return Dist2(p, localQ) < r2;
-        }
-    }
     default:
         throw std::runtime_error("Not a supported shape");
     }
-}
-
-float ComputeDistance(RigidBody* a, RigidBody* b)
-{
-    RigidBody::Shape shapeA = a->GetShape();
-    RigidBody::Shape shapeB = b->GetShape();
-
-    // Circle vs. Circle distance
-    if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapeCircle)
-    {
-        Circle* c1 = static_cast<Circle*>(a);
-        Circle* c2 = static_cast<Circle*>(b);
-
-        float d = Dist2(c1->GetPosition(), c2->GetPosition());
-        float r2 = c1->GetRadius() + c2->GetRadius();
-
-        if (d > r2 * r2)
-        {
-            return 0.0f;
-        }
-        else
-        {
-            return Sqrt(d);
-        }
-    }
-    // Convex vs. Circle distance
-    else if (shapeA == RigidBody::Shape::ShapePolygon && shapeB == RigidBody::Shape::ShapeCircle)
-    {
-        Polygon* p = static_cast<Polygon*>(a);
-        Circle* c = static_cast<Circle*>(b);
-
-        Vec2 pp = p->GetPosition();
-        Vec2 cp = c->GetPosition();
-
-        Vec2 p2c = (cp - pp).Normalized();
-
-        Edge e = GetIntersectingEdge(p, p2c);
-        UV w = ComputeWeights(e.p1.position, e.p2.position, cp);
-
-        const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
-
-        Vec2 n = cp - closest;
-        float dist2 = n.Length2();
-        float r2 = p->GetRadius() + c->GetRadius();
-
-        if (dist2 > r2 * r2)
-        {
-            return 0.0f;
-        }
-        else
-        {
-            return Sqrt(dist2);
-        }
-    }
-    else if (shapeA == RigidBody::Shape::ShapeCircle && shapeB == RigidBody::Shape::ShapePolygon)
-    {
-        Polygon* p = static_cast<Polygon*>(b);
-        Circle* c = static_cast<Circle*>(a);
-
-        Vec2 pp = p->GetPosition();
-        Vec2 cp = c->GetPosition();
-
-        Vec2 p2c = (cp - pp).Normalized();
-
-        Edge e = GetIntersectingEdge(p, p2c);
-        UV w = ComputeWeights(e.p1.position, e.p2.position, cp);
-
-        const Vec2& closest = w.v <= 0 ? e.p1.position : (w.v >= 1 ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
-
-        Vec2 n = cp - closest;
-        float dist2 = n.Length2();
-        float r2 = p->GetRadius() + c->GetRadius();
-
-        if (dist2 > r2 * r2)
-        {
-            return 0.0f;
-        }
-        else
-        {
-            return Sqrt(dist2);
-        }
-    }
-    else
-    {
-        Polygon* p1 = static_cast<Polygon*>(a);
-        Polygon* p2 = static_cast<Polygon*>(b);
-
-        GJKResult gr = GJK(p1, p2, false);
-
-        if (gr.collide == true)
-        {
-            return 0.0f;
-        }
-        else
-        {
-            ClosestPoint cp = gr.simplex.GetClosestPoint(origin);
-            return cp.position.Length();
-        }
-    }
-}
-
-float ComputeDistance(RigidBody* b, const Vec2& q)
-{
-    return Dist(GetClosestPoint(b, q), q);
 }
 
 Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
@@ -714,6 +733,37 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
 
         return b->GetPosition() + dir * c->GetRadius();
     }
+    case RigidBody::Shape::ShapeCapsule:
+    {
+        Capsule* c = static_cast<Capsule*>(b);
+
+        Vec2 localQ = MulT(c->GetTransform(), q);
+        UV w = ComputeWeights(c->GetVertexA(), c->GetVertexB(), localQ);
+
+        Vec2 closest;
+        if (w.v <= 0) // Region A
+        {
+            closest = c->GetVertexA();
+        }
+        else if (w.v >= 1) // Region B
+        {
+            closest = c->GetVertexB();
+        }
+        else // Region AB
+        {
+            Vec2 normal{ 0.0f, 1.0f };
+            float distance = Dot(localQ - c->GetVertexA(), normal);
+            if (distance < 0)
+            {
+                normal *= -1;
+                distance *= -1;
+            }
+
+            closest = localQ + normal * -distance;
+        }
+
+        return c->GetTransform() * closest;
+    }
     case RigidBody::Shape::ShapePolygon:
     {
         Polygon* p = static_cast<Polygon*>(b);
@@ -724,29 +774,29 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
         UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
 
         Vec2 closest;
+        Vec2 normal;
         if (w.v <= 0) // Region p1
         {
             closest = e.p1.position;
+            normal = (q - e.p1.position).Normalized();
         }
         else if (w.v >= 1) // Region p2
         {
             closest = e.p2.position;
+            normal = (q - e.p2.position).Normalized();
         }
         else // Region middle
         {
-            // Remove floating point error
-            // such that Dot(q - closest, e.p2 - e.p1) == 0
+            // Remove floating point error; Dot(q - closest, e.p2 - e.p1) == 0
 
-            Vec2 normal = e.normal;
+            Vec2 normal = -e.normal;
             float distance = Dot(q - e.p1.position, normal);
-            if (distance < 0)
-            {
-                normal *= -1;
-                distance *= -1;
-            }
+            muliAssert(distance >= 0.0f);
 
             closest = q + normal * -distance;
         }
+
+        closest += normal * p->GetRadius();
 
         return closest;
     }
@@ -778,19 +828,40 @@ Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
 
 void InitializeDetectionFunctionMap()
 {
-    if (initialized)
+    if (dectectionFunctionInitialized)
     {
         return;
     }
 
     DetectionFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &CircleVsCircle;
+
     DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &CapsuleVsCircle;
     DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
-    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &ConvexVsCircle;
+
+    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &PolygonVsCircle;
     DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
     DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapePolygon] = &ConvexVsConvex;
 
-    initialized = true;
+    dectectionFunctionInitialized = true;
+}
+
+void InitializeDistanceFunctionMap()
+{
+    if (distanceFunctionInitialized)
+    {
+        return;
+    }
+
+    DistanceFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &ComputeDistanceCircleVsCircle;
+
+    DistanceFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &ComputeDistanceCapsuleVsCircle;
+    DistanceFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ComputeDistanceConvexVsConvex;
+
+    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &ComputeDistancePolygonVsCircle;
+    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCapsule] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapePolygon] = &ComputeDistanceConvexVsConvex;
+
+    distanceFunctionInitialized = true;
 }
 
 // Compute signed distance between polygons
