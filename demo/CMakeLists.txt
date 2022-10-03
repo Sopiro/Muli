@@ -39,6 +39,7 @@ set(DEMO_SOURCE_FILES
     src/demo/collision_detection.cpp
     src/demo/dynamic_aabb_tree.cpp
     src/demo/convex_hull.cpp
+    src/demo/compute_distance_point.cpp
 )
 
 set(DEMO_HEADER_FILES

@@ -736,24 +736,30 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
     case RigidBody::Shape::ShapeCapsule:
     {
         Capsule* c = static_cast<Capsule*>(b);
+        const Vec2& va = c->GetVertexA();
+        const Vec2& vb = c->GetVertexB();
 
         Vec2 localQ = MulT(c->GetTransform(), q);
-        UV w = ComputeWeights(c->GetVertexA(), c->GetVertexB(), localQ);
+        UV w = ComputeWeights(va, vb, localQ);
 
         Vec2 closest;
+        Vec2 normal;
         if (w.v <= 0) // Region A
         {
-            closest = c->GetVertexA();
+            closest = va;
+            normal = (localQ - va).Normalized();
         }
         else if (w.v >= 1) // Region B
         {
-            closest = c->GetVertexB();
+            closest = vb;
+            normal = (localQ - vb).Normalized();
         }
         else // Region AB
         {
-            Vec2 normal{ 0.0f, 1.0f };
-            float distance = Dot(localQ - c->GetVertexA(), normal);
-            if (distance < 0)
+            normal.Set(0.0f, 1.0f);
+            float distance = Dot(localQ - va, normal);
+
+            if (Dot(normal, localQ - va) < 0.0f)
             {
                 normal *= -1;
                 distance *= -1;
@@ -761,6 +767,8 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
 
             closest = localQ + normal * -distance;
         }
+
+        closest += normal * c->GetRadius();
 
         return c->GetTransform() * closest;
     }
@@ -771,7 +779,7 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
         Vec2 p2q = (q - p->GetPosition()).Normalized();
         Edge e = GetIntersectingEdge(p, p2q);
 
-        UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
+        UV w = ComputeWeights(e.p1.position, e.p2.position, q);
 
         Vec2 closest;
         Vec2 normal;
@@ -789,7 +797,7 @@ Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
         {
             // Remove floating point error; Dot(q - closest, e.p2 - e.p1) == 0
 
-            Vec2 normal = -e.normal;
+            normal = -e.normal;
             float distance = Dot(q - e.p1.position, normal);
             muliAssert(distance >= 0.0f);
 
