@@ -1,0 +1,19 @@
+#pragma once
+
+#include "common.h"
+
+namespace muli
+{
+
+struct CollisionFilter
+{
+    uint32 filter = 1;
+    uint32 mask = 0xffffffff;
+};
+
+static bool CanCollide(const CollisionFilter& filterA, const CollisionFilter& filterB)
+{
+    return (filterA.mask & filterB.filter) != 0 && (filterB.mask & filterA.filter) != 0;
+}
+
+} // namespace muli

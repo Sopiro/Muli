@@ -44,6 +44,7 @@ public:
     void RegisterRenderBody(RigidBody* b);
     std::vector<Vec2>& GetPointList();
     std::vector<Vec2>& GetLineList();
+    float GetTime() const;
 
 private:
     Application& app;
@@ -89,6 +90,11 @@ inline void Game::RegisterRenderBody(RigidBody* b)
 inline Vec2 Game::GetWorldMousePosition() const
 {
     return rRenderer.Pick(Input::GetMousePosition());
+}
+
+inline float Game::GetTime() const
+{
+    return time;
 }
 
 } // namespace muli

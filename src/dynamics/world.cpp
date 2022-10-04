@@ -156,7 +156,6 @@ void World::Add(RigidBody* body)
 
     body->world = this;
     body->id = ++uid;
-    body->filter = body->id;
 
     if (bodyList == nullptr && bodyListTail == nullptr)
     {

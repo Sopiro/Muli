@@ -17,7 +17,7 @@ void ContactManager::Update(float dt)
             return;
         }
 
-        if (bodyA->GetCollisionFilter() == bodyB->GetCollisionFilter())
+        if (CanCollide(bodyA->GetCollisionFilter(), bodyB->GetCollisionFilter()) == false)
         {
             return;
         }

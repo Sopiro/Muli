@@ -1,6 +1,7 @@
 #pragma once
 
 #include "aabb.h"
+#include "collision_filter.h"
 #include "common.h"
 #include "contact_point.h"
 #include "edge.h"
@@ -91,8 +92,8 @@ public:
     void SetTorque(float _torque);
     Type GetType() const;
     Shape GetShape() const;
-    uint32 GetCollisionFilter() const;
-    void SetCollisionFilter(uint32 _filter);
+    const CollisionFilter& GetCollisionFilter() const;
+    void SetCollisionFilter(const CollisionFilter& _filter);
     bool IsSleeping() const;
 
     uint32 GetID() const;
@@ -145,8 +146,7 @@ protected:
 
     Shape shape;
     Type type;
-
-    uint32 filter = 0;
+    CollisionFilter filter;
 
 private:
     bool moved = false;
@@ -365,12 +365,12 @@ inline RigidBody::Shape RigidBody::GetShape() const
     return shape;
 }
 
-inline uint32 RigidBody::GetCollisionFilter() const
+inline const CollisionFilter& RigidBody::GetCollisionFilter() const
 {
     return filter;
 }
 
-inline void RigidBody::SetCollisionFilter(uint32 _filter)
+inline void RigidBody::SetCollisionFilter(const CollisionFilter& _filter)
 {
     filter = _filter;
 }

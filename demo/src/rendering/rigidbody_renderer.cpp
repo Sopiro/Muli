@@ -28,22 +28,45 @@ void RigidBodyRenderer::Render()
         if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == RigidBody::Type::Static)
         {
             Vec3 color{ 1.0f };
+            const CollisionFilter& cf = body->GetCollisionFilter();
 
             if (body->GetType() == RigidBody::Type::Dynamic)
             {
-                int32 id = body->GetIslandID();
+                float h, s, l;
 
-                int32 hStride = 17;
-                int32 sStride = 5;
-                int32 lStride = 3;
-                int32 period = static_cast<int32>(Trunc(360.0f / hStride));
-                int32 cycle = static_cast<int32>(Trunc((float)id / period));
+                if (cf.mask != 0xffffffff)
+                {
+                    h = (((cf.filter - 2) * 17) % 360) / 360.0f;
+                    s = 100.0f / 100.0f;
+                    l = 75.0f / 100.0f;
+                }
+                else
+                {
+                    int32 id = body->GetIslandID();
 
-                float h = (((id - 1) * hStride) % 360) / 360.0f;
-                float s = (100 - (cycle * sStride) % 21) / 100.0f;
-                float l = (75 - (cycle * lStride) % 17) / 100.0f;
+                    int32 hStride = 17;
+                    int32 sStride = 5;
+                    int32 lStride = 3;
+                    int32 period = static_cast<int32>(Trunc(360.0f / hStride));
+                    int32 cycle = static_cast<int32>(Trunc((float)id / period));
+
+                    h = (((id - 1) * hStride) % 360) / 360.0f;
+                    s = (100 - (cycle * sStride) % 21) / 100.0f;
+                    l = (75 - (cycle * lStride) % 17) / 100.0f;
+                }
 
                 color = hsl2rgb(h, s, l);
+            }
+            else
+            {
+                if (cf.mask != 0xffffffff)
+                {
+                    float h = (((cf.filter - 2) * 17) % 360) / 360.0f;
+                    float s = 100.0f / 100.0f;
+                    float l = 75.0f / 100.0f;
+
+                    color = hsl2rgb(h, s, l);
+                }
             }
 
             shader->SetColor({ color.x, color.y, color.z });

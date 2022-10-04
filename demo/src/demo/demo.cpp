@@ -375,6 +375,7 @@ extern DemoFrame dynamic_aabb_tree;
 extern DemoFrame compute_distance_point;
 extern DemoFrame collision_detection;
 extern DemoFrame cloth;
+extern DemoFrame collision_filtering;
 
 static int32 init_demos()
 {
@@ -402,6 +403,7 @@ static int32 init_demos()
     demos[demo_count++] = compute_distance_point;
     demos[demo_count++] = collision_detection;
     demos[demo_count++] = cloth;
+    demos[demo_count++] = collision_filtering;
 
     return demo_count;
 }
