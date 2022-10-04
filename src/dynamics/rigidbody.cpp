@@ -81,6 +81,8 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     shape = _other.shape;
     type = _other.type;
 
+    filter = _other.filter;
+
     // public member
     OnDestroy = std::move(_other.OnDestroy);
 }

@@ -17,6 +17,11 @@ void ContactManager::Update(float dt)
             return;
         }
 
+        if (bodyA->GetCollisionFilter() == bodyB->GetCollisionFilter())
+        {
+            return;
+        }
+
         // TODO: Use hash set to remove potential bottleneck
         ContactEdge* e = bodyB->contactList;
         while (e)

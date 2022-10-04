@@ -22,7 +22,7 @@ public:
 
         Circle* circles[rows][cols];
 
-        float yStart = 2.0f;
+        float yStart = 2.5f;
 
         for (uint32 j = 0; j < rows; j++)
         {
@@ -34,6 +34,7 @@ public:
                 float y = (j / (float)rows) * rows * gap + yStart;
 
                 c->SetPosition(x, y);
+                c->SetCollisionFilter(0);
 
                 circles[j][i] = c;
             }
