@@ -370,10 +370,11 @@ extern DemoFrame convex_polygons_1000;
 extern DemoFrame mix_1000;
 extern DemoFrame dense_collision;
 extern DemoFrame kinematic_body;
-extern DemoFrame collision_detection;
-extern DemoFrame dynamic_aabb_tree;
 extern DemoFrame convex_hull;
+extern DemoFrame dynamic_aabb_tree;
 extern DemoFrame compute_distance_point;
+extern DemoFrame collision_detection;
+extern DemoFrame cloth;
 
 static int32 init_demos()
 {
@@ -396,10 +397,11 @@ static int32 init_demos()
     demos[demo_count++] = mix_1000;
     demos[demo_count++] = dense_collision;
     demos[demo_count++] = kinematic_body;
-    demos[demo_count++] = collision_detection;
-    demos[demo_count++] = dynamic_aabb_tree;
     demos[demo_count++] = convex_hull;
+    demos[demo_count++] = dynamic_aabb_tree;
     demos[demo_count++] = compute_distance_point;
+    demos[demo_count++] = collision_detection;
+    demos[demo_count++] = cloth;
 
     return demo_count;
 }

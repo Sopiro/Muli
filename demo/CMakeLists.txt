@@ -40,6 +40,7 @@ set(DEMO_SOURCE_FILES
     src/demo/dynamic_aabb_tree.cpp
     src/demo/convex_hull.cpp
     src/demo/compute_distance_point.cpp
+    src/demo/cloth.cpp
 )
 
 set(DEMO_HEADER_FILES
