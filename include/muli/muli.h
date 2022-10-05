@@ -1,19 +1,22 @@
 #pragma once
 
+// clang-format off
+
 #include "common.h"
 
-#include "collision.h"
-
-#include "box.h"
-#include "circle.h"
-#include "polygon.h"
-#include "rigidbody.h"
 #include "world.h"
-
-#include "distance_joint.h"
-#include "grab_joint.h"
-#include "joint.h"
-#include "revolute_joint.h"
-
-#include "aabb.h"
+#include "collision.h"
 #include "aabbtree.h"
+
+#include "rigidbody.h"
+#include "circle.h"
+#include "capsule.h"
+#include "polygon.h"
+#include "box.h"
+
+#include "joint.h"
+#include "grab_joint.h"
+#include "revolute_joint.h"
+#include "distance_joint.h"
+
+// clang-format on

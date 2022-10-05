@@ -40,6 +40,7 @@ set(HEADER_FILES
     ../include/muli/polytope.h
     ../include/muli/contact_point.h
     ../include/muli/edge.h
+    ../include/muli/collision_filter.h
 
     ../include/muli/block_solver.h
 

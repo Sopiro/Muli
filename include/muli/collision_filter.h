@@ -11,7 +11,7 @@ struct CollisionFilter
     uint32 mask = 0xffffffff;
 };
 
-static bool CanCollide(const CollisionFilter& filterA, const CollisionFilter& filterB)
+inline bool EvaluateFilter(const CollisionFilter& filterA, const CollisionFilter& filterB)
 {
     return (filterA.mask & filterB.filter) != 0 && (filterB.mask & filterA.filter) != 0;
 }

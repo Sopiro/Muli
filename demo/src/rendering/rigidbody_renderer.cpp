@@ -18,6 +18,8 @@ void RigidBodyRenderer::Render()
     for (uint32 i = 0; i < bodiesAndMeshes.size(); i++)
     {
         RigidBody* body = bodiesAndMeshes[i].first;
+        RigidBody::Type type = body->GetType();
+
         std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;
 
         Mat4 t = Mat4{ 1.0f }.Translate(body->GetPosition().x, body->GetPosition().y, 0.0f);
@@ -25,13 +27,14 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        if ((!drawOutlineOnly && !body->IsSleeping()) || body->GetType() == RigidBody::Type::Static)
+        if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::Static)
         {
             Vec3 color{ 1.0f };
             const CollisionFilter& cf = body->GetCollisionFilter();
 
-            if (body->GetType() == RigidBody::Type::Dynamic)
+            switch (type)
             {
+            case RigidBody::Type::Dynamic:
                 float h, s, l;
 
                 if (cf.mask != 0xffffffff)
@@ -56,9 +59,13 @@ void RigidBodyRenderer::Render()
                 }
 
                 color = hsl2rgb(h, s, l);
-            }
-            else
-            {
+                break;
+
+            case RigidBody::Type::Kinematic:
+                color.Set(0.83f, 0.82f, 0.84f);
+                break;
+
+            case RigidBody::Type::Static:
                 if (cf.mask != 0xffffffff)
                 {
                     float h = (((cf.filter - 2) * 17) % 360) / 360.0f;
@@ -67,15 +74,19 @@ void RigidBodyRenderer::Render()
 
                     color = hsl2rgb(h, s, l);
                 }
+                break;
             }
 
             shader->SetColor({ color.x, color.y, color.z });
             mesh->Draw(GL_TRIANGLES);
         }
 
-        glLineWidth(1.0f);
-        shader->SetColor({ 0, 0, 0 });
-        mesh->Draw(GL_LINE_LOOP);
+        // if (type != RigidBody::Type::Static)
+        {
+            glLineWidth(1.0f);
+            shader->SetColor({ 0, 0, 0 });
+            mesh->Draw(GL_LINE_LOOP);
+        }
     }
 }
 
