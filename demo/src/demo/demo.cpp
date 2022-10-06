@@ -376,6 +376,7 @@ extern DemoFrame compute_distance_point;
 extern DemoFrame collision_detection;
 extern DemoFrame cloth;
 extern DemoFrame collision_filtering;
+extern DemoFrame angle_joint_test;
 
 static int32 init_demos()
 {
@@ -404,6 +405,7 @@ static int32 init_demos()
     demos[demo_count++] = collision_detection;
     demos[demo_count++] = cloth;
     demos[demo_count++] = collision_filtering;
+    demos[demo_count++] = angle_joint_test;
 
     return demo_count;
 }

@@ -119,6 +119,8 @@ protected:
     friend class GrabJoint;
     friend class RevoluteJoint;
     friend class DistanceJoint;
+    friend class AngleJoint;
+    friend class LineJoint;
 
     friend class AABBTree;
     friend class BroadPhase;

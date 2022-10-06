@@ -42,6 +42,7 @@ set(DEMO_SOURCE_FILES
     src/demo/compute_distance_point.cpp
     src/demo/cloth.cpp
     src/demo/collision_filtering.cpp
+    src/demo/angle_joint_test.cpp
 )
 
 set(DEMO_HEADER_FILES

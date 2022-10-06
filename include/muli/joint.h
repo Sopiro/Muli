@@ -60,6 +60,8 @@ public:
         JointGrab,
         JointRevolute,
         JointDistance,
+        JointAngle,
+        JointLine,
     };
 
     Joint(Joint::Type _type,

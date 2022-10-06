@@ -16,7 +16,7 @@
 #define DEFAULT_SURFACESPEED 0.0f
 
 // Default joint settings
-#define DEFAULT_FREQUENCY 15.0f
+#define DEFAULT_FREQUENCY 10.0f
 #define DEFAULT_DAMPING_RATIO 1.0f
 #define DEFAULT_JOINT_MASS 1.0f
 

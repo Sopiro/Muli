@@ -27,6 +27,7 @@ set(SOURCE_FILES
     constraint/joint/grab_joint.cpp
     constraint/joint/revolute_joint.cpp
     constraint/joint/distance_joint.cpp
+    constraint/joint/angle_joint.cpp
 )
 
 set(HEADER_FILES
@@ -56,6 +57,7 @@ set(HEADER_FILES
     ../include/muli/grab_joint.h
     ../include/muli/revolute_joint.h
     ../include/muli/distance_joint.h
+    ../include/muli/angle_joint.h
 
     ../include/muli/contact.h
     ../include/muli/position_solver.h

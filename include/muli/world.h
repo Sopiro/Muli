@@ -1,5 +1,6 @@
 #pragma once
 
+#include "angle_joint.h"
 #include "box.h"
 #include "capsule.h"
 #include "circle.h"
@@ -110,6 +111,8 @@ public:
                                        float frequency = 10.0f,
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
+    AngleJoint* CreateAngleJoint(
+        RigidBody* _bodyA, RigidBody* _bodyB, float _frequency = 10.0f, float _dampingRatio = 1.0f, float _jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;

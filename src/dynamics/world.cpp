@@ -478,6 +478,14 @@ DistanceJoint* World::CreateDistanceJoint(
                                jointMass);
 }
 
+AngleJoint* World::CreateAngleJoint(RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, float _dampingRatio, float _jointMass)
+{
+    AngleJoint* aj = new AngleJoint(_bodyA, _bodyB, settings, _frequency, _dampingRatio, _jointMass);
+
+    Add(aj);
+    return aj;
+}
+
 void World::Add(Joint* joint)
 {
     // Insert into the world
