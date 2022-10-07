@@ -61,7 +61,7 @@ public:
         JointRevolute,
         JointDistance,
         JointAngle,
-        JointLine,
+        JointWeld,
     };
 
     Joint(Joint::Type _type,

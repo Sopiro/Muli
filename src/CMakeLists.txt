@@ -2,6 +2,13 @@ set(SOURCE_FILES
     common/util.cpp
     common/math.cpp
 
+    collision/aabbtree.cpp
+    collision/collision.cpp
+    collision/simplex.cpp
+    collision/polytope.cpp
+    collision/broad_phase.cpp
+    collision/contact_manager.cpp
+
     dynamics/world.cpp
     dynamics/island.cpp
 
@@ -11,23 +18,17 @@ set(SOURCE_FILES
     dynamics/box.cpp
     dynamics/capsule.cpp
 
-    collision/aabbtree.cpp
-    collision/collision.cpp
-    collision/simplex.cpp
-    collision/polytope.cpp
-    collision/broad_phase.cpp
-    collision/contact_manager.cpp
+    dynamics/constraint/contact/contact.cpp
+    dynamics/constraint/contact/contact_solver.cpp
+    dynamics/constraint/contact/block_solver.cpp
+    dynamics/constraint/contact/position_solver.cpp
 
-    constraint/contact/contact.cpp
-    constraint/contact/contact_solver.cpp
-    constraint/contact/block_solver.cpp
-    constraint/contact/position_solver.cpp
-
-    constraint/joint/joint.cpp
-    constraint/joint/grab_joint.cpp
-    constraint/joint/revolute_joint.cpp
-    constraint/joint/distance_joint.cpp
-    constraint/joint/angle_joint.cpp
+    dynamics/constraint/joint/joint.cpp
+    dynamics/constraint/joint/grab_joint.cpp
+    dynamics/constraint/joint/revolute_joint.cpp
+    dynamics/constraint/joint/distance_joint.cpp
+    dynamics/constraint/joint/angle_joint.cpp
+    dynamics/constraint/joint/weld_joint.cpp
 )
 
 set(HEADER_FILES

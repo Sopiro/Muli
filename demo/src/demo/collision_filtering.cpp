@@ -7,6 +7,7 @@ namespace muli
 class CollisionFiltering : public Demo
 {
 public:
+    uint32 group = 1;
     uint32 filter0 = 1; // Default filter
     uint32 filter1 = 1 << 1;
     uint32 filter2 = 1 << 2;
@@ -38,15 +39,15 @@ public:
 
         Capsule* a =
             world->CreateCapsule(Vec2{ -2.5f, f(-2.5f) }, Vec2{ -1.5f, f(-1.5f) }, 0.05f, false, RigidBody::Type::Static);
-        CollisionFilter f1 = CollisionFilter{ filter1, filter0 | filter2 | filter3 };
+        CollisionFilter f1 = CollisionFilter{ group, filter1, filter0 | filter2 | filter3 };
         a->SetCollisionFilter(f1);
 
         Capsule* b = world->CreateCapsule(Vec2{ -0.5f, f(-0.5f) }, Vec2{ 0.5f, f(0.5f) }, 0.05f, false, RigidBody::Type::Static);
-        CollisionFilter f2 = CollisionFilter{ filter2, filter0 | filter1 | filter3 };
+        CollisionFilter f2 = CollisionFilter{ group, filter2, filter0 | filter1 | filter3 };
         b->SetCollisionFilter(f2);
 
         Capsule* c = world->CreateCapsule(Vec2{ 1.5f, f(1.5f) }, Vec2{ 2.5f, f(2.5f) }, 0.05f, false, RigidBody::Type::Static);
-        CollisionFilter f3 = CollisionFilter{ filter3, filter0 | filter1 | filter2 };
+        CollisionFilter f3 = CollisionFilter{ group, filter3, filter0 | filter1 | filter2 };
         c->SetCollisionFilter(f3);
 
         camera.position.x -= 1;
@@ -68,15 +69,15 @@ public:
 
             if (r < 1.0f)
             {
-                c->SetCollisionFilter(CollisionFilter{ filter1, filter0 | filter1 | filter2 | filter3 });
+                c->SetCollisionFilter(CollisionFilter{ group, filter1, filter0 | filter1 | filter2 | filter3 });
             }
             else if (r < 2.0f)
             {
-                c->SetCollisionFilter(CollisionFilter{ filter2, filter0 | filter1 | filter2 | filter3 });
+                c->SetCollisionFilter(CollisionFilter{ group, filter2, filter0 | filter1 | filter2 | filter3 });
             }
             else
             {
-                c->SetCollisionFilter(CollisionFilter{ filter3, filter0 | filter1 | filter2 | filter3 });
+                c->SetCollisionFilter(CollisionFilter{ group, filter3, filter0 | filter1 | filter2 | filter3 });
             }
 
             t = game.GetTime();

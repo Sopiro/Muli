@@ -34,7 +34,7 @@ public:
                 float y = (j / (float)rows) * rows * gap + yStart;
 
                 c->SetPosition(x, y);
-                c->SetCollisionFilter(CollisionFilter{ 1 << 1, 1 });
+                c->SetCollisionFilter(CollisionFilter{ 1, 0xffffffff ^ (1 << 1), 1 });
 
                 circles[j][i] = c;
             }

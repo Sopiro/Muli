@@ -14,6 +14,7 @@
 #include "revolute_joint.h"
 #include "rigidbody.h"
 #include "util.h"
+#include "weld_joint.h"
 
 namespace muli
 {
@@ -112,7 +113,9 @@ public:
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
     AngleJoint* CreateAngleJoint(
-        RigidBody* _bodyA, RigidBody* _bodyB, float _frequency = 10.0f, float _dampingRatio = 1.0f, float _jointMass = 1.0f);
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    WeldJoint* CreateWeldJoint(
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;

@@ -43,6 +43,7 @@ set(DEMO_SOURCE_FILES
     src/demo/cloth.cpp
     src/demo/collision_filtering.cpp
     src/demo/angle_joint_test.cpp
+    src/demo/weld_joint_test.cpp
 )
 
 set(DEMO_HEADER_FILES

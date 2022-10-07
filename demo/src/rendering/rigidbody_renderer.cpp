@@ -37,7 +37,7 @@ void RigidBodyRenderer::Render()
             case RigidBody::Type::Dynamic:
                 float h, s, l;
 
-                if (cf.mask != 0xffffffff)
+                if (cf.group == 1 && cf.mask != 0xffffffff)
                 {
                     h = (((cf.filter - 2) * 17) % 360) / 360.0f;
                     s = 100.0f / 100.0f;
@@ -66,7 +66,7 @@ void RigidBodyRenderer::Render()
                 break;
 
             case RigidBody::Type::Static:
-                if (cf.mask != 0xffffffff)
+                if (cf.group == 1 && cf.mask != 0xffffffff)
                 {
                     float h = (((cf.filter - 2) * 17) % 360) / 360.0f;
                     float s = 100.0f / 100.0f;

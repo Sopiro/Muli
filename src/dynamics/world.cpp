@@ -478,12 +478,21 @@ DistanceJoint* World::CreateDistanceJoint(
                                jointMass);
 }
 
-AngleJoint* World::CreateAngleJoint(RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, float _dampingRatio, float _jointMass)
+AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    AngleJoint* aj = new AngleJoint(_bodyA, _bodyB, settings, _frequency, _dampingRatio, _jointMass);
+    AngleJoint* aj = new AngleJoint(bodyA, bodyB, settings, frequency, dampingRatio, jointMass);
 
     Add(aj);
     return aj;
+}
+
+WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+{
+    WeldJoint* wj = new WeldJoint(bodyA, bodyB, (bodyA->GetPosition() + bodyB->GetPosition()) * 0.5f, settings, frequency,
+                                  dampingRatio, jointMass);
+
+    Add(wj);
+    return wj;
 }
 
 void World::Add(Joint* joint)
