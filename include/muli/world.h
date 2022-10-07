@@ -11,6 +11,7 @@
 #include "grab_joint.h"
 #include "joint.h"
 #include "polygon.h"
+#include "prismatic_joint.h"
 #include "revolute_joint.h"
 #include "rigidbody.h"
 #include "util.h"
@@ -116,6 +117,15 @@ public:
         RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     WeldJoint* CreateWeldJoint(
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    PrismaticJoint* CreatePrismaticJoint(RigidBody* bodyA,
+                                         RigidBody* bodyB,
+                                         Vec2 anchor,
+                                         Vec2 dir,
+                                         float frequency = 10.0f,
+                                         float dampingRatio = 1.0f,
+                                         float jointMass = 1.0f);
+    PrismaticJoint* CreatePrismaticJoint(
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;

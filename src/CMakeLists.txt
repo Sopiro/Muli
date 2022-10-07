@@ -29,6 +29,7 @@ set(SOURCE_FILES
     dynamics/constraint/joint/distance_joint.cpp
     dynamics/constraint/joint/angle_joint.cpp
     dynamics/constraint/joint/weld_joint.cpp
+    dynamics/constraint/joint/prismatic_joint.cpp
 )
 
 set(HEADER_FILES
@@ -59,6 +60,8 @@ set(HEADER_FILES
     ../include/muli/revolute_joint.h
     ../include/muli/distance_joint.h
     ../include/muli/angle_joint.h
+    ../include/muli/weld_joint.h
+    ../include/muli/prismatic_joint.h
 
     ../include/muli/contact.h
     ../include/muli/position_solver.h

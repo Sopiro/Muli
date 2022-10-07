@@ -121,6 +121,7 @@ protected:
     friend class DistanceJoint;
     friend class AngleJoint;
     friend class WeldJoint;
+    friend class PrismaticJoint;
 
     friend class AABBTree;
     friend class BroadPhase;

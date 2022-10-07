@@ -17,7 +17,7 @@ public:
               const WorldSettings& _settings,
               float _frequency = -1.0f,
               float _dampingRatio = 1.0f,
-              float _jointMass = -1.0f);
+              float _jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

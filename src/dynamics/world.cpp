@@ -495,6 +495,22 @@ WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
     return wj;
 }
 
+PrismaticJoint* World::CreatePrismaticJoint(
+    RigidBody* bodyA, RigidBody* bodyB, Vec2 anchor, Vec2 dir, float frequency, float dampingRatio, float jointMass)
+{
+    PrismaticJoint* pj = new PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
+
+    Add(pj);
+    return pj;
+}
+
+PrismaticJoint* World::CreatePrismaticJoint(
+    RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+{
+    return CreatePrismaticJoint(bodyA, bodyB, bodyB->GetPosition(), (bodyB->GetPosition() - bodyA->GetPosition()).Normalized(),
+                                frequency, dampingRatio, jointMass);
+}
+
 void World::Add(Joint* joint)
 {
     // Insert into the world

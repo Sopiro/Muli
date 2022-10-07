@@ -62,6 +62,7 @@ public:
         JointDistance,
         JointAngle,
         JointWeld,
+        JointPrismatic,
     };
 
     Joint(Joint::Type _type,

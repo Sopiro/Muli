@@ -240,6 +240,22 @@ void Game::Render()
             lines.push_back(anchorB);
         }
         break;
+        case Joint::Type::JointPrismatic:
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            PrismaticJoint* pj = static_cast<PrismaticJoint*>(j);
+
+            const Vec2& anchorA = ba->GetTransform() * pj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * pj->GetLocalAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(anchorB);
+
+            lines.push_back(anchorA);
+            lines.push_back(anchorB);
+        }
+        break;
         default:
             break;
         }
