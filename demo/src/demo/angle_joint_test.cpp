@@ -48,6 +48,6 @@ public:
     }
 };
 
-DemoFrame angle_joint_test{ "Freeze rotation", AngleJointTest::Create };
+DemoFrame angle_joint_test{ "Freeze rotation: angle joint", AngleJointTest::Create };
 
 } // namespace muli

@@ -58,8 +58,8 @@ protected:
     RigidBody* bodyB;
     const WorldSettings& settings;
 
-    float beta{ 0.0f };
-    float gamma{ 0.0f };
+    float beta = 0.0f;
+    float gamma = 0.0f;
 };
 
 inline Constraint::Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)

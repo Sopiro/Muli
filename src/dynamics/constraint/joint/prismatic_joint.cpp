@@ -4,6 +4,8 @@
 namespace muli
 {
 
+// TODO: Implement limit constraint
+
 PrismaticJoint::PrismaticJoint(RigidBody* _bodyA,
                                RigidBody* _bodyB,
                                Vec2 _anchor,
@@ -17,17 +19,17 @@ PrismaticJoint::PrismaticJoint(RigidBody* _bodyA,
     localAnchorA = MulT(bodyA->GetTransform(), _anchor);
     localAnchorB = MulT(bodyB->GetTransform(), _anchor);
 
-    angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
-
     if (_dir.Length2() < FLT_EPSILON)
     {
-        Vec2 u = MulT(bodyA->GetRotation(), (_bodyB->GetPosition() - _bodyA->GetPosition()).Normalized());
-        localYAxis = Cross(1.0f, u);
+        Vec2 d = MulT(bodyA->GetRotation(), (_bodyB->GetPosition() - _bodyA->GetPosition()).Normalized());
+        localYAxis = Cross(1.0f, d);
     }
     else
     {
-        localYAxis = Cross(1.0f, _dir.Normalized());
+        localYAxis = MulT(bodyA->GetRotation(), Cross(1.0f, _dir.Normalized()));
     }
+
+    angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
 }
 
 void PrismaticJoint::Prepare()
@@ -37,16 +39,16 @@ void PrismaticJoint::Prepare()
     //     [   0,          -1,   0,    1] // Angle
     // M = (J · M^-1 · J^t)^-1
 
-    ra = bodyA->GetRotation() * localAnchorA;
-    rb = bodyB->GetRotation() * localAnchorB;
-
+    Vec2 ra = bodyA->GetRotation() * localAnchorA;
+    Vec2 rb = bodyB->GetRotation() * localAnchorB;
     Vec2 pa = bodyA->GetPosition() + ra;
     Vec2 pb = bodyB->GetPosition() + rb;
     Vec2 d = pb - pa;
 
-    perp = bodyA->GetRotation() * localYAxis;
-    sa = Cross(ra + d, perp);
-    sb = Cross(rb, perp);
+    // tangent/perpendicular vector
+    t = bodyA->GetRotation() * localYAxis;
+    sa = Cross(ra + d, t);
+    sb = Cross(rb, t);
 
     Mat2 k;
     k[0][0] = bodyA->invMass + bodyB->invMass + sa * sa * bodyA->invInertia + sb * sb * bodyB->invInertia;
@@ -59,10 +61,8 @@ void PrismaticJoint::Prepare()
 
     m = k.GetInverse();
 
-    float error0 = Dot(d, perp);
-    float error1 = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
-
-    bias.Set(error0, error1);
+    bias.x = Dot(d, t);
+    bias.y = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
     bias *= beta * settings.INV_DT;
 
     if (settings.WARM_STARTING)
@@ -78,7 +78,7 @@ void PrismaticJoint::SolveVelocityConstraint()
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
     Vec2 jv;
-    jv.x = Dot(perp, bodyB->linearVelocity - bodyA->linearVelocity) + sb * bodyB->angularVelocity - sa * bodyA->angularVelocity;
+    jv.x = Dot(t, bodyB->linearVelocity - bodyA->linearVelocity) + sb * bodyB->angularVelocity - sa * bodyA->angularVelocity;
     jv.y = bodyB->angularVelocity - bodyA->angularVelocity;
 
     Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
@@ -92,10 +92,12 @@ void PrismaticJoint::ApplyImpulse(const Vec2& lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    bodyA->linearVelocity -= (perp * lambda.x) * bodyA->invMass;
+    Vec2 p = (t * lambda.x);
+
+    bodyA->linearVelocity -= p * bodyA->invMass;
     bodyA->angularVelocity -= (lambda.x * sa + lambda.y) * bodyA->invInertia;
-    bodyB->linearVelocity += (perp * lambda.x) * bodyB->invMass;
-    bodyB->angularVelocity += (lambda.x * sa + lambda.y) * bodyB->invInertia;
+    bodyB->linearVelocity += p * bodyB->invMass;
+    bodyB->angularVelocity += (lambda.x * sb + lambda.y) * bodyB->invInertia;
 }
 
 } // namespace muli

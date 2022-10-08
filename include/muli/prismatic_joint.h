@@ -16,7 +16,7 @@ public:
                    Vec2 _anchor,
                    Vec2 _dir,
                    const WorldSettings& _settings,
-                   float _frequency = 10.0f,
+                   float _frequency = -1.0f,
                    float _dampingRatio = 1.0f,
                    float _jointMass = 1.0f);
 
@@ -30,18 +30,16 @@ public:
 private:
     Vec2 localAnchorA;
     Vec2 localAnchorB;
-    float angleOffset;
-    Vec2 localXAxis;
     Vec2 localYAxis;
+    float angleOffset;
 
-    Vec2 ra;
-    Vec2 rb;
     float sa;
     float sb;
-    Vec2 perp;
-    Mat2 m;
-    Vec2 bias;
+    Vec2 t;
 
+    Mat2 m;
+
+    Vec2 bias;
     Vec2 impulseSum{ 0.0f };
 
     void ApplyImpulse(const Vec2& lambda);
