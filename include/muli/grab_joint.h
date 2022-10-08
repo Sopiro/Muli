@@ -30,9 +30,10 @@ private:
     Vec2 localAnchor;
     Vec2 target;
 
-    Vec2 r{ 0.0f };
-    Mat2 m{ 1.0f };
-    Vec2 bias{ 0.0f };
+    Vec2 r;
+    Mat2 m;
+
+    Vec2 bias;
     Vec2 impulseSum{ 0.0f };
 
     void ApplyImpulse(const Vec2& lambda);

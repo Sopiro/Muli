@@ -147,6 +147,13 @@ struct Vec3
     {
     }
 
+    Vec3(const Vec2& _v)
+        : x{ _v.x }
+        , y{ _v.y }
+        , z{ 0.0f }
+    {
+    }
+
     void SetZero()
     {
         x = 0.0f;

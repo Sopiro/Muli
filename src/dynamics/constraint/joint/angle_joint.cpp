@@ -45,7 +45,6 @@ void AngleJoint::SolveVelocityConstraint()
     float lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
-
     impulseSum += lambda;
 }
 

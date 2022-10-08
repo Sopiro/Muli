@@ -55,10 +55,10 @@ void GrabJoint::SolveVelocityConstraint()
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
     Vec2 jv = bodyA->linearVelocity + Cross(bodyA->angularVelocity, r);
+
     Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
-
     impulseSum += lambda;
 }
 

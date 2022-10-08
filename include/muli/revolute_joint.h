@@ -29,11 +29,11 @@ private:
     Vec2 localAnchorA;
     Vec2 localAnchorB;
 
-    Vec2 ra{ 0.0f };
-    Vec2 rb{ 0.0f };
+    Vec2 ra;
+    Vec2 rb;
+    Mat2 m;
 
-    Mat2 m{ 1.0f };
-    Vec2 bias{ 0.0f };
+    Vec2 bias;
     Vec2 impulseSum{ 0.0f };
 
     void ApplyImpulse(const Vec2& lambda);

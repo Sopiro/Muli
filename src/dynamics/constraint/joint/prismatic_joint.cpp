@@ -92,7 +92,7 @@ void PrismaticJoint::ApplyImpulse(const Vec2& lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    Vec2 p = (t * lambda.x);
+    Vec2 p = t * lambda.x;
 
     bodyA->linearVelocity -= p * bodyA->invMass;
     bodyA->angularVelocity -= (lambda.x * sa + lambda.y) * bodyA->invInertia;

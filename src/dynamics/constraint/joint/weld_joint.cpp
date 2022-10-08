@@ -4,6 +4,8 @@
 namespace muli
 {
 
+// Revolute joint + Angle joint
+
 WeldJoint::WeldJoint(RigidBody* _bodyA,
                      RigidBody* _bodyB,
                      Vec2 _anchor,
@@ -79,15 +81,13 @@ void WeldJoint::SolveVelocityConstraint()
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    Vec2 jv01 =
-        bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb) - (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra));
-    float jv2 = bodyB->angularVelocity - bodyA->angularVelocity;
-
-    Vec3 jv{ jv01.x, jv01.y, jv2 };
+    Vec3 jv = Vec2{ bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb) -
+                    (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)) };
+    jv.z = bodyB->angularVelocity - bodyA->angularVelocity;
 
     Vec3 lambda = m * -(jv + bias + impulseSum * gamma);
-    ApplyImpulse(lambda);
 
+    ApplyImpulse(lambda);
     impulseSum += lambda;
 }
 
@@ -99,6 +99,12 @@ void WeldJoint::ApplyImpulse(const Vec3& lambda)
     Vec2 lambda01{ lambda.x, lambda.y };
     float lambda2 = lambda.z;
 
+#if 1 // Shortened
+    bodyA->linearVelocity -= lambda01 * bodyA->invMass;
+    bodyA->angularVelocity -= (Cross(ra, lambda01) + lambda2) * bodyA->invInertia;
+    bodyB->linearVelocity += lambda01 * bodyB->invMass;
+    bodyB->angularVelocity += (Cross(rb, lambda01) + lambda2) * bodyB->invInertia;
+#else
     // Solve for point-to-point constraint
     bodyA->linearVelocity -= lambda01 * bodyA->invMass;
     bodyA->angularVelocity -= Cross(ra, lambda01) * bodyA->invInertia;
@@ -108,6 +114,7 @@ void WeldJoint::ApplyImpulse(const Vec3& lambda)
     // Solve for angle constraint
     bodyA->angularVelocity -= lambda2 * bodyA->invInertia;
     bodyB->angularVelocity += lambda2 * bodyB->invInertia;
+#endif
 }
 
 } // namespace muli

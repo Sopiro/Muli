@@ -33,10 +33,9 @@ private:
     Vec2 localYAxis;
     float angleOffset;
 
+    Vec2 t; // perpendicular vector
     float sa;
     float sb;
-    Vec2 t;
-
     Mat2 m;
 
     Vec2 bias;

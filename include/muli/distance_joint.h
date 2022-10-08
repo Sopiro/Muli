@@ -32,16 +32,14 @@ public:
 private:
     Vec2 localAnchorA;
     Vec2 localAnchorB;
+    float length;
 
-    float length = 0.0f;
+    Vec2 ra;
+    Vec2 rb;
+    Vec2 d;
+    float m;
 
-    Vec2 ra{ 0.0f };
-    Vec2 rb{ 0.0f };
-
-    Vec2 u{ 0.0 };
-
-    float m = 1.0f;
-    float bias = 0.0f;
+    float bias;
     float impulseSum = 0.0f;
 
     void ApplyImpulse(float lambda);

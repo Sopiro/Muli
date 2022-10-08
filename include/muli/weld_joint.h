@@ -33,8 +33,8 @@ private:
 
     Vec2 ra;
     Vec2 rb;
-
     Mat3 m;
+
     Vec3 bias;
     Vec3 impulseSum{ 0.0f };
 

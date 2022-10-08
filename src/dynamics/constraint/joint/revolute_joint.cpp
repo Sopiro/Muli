@@ -66,7 +66,6 @@ void RevoluteJoint::SolveVelocityConstraint()
     Vec2 lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
-
     impulseSum += lambda;
 }
 

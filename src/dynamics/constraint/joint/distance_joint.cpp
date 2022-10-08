@@ -23,7 +23,7 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
 void DistanceJoint::Prepare()
 {
     // Calculate Jacobian J and effective mass M
-    // J = [-n, -n·cross(ra), n, n·cross(rb)] ( n = (anchorB-anchorA) / ||anchorB-anchorA|| )
+    // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 
     ra = bodyA->GetRotation() * localAnchorA;
@@ -32,21 +32,23 @@ void DistanceJoint::Prepare()
     Vec2 pa = bodyA->GetPosition() + ra;
     Vec2 pb = bodyB->GetPosition() + rb;
 
-    u = pb - pa;
-    float currentLength = u.Normalize();
+    d = pb - pa;
+    float currentLength = d.Normalize();
 
     // clang-format off
-    float k
-        = bodyA->invMass + bodyB->invMass
-        + bodyA->invInertia * Cross(u, ra) * Cross(u, ra)
-        + bodyB->invInertia * Cross(u, rb) * Cross(u, rb)
-        + gamma;
+    float k = bodyA->invMass + bodyB->invMass
+            + bodyA->invInertia * Cross(d, ra) * Cross(d, ra)
+            + bodyB->invInertia * Cross(d, rb) * Cross(d, rb)
+            + gamma;
     // clang-format on
 
-    m = 1.0f / k;
+    if (k != 0.0f)
+    {
+        m = 1.0f / k;
+    }
 
-    float error = currentLength - length;
-    bias = error * beta * settings.INV_DT;
+    bias = currentLength - length;
+    bias *= beta * settings.INV_DT;
 
     if (settings.WARM_STARTING)
     {
@@ -62,17 +64,13 @@ void DistanceJoint::SolveVelocityConstraint()
 
     float jv = Dot((bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) -
                        (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)),
-                   u);
+                   d);
 
     // You don't have to clamp the impulse. It's equality constraint!
     float lambda = m * -(jv + bias + impulseSum * gamma);
 
     ApplyImpulse(lambda);
-
-    if (settings.WARM_STARTING)
-    {
-        impulseSum += lambda;
-    }
+    impulseSum += lambda;
 }
 
 void DistanceJoint::ApplyImpulse(float lambda)
@@ -80,10 +78,12 @@ void DistanceJoint::ApplyImpulse(float lambda)
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 
-    bodyA->linearVelocity -= u * (lambda * bodyA->invMass);
-    bodyA->angularVelocity -= Dot(u, Cross(lambda, ra)) * bodyA->invInertia;
-    bodyB->linearVelocity += u * (lambda * bodyB->invMass);
-    bodyB->angularVelocity += Dot(u, Cross(lambda, rb)) * bodyB->invInertia;
+    Vec2 p = d * lambda;
+
+    bodyA->linearVelocity -= p * bodyA->invMass;
+    bodyA->angularVelocity -= Dot(d, Cross(lambda, ra)) * bodyA->invInertia;
+    bodyB->linearVelocity += p * bodyB->invMass;
+    bodyB->angularVelocity += Dot(d, Cross(lambda, rb)) * bodyB->invInertia;
 }
 
 } // namespace muli

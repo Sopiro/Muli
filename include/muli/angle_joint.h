@@ -29,9 +29,10 @@ public:
 private:
     float angleOffset;
 
-    float m{ 1.0f };
-    float bias{ 0.0f };
-    float impulseSum{ 0.0f };
+    float m;
+
+    float bias;
+    float impulseSum = 0.0f;
 
     void ApplyImpulse(float lambda);
 };
