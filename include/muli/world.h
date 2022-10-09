@@ -92,18 +92,22 @@ public:
                                   float radius = DEFAULT_RADIUS,
                                   float density = DEFAULT_DENSITY);
 
-    GrabJoint* CreateGrabJoint(
-        RigidBody* body, Vec2 anchor, Vec2 target, float frequency = 1.0f, float dampingRatio = 0.5f, float jointMass = 1.0f);
+    GrabJoint* CreateGrabJoint(RigidBody* body,
+                               const Vec2& anchor,
+                               const Vec2& target,
+                               float frequency = 1.0f,
+                               float dampingRatio = 0.5f,
+                               float jointMass = 1.0f);
     RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA,
                                        RigidBody* bodyB,
-                                       Vec2 anchor,
+                                       const Vec2& anchor,
                                        float frequency = 10.0f,
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
                                        RigidBody* bodyB,
-                                       Vec2 anchorA,
-                                       Vec2 anchorB,
+                                       const Vec2& anchorA,
+                                       const Vec2& anchorB,
                                        float length = -1.0f,
                                        float frequency = 10.0f,
                                        float dampingRatio = 1.0f,
@@ -120,8 +124,8 @@ public:
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     PrismaticJoint* CreatePrismaticJoint(RigidBody* bodyA,
                                          RigidBody* bodyB,
-                                         Vec2 anchor,
-                                         Vec2 dir,
+                                         const Vec2& anchor,
+                                         const Vec2& dir,
                                          float frequency = -1.0f,
                                          float dampingRatio = 1.0f,
                                          float jointMass = 1.0f);
@@ -129,10 +133,10 @@ public:
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     PulleyJoint* CreatePulleyJoint(RigidBody* bodyA,
                                    RigidBody* bodyB,
-                                   Vec2 anchorA,
-                                   Vec2 anchorB,
-                                   Vec2 groundAnchorA,
-                                   Vec2 groundAnchorB,
+                                   const Vec2& anchorA,
+                                   const Vec2& anchorB,
+                                   const Vec2& groundAnchorA,
+                                   const Vec2& groundAnchorB,
                                    float ratio = 1.0f,
                                    float frequency = -1.0f,
                                    float dampingRatio = 1.0f,

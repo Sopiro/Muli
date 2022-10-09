@@ -5,8 +5,8 @@ namespace muli
 {
 
 GrabJoint::GrabJoint(RigidBody* _body,
-                     Vec2 _anchor,
-                     Vec2 _target,
+                     const Vec2& _anchor,
+                     const Vec2& _target,
                      const WorldSettings& _settings,
                      float _frequency,
                      float _dampingRatio,

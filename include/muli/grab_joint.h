@@ -12,8 +12,8 @@ class GrabJoint : public Joint
 {
 public:
     GrabJoint(RigidBody* _body,
-              Vec2 _anchor,
-              Vec2 _target,
+              const Vec2& _anchor,
+              const Vec2& _target,
               const WorldSettings& _settings,
               float _frequency = 1.0f,
               float _dampingRatio = 0.5f,

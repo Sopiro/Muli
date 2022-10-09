@@ -424,7 +424,8 @@ Capsule* World::CreateCapsule(
     return c;
 }
 
-GrabJoint* World::CreateGrabJoint(RigidBody* body, Vec2 anchor, Vec2 target, float frequency, float dampingRatio, float jointMass)
+GrabJoint* World::CreateGrabJoint(
+    RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio, float jointMass)
 {
     if (body->world != this)
     {
@@ -438,7 +439,7 @@ GrabJoint* World::CreateGrabJoint(RigidBody* body, Vec2 anchor, Vec2 target, flo
 }
 
 RevoluteJoint* World::CreateRevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, Vec2 anchor, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -453,8 +454,8 @@ RevoluteJoint* World::CreateRevoluteJoint(
 
 DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
                                           RigidBody* bodyB,
-                                          Vec2 anchorA,
-                                          Vec2 anchorB,
+                                          const Vec2& anchorA,
+                                          const Vec2& anchorB,
                                           float length,
                                           float frequency,
                                           float dampingRatio,
@@ -496,7 +497,7 @@ WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, Vec2 anchor, Vec2 dir, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
 {
     PrismaticJoint* pj = new PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
@@ -513,10 +514,10 @@ PrismaticJoint* World::CreatePrismaticJoint(
 
 PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
                                       RigidBody* bodyB,
-                                      Vec2 anchorA,
-                                      Vec2 anchorB,
-                                      Vec2 groundAnchorA,
-                                      Vec2 groundAnchorB,
+                                      const Vec2& anchorA,
+                                      const Vec2& anchorB,
+                                      const Vec2& groundAnchorA,
+                                      const Vec2& groundAnchorB,
                                       float ratio,
                                       float frequency,
                                       float dampingRatio,

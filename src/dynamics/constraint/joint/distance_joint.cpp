@@ -6,8 +6,8 @@ namespace muli
 
 DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              RigidBody* _bodyB,
-                             Vec2 _anchorA,
-                             Vec2 _anchorB,
+                             const Vec2& _anchorA,
+                             const Vec2& _anchorB,
                              float _length,
                              const WorldSettings& _settings,
                              float _frequency,

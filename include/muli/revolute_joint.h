@@ -13,7 +13,7 @@ class RevoluteJoint : public Joint
 public:
     RevoluteJoint(RigidBody* _bodyA,
                   RigidBody* _bodyB,
-                  Vec2 _anchor,
+                  const Vec2& _anchor,
                   const WorldSettings& _settings,
                   float _frequency = 10.0f,
                   float _dampingRatio = 1.0f,

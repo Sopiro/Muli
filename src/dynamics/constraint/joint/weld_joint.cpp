@@ -8,7 +8,7 @@ namespace muli
 
 WeldJoint::WeldJoint(RigidBody* _bodyA,
                      RigidBody* _bodyB,
-                     Vec2 _anchor,
+                     const Vec2& _anchor,
                      const WorldSettings& _settings,
                      float _frequency,
                      float _dampingRatio,

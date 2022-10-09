@@ -13,8 +13,8 @@ class PrismaticJoint : public Joint
 public:
     PrismaticJoint(RigidBody* _bodyA,
                    RigidBody* _bodyB,
-                   Vec2 _anchor,
-                   Vec2 _dir,
+                   const Vec2& _anchor,
+                   const Vec2& _dir,
                    const WorldSettings& _settings,
                    float _frequency = -1.0f,
                    float _dampingRatio = 1.0f,
