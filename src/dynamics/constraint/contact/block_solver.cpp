@@ -133,7 +133,7 @@ void BlockSolver::Solve()
         // vn2 = a21 * x1 + a22 * 0 + b2'
         //
 
-        x.x = nc1->effectiveMass * -b.x;
+        x.x = nc1->m * -b.x;
         x.y = 0.0f;
         vn1 = 0.0f;
         vn2 = k[1][0] * x.x + b.y;
@@ -147,7 +147,7 @@ void BlockSolver::Solve()
         //   0 = a21 * 0 + a22 * x2 + b2'
         //
         x.x = 0.0f;
-        x.y = nc2->effectiveMass * -b.y;
+        x.y = nc2->m * -b.y;
         vn1 = k[0][1] * x.y + b.x;
         vn2 = 0.0f;
         if (x.y >= 0.0f && vn1 >= 0.0f) break;

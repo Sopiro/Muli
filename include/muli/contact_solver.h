@@ -45,8 +45,8 @@ private:
     Vec2 rb;
     Jacobian j;
 
-    float bias = 0.0f;
-    float effectiveMass = 0.0f;
+    float bias;
+    float m; // effective mass
     float impulseSum = 0.0f;
 
     void ApplyImpulse(float lambda);

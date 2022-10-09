@@ -14,7 +14,10 @@ struct CollisionFilter
 
 inline bool EvaluateFilter(const CollisionFilter& filterA, const CollisionFilter& filterB)
 {
-    if (filterA.group != filterB.group) return true;
+    if (filterA.group != filterB.group)
+    {
+        return true;
+    }
 
     return (filterA.mask & filterB.filter) != 0 && (filterB.mask & filterA.filter) != 0;
 }

@@ -52,6 +52,11 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     else
     {
         bias = -(c->b2->surfaceSpeed - c->b1->surfaceSpeed);
+
+        if (c->manifold.featureFlipped)
+        {
+            bias *= -1;
+        }
     }
 
     // clang-format off
@@ -62,7 +67,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
         + j.wb * c->b2->invInertia * j.wb;
     // clang-format on
 
-    effectiveMass = k > 0.0f ? 1.0f / k : 0.0f;
+    m = k > 0.0f ? 1.0f / k : 0.0f;
 
     if (c->settings.WARM_STARTING)
     {
@@ -85,7 +90,7 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
     // clang-format on
 
     // Clamp impulse correctly and accumulate it
-    float lambda = effectiveMass * -(jv + bias);
+    float lambda = m * -(jv + bias);
     float oldImpulseSum = impulseSum;
 
     switch (type)

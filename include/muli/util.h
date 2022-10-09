@@ -49,7 +49,21 @@ inline uint32 MakePairNatural(uint32 a, uint32 b)
 inline PairID CombineID(uint32 a, uint32 b)
 {
     muliAssert(a != b);
-    return a < b ? PairID{ a, b } : PairID{ b, a };
+
+    PairID pid;
+
+    if (a < b)
+    {
+        pid.pair.first = a;
+        pid.pair.second = b;
+    }
+    else
+    {
+        pid.pair.first = b;
+        pid.pair.first = a;
+    }
+
+    return pid;
 }
 
 inline bool operator==(PairID lhs, PairID rhs)

@@ -45,6 +45,7 @@ set(DEMO_SOURCE_FILES
     src/demo/angle_joint_test.cpp
     src/demo/weld_joint_test.cpp
     src/demo/prismatic_joint_test.cpp
+    src/demo/conveyor_belt.cpp
 )
 
 set(DEMO_HEADER_FILES

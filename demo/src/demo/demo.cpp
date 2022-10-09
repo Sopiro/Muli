@@ -379,6 +379,7 @@ extern DemoFrame collision_filtering;
 extern DemoFrame angle_joint_test;
 extern DemoFrame weld_joint_test;
 extern DemoFrame prismatic_joint_test;
+extern DemoFrame conveyor_belt;
 
 static int32 init_demos()
 {
@@ -410,6 +411,7 @@ static int32 init_demos()
     demos[demo_count++] = angle_joint_test;
     demos[demo_count++] = weld_joint_test;
     demos[demo_count++] = prismatic_joint_test;
+    demos[demo_count++] = conveyor_belt;
 
     return demo_count;
 }

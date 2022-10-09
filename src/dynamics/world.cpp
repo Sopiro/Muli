@@ -351,7 +351,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
 {
     if (vertexCount < 3)
     {
-        vertexCount = LinearRand(3, 8);
+        vertexCount = LinearRand(6, 12);
     }
 
     std::vector<float> angles{};
