@@ -511,6 +511,24 @@ PrismaticJoint* World::CreatePrismaticJoint(
                                 frequency, dampingRatio, jointMass);
 }
 
+PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
+                                      RigidBody* bodyB,
+                                      Vec2 anchorA,
+                                      Vec2 anchorB,
+                                      Vec2 groundAnchorA,
+                                      Vec2 groundAnchorB,
+                                      float ratio,
+                                      float frequency,
+                                      float dampingRatio,
+                                      float jointMass)
+{
+    PulleyJoint* pj = new PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, settings, ratio, frequency,
+                                      dampingRatio, jointMass);
+
+    Add(pj);
+    return pj;
+}
+
 void World::Add(Joint* joint)
 {
     // Insert into the world

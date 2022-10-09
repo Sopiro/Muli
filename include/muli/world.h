@@ -12,6 +12,7 @@
 #include "joint.h"
 #include "polygon.h"
 #include "prismatic_joint.h"
+#include "pulley_joint.h"
 #include "revolute_joint.h"
 #include "rigidbody.h"
 #include "util.h"
@@ -126,6 +127,16 @@ public:
                                          float jointMass = 1.0f);
     PrismaticJoint* CreatePrismaticJoint(
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    PulleyJoint* CreatePulleyJoint(RigidBody* bodyA,
+                                   RigidBody* bodyB,
+                                   Vec2 anchorA,
+                                   Vec2 anchorB,
+                                   Vec2 groundAnchorA,
+                                   Vec2 groundAnchorB,
+                                   float ratio = 1.0f,
+                                   float frequency = -1.0f,
+                                   float dampingRatio = 1.0f,
+                                   float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;

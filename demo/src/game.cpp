@@ -256,6 +256,30 @@ void Game::Render()
             lines.push_back(anchorB);
         }
         break;
+        case Joint::Type::JointPulley:
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            PulleyJoint* pj = static_cast<PulleyJoint*>(j);
+
+            const Vec2& anchorA = ba->GetTransform() * pj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * pj->GetLocalAnchorB();
+            const Vec2& groundAnchorA = pj->GetGroundAnchorA();
+            const Vec2& groundAnchorB = pj->GetGroundAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(groundAnchorA);
+            points.push_back(anchorB);
+            points.push_back(groundAnchorB);
+
+            lines.push_back(anchorA);
+            lines.push_back(groundAnchorA);
+            lines.push_back(anchorB);
+            lines.push_back(groundAnchorB);
+            lines.push_back(groundAnchorA);
+            lines.push_back(groundAnchorB);
+        }
+        break;
         default:
             break;
         }

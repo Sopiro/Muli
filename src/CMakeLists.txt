@@ -1,3 +1,51 @@
+set(HEADER_FILES
+    ../include/muli/aabb.h
+    ../include/muli/aabbtree.h
+    ../include/muli/broad_phase.h
+    ../include/muli/contact_manager.h
+
+    ../include/muli/collision.h
+    ../include/muli/simplex.h
+    ../include/muli/polytope.h
+    ../include/muli/contact_point.h
+    ../include/muli/edge.h
+    ../include/muli/collision_filter.h
+
+    ../include/muli/block_solver.h
+
+    ../include/muli/rigidbody.h
+    ../include/muli/box.h
+    ../include/muli/circle.h
+    ../include/muli/polygon.h
+    ../include/muli/capsule.h
+
+    ../include/muli/constraint.h
+
+    ../include/muli/joint.h
+    ../include/muli/grab_joint.h
+    ../include/muli/revolute_joint.h
+    ../include/muli/distance_joint.h
+    ../include/muli/angle_joint.h
+    ../include/muli/weld_joint.h
+    ../include/muli/prismatic_joint.h
+    ../include/muli/pulley_joint.h
+
+    ../include/muli/contact.h
+    ../include/muli/position_solver.h
+    ../include/muli/contact_solver.h
+
+    ../include/muli/island.h
+    ../include/muli/world.h
+
+    ../include/muli/settings.h
+    ../include/muli/growable_array.h
+    ../include/muli/common.h
+    ../include/muli/util.h
+    ../include/muli/muli.h
+    ../include/muli/math.h
+    ../include/muli/types.h
+)
+
 set(SOURCE_FILES
     common/util.cpp
     common/math.cpp
@@ -30,53 +78,7 @@ set(SOURCE_FILES
     dynamics/constraint/joint/angle_joint.cpp
     dynamics/constraint/joint/weld_joint.cpp
     dynamics/constraint/joint/prismatic_joint.cpp
-)
-
-set(HEADER_FILES
-    ../include/muli/aabb.h
-    ../include/muli/aabbtree.h
-    ../include/muli/broad_phase.h
-    ../include/muli/contact_manager.h
-
-    ../include/muli/collision.h
-    ../include/muli/simplex.h
-    ../include/muli/polytope.h
-    ../include/muli/contact_point.h
-    ../include/muli/edge.h
-    ../include/muli/collision_filter.h
-
-    ../include/muli/block_solver.h
-
-    ../include/muli/rigidbody.h
-    ../include/muli/box.h
-    ../include/muli/circle.h
-    ../include/muli/polygon.h
-    ../include/muli/capsule.h
-
-    ../include/muli/constraint.h
-
-    ../include/muli/joint.h
-    ../include/muli/grab_joint.h
-    ../include/muli/revolute_joint.h
-    ../include/muli/distance_joint.h
-    ../include/muli/angle_joint.h
-    ../include/muli/weld_joint.h
-    ../include/muli/prismatic_joint.h
-
-    ../include/muli/contact.h
-    ../include/muli/position_solver.h
-    ../include/muli/contact_solver.h
-
-    ../include/muli/island.h
-    ../include/muli/world.h
-
-    ../include/muli/settings.h
-    ../include/muli/growable_array.h
-    ../include/muli/common.h
-    ../include/muli/util.h
-    ../include/muli/muli.h
-    ../include/muli/math.h
-    ../include/muli/types.h
+    dynamics/constraint/joint/pulley_joint.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "src" FILES ${SOURCE_FILES})

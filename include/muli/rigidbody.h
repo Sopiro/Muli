@@ -110,6 +110,10 @@ protected:
     friend class World;
     friend class Island;
 
+    friend class AABBTree;
+    friend class BroadPhase;
+    friend class ContactManager;
+
     friend class Contact;
     friend class ContactSolver;
     friend class BlockSolver;
@@ -122,10 +126,7 @@ protected:
     friend class AngleJoint;
     friend class WeldJoint;
     friend class PrismaticJoint;
-
-    friend class AABBTree;
-    friend class BroadPhase;
-    friend class ContactManager;
+    friend class PulleyJoint;
 
     // Center of mass in local space = (0, 0)
     Transform transform;

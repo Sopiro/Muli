@@ -46,6 +46,7 @@ set(DEMO_SOURCE_FILES
     src/demo/weld_joint_test.cpp
     src/demo/prismatic_joint_test.cpp
     src/demo/conveyor_belt.cpp
+    src/demo/pulley.cpp
 )
 
 set(DEMO_HEADER_FILES

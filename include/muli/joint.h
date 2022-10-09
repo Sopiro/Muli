@@ -63,6 +63,7 @@ public:
         JointAngle,
         JointWeld,
         JointPrismatic,
+        JointPulley,
     };
 
     Joint(Joint::Type _type,
