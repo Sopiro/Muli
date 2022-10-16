@@ -6,7 +6,6 @@ namespace muli
 {
 
 // Inspired by b2GrowableStack in box2d code
-// Use only element types that don't need a destructor
 template <typename T, uint32 N>
 class GrowableArray
 {

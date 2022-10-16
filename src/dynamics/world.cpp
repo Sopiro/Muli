@@ -283,11 +283,11 @@ void World::BufferDestroy(const std::vector<Joint*>& joints)
 std::vector<RigidBody*> World::Query(const Vec2& point) const
 {
     std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(point);
+    std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(point);
 
-    for (uint32 i = 0; i < nodes.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
-        RigidBody* body = nodes[i]->body;
+        RigidBody* body = bodies[i];
 
         if (TestPointInside(body, point))
         {
@@ -301,15 +301,15 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
 std::vector<RigidBody*> World::Query(const AABB& aabb) const
 {
     std::vector<RigidBody*> res;
-    std::vector<Node*> nodes = contactManager.broadPhase.tree.Query(aabb);
+    std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(aabb);
 
     Polygon t{
         { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } }, RigidBody::Type::Dynamic, false, 0.0f
     };
 
-    for (uint32 i = 0; i < nodes.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); i++)
     {
-        RigidBody* body = nodes[i]->body;
+        RigidBody* body = bodies[i];
 
         if (DetectCollision(body, &t))
         {

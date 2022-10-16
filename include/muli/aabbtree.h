@@ -5,6 +5,8 @@
 #include "rigidbody.h"
 #include "settings.h"
 
+#define nullNode (-1)
+
 namespace muli
 {
 
@@ -18,37 +20,28 @@ inline float SAH(const AABB& aabb)
 #endif
 }
 
+// typedef int32 NodePointer;
+
 struct Node
 {
-    friend class AABBTree;
-    friend class BroadPhase;
-
-public:
     uint32 id;
     AABB aabb;
     bool isLeaf;
 
-    Node* parent = nullptr;
-    Node* child1 = nullptr;
-    Node* child2 = nullptr;
+    int32 parent;
+    int32 child1;
+    int32 child2;
 
-    RigidBody* body = nullptr;
-
-private:
-    Node(uint32 _id, const AABB& _aabb, bool _isLeaf);
-    ~Node() noexcept = default;
-
-    Node(const Node&) noexcept = delete;
-    Node& operator=(const Node&) noexcept = delete;
-
-    Node(Node&&) noexcept = default;
-    Node& operator=(Node&&) noexcept = default;
+    RigidBody* body;
+    int32 next;
 };
 
 class AABBTree
 {
 public:
-    AABBTree() = default;
+    friend class BroadPhase;
+
+    AABBTree();
     ~AABBTree() noexcept;
 
     AABBTree(const AABBTree&) noexcept = delete;
@@ -57,45 +50,40 @@ public:
     AABBTree(AABBTree&&) noexcept = delete;
     AABBTree& operator=(AABBTree&&) noexcept = delete;
 
-    const Node* Insert(RigidBody* body, const AABB& aabb);
+    int32 Insert(RigidBody* body, const AABB& aabb);
     void Remove(RigidBody* body);
     void Reset();
 
     void Traverse(std::function<void(const Node*)> callback) const;
     void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
 
-    std::vector<Node*> Query(const Vec2& point) const;
-    std::vector<Node*> Query(const AABB& aabb) const;
-    void Query(const AABB& aabb, std::function<bool(const Node*)> callback) const;
+    std::vector<RigidBody*> Query(const Vec2& point) const;
+    std::vector<RigidBody*> Query(const AABB& aabb) const;
+    void Query(const AABB& aabb, std::function<bool(RigidBody*)> callback) const;
 
     float ComputeTreeCost() const;
 
 private:
     uint32 nodeID = 0;
 
-    Node* root = nullptr;
-    float aabbMargin;
+    Node* nodes;
+    int32 root;
 
-    void Rotate(Node* node);
-    void Swap(Node* node1, Node* node2);
-    void CheckCollision(Node* a,
-                        Node* b,
+    int32 nodeCount;
+    int32 nodeCapacity;
+
+    int32 freeList;
+
+    int32 AllocateNode();
+    void FreeNode(int32 node);
+
+    void Rotate(int32 node);
+    void Swap(int32 node1, int32 node2);
+    void CheckCollision(int32 nodeA,
+                        int32 nodeB,
                         std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
                         std::unordered_set<uint64>& checked) const;
 };
-
-inline AABBTree::~AABBTree()
-{
-    Reset();
-}
-
-inline void AABBTree::Reset()
-{
-    Traverse([&](const Node* n) -> void { delete n; });
-
-    nodeID = 0;
-    root = nullptr;
-}
 
 inline float AABBTree::ComputeTreeCost() const
 {

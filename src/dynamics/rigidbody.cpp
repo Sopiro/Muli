@@ -1,4 +1,5 @@
 #include "muli/rigidbody.h"
+#include "muli/aabbtree.h"
 #include "muli/world.h"
 
 namespace muli
@@ -7,6 +8,7 @@ namespace muli
 RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
     : type{ _type }
     , shape{ _shape }
+    , node{ nullNode }
 {
     if (type != Dynamic)
     {
@@ -53,7 +55,7 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     sleeping = _other.sleeping;
 
     node = _other.node;
-    _other.node = nullptr;
+    _other.node = nullNode;
     prev = _other.prev;
     _other.prev = nullptr;
     next = _other.next;

@@ -64,7 +64,7 @@ inline void BroadPhase::Remove(RigidBody* body)
 
 inline bool BroadPhase::TestOverlap(RigidBody* bodyA, RigidBody* bodyB) const
 {
-    return TestOverlapAABB(bodyA->node->aabb, bodyB->node->aabb);
+    return TestOverlapAABB(tree.nodes[bodyA->node].aabb, tree.nodes[bodyB->node].aabb);
 }
 
 } // namespace muli

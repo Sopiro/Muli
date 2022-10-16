@@ -12,8 +12,8 @@ void BroadPhase::UpdateDynamicTree(float dt)
         if (body->sleeping) continue;
         if (body->type == RigidBody::Type::Static) body->sleeping = true;
 
-        Node* node = body->node;
-        AABB treeAABB = node->aabb;
+        int32 node = body->node;
+        AABB treeAABB = tree.nodes[node].aabb;
         AABB aabb = body->GetAABB();
 
         if (ContainsAABB(treeAABB, aabb) && body->resting < world.settings.SLEEPING_TRESHOLD)
@@ -42,9 +42,8 @@ void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bo
 {
     for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {
-        tree.Query(bodyA->node->aabb, [&](const Node* n) -> bool {
-            RigidBody* bodyB = n->body;
 
+        tree.Query(tree.nodes[bodyA->node].aabb, [&](RigidBody* bodyB) -> bool {
             if (bodyA == bodyB)
             {
                 return true;

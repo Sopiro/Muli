@@ -98,7 +98,7 @@ public:
 
     uint32 GetID() const;
     uint32 GetIslandID() const;
-    const Node* GetNode() const;
+    int32 GetTreeNode() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
     World* GetWorld() const;
@@ -165,9 +165,9 @@ private:
     float resting = 0.0f;
     bool sleeping = false;
 
-    Node* node = nullptr;
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
+    int32 node;
 
     void NotifyForceUpdate() const;
 };
@@ -258,7 +258,7 @@ inline float RigidBody::GetInverseInertia() const
     return invInertia;
 }
 
-inline const Node* RigidBody::GetNode() const
+inline int32 RigidBody::GetTreeNode() const
 {
     return node;
 }
