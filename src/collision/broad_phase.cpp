@@ -9,8 +9,17 @@ void BroadPhase::UpdateDynamicTree(float dt)
 {
     for (RigidBody* body = world.bodyList; body; body = body->next)
     {
-        if (body->IsSleeping()) continue;
-        if (body->type == RigidBody::Type::Static) body->flag |= RigidBody::Flag::FlagSleeping;
+        // Clear island flag
+        body->flag &= ~RigidBody::Flag::FlagIsland;
+
+        if (body->IsSleeping())
+        {
+            continue;
+        }
+        if (body->type == RigidBody::Type::Static)
+        {
+            body->flag |= RigidBody::Flag::FlagSleeping;
+        }
 
         int32 node = body->node;
         AABB treeAABB = tree.nodes[node].aabb;
@@ -24,14 +33,22 @@ void BroadPhase::UpdateDynamicTree(float dt)
         Vec2 d = body->linearVelocity * dt * velocityMultiplier;
 
         if (d.x > 0.0f)
+        {
             aabb.max.x += d.x;
+        }
         else
+        {
             aabb.min.x += d.x;
+        }
 
         if (d.y > 0.0f)
+        {
             aabb.max.y += d.y;
+        }
         else
+        {
             aabb.min.y += d.y;
+        }
 
         aabb.max += aabbMargin;
         aabb.min -= aabbMargin;

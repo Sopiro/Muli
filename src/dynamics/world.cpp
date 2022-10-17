@@ -31,9 +31,6 @@ void World::Step(float dt)
     sleepingIslands = 0;
     sleepingBodies = 0;
 
-    std::unordered_set<uint32> visited{};
-    visited.reserve(bodyCount);
-
     // Use stack allocator to avoid per-frame allocation
     RigidBody** stack = (RigidBody**)stackAllocator.Allocate(bodyCount * sizeof(RigidBody*));
     uint32 stackPointer;
@@ -42,7 +39,12 @@ void World::Step(float dt)
     // After building island, each island can be solved in parallel because they are independent of each other
     for (RigidBody* b = bodyList; b; b = b->next)
     {
-        if (b->type == RigidBody::Type::Static || (visited.find(b->id) != visited.end()))
+        if (b->type == RigidBody::Type::Static)
+        {
+            continue;
+        }
+
+        if (b->flag & RigidBody::Flag::FlagSleeping || b->flag & RigidBody::Flag::FlagIsland)
         {
             continue;
         }
@@ -55,18 +57,18 @@ void World::Step(float dt)
         {
             RigidBody* t = stack[--stackPointer];
 
-            if (t->type == RigidBody::Type::Static || (visited.find(t->id) != visited.end()))
+            if (t->type == RigidBody::Type::Static || (t->flag & RigidBody::Flag::FlagIsland))
             {
                 continue;
             }
 
-            visited.insert(t->id);
+            t->flag |= RigidBody::Flag::FlagIsland;
             t->islandID = islandID;
             island.Add(t);
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
-                if (visited.find(ce->other->id) != visited.end())
+                if (ce->other->flag & RigidBody::Flag::FlagIsland)
                 {
                     continue;
                 }
@@ -86,7 +88,7 @@ void World::Step(float dt)
                     t->Awake();
                 }
 
-                if (visited.find(je->other->id) != visited.end())
+                if (je->other->flag & RigidBody::Flag::FlagIsland)
                 {
                     continue;
                 }

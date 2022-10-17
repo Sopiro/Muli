@@ -218,6 +218,7 @@ bool Demo::EnableBodyGrab()
     {
         if (target->GetType() == RigidBody::Type::Dynamic)
         {
+            target->Awake();
             gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
             gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
         }
