@@ -35,6 +35,12 @@ public:
         Dynamic,
     };
 
+    enum Flag
+    {
+        FlagIsland = 1 << 0,
+        FlagSleeping = 1 << 1,
+    };
+
     RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
     virtual ~RigidBody() noexcept;
 
@@ -152,6 +158,8 @@ protected:
     Type type;
     CollisionFilter filter;
 
+    uint16 flag;
+
 private:
     bool moved = false;
 
@@ -163,7 +171,6 @@ private:
     JointEdge* jointList = nullptr;
 
     float resting = 0.0f;
-    bool sleeping = false;
 
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
@@ -266,7 +273,7 @@ inline int32 RigidBody::GetTreeNode() const
 inline void RigidBody::Awake()
 {
     resting = 0.0f;
-    sleeping = false;
+    flag &= ~Flag::FlagSleeping;
 }
 
 inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
@@ -381,7 +388,7 @@ inline void RigidBody::SetCollisionFilter(const CollisionFilter& _filter)
 
 inline bool RigidBody::IsSleeping() const
 {
-    return sleeping;
+    return flag & Flag::FlagSleeping;
 }
 
 inline uint32 RigidBody::GetID() const

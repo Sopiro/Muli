@@ -12,7 +12,6 @@
 #include "circle.h"
 #include "capsule.h"
 #include "polygon.h"
-#include "box.h"
 
 #include "joint.h"
 #include "grab_joint.h"

@@ -32,7 +32,8 @@ void ContactManager::Update(float dt)
         }
 
         // Create new contact
-        Contact* c = new Contact(bodyA, bodyB, world.settings);
+        void* mem = world.blockAllocator.Allocate(sizeof(Contact));
+        Contact* c = new (mem) Contact(bodyA, bodyB, world.settings);
 
         // Insert into the world
         c->prev = nullptr;
@@ -124,8 +125,9 @@ void ContactManager::Destroy(Contact* c)
     if (c->nodeB.next) c->nodeB.next->prev = c->nodeB.prev;
     if (&c->nodeB == bodyB->contactList) bodyB->contactList = c->nodeB.next;
 
+    c->~Contact();
+    world.blockAllocator.Free(c, sizeof(Contact));
     --contactCount;
-    delete c;
 }
 
 void ContactManager::Reset()
@@ -137,7 +139,8 @@ void ContactManager::Reset()
     {
         Contact* c0 = c;
         c = c->GetNext();
-        delete c0; // Destroy(c0);
+        c0->~Contact();
+        world.blockAllocator.Free(c0, sizeof(Contact));
     }
     contactList = nullptr;
 

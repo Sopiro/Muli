@@ -11,7 +11,7 @@ public:
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
-        Box* b = world->CreateBox(0.3f);
+        RigidBody* b = world->CreateBox(0.3f);
         b->SetPosition(-3.0f, 5.0f);
 
         world->CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);

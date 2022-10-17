@@ -11,13 +11,13 @@ class Island
 
 private:
     World& world;
-    bool sleeping = false;
+    bool sleeping;
 
     // Static body is not included
-    std::vector<RigidBody*> bodies{};
+    std::vector<RigidBody*> bodies;
 
-    std::vector<Contact*> contacts{};
-    std::vector<Joint*> joints{};
+    std::vector<Contact*> contacts;
+    std::vector<Joint*> joints;
 
     Island(World& _world);
     void Solve();
@@ -26,6 +26,7 @@ private:
 
 inline Island::Island(World& _world)
     : world{ _world }
+    , sleeping{ false }
 {
 }
 

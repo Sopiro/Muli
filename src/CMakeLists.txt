@@ -14,7 +14,6 @@ set(HEADER_FILES
     ../include/muli/block_solver.h
 
     ../include/muli/rigidbody.h
-    ../include/muli/box.h
     ../include/muli/circle.h
     ../include/muli/polygon.h
     ../include/muli/capsule.h
@@ -39,6 +38,10 @@ set(HEADER_FILES
 
     ../include/muli/settings.h
     ../include/muli/growable_array.h
+    ../include/muli/stack_allocator.h
+    ../include/muli/block_allocator.h
+    ../include/muli/predefined_block_allocator.h
+    ../include/muli/fixed_block_allocator.h
     ../include/muli/common.h
     ../include/muli/util.h
     ../include/muli/muli.h
@@ -49,6 +52,9 @@ set(HEADER_FILES
 set(SOURCE_FILES
     common/util.cpp
     common/math.cpp
+    common/stack_allocator.cpp
+    common/block_allocator.cpp
+    common/predefined_block_allocator.cpp
 
     collision/aabbtree.cpp
     collision/collision.cpp
@@ -63,7 +69,6 @@ set(SOURCE_FILES
     dynamics/rigidbody.cpp
     dynamics/circle.cpp
     dynamics/polygon.cpp
-    dynamics/box.cpp
     dynamics/capsule.cpp
 
     dynamics/constraint/contact/contact.cpp

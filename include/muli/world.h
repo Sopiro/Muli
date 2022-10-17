@@ -1,21 +1,24 @@
 #pragma once
 
-#include "angle_joint.h"
-#include "box.h"
-#include "capsule.h"
-#include "circle.h"
 #include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
+#include "predefined_block_allocator.h"
+#include "stack_allocator.h"
+#include "util.h"
+
+#include "capsule.h"
+#include "circle.h"
+#include "polygon.h"
+#include "rigidbody.h"
+
+#include "angle_joint.h"
 #include "distance_joint.h"
 #include "grab_joint.h"
 #include "joint.h"
-#include "polygon.h"
 #include "prismatic_joint.h"
 #include "pulley_joint.h"
 #include "revolute_joint.h"
-#include "rigidbody.h"
-#include "util.h"
 #include "weld_joint.h"
 
 namespace muli
@@ -56,15 +59,15 @@ public:
 
     // Factory functions
 
-    Box* CreateBox(float size,
-                   RigidBody::Type type = RigidBody::Type::Dynamic,
-                   float radius = DEFAULT_RADIUS,
-                   float density = DEFAULT_DENSITY);
-    Box* CreateBox(float width,
-                   float height,
-                   RigidBody::Type type = RigidBody::Type::Dynamic,
-                   float radius = DEFAULT_RADIUS,
-                   float density = DEFAULT_DENSITY);
+    Polygon* CreateBox(float size,
+                       RigidBody::Type type = RigidBody::Type::Dynamic,
+                       float radius = DEFAULT_RADIUS,
+                       float density = DEFAULT_DENSITY);
+    Polygon* CreateBox(float width,
+                       float height,
+                       RigidBody::Type type = RigidBody::Type::Dynamic,
+                       float radius = DEFAULT_RADIUS,
+                       float density = DEFAULT_DENSITY);
     Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(const std::vector<Vec2>& vertices,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
@@ -159,6 +162,9 @@ public:
     void Awake();
 
 private:
+    StackAllocator stackAllocator;
+    PredefinedBlockAllocator blockAllocator;
+
     const WorldSettings& settings;
     uint32 uid{ 0 };
 
@@ -182,18 +188,9 @@ private:
     bool integrateForce = false;
 
     void Add(Joint* joint);
+    void FreeBody(RigidBody* body);
+    void FreeJoint(Joint* joint);
 };
-
-inline World::World(const WorldSettings& simulationSettings)
-    : settings{ simulationSettings }
-    , contactManager{ *this }
-{
-}
-
-inline World::~World() noexcept
-{
-    Reset();
-}
 
 inline void World::Awake()
 {

@@ -1,5 +1,4 @@
 #include "muli/collision.h"
-#include "muli/box.h"
 #include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/contact_point.h"

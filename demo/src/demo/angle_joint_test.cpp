@@ -34,9 +34,9 @@ public:
             world->CreateAngleJoint(ground, b, 2, 1, 1);
         }
 
-        // Box* b1 = world->CreateBox(0.5f);
+        // RigidBody* b1 = world->CreateBox(0.5f);
         // b1->SetPosition(0, 3);
-        // Box* b2 = world->CreateBox(0.5f);
+        // RigidBody* b2 = world->CreateBox(0.5f);
         // b2->SetPosition(2, 2);
 
         // world->CreateAngleJoint(b1, b2)

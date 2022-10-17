@@ -5,6 +5,17 @@
 namespace muli
 {
 
+World::World(const WorldSettings& simulationSettings)
+    : settings{ simulationSettings }
+    , contactManager{ *this }
+{
+}
+
+World::~World() noexcept
+{
+    Reset();
+}
+
 void World::Step(float dt)
 {
     settings.DT = dt;
@@ -108,9 +119,14 @@ void World::Step(float dt)
     numIslands = islandID;
 
     for (RigidBody* b : destroyBufferBody)
+    {
         Destroy(b);
+    }
     for (Joint* j : destroyBufferJoint)
+    {
         Destroy(j);
+    }
+
     destroyBufferBody.clear();
     destroyBufferJoint.clear();
 
@@ -126,7 +142,7 @@ void World::Reset()
     {
         RigidBody* b0 = b;
         b = b->next;
-        delete b0;
+        FreeBody(b0);
     }
 
     Joint* j = jointList;
@@ -134,7 +150,7 @@ void World::Reset()
     {
         Joint* j0 = j;
         j = j->next;
-        delete j0;
+        FreeJoint(j0);
     }
 
     bodyList = nullptr;
@@ -145,6 +161,8 @@ void World::Reset()
     jointCount = 0;
 
     uid = 0;
+
+    muliAssert(blockAllocator.GetBlockCount() == 0);
 }
 
 void World::Add(RigidBody* body)
@@ -207,7 +225,7 @@ void World::Destroy(RigidBody* body)
     if (body == bodyList) bodyList = body->next;
     if (body == bodyListTail) bodyListTail = body->prev;
 
-    delete body;
+    FreeBody(body);
     --bodyCount;
 }
 
@@ -255,8 +273,8 @@ void World::Destroy(Joint* joint)
         if (&joint->nodeB == bodyB->jointList) bodyB->jointList = joint->nodeB.next;
     }
 
+    FreeJoint(joint);
     --jointCount;
-    delete joint;
 }
 
 void World::Destroy(const std::vector<Joint*>& joints)
@@ -320,21 +338,24 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     return res;
 }
 
-Box* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
+Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
 {
-    Box* b = new Box(width, height, type, radius, density);
+    void* mem = blockAllocator.Allocate(sizeof(Polygon));
+    Polygon* b = new (mem)
+        Polygon({ Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } }, type, true, radius, density);
     Add(b);
     return b;
 }
 
-Box* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
+Polygon* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
 {
     return CreateBox(size, size, type, radius, density);
 }
 
 Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
 {
-    Circle* c = new Circle(radius, type, density);
+    void* mem = blockAllocator.Allocate(sizeof(Circle));
+    Circle* c = new (mem) Circle(radius, type, density);
     Add(c);
     return c;
 }
@@ -342,6 +363,7 @@ Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
 Polygon* World::CreatePolygon(
     const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
+    void* mem = blockAllocator.Allocate(sizeof(Polygon));
     Polygon* p = new Polygon(vertices, type, resetPosition, radius, density);
     Add(p);
     return p;
@@ -372,7 +394,8 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
+    void* mem = blockAllocator.Allocate(sizeof(Polygon));
+    Polygon* p = new (mem) Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
     Add(p);
     return p;
 }
@@ -405,21 +428,24 @@ Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float ini
         vertices.push_back(corner);
     }
 
-    Polygon* p = new Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
+    void* mem = blockAllocator.Allocate(sizeof(Polygon));
+    Polygon* p = new (mem) Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
     Add(p);
     return p;
 }
 
 Capsule* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
 {
-    Capsule* c = new Capsule(length, radius, horizontal, type, density);
+    void* mem = blockAllocator.Allocate(sizeof(Capsule));
+    Capsule* c = new (mem) Capsule(length, radius, horizontal, type, density);
     Add(c);
     return c;
 }
 Capsule* World::CreateCapsule(
     const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, RigidBody::Type type, float density)
 {
-    Capsule* c = new Capsule(p1, p2, radius, resetPosition, type, density);
+    void* mem = blockAllocator.Allocate(sizeof(Capsule));
+    Capsule* c = new (mem) Capsule(p1, p2, radius, resetPosition, type, density);
     Add(c);
     return c;
 }
@@ -432,7 +458,8 @@ GrabJoint* World::CreateGrabJoint(
         throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
-    GrabJoint* gj = new GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(GrabJoint));
+    GrabJoint* gj = new (mem) GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
 
     Add(gj);
     return gj;
@@ -446,7 +473,8 @@ RevoluteJoint* World::CreateRevoluteJoint(
         throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
-    RevoluteJoint* rj = new RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(RevoluteJoint));
+    RevoluteJoint* rj = new (mem) RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
 
     Add(rj);
     return rj;
@@ -466,7 +494,9 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
         throw std::runtime_error("You should register the rigid bodies before registering the joint");
     }
 
-    DistanceJoint* dj = new DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
+    DistanceJoint* dj =
+        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
 
     Add(dj);
     return dj;
@@ -481,7 +511,8 @@ DistanceJoint* World::CreateDistanceJoint(
 
 AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    AngleJoint* aj = new AngleJoint(bodyA, bodyB, settings, frequency, dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
+    AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, settings, frequency, dampingRatio, jointMass);
 
     Add(aj);
     return aj;
@@ -489,8 +520,9 @@ AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float fr
 
 WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    WeldJoint* wj = new WeldJoint(bodyA, bodyB, (bodyA->GetPosition() + bodyB->GetPosition()) * 0.5f, settings, frequency,
-                                  dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(WeldJoint));
+    WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, (bodyA->GetPosition() + bodyB->GetPosition()) * 0.5f, settings, frequency,
+                                        dampingRatio, jointMass);
 
     Add(wj);
     return wj;
@@ -499,7 +531,8 @@ WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
 PrismaticJoint* World::CreatePrismaticJoint(
     RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
 {
-    PrismaticJoint* pj = new PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(PrismaticJoint));
+    PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
     Add(pj);
     return pj;
@@ -523,8 +556,9 @@ PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
                                       float dampingRatio,
                                       float jointMass)
 {
-    PulleyJoint* pj = new PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, settings, ratio, frequency,
-                                      dampingRatio, jointMass);
+    void* mem = blockAllocator.Allocate(sizeof(PulleyJoint));
+    PulleyJoint* pj = new (mem) PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, settings, ratio,
+                                            frequency, dampingRatio, jointMass);
 
     Add(pj);
     return pj;
@@ -571,6 +605,60 @@ void World::Add(Joint* joint)
     }
 
     ++jointCount;
+}
+
+void World::FreeBody(RigidBody* body)
+{
+    body->~RigidBody();
+
+    switch (body->shape)
+    {
+    case RigidBody::Shape::ShapePolygon:
+        blockAllocator.Free(body, sizeof(Polygon));
+        break;
+    case RigidBody::Shape::ShapeCircle:
+        blockAllocator.Free(body, sizeof(Circle));
+        break;
+    case RigidBody::Shape::ShapeCapsule:
+        blockAllocator.Free(body, sizeof(Capsule));
+        break;
+    default:
+        muliAssert(false);
+        break;
+    }
+}
+
+void World::FreeJoint(Joint* joint)
+{
+    joint->~Joint();
+
+    switch (joint->type)
+    {
+    case Joint::Type::JointGrab:
+        blockAllocator.Free(joint, sizeof(GrabJoint));
+        break;
+    case Joint::Type::JointRevolute:
+        blockAllocator.Free(joint, sizeof(RevoluteJoint));
+        break;
+    case Joint::Type::JointDistance:
+        blockAllocator.Free(joint, sizeof(DistanceJoint));
+        break;
+    case Joint::Type::JointAngle:
+        blockAllocator.Free(joint, sizeof(AngleJoint));
+        break;
+    case Joint::Type::JointWeld:
+        blockAllocator.Free(joint, sizeof(WeldJoint));
+        break;
+    case Joint::Type::JointPrismatic:
+        blockAllocator.Free(joint, sizeof(PrismaticJoint));
+        break;
+    case Joint::Type::JointPulley:
+        blockAllocator.Free(joint, sizeof(PulleyJoint));
+        break;
+    default:
+        muliAssert(false);
+        break;
+    }
 }
 
 } // namespace muli

@@ -13,7 +13,7 @@ public:
     {
         ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
-        Box* b = world->CreateBox(0.5f);
+        RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(0.0f, 2.0f);
         world->CreatePrismaticJoint(ground, b);
 

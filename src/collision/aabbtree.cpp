@@ -9,7 +9,6 @@ AABBTree::AABBTree()
 {
     nodeID = 0;
     root = nullNode;
-
     nodeCapacity = 32;
     nodeCount = 0;
     nodes = (Node*)malloc(nodeCapacity * sizeof(Node));
@@ -514,7 +513,6 @@ void AABBTree::Reset()
     nodeID = 0;
     root = nullNode;
     nodeCount = 0;
-
     memset(nodes, 0, nodeCapacity * sizeof(Node));
 
     // Build a linked list for the free list.

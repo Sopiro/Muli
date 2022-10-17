@@ -1,6 +1,5 @@
 #include "muli/util.h"
 #include "muli/aabb.h"
-#include "muli/box.h"
 #include "muli/circle.h"
 
 namespace muli

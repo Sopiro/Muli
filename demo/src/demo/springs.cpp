@@ -11,10 +11,10 @@ public:
     {
         settings.APPLY_GRAVITY = false;
 
-        Box* g = world->CreateBox(0.3f, 6, RigidBody::Type::Static);
+        RigidBody* g = world->CreateBox(0.3f, 6, RigidBody::Type::Static);
         g->SetPosition(0.0f, 3.6f);
 
-        Box* b = world->CreateBox(0.3f);
+        RigidBody* b = world->CreateBox(0.3f);
         b->SetPosition(3.0f, 3.6f + 2.0f);
         world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), 2.0f, 1.0f, 0.05f, b->GetMass());
 

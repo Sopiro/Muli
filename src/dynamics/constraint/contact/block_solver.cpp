@@ -165,8 +165,10 @@ void BlockSolver::Solve()
         vn2 = b.y;
         if (vn1 >= 0.0f && vn2 >= 0.0f) break;
 
-        // How did you reach here?! something went wrong!
+// How did you reach here?! something went wrong!
+#if 0
         muliAssert(false);
+#endif
         break;
     }
 

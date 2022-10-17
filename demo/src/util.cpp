@@ -1,6 +1,5 @@
 #include "util.h"
 #include "common.h"
-#include "muli/box.h"
 #include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/polygon.h"

@@ -6,7 +6,6 @@
 namespace muli
 {
 
-// Children: Box
 class Polygon : public RigidBody
 {
 public:

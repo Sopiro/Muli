@@ -15,7 +15,14 @@ void Island::Solve()
     {
         RigidBody* b = bodies[i];
 
-        b->sleeping = sleeping;
+        if (sleeping)
+        {
+            b->flag |= RigidBody::Flag::FlagSleeping;
+        }
+        else
+        {
+            b->flag &= ~RigidBody::Flag::FlagSleeping;
+        }
 
         if (sleeping)
         {

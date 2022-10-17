@@ -9,8 +9,8 @@ void BroadPhase::UpdateDynamicTree(float dt)
 {
     for (RigidBody* body = world.bodyList; body; body = body->next)
     {
-        if (body->sleeping) continue;
-        if (body->type == RigidBody::Type::Static) body->sleeping = true;
+        if (body->IsSleeping()) continue;
+        if (body->type == RigidBody::Type::Static) body->flag |= RigidBody::Flag::FlagSleeping;
 
         int32 node = body->node;
         AABB treeAABB = tree.nodes[node].aabb;
@@ -22,14 +22,17 @@ void BroadPhase::UpdateDynamicTree(float dt)
         }
 
         Vec2 d = body->linearVelocity * dt * velocityMultiplier;
+
         if (d.x > 0.0f)
             aabb.max.x += d.x;
         else
             aabb.min.x += d.x;
+
         if (d.y > 0.0f)
             aabb.max.y += d.y;
         else
             aabb.min.y += d.y;
+
         aabb.max += aabbMargin;
         aabb.min -= aabbMargin;
 
@@ -42,7 +45,6 @@ void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bo
 {
     for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {
-
         tree.Query(tree.nodes[bodyA->node].aabb, [&](RigidBody* bodyB) -> bool {
             if (bodyA == bodyB)
             {

@@ -52,7 +52,6 @@ RigidBody::RigidBody(RigidBody&& _other) noexcept
     _other.jointList = nullptr;
 
     resting = _other.resting;
-    sleeping = _other.sleeping;
 
     node = _other.node;
     _other.node = nullNode;
