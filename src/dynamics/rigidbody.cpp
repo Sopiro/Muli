@@ -9,6 +9,7 @@ RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
     : type{ _type }
     , shape{ _shape }
     , node{ nullNode }
+    , flag{ 0 }
 {
     if (type != Dynamic)
     {

@@ -24,10 +24,7 @@ void World::Step(float dt)
     contactManager.Update(dt);
 
     // Build the constraint island
-    Island island{ *this };
-    island.bodies.reserve(bodyCount);
-    island.joints.reserve(jointCount);
-    island.contacts.reserve(contactManager.contactCount);
+    Island island{ *this, bodyCount, contactManager.contactCount, jointCount };
 
     uint32 restingBodies = 0;
     uint32 islandID = 0;
@@ -35,9 +32,11 @@ void World::Step(float dt)
     sleepingBodies = 0;
 
     std::unordered_set<uint32> visited{};
-    std::vector<RigidBody*> stack;
     visited.reserve(bodyCount);
-    stack.reserve(bodyCount);
+
+    // Use stack allocator to avoid per-frame allocation
+    RigidBody** stack = (RigidBody**)stackAllocator.Allocate(bodyCount * sizeof(RigidBody*));
+    uint32 stackPointer;
 
     // Perform a DFS(Depth First Search) on the constraint graph
     // After building island, each island can be solved in parallel because they are independent of each other
@@ -48,14 +47,13 @@ void World::Step(float dt)
             continue;
         }
 
-        stack.clear();
-        stack.push_back(b);
+        stackPointer = 0;
+        stack[stackPointer++] = b;
 
-        islandID++;
-        while (stack.size() > 0)
+        ++islandID;
+        while (stackPointer > 0)
         {
-            RigidBody* t = stack.back();
-            stack.pop_back();
+            RigidBody* t = stack[--stackPointer];
 
             if (t->type == RigidBody::Type::Static || (visited.find(t->id) != visited.end()))
             {
@@ -64,7 +62,7 @@ void World::Step(float dt)
 
             visited.insert(t->id);
             t->islandID = islandID;
-            island.bodies.push_back(t);
+            island.Add(t);
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
@@ -75,8 +73,8 @@ void World::Step(float dt)
 
                 if (ce->contact->touching)
                 {
-                    island.contacts.push_back(ce->contact);
-                    stack.push_back(ce->other);
+                    island.Add(ce->contact);
+                    stack[stackPointer++] = ce->other;
                 }
             }
 
@@ -84,7 +82,7 @@ void World::Step(float dt)
             {
                 if (je->other == t)
                 {
-                    island.joints.push_back(je->joint);
+                    island.Add(je->joint);
                     t->Awake();
                 }
 
@@ -93,8 +91,8 @@ void World::Step(float dt)
                     continue;
                 }
 
-                island.joints.push_back(je->joint);
-                stack.push_back(je->other);
+                island.Add(je->joint);
+                stack[stackPointer++] = je->other;
             }
 
             if (t->resting > settings.SLEEPING_TRESHOLD)
@@ -103,11 +101,11 @@ void World::Step(float dt)
             }
         }
 
-        island.sleeping = settings.SLEEPING && (restingBodies == island.bodies.size());
+        island.sleeping = settings.SLEEPING && (restingBodies == island.bodyCount);
 
         if (island.sleeping)
         {
-            sleepingBodies += static_cast<uint32>(island.bodies.size());
+            sleepingBodies += island.bodyCount;
             sleepingIslands++;
         }
 
@@ -115,6 +113,8 @@ void World::Step(float dt)
         island.Clear();
         restingBodies = 0;
     }
+
+    stackAllocator.Free(stack);
 
     numIslands = islandID;
 
