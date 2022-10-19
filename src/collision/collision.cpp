@@ -645,174 +645,253 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
     }
 }
 
-float ComputeDistance(RigidBody* b, const Vec2& q)
+float ComputeDistance(RigidBody* b, Vec2 q)
 {
     return Dist(GetClosestPoint(b, q), q);
 }
 
-bool TestPointInside(RigidBody* b, const Vec2& q)
+bool TestPointInside(Circle* c, Vec2 q)
+{
+    return Dist2(c->GetPosition(), q) < c->GetRadius() * c->GetRadius();
+}
+
+bool TestPointInside(Capsule* c, Vec2 q)
+{
+    Vec2 localQ = MulT(c->GetTransform(), q);
+
+    float l = c->GetLength();
+    float r = c->GetRadius();
+
+    Vec2 va = c->GetVertexA();
+    Vec2 vb = c->GetVertexB();
+
+    UV w = ComputeWeights(va, vb, localQ);
+    float r2 = r * r;
+
+    if (w.v <= 0.0f) // Region A
+    {
+        return Dist2(va, localQ) < r2;
+    }
+    else if (w.v >= 1.0f) // Region B
+    {
+        return Dist2(vb, localQ) < r2;
+    }
+    else // Region AB
+    {
+        Vec2 p = LerpVector(va, vb, w);
+        return Dist2(p, localQ) < r2;
+    }
+}
+
+bool TestPointInside(Polygon* p, Vec2 q)
+{
+    const std::vector<Vec2>& vertices = p->GetVertices();
+
+    Vec2 localQ = MulT(p->GetTransform(), q);
+
+    float dir = Cross(vertices[0] - localQ, vertices[1] - localQ);
+    for (uint32 i = 1; i < vertices.size(); i++)
+    {
+        float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertices.size()] - localQ);
+
+        if (dir * nDir < 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool TestPointInside(RigidBody* b, Vec2 q)
 {
     RigidBody::Shape shape = b->GetShape();
     switch (shape)
     {
     case RigidBody::Shape::ShapeCircle:
     {
-        Circle* c = static_cast<Circle*>(b);
-
-        return Dist2(c->GetPosition(), q) < c->GetRadius() * c->GetRadius();
+        return TestPointInside(static_cast<Circle*>(b), q);
     }
     case RigidBody::Shape::ShapeCapsule:
     {
-        Capsule* c = static_cast<Capsule*>(b);
-
-        Vec2 localQ = MulT(c->GetTransform(), q);
-
-        float l = c->GetLength();
-        float r = c->GetRadius();
-
-        Vec2 va = c->GetVertexA();
-        Vec2 vb = c->GetVertexB();
-
-        UV w = ComputeWeights(va, vb, localQ);
-        float r2 = r * r;
-
-        if (w.v <= 0.0f) // Region A
-        {
-            return Dist2(va, localQ) < r2;
-        }
-        else if (w.v >= 1.0f) // Region B
-        {
-            return Dist2(vb, localQ) < r2;
-        }
-        else // Region AB
-        {
-            Vec2 p = LerpVector(va, vb, w);
-            return Dist2(p, localQ) < r2;
-        }
+        return TestPointInside(static_cast<Capsule*>(b), q);
     }
     case RigidBody::Shape::ShapePolygon:
     {
-        Polygon* p = static_cast<Polygon*>(b);
-        const std::vector<Vec2>& vertices = p->GetVertices();
-
-        Vec2 localQ = MulT(p->GetTransform(), q);
-
-        float dir = Cross(vertices[0] - localQ, vertices[1] - localQ);
-        for (uint32 i = 1; i < vertices.size(); i++)
-        {
-            float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertices.size()] - localQ);
-
-            if (dir * nDir < 0)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return TestPointInside(static_cast<Polygon*>(b), q);
     }
     default:
         throw std::runtime_error("Not a supported shape");
     }
 }
 
-Vec2 GetClosestPoint(RigidBody* b, const Vec2& q)
+Vec2 GetClosestPoint(Circle* b, Vec2 q)
 {
-    if (TestPointInside(b, q))
+    float radius = b->GetRadius();
+
+    Vec2 dir = (q - b->GetPosition());
+    float distance = dir.Normalize();
+
+    if (distance <= radius)
+    {
+        return q;
+    }
+    else
+    {
+        return b->GetPosition() + dir * radius;
+    }
+}
+
+Vec2 GetClosestPoint(Capsule* c, Vec2 q)
+{
+    float radius = c->GetRadius();
+
+    const Vec2& va = c->GetVertexA();
+    const Vec2& vb = c->GetVertexB();
+
+    Vec2 localQ = MulT(c->GetTransform(), q);
+    UV w = ComputeWeights(va, vb, localQ);
+
+    Vec2 closest;
+    Vec2 normal;
+    float distance;
+    if (w.v <= 0) // Region A
+    {
+        closest = va;
+        normal = localQ - va;
+        distance = normal.Normalize();
+    }
+    else if (w.v >= 1) // Region B
+    {
+        closest = vb;
+        normal = localQ - vb;
+        distance = normal.Normalize();
+    }
+    else // Region AB
+    {
+        normal.Set(0.0f, 1.0f);
+        distance = Dot(localQ - va, normal);
+
+        if (Dot(normal, localQ - va) < 0.0f)
+        {
+            normal *= -1;
+            distance *= -1;
+        }
+
+        closest = localQ + normal * -distance;
+    }
+
+    if (distance <= radius)
+    {
+        return q;
+    }
+    else
+    {
+        closest += normal * radius;
+        return c->GetTransform() * closest;
+    }
+}
+
+Vec2 GetClosestPoint(Polygon* p, Vec2 q)
+{
+    float radius = p->GetRadius();
+    Vec2 localQ = MulT(p->GetTransform(), q);
+    const std::vector<Vec2>& vertices = p->GetVertices();
+    int32 vertexCount = static_cast<int32>(vertices.size());
+
+    float s0 = Cross(vertices[0] - localQ, vertices[1] - localQ);
+    int32 i0;
+    for (i0 = 1; i0 < vertexCount; i0++)
+    {
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        float s1 = Cross(vertices[i0] - localQ, vertices[i1] - localQ);
+
+        if (s0 * s1 < 0)
+        {
+            break;
+        }
+    }
+
+    if (i0 == vertexCount)
     {
         return q;
     }
 
+    UV w;
+    Vec2 normal;
+    int32 dir = 0;
+
+    i0 = 0;
+    while (true)
+    {
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        w = ComputeWeights(v0, v1, localQ);
+        if (w.v <= 0) // Region v0
+        {
+            if (dir > 0)
+            {
+                normal = (localQ - v0).Normalized();
+                return p->GetTransform() * (v0 + normal * radius);
+            }
+
+            dir = -1;
+            i0 = (i0 - 1 + vertexCount) % vertexCount;
+        }
+        else if (w.v >= 1) // Region v1
+        {
+            if (dir < 0)
+            {
+                normal = (localQ - v1).Normalized();
+                return p->GetTransform() * (v1 + normal * radius);
+            }
+
+            dir = 1;
+            i0 = (i0 + 1) % vertexCount;
+        }
+        else // Inside the region
+        {
+            normal = Cross(v1 - v0, 1.0f).Normalized();
+            float distance = Dot(localQ - v0, normal);
+            if (distance >= 0)
+            {
+                Vec2 closest = localQ + normal * (radius - distance);
+                return p->GetTransform() * closest;
+            }
+
+            dir = 1;
+            i0 = (i0 + 1) % vertexCount;
+        }
+    }
+}
+
+Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
+{
     RigidBody::Shape shape = b->GetShape();
     switch (shape)
     {
     case RigidBody::Shape::ShapeCircle:
     {
-        Circle* c = static_cast<Circle*>(b);
-        Vec2 dir = (q - b->GetPosition()).Normalized();
-
-        return b->GetPosition() + dir * c->GetRadius();
+        return GetClosestPoint(static_cast<Circle*>(b), q);
     }
     case RigidBody::Shape::ShapeCapsule:
     {
-        Capsule* c = static_cast<Capsule*>(b);
-        const Vec2& va = c->GetVertexA();
-        const Vec2& vb = c->GetVertexB();
-
-        Vec2 localQ = MulT(c->GetTransform(), q);
-        UV w = ComputeWeights(va, vb, localQ);
-
-        Vec2 closest;
-        Vec2 normal;
-        if (w.v <= 0) // Region A
-        {
-            closest = va;
-            normal = (localQ - va).Normalized();
-        }
-        else if (w.v >= 1) // Region B
-        {
-            closest = vb;
-            normal = (localQ - vb).Normalized();
-        }
-        else // Region AB
-        {
-            normal.Set(0.0f, 1.0f);
-            float distance = Dot(localQ - va, normal);
-
-            if (Dot(normal, localQ - va) < 0.0f)
-            {
-                normal *= -1;
-                distance *= -1;
-            }
-
-            closest = localQ + normal * -distance;
-        }
-
-        closest += normal * c->GetRadius();
-
-        return c->GetTransform() * closest;
+        return GetClosestPoint(static_cast<Capsule*>(b), q);
     }
     case RigidBody::Shape::ShapePolygon:
     {
-        Polygon* p = static_cast<Polygon*>(b);
-
-        Vec2 p2q = (q - p->GetPosition()).Normalized();
-        Edge e = GetIntersectingEdge(p, p2q);
-
-        UV w = ComputeWeights(e.p1.position, e.p2.position, q);
-
-        Vec2 closest;
-        Vec2 normal;
-        if (w.v <= 0) // Region p1
-        {
-            closest = e.p1.position;
-            normal = (q - e.p1.position).Normalized();
-        }
-        else if (w.v >= 1) // Region p2
-        {
-            closest = e.p2.position;
-            normal = (q - e.p2.position).Normalized();
-        }
-        else // Region middle
-        {
-            // Remove floating point error; Dot(q - closest, e.p2 - e.p1) == 0
-
-            normal = -e.normal;
-            float distance = Dot(q - e.p1.position, normal);
-            muliAssert(distance >= 0.0f);
-
-            closest = q + normal * -distance;
-        }
-
-        closest += normal * p->GetRadius();
-
-        return closest;
+        return GetClosestPoint(static_cast<Polygon*>(b), q);
     }
     default:
         throw std::runtime_error("Not a supported shape");
     }
 }
 
-Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
+Edge GetIntersectingEdge(Polygon* p, Vec2 dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
     const std::vector<Vec2>& vertices = p->GetVertices();

@@ -60,6 +60,10 @@ public:
         std::vector<Vec2>& pl = game.GetPointList();
         std::vector<Vec2>& ll = game.GetLineList();
 
+        // pl.push_back(b->GetPosition());
+        // ll.push_back(b->GetPosition());
+        // ll.push_back(mpos);
+
         pl.push_back(closest);
         pl.push_back(mpos);
         ll.push_back(closest);
