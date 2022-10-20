@@ -799,31 +799,13 @@ Vec2 GetClosestPoint(Polygon* p, Vec2 q)
     const std::vector<Vec2>& vertices = p->GetVertices();
     int32 vertexCount = static_cast<int32>(vertices.size());
 
-    float s0 = Cross(vertices[0] - localQ, vertices[1] - localQ);
-    int32 i0;
-    for (i0 = 1; i0 < vertexCount; i0++)
-    {
-        int32 i1 = (i0 + 1) % vertexCount;
-
-        float s1 = Cross(vertices[i0] - localQ, vertices[i1] - localQ);
-
-        if (s0 * s1 < 0)
-        {
-            break;
-        }
-    }
-
-    if (i0 == vertexCount)
-    {
-        return q;
-    }
-
     UV w;
     Vec2 normal;
     int32 dir = 0;
+    int32 i0 = 0;
+    int32 insideCheck = 0;
 
-    i0 = 0;
-    while (true)
+    while (insideCheck < vertexCount)
     {
         int32 i1 = (i0 + 1) % vertexCount;
 
@@ -863,10 +845,18 @@ Vec2 GetClosestPoint(Polygon* p, Vec2 q)
                 return p->GetTransform() * closest;
             }
 
-            dir = 1;
+            if (dir != 0)
+            {
+                return q;
+            }
+
+            ++insideCheck;
+            dir = 0;
             i0 = (i0 + 1) % vertexCount;
         }
     }
+
+    return q;
 }
 
 Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
