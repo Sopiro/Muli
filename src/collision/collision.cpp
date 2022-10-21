@@ -582,64 +582,146 @@ static float ComputeDistanceCircleVsCircle(RigidBody* a, RigidBody* b)
 
     if (d2 > r2 * r2)
     {
-        return 0.0f;
+        return Sqrt(d2) - r2;
     }
     else
     {
-        return Sqrt(d2);
+        return 0.0f;
     }
 }
 
 static float ComputeDistanceCapsuleVsCircle(RigidBody* a, RigidBody* b)
 {
-    Vec2 localP = MulT(a->GetTransform(), b->GetPosition());
+    Vec2 localC = MulT(a->GetTransform(), b->GetPosition());
 
     Capsule* c = static_cast<Capsule*>(a);
-    const Vec2& va = c->GetVertexA();
-    const Vec2& vb = c->GetVertexB();
+    Vec2 va = c->GetVertexA();
+    Vec2 vb = c->GetVertexB();
 
-    UV w = ComputeWeights(va, vb, localP);
-
-    const Vec2& closest = w.v <= 0.0f ? va : (w.v >= 1.0f ? vb : LerpVector(va, vb, w));
-
-    float d2 = Dist2(closest, localP);
     float r2 = a->GetRadius() + b->GetRadius();
 
-    if (d2 > r2 * r2)
+    UV w = ComputeWeights(va, vb, localC);
+
+    float d2;
+    if (w.v <= 0.0f)
     {
-        return 0.0f;
+        d2 = Dist2(va, localC);
+    }
+    else if (w.v >= 1.0f)
+    {
+        d2 = Dist2(vb, localC);
     }
     else
     {
-        return Sqrt(d2);
+        Vec2 normal{ 0.0f, 1.0f };
+        float d = Abs(Dot(normal, localC - va));
+
+        if (d > r2)
+        {
+            return d - r2;
+        }
+        else
+        {
+            return 0.0f;
+        }
+    }
+
+    if (d2 > r2 * r2)
+    {
+        return Sqrt(d2) - r2;
+    }
+    else
+    {
+        return 0.0f;
     }
 }
 
 static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
 {
-    Vec2 pa = a->GetPosition();
-    Vec2 pb = b->GetPosition();
+    Polygon* p = static_cast<Polygon*>(a);
+    const std::vector<Vec2>& vertices = p->GetVertices();
+    size_t vertexCount = vertices.size();
 
-    Vec2 a2b = (pb - pa).Normalized();
+    Vec2 localC = MulT(p->GetTransform(), b->GetPosition());
 
-    Edge e = GetIntersectingEdge(static_cast<Polygon*>(a), a2b);
-    UV w = ComputeWeights(e.p1.position, e.p2.position, pb);
-
-    const Vec2& closest =
-        w.v <= 0.0f ? e.p1.position : (w.v >= 1.0f ? e.p2.position : LerpVector(e.p1.position, e.p2.position, w));
-
-    Vec2 n = pb - closest;
-    float d2 = n.Length2();
     float r2 = a->GetRadius() + b->GetRadius();
 
-    if (d2 > r2 * r2)
+    UV w;
+    int32 dir = 0;
+    size_t i0 = 0;
+    int32 insideCheck = 0;
+    while (insideCheck < vertexCount)
     {
-        return 0.0f;
+        size_t i1 = (i0 + 1) % vertexCount;
+
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        w = ComputeWeights(v0, v1, localC);
+        if (w.v <= 0) // Region v0
+        {
+            if (dir > 0)
+            {
+                float d2 = Dist2(v0, localC);
+                if (d2 > r2 * r2)
+                {
+                    return Sqrt(d2) - r2;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+
+            dir = -1;
+            i0 = (i0 - 1 + vertexCount) % vertexCount;
+        }
+        else if (w.v >= 1) // Region v1
+        {
+            if (dir < 0)
+            {
+                float d2 = Dist2(v1, localC);
+                if (d2 > r2 * r2)
+                {
+                    return Sqrt(d2) - r2;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+
+            dir = 1;
+            i0 = (i0 + 1) % vertexCount;
+        }
+        else // Inside the region
+        {
+            Vec2 normal = Cross(v1 - v0, 1.0f).Normalized();
+            float d = Dot(localC - v0, normal);
+            if (d >= 0)
+            {
+                if (d > r2)
+                {
+                    return d - r2;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+
+            if (dir != 0)
+            {
+                return 0.0f;
+            }
+
+            ++insideCheck;
+            dir = 0;
+            i0 = (i0 + 1) % vertexCount;
+        }
     }
-    else
-    {
-        return Sqrt(d2);
-    }
+
+    return 0.0f;
 }
 
 static float ComputeDistanceConvexVsConvex(RigidBody* a, RigidBody* b)
@@ -654,15 +736,16 @@ static float ComputeDistanceConvexVsConvex(RigidBody* a, RigidBody* b)
     {
         ClosestPoint cp = gr.simplex.GetClosestPoint(origin);
 
-        float d = cp.position.Length();
+        float d2 = cp.position.Length2();
+        float r2 = a->GetRadius() + b->GetRadius();
 
-        if (d <= a->GetRadius() + b->GetRadius())
+        if (d2 > r2 * r2)
         {
-            return 0.0f;
+            return Sqrt(d2) - r2;
         }
         else
         {
-            return d;
+            return 0.0f;
         }
     }
 }
