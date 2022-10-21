@@ -7,7 +7,7 @@ namespace muli
 //                   Sizes
 // circle           : 248
 // capsule          : 264
-// polygon          : 272
+// polygon          : 296
 
 // Angle joint      : 216
 // Grab joint       : 256
@@ -33,6 +33,7 @@ static constexpr int32 blockSizes[predefinedBlockSizeCount] = {
     448, // 11
     512, // 12
     640, // 13
+    704, // 14
 };
 
 static constexpr int32 chunkSize = 16 * 1024;
@@ -84,6 +85,7 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     }
     if (size > maxPredefinedBlockSize)
     {
+        muliAssert(false);
         return malloc(size);
     }
 

@@ -11,16 +11,18 @@ int main(int argc, char** argv)
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
 
-    std::cout << "circle: " << sizeof(muli::Circle) << std::endl;
-    std::cout << "capsule: " << sizeof(muli::Capsule) << std::endl;
-    std::cout << "polygon: " << sizeof(muli::Polygon) << std::endl;
+    std::cout << "Circle: " << sizeof(muli::Circle) << '\n';
+    std::cout << "Capsule: " << sizeof(muli::Capsule) << '\n';
+    std::cout << "Polygon: " << sizeof(muli::Polygon) << '\n';
+    std::cout << "Contact: " << sizeof(muli::Contact) << '\n';
+    std::cout << '\n';
 
-    std::cout << "Angle joint: " << sizeof(muli::AngleJoint) << std::endl;
-    std::cout << "Grab joint: " << sizeof(muli::GrabJoint) << std::endl;
-    std::cout << "Distance joint: " << sizeof(muli::DistanceJoint) << std::endl;
-    std::cout << "Revolute joint: " << sizeof(muli::RevoluteJoint) << std::endl;
-    std::cout << "Prismatic joint: " << sizeof(muli::PrismaticJoint) << std::endl;
-    std::cout << "Pulley joint: " << sizeof(muli::PulleyJoint) << std::endl;
+    std::cout << "Angle joint: " << sizeof(muli::AngleJoint) << '\n';
+    std::cout << "Grab joint: " << sizeof(muli::GrabJoint) << '\n';
+    std::cout << "Distance joint: " << sizeof(muli::DistanceJoint) << '\n';
+    std::cout << "Revolute joint: " << sizeof(muli::RevoluteJoint) << '\n';
+    std::cout << "Prismatic joint: " << sizeof(muli::PrismaticJoint) << '\n';
+    std::cout << "Pulley joint: " << sizeof(muli::PulleyJoint) << '\n';
     std::cout << "Weld joint: " << sizeof(muli::WeldJoint) << std::endl;
 
     muli::Application* app = muli::Application::Create(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);

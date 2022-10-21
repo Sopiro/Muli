@@ -166,7 +166,7 @@ private:
     PredefinedBlockAllocator blockAllocator;
 
     const WorldSettings& settings;
-    uint32 uid{ 0 };
+    uint32 uid = 0;
 
     ContactManager contactManager;
 
