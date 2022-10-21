@@ -10,27 +10,27 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
     radius = _radius;
 
     Vec2 centerOfMass{ 0.0f };
-    size_t count = vertices.size();
+    size_t vertexCount = vertices.size();
+    normals.reserve(vertexCount);
 
-    for (size_t i = 0; i < count; i++)
+    for (size_t i0 = 0; i0 < vertexCount; i0++)
     {
-        centerOfMass += vertices[i];
+        size_t i1 = (i0 + 1) % vertexCount;
+
+        centerOfMass += vertices[i0];
+        normals.push_back(Cross(vertices[i1] - vertices[i0], 1.0f).Normalized());
     }
-
-    centerOfMass *= 1.0f / count;
-
-    float _area = 0;
-
+    centerOfMass *= 1.0f / vertexCount;
     vertices[0] -= centerOfMass;
 
-    for (uint32 i = 1; i < count; i++)
+    area = 0;
+    for (size_t i = 1; i < vertexCount; i++)
     {
         vertices[i] -= centerOfMass;
-        _area += Cross(vertices[i - 1], vertices[i]);
+        area += Cross(vertices[i - 1], vertices[i]);
     }
-    _area += Cross(vertices[count - 1], vertices[0]);
-
-    area = Abs(_area) / 2.0f;
+    area += Cross(vertices[vertexCount - 1], vertices[0]);
+    area = Abs(area) / 2.0f;
 
     if (type == Dynamic)
     {

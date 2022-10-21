@@ -262,43 +262,43 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 
 static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    const Vec2& pa = a->GetPosition();
-    const Vec2& pb = b->GetPosition();
+    Capsule* c = static_cast<Capsule*>(a);
 
-    Vec2 a2b = (pb - pa).Normalized();
-    const Vec2 localDir = MulT(a->GetRotation(), a2b);
-    const Transform& t = a->GetTransform();
+    Vec2 pb = b->GetPosition();
+    Vec2 localP = MulT(a->GetTransform(), pb);
 
-    Edge e = Edge{ t * static_cast<Capsule*>(a)->GetVertexA(), t * static_cast<Capsule*>(a)->GetVertexB(), 0, 1 };
+    Vec2 va = c->GetVertexA();
+    Vec2 vb = c->GetVertexB();
 
-    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
+    UV w = ComputeWeights(va, vb, localP);
 
     // Find closest point depending on the Voronoi region
     Vec2 normal;
     float distance;
-    ContactPoint rp;
+    int32 index;
+
     if (w.v <= 0) // Region A: vertex collision
     {
-        normal = pb - e.p1.position;
+        normal = localP - va;
         distance = normal.Normalize();
-        rp = e.p1;
+        index = 0;
     }
     else if (w.v >= 1) // Region B: vertex collision
     {
-        normal = pb - e.p2.position;
+        normal = localP - vb;
         distance = normal.Normalize();
-        rp = e.p2;
+        index = 1;
     }
     else // Region AB: Edge vs. vertex collision
     {
-        normal = e.normal;
-        distance = Dot(pb - e.p1.position, normal);
+        normal.Set(0.0f, 1.0f);
+        distance = Dot(localP - va, normal);
         if (distance < 0.0f)
         {
             normal *= -1;
             distance *= -1;
         }
-        rp = e.p1;
+        index = 0;
     }
 
     float r2 = a->GetRadius() + b->GetRadius();
@@ -306,80 +306,126 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     {
         return false;
     }
-    else
+
+    if (out == nullptr)
     {
-        if (out == nullptr)
-        {
-            return true;
-        }
-
-        out->contactNormal = normal;
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
-        out->penetrationDepth = r2 - distance;
-        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referencePoint = ContactPoint{ rp.position + normal * a->GetRadius(), rp.id };
-        out->numContacts = 1;
-        out->featureFlipped = false;
-
         return true;
     }
+
+    normal = c->GetRotation() * normal;
+    Vec2 v = c->GetTransform() * (index ? vb : va);
+
+    out->contactNormal = normal;
+    out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
+    out->penetrationDepth = r2 - distance;
+    out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+    out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
+    out->numContacts = 1;
+    out->featureFlipped = false;
+
+    return true;
 }
 
 static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
-    const Vec2& pa = a->GetPosition();
-    const Vec2& pb = b->GetPosition();
+    Polygon* p = static_cast<Polygon*>(a);
+    Vec2 pb = b->GetPosition();
+    const std::vector<Vec2>& vertices = p->GetVertices();
+    const std::vector<Vec2>& normals = p->GetNormals();
+    size_t vertexCount = vertices.size();
 
-    Vec2 a2b = (pb - pa).Normalized();
-    Edge e = GetIntersectingEdge(static_cast<Polygon*>(a), a2b);
-    UV w = ComputeWeights(e.p1.position, e.p2.position, b->GetPosition());
+    Vec2 localP = MulT(a->GetTransform(), pb);
 
-    // Find closest point depending on the Voronoi region
-    Vec2 closest;
-    Vec2 normal;
-    if (w.v <= 0) // Region A: vertex collision
-    {
-        closest = e.p1.position;
-        normal = (pb - e.p1.position).Normalized();
-    }
-    else if (w.v >= 1) // Region B: vertex collision
-    {
-        closest = e.p2.position;
-        normal = (pb - e.p2.position).Normalized();
-    }
-    else // Region AB: Edge vs. vertex collision
-    {
-        closest = LerpVector(e.p1.position, e.p2.position, w);
-        normal = -e.normal;
-    }
-
-    Vec2 c2b = pb - closest;
-
-    // Signed distance along the normal
-    float l = Dot(c2b, normal);
+    float minSeparation = -FLT_MAX;
     float r2 = a->GetRadius() + b->GetRadius();
 
-    if (l > r2)
+    int32 index;
+    for (int32 i = 0; i < vertexCount; i++)
     {
-        return false;
+        float separation = Dot(normals[i], localP - vertices[i]);
+
+        if (separation > r2)
+        {
+            return false;
+        }
+
+        if (separation > minSeparation)
+        {
+            minSeparation = separation;
+            index = i;
+        }
     }
-    else
+
+    Vec2 normal;
+    Vec2 v;
+
+    // Circle center is inside the polygon
+    if (minSeparation < 0)
     {
         if (out == nullptr)
         {
             return true;
         }
 
+        normal = p->GetRotation() * normals[index];
+        v = p->GetTransform() * vertices[index];
+
         out->contactNormal = normal;
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
-        out->penetrationDepth = r2 - l;
+        out->contactTangent = Vec2{ -normal.y, normal.x };
+        out->penetrationDepth = r2 - minSeparation;
         out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referencePoint = e.p1;
+        out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
         out->numContacts = 1;
         out->featureFlipped = false;
 
         return true;
     }
+
+    Vec2 v0 = vertices[index];
+    Vec2 v1 = vertices[(index + 1) % vertexCount];
+
+    UV w = ComputeWeights(v0, v1, localP);
+    float distance;
+
+    if (w.v <= 0.0f) // Region v0
+    {
+        normal = localP - v0;
+        distance = normal.Normalize();
+    }
+    else if (w.v >= 1.0f) // Region v1
+    {
+        normal = localP - v1;
+        distance = normal.Normalize();
+        index = (index + 1) % vertexCount;
+    }
+    else // Inside the region
+    {
+        normal = normals[index];
+        distance = Dot(normal, localP - v0);
+    }
+
+    if (distance > r2)
+    {
+        return false;
+    }
+
+    if (out == nullptr)
+    {
+        return true;
+    }
+
+    normal = p->GetRotation() * normal;
+    v = p->GetTransform() * vertices[index];
+
+    out->contactNormal = normal;
+    out->contactTangent = Vec2{ -normal.y, normal.x };
+    out->penetrationDepth = r2 - distance;
+    out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+    out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
+    out->numContacts = 1;
+    out->featureFlipped = false;
+
+    return true;
 }
 
 static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
@@ -795,19 +841,20 @@ Vec2 GetClosestPoint(Capsule* c, Vec2 q)
 Vec2 GetClosestPoint(Polygon* p, Vec2 q)
 {
     float radius = p->GetRadius();
-    Vec2 localQ = MulT(p->GetTransform(), q);
     const std::vector<Vec2>& vertices = p->GetVertices();
-    int32 vertexCount = static_cast<int32>(vertices.size());
+    size_t vertexCount = vertices.size();
+    const Transform& t = p->GetTransform();
+    Vec2 localQ = MulT(t, q);
 
     UV w;
     Vec2 normal;
     int32 dir = 0;
-    int32 i0 = 0;
+    size_t i0 = 0;
     int32 insideCheck = 0;
 
     while (insideCheck < vertexCount)
     {
-        int32 i1 = (i0 + 1) % vertexCount;
+        size_t i1 = (i0 + 1) % vertexCount;
 
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -818,7 +865,7 @@ Vec2 GetClosestPoint(Polygon* p, Vec2 q)
             if (dir > 0)
             {
                 normal = (localQ - v0).Normalized();
-                return p->GetTransform() * (v0 + normal * radius);
+                return t * (v0 + normal * radius);
             }
 
             dir = -1;
@@ -829,7 +876,7 @@ Vec2 GetClosestPoint(Polygon* p, Vec2 q)
             if (dir < 0)
             {
                 normal = (localQ - v1).Normalized();
-                return p->GetTransform() * (v1 + normal * radius);
+                return t * (v1 + normal * radius);
             }
 
             dir = 1;
@@ -842,7 +889,7 @@ Vec2 GetClosestPoint(Polygon* p, Vec2 q)
             if (distance >= 0)
             {
                 Vec2 closest = localQ + normal * (radius - distance);
-                return p->GetTransform() * closest;
+                return t * closest;
             }
 
             if (dir != 0)

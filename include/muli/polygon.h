@@ -24,10 +24,12 @@ public:
     virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
 
     const std::vector<Vec2>& GetVertices() const;
-    size_t VertexCount() const;
+    const std::vector<Vec2>& GetNormals() const;
+    size_t GetVertexCount() const;
 
 protected:
     std::vector<Vec2> vertices;
+    std::vector<Vec2> normals;
     float area;
 };
 
@@ -41,7 +43,12 @@ inline const std::vector<Vec2>& Polygon::GetVertices() const
     return vertices;
 }
 
-inline size_t Polygon::VertexCount() const
+inline const std::vector<Vec2>& Polygon::GetNormals() const
+{
+    return normals;
+}
+
+inline size_t Polygon::GetVertexCount() const
 {
     return vertices.size();
 }
