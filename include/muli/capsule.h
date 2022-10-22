@@ -13,7 +13,7 @@ public:
     Capsule(const Vec2& p1,
             const Vec2& p2,
             float _radius,
-            bool _resetPosition = true,
+            bool _resetPosition = false,
             Type _type = Dynamic,
             float _density = DEFAULT_DENSITY);
 

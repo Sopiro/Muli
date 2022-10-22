@@ -473,6 +473,9 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
                 return false;
             }
         case 2: // vertex vs. edge collision
+
+            [[fallthrough]];
+
         case 3: // Simplex vertices are in the collinear position
             if (gjkResult.distance < r2)
             {

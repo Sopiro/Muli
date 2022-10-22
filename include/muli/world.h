@@ -16,6 +16,7 @@
 #include "distance_joint.h"
 #include "grab_joint.h"
 #include "joint.h"
+#include "motor_joint.h"
 #include "prismatic_joint.h"
 #include "pulley_joint.h"
 #include "revolute_joint.h"
@@ -82,7 +83,7 @@ public:
     Capsule* CreateCapsule(const Vec2& p1,
                            const Vec2& p2,
                            float radius,
-                           bool resetPosition = true,
+                           bool resetPosition = false,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float length,
@@ -144,6 +145,14 @@ public:
                                    float frequency = -1.0f,
                                    float dampingRatio = 1.0f,
                                    float jointMass = 1.0f);
+    MotorJoint* CreateMotorJoint(RigidBody* bodyA,
+                                 RigidBody* bodyB,
+                                 const Vec2& anchor,
+                                 float maxForce = 1000.0f,
+                                 float maxTorque = 1000.0f,
+                                 float frequency = -1.0f,
+                                 float dampingRatio = 1.0f,
+                                 float jointMass = 1.0f);
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;

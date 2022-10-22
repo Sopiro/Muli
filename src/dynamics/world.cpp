@@ -565,6 +565,23 @@ PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
     return pj;
 }
 
+MotorJoint* World::CreateMotorJoint(RigidBody* bodyA,
+                                    RigidBody* bodyB,
+                                    const Vec2& anchor,
+                                    float maxForce,
+                                    float maxTorque,
+                                    float frequency,
+                                    float dampingRatio,
+                                    float jointMass)
+{
+    void* mem = blockAllocator.Allocate(sizeof(MotorJoint));
+    MotorJoint* mj =
+        new (mem) MotorJoint(bodyA, bodyB, anchor, settings, maxForce, maxTorque, frequency, dampingRatio, jointMass);
+
+    Add(mj);
+    return mj;
+}
+
 void World::Add(Joint* joint)
 {
     // Insert into the world
@@ -655,6 +672,9 @@ void World::FreeJoint(Joint* joint)
         break;
     case Joint::Type::JointPulley:
         blockAllocator.Free(joint, sizeof(PulleyJoint));
+        break;
+    case Joint::Type::JointMotor:
+        blockAllocator.Free(joint, sizeof(MotorJoint));
         break;
     default:
         muliAssert(false);

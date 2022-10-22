@@ -28,6 +28,7 @@ set(HEADER_FILES
     ../include/muli/weld_joint.h
     ../include/muli/prismatic_joint.h
     ../include/muli/pulley_joint.h
+    ../include/muli/motor_joint.h
 
     ../include/muli/contact.h
     ../include/muli/position_solver.h
@@ -84,6 +85,7 @@ set(SOURCE_FILES
     dynamics/constraint/joint/weld_joint.cpp
     dynamics/constraint/joint/prismatic_joint.cpp
     dynamics/constraint/joint/pulley_joint.cpp
+    dynamics/constraint/joint/motor_joint.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "src" FILES ${SOURCE_FILES})

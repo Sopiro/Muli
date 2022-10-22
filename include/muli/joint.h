@@ -64,6 +64,7 @@ public:
         JointWeld,
         JointPrismatic,
         JointPulley,
+        JointMotor,
     };
 
     Joint(Joint::Type _type,

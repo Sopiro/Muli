@@ -279,6 +279,18 @@ void Game::Render()
             lines.push_back(groundAnchorA);
             lines.push_back(groundAnchorB);
         }
+        case Joint::Type::JointMotor:
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            MotorJoint* pj = static_cast<MotorJoint*>(j);
+
+            const Vec2& anchorA = ba->GetTransform() * pj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * pj->GetLocalAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(anchorB);
+        }
         break;
         default:
             break;

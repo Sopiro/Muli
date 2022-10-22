@@ -133,6 +133,7 @@ protected:
     friend class WeldJoint;
     friend class PrismaticJoint;
     friend class PulleyJoint;
+    friend class MotorJoint;
 
     // Center of mass in local space = (0, 0)
     Transform transform;
