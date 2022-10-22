@@ -27,8 +27,8 @@ public:
             c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);
         }
 
-        camera.position = { -5.0f, 0.0f };
-        camera.scale = { 6.0f, 6.0f };
+        camera.position.Set(-5.0f, 0.0f);
+        camera.scale.Set(6.0f, 6.0f);
     }
 
     static Demo* Create(Game& game)

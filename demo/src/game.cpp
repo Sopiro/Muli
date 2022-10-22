@@ -279,6 +279,7 @@ void Game::Render()
             lines.push_back(groundAnchorA);
             lines.push_back(groundAnchorB);
         }
+        break;
         case Joint::Type::JointMotor:
         {
             RigidBody* ba = j->GetBodyA();
