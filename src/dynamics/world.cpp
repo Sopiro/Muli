@@ -323,9 +323,8 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     std::vector<RigidBody*> res;
     std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(aabb);
 
-    Polygon t{
-        { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } }, RigidBody::Type::Dynamic, false, 0.0f
-    };
+    Vec2 box[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
+    Polygon t{ box, 4, RigidBody::Type::Dynamic, false, 0.0f };
 
     for (uint32 i = 0; i < bodies.size(); i++)
     {
@@ -342,9 +341,9 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
 
 Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
 {
+    Vec2 box[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* b = new (mem)
-        Polygon({ Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } }, type, true, radius, density);
+    Polygon* b = new (mem) Polygon(box, 4, type, true, radius, density);
     Add(b);
     return b;
 }
@@ -366,22 +365,22 @@ Polygon* World::CreatePolygon(
     const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new Polygon(vertices, type, resetPosition, radius, density);
+    Polygon* p = new Polygon(vertices.data(), static_cast<int32>(vertices.size()), type, resetPosition, radius, density);
     Add(p);
     return p;
 }
 
-Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, float radius, float density)
+Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float radius, float density)
 {
     if (vertexCount < 3)
     {
         vertexCount = LinearRand(6, 12);
     }
 
-    std::vector<float> angles{};
+    std::vector<float> angles;
     angles.reserve(vertexCount);
 
-    for (uint32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
         angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - FLT_EPSILON));
     }
@@ -391,22 +390,22 @@ Polygon* World::CreateRandomConvexPolygon(float length, uint32 vertexCount, floa
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);
 
-    for (uint32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
+    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::Dynamic, true, radius, density);
     Add(p);
     return p;
 }
 
-Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float initial_angle, float radius, float density)
+Polygon* World::CreateRegularPolygon(float length, int32 vertexCount, float initial_angle, float radius, float density)
 {
     if (vertexCount < 3)
     {
-        vertexCount = LinearRand(3, 11);
+        vertexCount = LinearRand(3, 12);
     }
 
     float angleStart = initial_angle;
@@ -420,7 +419,7 @@ Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float ini
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);
 
-    for (uint32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
         float currentAngle = angleStart + angle * i;
 
@@ -431,7 +430,7 @@ Polygon* World::CreateRegularPolygon(float length, uint32 vertexCount, float ini
     }
 
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices, RigidBody::Type::Dynamic, true, radius, density);
+    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::Dynamic, true, radius, density);
     Add(p);
     return p;
 }

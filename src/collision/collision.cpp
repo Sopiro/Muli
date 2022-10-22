@@ -330,9 +330,9 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
 {
     Polygon* p = static_cast<Polygon*>(a);
     Vec2 pb = b->GetPosition();
-    const std::vector<Vec2>& vertices = p->GetVertices();
-    const std::vector<Vec2>& normals = p->GetNormals();
-    size_t vertexCount = vertices.size();
+
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
 
     Vec2 localP = MulT(a->GetTransform(), pb);
 
@@ -340,9 +340,13 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     float r2 = a->GetRadius() + b->GetRadius();
 
     int32 index;
-    for (int32 i = 0; i < vertexCount; i++)
+    Vec2 normal;
+
+    for (int32 i0 = 0; i0 < vertexCount; i0++)
     {
-        float separation = Dot(normals[i], localP - vertices[i]);
+        int32 i1 = (i0 + 1) % vertexCount;
+        Vec2 n = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
+        float separation = Dot(normal, localP - vertices[i0]);
 
         if (separation > r2)
         {
@@ -352,12 +356,10 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         if (separation > minSeparation)
         {
             minSeparation = separation;
-            index = i;
+            index = i0;
+            normal = n;
         }
     }
-
-    Vec2 normal;
-    Vec2 v;
 
     // Circle center is inside the polygon
     if (minSeparation < 0)
@@ -367,8 +369,8 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
             return true;
         }
 
-        normal = p->GetRotation() * normals[index];
-        v = p->GetTransform() * vertices[index];
+        normal = p->GetRotation() * normal;
+        Vec2 v = p->GetTransform() * vertices[index];
 
         out->contactNormal = normal;
         out->contactTangent = Vec2{ -normal.y, normal.x };
@@ -400,7 +402,6 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else // Inside the region
     {
-        normal = normals[index];
         distance = Dot(normal, localP - v0);
     }
 
@@ -415,7 +416,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
 
     normal = p->GetRotation() * normal;
-    v = p->GetTransform() * vertices[index];
+    Vec2 v = p->GetTransform() * vertices[index];
 
     out->contactNormal = normal;
     out->contactTangent = Vec2{ -normal.y, normal.x };
@@ -639,8 +640,8 @@ static float ComputeDistanceCapsuleVsCircle(RigidBody* a, RigidBody* b)
 static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
 {
     Polygon* p = static_cast<Polygon*>(a);
-    const std::vector<Vec2>& vertices = p->GetVertices();
-    size_t vertexCount = vertices.size();
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
 
     Vec2 localC = MulT(p->GetTransform(), b->GetPosition());
 
@@ -648,11 +649,11 @@ static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
 
     UV w;
     int32 dir = 0;
-    size_t i0 = 0;
+    int32 i0 = 0;
     int32 insideCheck = 0;
     while (insideCheck < vertexCount)
     {
-        size_t i1 = (i0 + 1) % vertexCount;
+        int32 i1 = (i0 + 1) % vertexCount;
 
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -814,14 +815,15 @@ bool TestPointInside(Capsule* c, Vec2 q)
 
 bool TestPointInside(Polygon* p, Vec2 q)
 {
-    const std::vector<Vec2>& vertices = p->GetVertices();
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
 
     Vec2 localQ = MulT(p->GetTransform(), q);
 
     float dir = Cross(vertices[0] - localQ, vertices[1] - localQ);
-    for (uint32 i = 1; i < vertices.size(); i++)
+    for (int32 i = 1; i < vertexCount; i++)
     {
-        float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertices.size()] - localQ);
+        float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertexCount] - localQ);
 
         if (dir * nDir < 0)
         {
@@ -924,20 +926,20 @@ Vec2 GetClosestPoint(Capsule* c, Vec2 q)
 Vec2 GetClosestPoint(Polygon* p, Vec2 q)
 {
     float radius = p->GetRadius();
-    const std::vector<Vec2>& vertices = p->GetVertices();
-    size_t vertexCount = vertices.size();
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
     const Transform& t = p->GetTransform();
     Vec2 localQ = MulT(t, q);
 
     UV w;
     Vec2 normal;
     int32 dir = 0;
-    size_t i0 = 0;
+    int32 i0 = 0;
     int32 insideCheck = 0;
 
     while (insideCheck < vertexCount)
     {
-        size_t i1 = (i0 + 1) % vertexCount;
+        int32 i1 = (i0 + 1) % vertexCount;
 
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -1014,11 +1016,12 @@ Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
 Edge GetIntersectingEdge(Polygon* p, Vec2 dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
-    const std::vector<Vec2>& vertices = p->GetVertices();
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
 
-    for (int32 i = 0; i < vertices.size(); i++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
-        int32 i2 = (i + 1) % vertices.size();
+        int32 i2 = (i + 1) % vertexCount;
         const Vec2& v1 = vertices[i];
         const Vec2& v2 = vertices[i2];
 
@@ -1099,14 +1102,17 @@ static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Ve
 
 bool SAT(Polygon* a, Polygon* b)
 {
-    const std::vector<Vec2>& va = a->GetVertices();
-    const std::vector<Vec2>& vb = b->GetVertices();
+    const Vec2* va = a->GetVertices();
+    const Vec2* vb = b->GetVertices();
 
-    std::vector<Vec2> wva(va.size());
-    std::vector<Vec2> wvb(vb.size());
+    int32 vca = a->GetVertexCount();
+    int32 vcb = b->GetVertexCount();
 
-    std::transform(va.begin(), va.end(), wva.begin(), [&](const Vec2& v) { return a->GetTransform() * v; });
-    std::transform(vb.begin(), vb.end(), wvb.begin(), [&](const Vec2& v) { return b->GetTransform() * v; });
+    std::vector<Vec2> wva(vca);
+    std::vector<Vec2> wvb(vcb);
+
+    std::transform(va, va + vca, wva.begin(), [&](const Vec2& v) { return a->GetTransform() * v; });
+    std::transform(vb, vb + vcb, wvb.begin(), [&](const Vec2& v) { return b->GetTransform() * v; });
 
     return ComputeSeparation(wva, wvb) < 0 && ComputeSeparation(wvb, wva) < 0;
 }

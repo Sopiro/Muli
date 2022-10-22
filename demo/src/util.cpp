@@ -47,14 +47,18 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
     {
         Polygon& p = static_cast<Polygon&>(body);
 
-        const std::vector<Vec2>& vertices2 = p.GetVertices();
+        const Vec2* vertices = p.GetVertices();
+        int32 vertexCount = p.GetVertexCount();
 
+        std::vector<Vec2> vertices2;
         std::vector<Vec3> vertices3;
-        vertices3.reserve(vertices2.size());
+        vertices2.reserve(vertexCount);
+        vertices3.reserve(vertexCount);
 
-        for (uint32 i = 0; i < vertices2.size(); i++)
+        for (int32 i = 0; i < vertexCount; i++)
         {
-            const Vec2& v = vertices2[i];
+            const Vec2& v = vertices[i];
+            vertices2.emplace_back(v.x, v.y);
             vertices3.emplace_back(v.x, v.y, 0.0f);
         }
 

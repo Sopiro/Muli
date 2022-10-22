@@ -86,11 +86,11 @@ public:
                            RigidBody::Type type = RigidBody::Type::Dynamic,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float length,
-                                       uint32 vertexCount = 0,
+                                       int32 vertexCount = 0,
                                        float radius = DEFAULT_RADIUS,
                                        float density = DEFAULT_DENSITY);
     Polygon* CreateRegularPolygon(float length,
-                                  uint32 vertexCount = 0,
+                                  int32 vertexCount = 0,
                                   float initial_angle = 0,
                                   float radius = DEFAULT_RADIUS,
                                   float density = DEFAULT_DENSITY);

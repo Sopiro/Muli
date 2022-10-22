@@ -7,7 +7,7 @@ namespace muli
 //                   Sizes
 // circle           : 248
 // capsule          : 264
-// polygon          : 296
+// polygon          : 320
 
 // Angle joint      : 216
 // Grab joint       : 256

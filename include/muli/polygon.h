@@ -3,17 +3,21 @@
 #include "rigidbody.h"
 #include "util.h"
 
+#define MAX_LOCAL_POLYGON_VERTICES 8
+
 namespace muli
 {
 
 class Polygon : public RigidBody
 {
 public:
-    Polygon(const std::vector<Vec2>& _vertices,
+    Polygon(const Vec2* _vertices,
+            int32 _vertexCount,
             RigidBody::Type _type = Dynamic,
             bool _resetCenter = true,
             float _radius = DEFAULT_RADIUS,
             float _density = DEFAULT_DENSITY);
+    virtual ~Polygon() noexcept;
 
     virtual void SetDensity(float d) override;
     virtual void SetMass(float m) override;
@@ -23,14 +27,16 @@ public:
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
 
-    const std::vector<Vec2>& GetVertices() const;
-    const std::vector<Vec2>& GetNormals() const;
-    size_t GetVertexCount() const;
+    const Vec2* GetVertices() const;
+    int32 GetVertexCount() const;
 
 protected:
-    std::vector<Vec2> vertices;
-    std::vector<Vec2> normals;
+    Vec2* vertices;
+    int32 vertexCount;
     float area;
+
+private:
+    Vec2 localVertices[MAX_LOCAL_POLYGON_VERTICES];
 };
 
 inline float Polygon::GetArea() const
@@ -38,19 +44,14 @@ inline float Polygon::GetArea() const
     return area;
 }
 
-inline const std::vector<Vec2>& Polygon::GetVertices() const
+inline const Vec2* Polygon::GetVertices() const
 {
     return vertices;
 }
 
-inline const std::vector<Vec2>& Polygon::GetNormals() const
+inline int32 Polygon::GetVertexCount() const
 {
-    return normals;
-}
-
-inline size_t Polygon::GetVertexCount() const
-{
-    return vertices.size();
+    return vertexCount;
 }
 
 } // namespace muli

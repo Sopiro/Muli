@@ -3,28 +3,35 @@
 namespace muli
 {
 
-Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCenter, float _radius, float _density)
+Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _resetCenter, float _radius, float _density)
     : RigidBody(_type, RigidBody::Shape::ShapePolygon)
-    , vertices{ ComputeConvexHull(_vertices) }
 {
     radius = _radius;
+    vertexCount = _vertexCount;
+
+    if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
+    {
+        vertices = (Vec2*)malloc(vertexCount * sizeof(Vec2));
+    }
+    else
+    {
+        vertices = localVertices;
+    }
+
+    ComputeConvexHull(_vertices, vertexCount, vertices);
 
     Vec2 centerOfMass{ 0.0f };
-    size_t vertexCount = vertices.size();
-    normals.reserve(vertexCount);
-
-    for (size_t i0 = 0; i0 < vertexCount; i0++)
+    for (int32 i0 = 0; i0 < vertexCount; i0++)
     {
-        size_t i1 = (i0 + 1) % vertexCount;
+        int32 i1 = (i0 + 1) % vertexCount;
 
         centerOfMass += vertices[i0];
-        normals.push_back(Cross(vertices[i1] - vertices[i0], 1.0f).Normalized());
     }
     centerOfMass *= 1.0f / vertexCount;
     vertices[0] -= centerOfMass;
 
     area = 0;
-    for (size_t i = 1; i < vertexCount; i++)
+    for (int32 i = 1; i < vertexCount; i++)
     {
         vertices[i] -= centerOfMass;
         area += Cross(vertices[i - 1], vertices[i]);
@@ -39,13 +46,21 @@ Polygon::Polygon(const std::vector<Vec2>& _vertices, Type _type, bool _resetCent
         density = _density;
         mass = _density * area;
         invMass = 1.0f / mass;
-        inertia = ComputePolygonInertia(vertices, mass);
+        inertia = ComputePolygonInertia(vertices, vertexCount, mass);
         invInertia = 1.0f / inertia;
     }
 
     if (!_resetCenter)
     {
         Translate(centerOfMass);
+    }
+}
+
+Polygon::~Polygon()
+{
+    if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
+    {
+        free(vertices);
     }
 }
 
@@ -56,7 +71,7 @@ void Polygon::SetMass(float _mass)
     density = _mass / area;
     mass = _mass;
     invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(vertices, mass);
+    inertia = ComputePolygonInertia(vertices, vertexCount, mass);
     invInertia = 1.0f / inertia;
 }
 
@@ -67,20 +82,18 @@ void Polygon::SetDensity(float _density)
     density = _density;
     mass = _density * area;
     invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(vertices, mass);
+    inertia = ComputePolygonInertia(vertices, vertexCount, mass);
     invInertia = 1.0f / inertia;
 }
 
 AABB Polygon::GetAABB() const
 {
-    const Transform& t = GetTransform();
-
-    Vec2 min = t * vertices[0];
+    Vec2 min = transform * vertices[0];
     Vec2 max = min;
 
-    for (size_t i = 1; i < vertices.size(); i++)
+    for (int32 i = 1; i < vertexCount; i++)
     {
-        Vec2 v = t * vertices[i];
+        Vec2 v = transform * vertices[i];
 
         min = Min(min, v);
         max = Max(max, v);
@@ -94,48 +107,46 @@ AABB Polygon::GetAABB() const
 
 ContactPoint Polygon::Support(const Vec2& localDir) const
 {
-    int32 idx = 0;
-    float maxValue = Dot(localDir, vertices[idx]);
+    int32 index = 0;
+    float maxValue = Dot(localDir, vertices[index]);
 
-    for (int32 i = 1; i < vertices.size(); i++)
+    for (int32 i = 1; i < vertexCount; i++)
     {
         float value = Dot(localDir, vertices[i]);
         if (value > maxValue)
         {
-            idx = i;
+            index = i;
             maxValue = value;
         }
     }
 
-    return ContactPoint{ vertices[idx], idx };
+    return ContactPoint{ vertices[index], index };
 }
 
 Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
 {
-    const Vec2 localDir = MulT(transform.rotation, dir);
-    const ContactPoint farthest = Support(localDir);
+    Vec2 localDir = MulT(transform.rotation, dir);
+    ContactPoint farthest = Support(localDir);
 
     Vec2 curr = farthest.position;
-    int32 idx = farthest.id;
+    int32 index = farthest.id;
+    int32 prevIndex = (index - 1 + vertexCount) % vertexCount;
+    int32 nextIndex = (index + 1) % vertexCount;
 
-    int32 vertexCount = static_cast<int32>(vertices.size());
-    int32 prevIdx = (idx - 1 + vertexCount) % vertexCount;
-    int32 nextIdx = (idx + 1) % vertexCount;
-    const Vec2& prev = vertices[prevIdx];
-    const Vec2& next = vertices[nextIdx];
+    Vec2 prev = vertices[prevIndex];
+    Vec2 next = vertices[nextIndex];
 
     Vec2 e1 = (curr - prev).Normalized();
     Vec2 e2 = (curr - next).Normalized();
 
     bool w = Dot(e1, localDir) <= Dot(e2, localDir);
-
     if (w)
     {
-        return Edge{ transform * prev, transform * curr, prevIdx, idx };
+        return Edge{ transform * prev, transform * curr, prevIndex, index };
     }
     else
     {
-        return Edge{ transform * curr, transform * next, idx, nextIdx };
+        return Edge{ transform * curr, transform * next, index, nextIndex };
     }
 }
 

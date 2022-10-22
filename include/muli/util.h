@@ -21,10 +21,11 @@ union PairID
 };
 
 // Compute CCW Convex hull
+void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out);
 std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass);
+float ComputePolygonInertia(const Vec2* vertices, int32 vertexCount, float mass);
 
 float ComputeCapsuleInertia(float length, float radius, float mass);
 

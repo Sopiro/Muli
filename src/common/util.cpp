@@ -1,9 +1,94 @@
 #include "muli/util.h"
 #include "muli/aabb.h"
 #include "muli/circle.h"
+#include "muli/polygon.h"
 
 namespace muli
 {
+
+void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
+{
+    if (vertexCount < 3)
+    {
+        memcpy(out, vertices, vertexCount);
+        return;
+    }
+
+    int32 bi = 0;
+    for (int32 i = 1; i < vertexCount; i++)
+    {
+        if (vertices[i].y < vertices[bi].y)
+        {
+            bi = i;
+        }
+    }
+
+    Vec2 bottom = vertices[bi];
+    Vec2* sorted = (Vec2*)malloc(vertexCount * sizeof(Vec2));
+
+    std::partial_sort_copy(vertices, vertices + vertexCount, sorted, sorted + vertexCount,
+                           [&](const Vec2& a, const Vec2& b) -> bool {
+                               Vec2 ra = a - bottom;
+                               Vec2 rb = b - bottom;
+
+                               return Atan2(ra.y, ra.x) < Atan2(rb.y, rb.x);
+                           });
+    muliAssert(sorted[0] == bottom);
+
+    // Discard overlapped bottom vertices
+    int32 i = 0;
+    while (i < vertexCount)
+    {
+        Vec2& v0 = sorted[i];
+        Vec2& v1 = sorted[(i + 1) % vertexCount];
+
+        if (v0 == v1)
+        {
+            i++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    int32 sp = 0;
+    out[sp++] = sorted[i++];
+    out[sp++] = sorted[i++];
+
+    while (i < vertexCount)
+    {
+        Vec2& v = sorted[i];
+        int32 l = sp;
+
+        if (v == out[l - 1])
+        {
+            ++i;
+            continue;
+        }
+
+        Vec2 d1 = out[l - 1] - out[l - 2];
+        Vec2 d2 = v - out[l - 1];
+
+        if (Cross(d1, d2) <= 0)
+        {
+            --sp;
+
+            if (l < 3)
+            {
+                out[sp++] = v;
+                break;
+            }
+        }
+        else
+        {
+            out[sp++] = v;
+            ++i;
+        }
+    }
+
+    free(sorted);
+}
 
 std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
 {
@@ -88,14 +173,14 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     return s;
 }
 
-float ComputePolygonInertia(const std::vector<Vec2>& vertices, float mass)
+float ComputePolygonInertia(const Vec2* vertices, int32 vertexCount, float mass)
 {
     float numerator = 0.0f;
     float denominator = 0.0f;
 
-    for (uint32 i = 0; i < vertices.size(); i++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
-        uint32 j = (i + 1) % vertices.size();
+        int32 j = (i + 1) % vertexCount;
 
         const Vec2& vi = vertices[i];
         const Vec2& vj = vertices[j];
