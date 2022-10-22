@@ -57,7 +57,7 @@ public:
     bool IsTouching() const;
 
 private:
-    DetectionFunction* collisionDetectionFunction = nullptr;
+    DetectionFunction* collisionDetectionFunction;
 
     RigidBody* b1; // Reference body
     RigidBody* b2; // Incident body
@@ -71,8 +71,8 @@ private:
     float restitution;
     float friction;
 
-    bool touching = false;
-    bool persistent = false;
+    bool touching;
+    bool persistent;
 
     ContactManifold manifold;
 

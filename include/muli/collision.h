@@ -37,7 +37,7 @@ struct ContactManifold
 typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
 typedef float DistanceFunction(RigidBody*, RigidBody*);
 
-bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out = nullptr);
+bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold = nullptr);
 
 float ComputeDistance(RigidBody* a, RigidBody* b);
 float ComputeDistance(RigidBody* b, Vec2 q);

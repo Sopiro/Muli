@@ -13,6 +13,9 @@ Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _set
 {
     muliAssert(bodyA->GetShape() >= bodyB->GetShape());
 
+    touching = false;
+    persistent = false;
+
     manifold.numContacts = 0;
 
     beta = settings.POSITION_CORRECTION_BETA;

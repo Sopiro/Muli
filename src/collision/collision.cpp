@@ -183,7 +183,7 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
     }
 }
 
-static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, ContactManifold* out)
+static void FindContactPoints(Vec2 n, RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     Edge edgeA = a->GetFeaturedEdge(n);
     Edge edgeB = b->GetFeaturedEdge(-n);
@@ -193,8 +193,8 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
 
     Edge* ref = &edgeA; // Reference edge
     Edge* inc = &edgeB; // Incident edge
-    out->contactNormal = n;
-    out->featureFlipped = false;
+    manifold->contactNormal = n;
+    manifold->featureFlipped = false;
 
     float aPerpendicularness = Abs(Dot(edgeA.dir, n));
     float bPerpendicularness = Abs(Dot(edgeB.dir, n));
@@ -203,31 +203,31 @@ static void FindContactPoints(const Vec2& n, RigidBody* a, RigidBody* b, Contact
     {
         ref = &edgeB;
         inc = &edgeA;
-        out->contactNormal = -n;
-        out->featureFlipped = true;
+        manifold->contactNormal = -n;
+        manifold->featureFlipped = true;
     }
 
     ClipEdge(inc, ref->p1.position, ref->dir);
     ClipEdge(inc, ref->p2.position, -ref->dir);
-    ClipEdge(inc, ref->p1.position, -out->contactNormal, true);
+    ClipEdge(inc, ref->p1.position, -manifold->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
     if (inc->GetLength() <= CONTACT_MERGE_THRESHOLD)
     {
-        out->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
-        out->numContacts = 1;
+        manifold->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
+        manifold->numContacts = 1;
     }
     else
     {
-        out->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
-        out->contactPoints[1] = ContactPoint{ inc->p2.position, inc->p2.id };
-        out->numContacts = 2;
+        manifold->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
+        manifold->contactPoints[1] = ContactPoint{ inc->p2.position, inc->p2.id };
+        manifold->numContacts = 2;
     }
 
-    out->referencePoint = ref->p1;
+    manifold->referencePoint = ref->p1;
 }
 
-static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     Vec2 pa = a->GetPosition();
     Vec2 pb = b->GetPosition();
@@ -241,26 +241,26 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
-        if (out == nullptr)
+        if (manifold == nullptr)
         {
             return true;
         }
 
         d = Sqrt(d);
 
-        out->contactNormal = (pb - pa).Normalized();
-        out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
-        out->contactPoints[0] = ContactPoint{ pb + (-out->contactNormal * b->GetRadius()), -1 };
-        out->referencePoint = ContactPoint{ pa + (out->contactNormal * a->GetRadius()), -1 };
-        out->numContacts = 1;
-        out->penetrationDepth = r2 - d;
-        out->featureFlipped = false;
+        manifold->contactNormal = (pb - pa).Normalized();
+        manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
+        manifold->contactPoints[0] = ContactPoint{ pb + (-manifold->contactNormal * b->GetRadius()), -1 };
+        manifold->referencePoint = ContactPoint{ pa + (manifold->contactNormal * a->GetRadius()), -1 };
+        manifold->numContacts = 1;
+        manifold->penetrationDepth = r2 - d;
+        manifold->featureFlipped = false;
 
         return true;
     }
 }
 
-static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     Capsule* c = static_cast<Capsule*>(a);
 
@@ -307,7 +307,7 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         return false;
     }
 
-    if (out == nullptr)
+    if (manifold == nullptr)
     {
         return true;
     }
@@ -315,18 +315,18 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     normal = c->GetRotation() * normal;
     Vec2 v = c->GetTransform() * (index ? vb : va);
 
-    out->contactNormal = normal;
-    out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
-    out->penetrationDepth = r2 - distance;
-    out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-    out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
-    out->numContacts = 1;
-    out->featureFlipped = false;
+    manifold->contactNormal = normal;
+    manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
+    manifold->penetrationDepth = r2 - distance;
+    manifold->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+    manifold->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
+    manifold->numContacts = 1;
+    manifold->featureFlipped = false;
 
     return true;
 }
 
-static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     Polygon* p = static_cast<Polygon*>(a);
     Vec2 pb = b->GetPosition();
@@ -345,9 +345,9 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     for (int32 i0 = 0; i0 < vertexCount; i0++)
     {
         int32 i1 = (i0 + 1) % vertexCount;
-        Vec2 n = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
-        float separation = Dot(normal, localP - vertices[i0]);
+        Vec2 n0 = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
 
+        float separation = Dot(n0, localP - vertices[i0]);
         if (separation > r2)
         {
             return false;
@@ -357,14 +357,14 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         {
             minSeparation = separation;
             index = i0;
-            normal = n;
+            normal = n0;
         }
     }
 
     // Circle center is inside the polygon
     if (minSeparation < 0)
     {
-        if (out == nullptr)
+        if (manifold == nullptr)
         {
             return true;
         }
@@ -372,13 +372,13 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         normal = p->GetRotation() * normal;
         Vec2 v = p->GetTransform() * vertices[index];
 
-        out->contactNormal = normal;
-        out->contactTangent = Vec2{ -normal.y, normal.x };
-        out->penetrationDepth = r2 - minSeparation;
-        out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-        out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
-        out->numContacts = 1;
-        out->featureFlipped = false;
+        manifold->contactNormal = normal;
+        manifold->contactTangent = Vec2{ -normal.y, normal.x };
+        manifold->penetrationDepth = r2 - minSeparation;
+        manifold->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+        manifold->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
+        manifold->numContacts = 1;
+        manifold->featureFlipped = false;
 
         return true;
     }
@@ -410,7 +410,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
         return false;
     }
 
-    if (out == nullptr)
+    if (manifold == nullptr)
     {
         return true;
     }
@@ -418,18 +418,18 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* out)
     normal = p->GetRotation() * normal;
     Vec2 v = p->GetTransform() * vertices[index];
 
-    out->contactNormal = normal;
-    out->contactTangent = Vec2{ -normal.y, normal.x };
-    out->penetrationDepth = r2 - distance;
-    out->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
-    out->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
-    out->numContacts = 1;
-    out->featureFlipped = false;
+    manifold->contactNormal = normal;
+    manifold->contactTangent = Vec2{ -normal.y, normal.x };
+    manifold->penetrationDepth = r2 - distance;
+    manifold->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
+    manifold->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
+    manifold->numContacts = 1;
+    manifold->featureFlipped = false;
 
     return true;
 }
 
-static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
+static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     GJKResult gjkResult = GJK(a, b, false);
     Simplex& simplex = gjkResult.simplex;
@@ -443,27 +443,28 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
         case 1: // vertex vs. vertex collision
             if (gjkResult.distance < r2)
             {
-                if (out == nullptr)
+                if (manifold == nullptr)
                 {
                     return true;
                 }
 
-                out->contactNormal = (origin - simplex.vertices[0]).Normalized();
+                Vec2 normal = (origin - simplex.vertices[0]).Normalized();
 
-                Vec2 localDirA = MulT(a->GetRotation(), out->contactNormal);
-                Vec2 localDirB = MulT(b->GetRotation(), -out->contactNormal);
+                Vec2 localDirA = MulT(a->GetRotation(), normal);
+                Vec2 localDirB = MulT(b->GetRotation(), -normal);
 
                 ContactPoint supportA = a->Support(localDirA);
                 ContactPoint supportB = b->Support(localDirB);
                 supportA.position = a->GetTransform() * (supportA.position + localDirA * a->GetRadius());
                 supportB.position = b->GetTransform() * (supportB.position + localDirB * b->GetRadius());
 
-                out->contactTangent = out->contactNormal.Skew();
-                out->contactPoints[0] = supportB;
-                out->numContacts = 1;
-                out->referencePoint = supportA;
-                out->penetrationDepth = r2 - gjkResult.distance;
-                out->featureFlipped = false;
+                manifold->contactNormal = normal;
+                manifold->contactTangent = normal.Skew();
+                manifold->contactPoints[0] = supportB;
+                manifold->numContacts = 1;
+                manifold->referencePoint = supportA;
+                manifold->penetrationDepth = r2 - gjkResult.distance;
+                manifold->featureFlipped = false;
 
                 return true;
             }
@@ -475,18 +476,20 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
         case 3: // Simplex vertices are in the collinear position
             if (gjkResult.distance < r2)
             {
-                if (out == nullptr)
+                if (manifold == nullptr)
                 {
                     return true;
                 }
 
-                out->contactNormal = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
+                Vec2 normal = (simplex.vertices[1] - simplex.vertices[0]).Skew().Normalized();
                 Vec2 k = origin - simplex.vertices[0];
-                if (Dot(out->contactNormal, k) < 0)
+                if (Dot(normal, k) < 0)
                 {
-                    out->contactNormal *= -1;
+                    normal *= -1;
                 }
-                out->penetrationDepth = r2 - gjkResult.distance;
+
+                manifold->contactNormal = normal;
+                manifold->penetrationDepth = r2 - gjkResult.distance;
             }
             else
             {
@@ -496,7 +499,7 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
     }
     else
     {
-        if (out == nullptr)
+        if (manifold == nullptr)
         {
             return true;
         }
@@ -507,10 +510,8 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
         {
         case 1:
         {
-            const Vec2& v = simplex.vertices[0];
             Vec2 randomSupport = CSOSupport(a, b, Vec2{ 1.0f, 0.0f });
-
-            if (randomSupport == v)
+            if (randomSupport == simplex.vertices[0])
             {
                 randomSupport = CSOSupport(a, b, Vec2{ -1.0f, 0.0f });
             }
@@ -537,17 +538,18 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* out)
         }
 
         EPAResult epaResult = EPA(a, b, simplex);
-        out->contactNormal = epaResult.contactNormal;
-        out->penetrationDepth = epaResult.penetrationDepth;
+
+        manifold->contactNormal = epaResult.contactNormal;
+        manifold->penetrationDepth = epaResult.penetrationDepth;
     }
 
-    FindContactPoints(out->contactNormal, a, b, out);
-    out->contactTangent = Vec2{ -out->contactNormal.y, out->contactNormal.x };
+    FindContactPoints(manifold->contactNormal, a, b, manifold);
+    manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
 
     return true;
 }
 
-bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
+bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold)
 {
     if (dectectionFunctionInitialized == false)
     {
@@ -561,10 +563,10 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     {
         muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
-        bool collide = DetectionFunctionMap[shapeB][shapeA](b, a, out);
-        if (out)
+        bool collide = DetectionFunctionMap[shapeB][shapeA](b, a, manifold);
+        if (manifold)
         {
-            out->featureFlipped = true;
+            manifold->featureFlipped = true;
         }
         return collide;
     }
@@ -572,7 +574,7 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* out)
     {
         muliAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
 
-        return DetectionFunctionMap[shapeA][shapeB](a, b, out);
+        return DetectionFunctionMap[shapeA][shapeB](a, b, manifold);
     }
 }
 
