@@ -81,7 +81,7 @@ void RigidBodyRenderer::Render()
             mesh->Draw(GL_TRIANGLES);
         }
 
-        // if (type != RigidBody::Type::Static)
+        if (!(body->userFlag & (1 << 1)))
         {
             glLineWidth(1.0f);
             shader->SetColor({ 0, 0, 0 });

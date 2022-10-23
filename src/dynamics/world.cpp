@@ -443,10 +443,10 @@ Capsule* World::CreateCapsule(float length, float radius, bool horizontal, Rigid
     return c;
 }
 Capsule* World::CreateCapsule(
-    const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, RigidBody::Type type, float density)
+    const Vec2& p1, const Vec2& p2, float radius, RigidBody::Type type, bool resetPosition, float density)
 {
     void* mem = blockAllocator.Allocate(sizeof(Capsule));
-    Capsule* c = new (mem) Capsule(p1, p2, radius, resetPosition, type, density);
+    Capsule* c = new (mem) Capsule(p1, p2, radius, type, resetPosition, density);
     Add(c);
     return c;
 }

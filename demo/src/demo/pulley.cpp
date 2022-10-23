@@ -24,7 +24,7 @@ public:
 
         world->CreatePulleyJoint(b1, b2, b1->GetPosition() + offset, b2->GetPosition() + offset, ga, gb, ratio);
 
-        world->CreateCapsule(ga, gb, 0.075f, false, RigidBody::Type::Static);
+        world->CreateCapsule(ga, gb, 0.075f, RigidBody::Type::Static);
     }
 
     static Demo* Create(Game& game)

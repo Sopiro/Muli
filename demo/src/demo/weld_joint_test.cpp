@@ -17,7 +17,7 @@ public:
             b1->SetPosition(-0.3f, 0);
             RigidBody* b2 = world->CreateRegularPolygon(0.12f);
             b2->SetPosition(0.3f, 0);
-            Capsule* c = world->CreateCapsule(b1->GetPosition(), b2->GetPosition(), 0.02f, false);
+            Capsule* c = world->CreateCapsule(b1->GetPosition(), b2->GetPosition(), 0.02f);
 
             Vec2 t = LinearRand(Vec2{ -5.0f, 1.0f }, Vec2{ 5.0f, 15.0f });
             b1->Translate(t);

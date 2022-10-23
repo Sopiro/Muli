@@ -150,7 +150,7 @@ bool Demo::EnablePolygonCreate()
                 b->SetPosition(hull[0]);
                 break;
             case 2:
-                b = world->CreateCapsule(hull[0], hull[1], 0.05f, false, type);
+                b = world->CreateCapsule(hull[0], hull[1], 0.05f, type);
                 break;
             default:
                 b = world->CreatePolygon(hull, type, false);
@@ -384,6 +384,7 @@ extern DemoFrame conveyor_belt;
 extern DemoFrame pulley;
 extern DemoFrame windmill;
 extern DemoFrame crank;
+extern DemoFrame terrain;
 
 static int32 init_demos()
 {
@@ -419,6 +420,7 @@ static int32 init_demos()
     demos[demo_count++] = pulley;
     demos[demo_count++] = windmill;
     demos[demo_count++] = crank;
+    demos[demo_count++] = terrain;
 
     return demo_count;
 }

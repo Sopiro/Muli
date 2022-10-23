@@ -83,8 +83,8 @@ public:
     Capsule* CreateCapsule(const Vec2& p1,
                            const Vec2& p2,
                            float radius,
-                           bool resetPosition = false,
                            RigidBody::Type type = RigidBody::Type::Dynamic,
+                           bool resetPosition = false,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float length,
                                        int32 vertexCount = 0,

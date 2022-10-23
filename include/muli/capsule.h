@@ -13,8 +13,8 @@ public:
     Capsule(const Vec2& p1,
             const Vec2& p2,
             float _radius,
-            bool _resetPosition = false,
             Type _type = Dynamic,
+            bool _resetPosition = false,
             float _density = DEFAULT_DENSITY);
 
     virtual void SetMass(float m) override;

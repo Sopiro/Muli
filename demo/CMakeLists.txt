@@ -49,6 +49,7 @@ set(DEMO_SOURCE_FILES
     src/demo/pulley.cpp
     src/demo/windmill.cpp
     src/demo/crank.cpp
+    src/demo/terrain.cpp
 )
 
 set(DEMO_HEADER_FILES

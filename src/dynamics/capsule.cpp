@@ -3,7 +3,7 @@
 namespace muli
 {
 
-Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition, Type _type, float _density)
+Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, Type _type, bool _resetPosition, float _density)
     : RigidBody(_type, Shape::ShapeCapsule)
 {
     radius = _radius;

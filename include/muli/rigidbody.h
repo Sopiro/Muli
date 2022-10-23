@@ -111,6 +111,7 @@ public:
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
+    uint32 userFlag;
 
 protected:
     friend class World;
