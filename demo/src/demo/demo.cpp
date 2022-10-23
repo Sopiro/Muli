@@ -205,7 +205,7 @@ void Demo::EnableBodyRemove()
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
             auto qr = (aabb.max == aabb.min) ? world->Query(aabb.min) : world->Query(aabb);
-            world->BufferDestroy(qr);
+            world->Destroy(qr);
 
             draging = false;
         }

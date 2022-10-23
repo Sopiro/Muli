@@ -16,8 +16,6 @@ public:
 
         world->CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, RigidBody::Type::Static);
         world->CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, RigidBody::Type::Static);
-        // world->CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius,
-        // RigidBody::Type::Static);
         world->CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, RigidBody::Type::Static);
 
         float r = 0.22f;
@@ -32,7 +30,7 @@ public:
 
         RigidBody* k = world->CreateCapsule(size * 0.9f, 0.15f, true, RigidBody::Type::Kinematic);
         k->SetAngularVelocity(MULI_PI / 2.0f);
-        k = world->CreateCapsule(size * 0.9f, 0.15f, RigidBody::Type::Kinematic);
+        k = world->CreateCapsule(size * 0.9f, 0.15f, false, RigidBody::Type::Kinematic);
         k->SetAngularVelocity(MULI_PI / 2.0f);
 
         camera.position = { 0.0f, 0.0f };

@@ -342,9 +342,9 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     int32 index;
     Vec2 normal;
 
-    for (int32 i0 = 0; i0 < vertexCount; i0++)
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        int32 i1 = (i0 + 1) % vertexCount;
         Vec2 n0 = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
 
         float separation = Dot(n0, localP - vertices[i0]);
@@ -359,6 +359,8 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
             index = i0;
             normal = n0;
         }
+
+        i0 = i1;
     }
 
     // Circle center is inside the polygon
@@ -826,9 +828,11 @@ bool TestPointInside(Polygon* p, Vec2 q)
     Vec2 localQ = MulT(p->GetTransform(), q);
 
     float dir = Cross(vertices[0] - localQ, vertices[1] - localQ);
-    for (int32 i = 1; i < vertexCount; i++)
+    for (int32 i0 = 1; i0 < vertexCount; i0++)
     {
-        float nDir = Cross(vertices[i] - localQ, vertices[(i + 1) % vertexCount] - localQ);
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        float nDir = Cross(vertices[i0] - localQ, vertices[i1] - localQ);
 
         if (dir * nDir < 0)
         {
@@ -1024,17 +1028,19 @@ Edge GetIntersectingEdge(Polygon* p, Vec2 dir)
     const Vec2* vertices = p->GetVertices();
     int32 vertexCount = p->GetVertexCount();
 
-    for (int32 i = 0; i < vertexCount; i++)
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        int32 i2 = (i + 1) % vertexCount;
-        const Vec2& v1 = vertices[i];
-        const Vec2& v2 = vertices[i2];
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
 
-        if (Cross(v1, localDir) > 0 && Cross(v2, localDir) < 0)
+        if (Cross(v0, localDir) > 0 && Cross(v1, localDir) < 0)
         {
             const Transform& t = p->GetTransform();
-            return Edge{ t * v1, t * v2, i, i2 };
+            return Edge{ t * v0, t * v1, i0, i1 };
         }
+
+        i0 = i1;
     }
 
     throw std::runtime_error("Unreachable");
@@ -1083,16 +1089,17 @@ static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Ve
 {
     float maxSeparation = -FLT_MAX;
 
-    for (uint32 i = 0; i < va.size(); i++)
+    size_t i0 = va.size() - 1;
+    for (size_t i1 = 0; i1 < va.size(); i1++)
     {
-        const Vec2& va0 = va[i];
-        const Vec2& va1 = va[(i + 1) % va.size()];
+        const Vec2& va0 = va[i0];
+        const Vec2& va1 = va[i1];
 
         // Right-hand coordinate system, CCW vertex winding
         Vec2 normal = Cross((va1 - va0).Normalized(), 1.0f);
         float separation = FLT_MAX;
 
-        for (uint32 j = 0; j < vb.size(); j++)
+        for (size_t j = 0; j < vb.size(); j++)
         {
             const Vec2& vb0 = vb[j];
 
@@ -1100,6 +1107,7 @@ static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Ve
         }
 
         maxSeparation = Max(separation, maxSeparation);
+        i0 = i1;
     }
 
     return maxSeparation;
