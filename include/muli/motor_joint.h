@@ -36,8 +36,8 @@ public:
 private:
     Vec2 localAnchorA;
     Vec2 localAnchorB;
+    float angleOffset; // Initial angle offset
 
-    float angleOffset;
     Vec2 linearOffset;
     float angularOffset;
 
@@ -51,6 +51,7 @@ private:
 
     Vec2 bias0;
     float bias1;
+
     Vec2 linearImpulseSum{ 0.0f };
     float angularImpulseSum = 0.0f;
 

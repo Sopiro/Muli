@@ -120,9 +120,9 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(RigidBody* a, RigidBody* b, Simplex& gjkResult)
+static EPAResult EPA(RigidBody* a, RigidBody* b, const Simplex& simplex)
 {
-    Polytope polytope{ gjkResult };
+    Polytope polytope{ simplex };
 
     ClosestEdgeInfo closestEdge{ 0, FLT_MAX, Vec2{ 0.0f } };
 

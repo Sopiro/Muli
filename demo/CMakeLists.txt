@@ -47,7 +47,8 @@ set(DEMO_SOURCE_FILES
     src/demo/prismatic_joint_test.cpp
     src/demo/conveyor_belt.cpp
     src/demo/pulley.cpp
-    src/demo/motor_joint_test.cpp
+    src/demo/windmill.cpp
+    src/demo/crank.cpp
 )
 
 set(DEMO_HEADER_FILES

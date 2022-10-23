@@ -4,13 +4,13 @@
 namespace muli
 {
 
-class MotorJointTest : public Demo
+class Windmill : public Demo
 {
 public:
     MotorJoint* motor;
     RigidBody* windmill;
 
-    MotorJointTest(Game& game)
+    Windmill(Game& game)
         : Demo(game)
     {
         RigidBody* stick = world->CreateCapsule(Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 3.0f }, 0.075f, false, RigidBody::Type::Static);
@@ -47,10 +47,10 @@ public:
 
     static Demo* Create(Game& game)
     {
-        return new MotorJointTest(game);
+        return new Windmill(game);
     }
 };
 
-DemoFrame windmill{ "Motor joint test", MotorJointTest::Create };
+DemoFrame windmill{ "Windmill", Windmill::Create };
 
 } // namespace muli

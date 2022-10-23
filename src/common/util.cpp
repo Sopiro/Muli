@@ -14,18 +14,19 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
         return;
     }
 
-    int32 bi = 0;
+    // Find the lowest vertex
+    int32 index = 0;
     for (int32 i = 1; i < vertexCount; i++)
     {
-        if (vertices[i].y < vertices[bi].y)
+        if (vertices[i].y < vertices[index].y)
         {
-            bi = i;
+            index = i;
         }
     }
+    Vec2 bottom = vertices[index];
 
-    Vec2 bottom = vertices[bi];
+    // Sort the vertices based on the angle related to the lowest vertex.
     Vec2* sorted = (Vec2*)malloc(vertexCount * sizeof(Vec2));
-
     std::partial_sort_copy(vertices, vertices + vertexCount, sorted, sorted + vertexCount,
                            [&](const Vec2& a, const Vec2& b) -> bool {
                                Vec2 ra = a - bottom;
@@ -52,7 +53,7 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
         }
     }
 
-    int32 sp = 0;
+    int32 sp = 0; // stack pointer
     out[sp++] = sorted[i++];
     out[sp++] = sorted[i++];
 
@@ -97,16 +98,16 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
         return vertices;
     }
 
-    uint32 bi = 0;
+    uint32 index = 0;
     for (uint32 i = 1; i < vertices.size(); i++)
     {
-        if (vertices[i].y < vertices[bi].y)
+        if (vertices[i].y < vertices[index].y)
         {
-            bi = i;
+            index = i;
         }
     }
 
-    Vec2 bottom = vertices[bi];
+    Vec2 bottom = vertices[index];
     std::vector<Vec2> sorted(vertices.size());
 
     std::partial_sort_copy(vertices.begin(), vertices.end(), sorted.begin(), sorted.end(),
