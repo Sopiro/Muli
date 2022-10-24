@@ -50,6 +50,7 @@ set(DEMO_SOURCE_FILES
     src/demo/windmill.cpp
     src/demo/crank.cpp
     src/demo/terrain.cpp
+    src/demo/rounded_polygon.cpp
 )
 
 set(DEMO_HEADER_FILES
@@ -69,6 +70,7 @@ set(DEMO_HEADER_FILES
     include/game.h
     include/input.h
     include/util.h
+    include/options.h
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

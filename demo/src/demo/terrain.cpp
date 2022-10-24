@@ -1,4 +1,5 @@
 #include "demo.h"
+#include "game.h"
 
 namespace muli
 {
@@ -21,7 +22,7 @@ public:
             float y1 = f(x1);
 
             RigidBody* b = world->CreateCapsule(Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f, RigidBody::Type::Static);
-            b->userFlag = 1 << 1;
+            b->userFlag |= UserFlag::REMOVE_OUTLINE;
         }
 
         // Pyramid

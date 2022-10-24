@@ -1,5 +1,6 @@
 #include "muli/util.h"
 #include "muli/aabb.h"
+#include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/polygon.h"
 
@@ -174,44 +175,107 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     return s;
 }
 
-float ComputePolygonInertia(const Vec2* vertices, int32 vertexCount, float mass)
+float ComputePolygonInertia(const Polygon* p)
 {
+    const Vec2* vertices = p->GetVertices();
+    int32 vertexCount = p->GetVertexCount();
+    float radius = p->GetRadius();
+
+    float inertia;
+
+    // Compute polygon inertia
     float numerator = 0.0f;
     float denominator = 0.0f;
 
-    for (int32 i = 0; i < vertexCount; i++)
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        int32 j = (i + 1) % vertexCount;
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
 
-        const Vec2& vi = vertices[i];
-        const Vec2& vj = vertices[j];
+        float crs = Abs(Cross(v1, v0));
 
-        float crs = Abs(Cross(vj, vi));
-
-        numerator += crs * (Dot(vj, vj) + Dot(vj, vi) + Dot(vi, vi));
+        numerator += crs * (Dot(v1, v1) + Dot(v1, v0) + Dot(v0, v0));
         denominator += crs;
+
+        i0 = i1;
     }
 
-    return (numerator * mass) / (denominator * 6.0f);
+    inertia = (numerator) / (denominator * 6.0f);
+
+    // Consider polygon skin(radius) inertia
+    float r2 = radius * radius;
+    float invArea = 1.0f / p->GetArea();
+
+    i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    {
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        Vec2 normal = v1 - v0;
+        float length = normal.Normalize();
+        normal = Cross(normal, 1.0f);
+
+        Vec2 mid = (v0 + v1) * 0.5f + normal * radius * 0.5f; // Mid point of edge rect
+
+        float areaFraction = length * radius * invArea;
+        float rectInertia = (length * length + r2) / 12.0f;
+        float d2 = mid.Length2();
+
+        inertia += (rectInertia + d2) * areaFraction;
+
+        i0 = i1;
+    }
+
+    // Consider corner arc inertia
+    i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    {
+        int32 i2 = (i1 + 1) % vertexCount;
+
+        Vec2 n0 = (Cross(vertices[i1] - vertices[i0], 1.0f)).Normalized();
+        Vec2 n1 = (Cross(vertices[i2] - vertices[i1], 1.0f)).Normalized();
+
+        float theta = AngleBetween(n0, n1);
+
+        float areaFraction = r2 * theta * 0.5f * invArea;
+        float arcInertia = r2 * 0.5f;
+        float d2 = vertices[i1].Length2();
+
+        inertia += (arcInertia + d2) * areaFraction;
+
+        i0 = i1;
+    }
+
+    muliAssert(inertia > 0.0f);
+
+    return inertia * p->GetMass();
 }
 
-float ComputeCapsuleInertia(float length, float radius, float mass)
+float ComputeCapsuleInertia(const Capsule* c)
 {
-    float width = length;
+    float length = c->GetLength();
+    float radius = c->GetRadius();
     float height = radius * 2.0f;
+    float invArea = 1.0f / c->GetArea();
 
-    float rectArea = width * height;
+    float inertia;
+
+    float rectArea = length * height;
+    float rectInertia = (length * length + height * height) / 12.0f;
+
+    inertia = rectInertia * rectArea * invArea;
+
     float circleArea = MULI_PI * radius * radius;
-    float totalArea = rectArea + circleArea;
-
-    float rectInertia = (width * width + height * height) / 12.0f;
     float halfCircleInertia = ((MULI_PI / 4) - 8.0f / (9.0f * MULI_PI)) * radius * radius * radius * radius;
-
     float dist2 = length * 0.5f + (4.0f * radius) / (MULI_PI * 3.0f);
     dist2 *= dist2;
 
+    inertia += (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f * invArea;
+
     // Parallel axis theorem applied
-    return mass * (rectInertia * rectArea + (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f) / (rectArea + circleArea);
+    return c->GetMass() * inertia;
 }
 
 } // namespace muli

@@ -81,18 +81,24 @@ void Mesh::Draw(GLenum drawMode)
     {
     case GL_TRIANGLES:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-        glDrawElements(drawMode, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     case GL_LINE_LOOP:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-        glDrawElements(drawMode, static_cast<GLsizei>(vertices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_LOOP, static_cast<GLsizei>(vertices.size()), GL_UNSIGNED_INT, 0);
+        break;
+
+    case GL_POINTS:
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
+        glDrawElements(GL_POINTS, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     default:
         SPDLOG_ERROR("Not a support draw mode");
         break;
     }
+
     glBindVertexArray(0);
 }
 

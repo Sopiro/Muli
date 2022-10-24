@@ -3,21 +3,21 @@
 #include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/polygon.h"
+#include "options.h"
 
 namespace muli
 {
 
-std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
+std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 {
-    RigidBody::Shape shape = body.GetShape();
+    RigidBody::Shape shape = body->GetShape();
 
     switch (shape)
     {
     case RigidBody::Shape::ShapeCircle:
     {
-        Circle& c = static_cast<Circle&>(body);
-
-        float radius = c.GetRadius();
+        Circle* c = static_cast<Circle*>(body);
+        float radius = c->GetRadius();
 
         float angle = MULI_PI * 2.0f / circlePolygonCount;
 
@@ -45,21 +45,53 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
     }
     case RigidBody::Shape::ShapePolygon:
     {
-        Polygon& p = static_cast<Polygon&>(body);
+        Polygon* p = static_cast<Polygon*>(body);
+        float radius = p->GetRadius();
 
-        const Vec2* vertices = p.GetVertices();
-        int32 vertexCount = p.GetVertexCount();
+        const Vec2* vertices = p->GetVertices();
+        int32 vertexCount = p->GetVertexCount();
 
         std::vector<Vec2> vertices2;
         std::vector<Vec3> vertices3;
-        vertices2.reserve(vertexCount);
-        vertices3.reserve(vertexCount);
+        vertices2.reserve(vertexCount * 2 + circlePolygonCount);
+        vertices3.reserve(vertexCount * 2 + circlePolygonCount);
 
-        for (int32 i = 0; i < vertexCount; i++)
+        for (int32 i0 = 0; i0 < vertexCount; i0++)
         {
-            const Vec2& v = vertices[i];
-            vertices2.emplace_back(v.x, v.y);
-            vertices3.emplace_back(v.x, v.y, 0.0f);
+            int32 i1 = (i0 + 1) % vertexCount;
+            int32 i2 = (i0 + 2) % vertexCount;
+
+            const Vec2& v0 = vertices[i0];
+
+            if (!(p->userFlag & UserFlag::RENDER_POLYGON_RADIUS))
+            {
+                vertices2.push_back(v0);
+                vertices3.push_back(v0);
+                continue;
+            }
+
+            const Vec2& v1 = vertices[i1];
+            const Vec2& v2 = vertices[i2];
+
+            Vec2 n0 = Cross(v1 - v0, 1.0f).Normalized();
+            Vec2 n1 = Cross(v2 - v1, 1.0f).Normalized();
+
+            Vec2 vn0 = v0 + n0 * radius;
+
+            vertices2.push_back(vn0);
+            vertices3.push_back(vn0);
+
+            float theta = AngleBetween(n0, n1);
+            float cCount = circlePolygonCount * theta / (2.0f * MULI_PI);
+
+            for (int32 j = 0; j < cCount; j++)
+            {
+                float per = j / cCount;
+                Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
+
+                vertices2.push_back(cv);
+                vertices3.push_back(cv);
+            }
         }
 
         std::vector<uint32> indices = Triangulate(vertices2);
@@ -68,10 +100,10 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount)
     }
     case RigidBody::Shape::ShapeCapsule:
     {
-        Capsule& c = static_cast<Capsule&>(body);
+        Capsule* c = static_cast<Capsule*>(body);
 
-        float l = c.GetLength();
-        float r = c.GetRadius();
+        float l = c->GetLength();
+        float r = c->GetRadius();
 
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;

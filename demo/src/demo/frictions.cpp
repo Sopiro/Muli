@@ -14,25 +14,25 @@ public:
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
         ground->SetFriction(groundFriction);
 
-        RigidBody* b = world->CreateCapsule(6.0f, 0.05f, true, RigidBody::Type::Static);
+        RigidBody* b = world->CreateCapsule(6.5f, 0.05f, true, RigidBody::Type::Static);
         b->SetPosition(-0.6f, 5.0f);
         b->SetRotation(-0.15f);
         b->SetFriction(groundFriction);
 
-        b = world->CreateCapsule(6.0f, 0.05f, true, RigidBody::Type::Static);
+        b = world->CreateCapsule(6.5f, 0.05f, true, RigidBody::Type::Static);
         b->SetPosition(0.0f, 3.0f);
         b->SetRotation(0.15f);
         b->SetFriction(groundFriction);
 
-        b = world->CreateCapsule(6.0f, 0.05f, true, RigidBody::Type::Static);
+        b = world->CreateCapsule(6.5f, 0.05f, true, RigidBody::Type::Static);
         b->SetPosition(-0.6f, 1.0f);
         b->SetRotation(-0.15f);
         b->SetFriction(groundFriction);
 
         b = world->CreateBox(0.1f, 1.1f, RigidBody::Type::Static);
-        b->SetPosition(3.1f, 4.3f);
+        b->SetPosition(3.2f, 4.3f);
         b = world->CreateBox(0.1f, 1.1f, RigidBody::Type::Static);
-        b->SetPosition(-3.7f, 2.3f);
+        b->SetPosition(-3.8f, 2.3f);
 
         float xStart = -4.5f;
         float yStart = 7.0f;

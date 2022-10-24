@@ -4,12 +4,13 @@
 namespace muli
 {
 
-std::unique_ptr<Mesh> GenerateMesh(RigidBody& body, uint32 circlePolygonCount = 13);
+std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount = 13);
 
 std::vector<uint32> Triangulate(const std::vector<Vec2>& vertices);
 
-// https://gist.github.com/ciembor/1494530
 /*
+ * https://gist.github.com/ciembor/1494530
+ *
  * Converts an RGB color value to HSL. Conversion formula
  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
  * Assumes r, g, and b are contained in the set [0, 255] and

@@ -25,13 +25,18 @@ public:
         float size = 1.0f;
         float range = size * 0.7f;
 
-        float r = LinearRand(0.0f, 3.0f);
+        float r = LinearRand(0.0f, 4.0f);
 
         if (r < 1.0f)
         {
-            b = world->CreateRandomConvexPolygon(size / 2.0f, 10);
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, 0.0f);
         }
         else if (r < 2.0f)
+        {
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, r / 10.0f);
+            b->userFlag |= UserFlag::RENDER_POLYGON_RADIUS;
+        }
+        else if (r < 3.0f)
         {
             b = world->CreateCircle(size / 2.0f);
         }

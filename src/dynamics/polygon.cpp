@@ -20,24 +20,27 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
 
     ComputeConvexHull(_vertices, vertexCount, vertices);
 
+    // Traslate center of mass to the origin
     Vec2 centerOfMass{ 0.0f };
-    for (int32 i0 = 0; i0 < vertexCount; i0++)
+    for (int32 i = 0; i < vertexCount; i++)
     {
-        int32 i1 = (i0 + 1) % vertexCount;
-
-        centerOfMass += vertices[i0];
+        centerOfMass += vertices[i];
     }
     centerOfMass *= 1.0f / vertexCount;
-    vertices[0] -= centerOfMass;
 
+    // Compute area
     area = 0;
+    vertices[0] -= centerOfMass;
     for (int32 i = 1; i < vertexCount; i++)
     {
         vertices[i] -= centerOfMass;
-        area += Cross(vertices[i - 1], vertices[i]);
+        area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // inside triangle
+        area += radius * (vertices[i - 1] - vertices[i]).Length(); // edge rect
     }
-    area += Cross(vertices[vertexCount - 1], vertices[0]);
-    area = Abs(area) / 2.0f;
+    area += Cross(vertices[vertexCount - 1], vertices[0]) * 0.5f;
+    area += radius * (vertices[vertexCount - 1] - vertices[0]).Length();
+
+    area += MULI_PI * radius * radius; // corner arc
 
     if (type == Dynamic)
     {
@@ -46,7 +49,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
         density = _density;
         mass = _density * area;
         invMass = 1.0f / mass;
-        inertia = ComputePolygonInertia(vertices, vertexCount, mass);
+        inertia = ComputePolygonInertia(this);
         invInertia = 1.0f / inertia;
     }
 
@@ -71,7 +74,7 @@ void Polygon::SetMass(float _mass)
     density = _mass / area;
     mass = _mass;
     invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(vertices, vertexCount, mass);
+    inertia = ComputePolygonInertia(this);
     invInertia = 1.0f / inertia;
 }
 
@@ -82,7 +85,7 @@ void Polygon::SetDensity(float _density)
     density = _density;
     mass = _density * area;
     invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(vertices, vertexCount, mass);
+    inertia = ComputePolygonInertia(this);
     invInertia = 1.0f / inertia;
 }
 

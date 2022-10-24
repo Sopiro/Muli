@@ -1031,6 +1031,26 @@ inline float Sin(float s)
     return sinf(s);
 }
 
+inline float Tan(float s)
+{
+    return tanf(s);
+}
+
+inline float Acos(float s)
+{
+    return acosf(s);
+}
+
+inline float Asin(float s)
+{
+    return asinf(s);
+}
+
+inline float Atan(float s)
+{
+    return atanf(s);
+}
+
 inline float Atan2(float y, float x)
 {
     return atan2f(y, x);
@@ -1039,6 +1059,36 @@ inline float Atan2(float y, float x)
 inline float Round(float s)
 {
     return roundf(s);
+}
+
+inline Vec2 Slerp(const Vec2& start, const Vec2& end, float percent)
+{
+    float dot = Clamp(Dot(start, end), -1.0f, 1.0f);
+    float angle = acosf(dot) * percent;
+
+    Vec2 rv = end - start * dot;
+    rv.Normalize();
+
+    return start * Cos(angle) + rv * Sin(angle);
+}
+
+inline Vec3 Slerp(const Vec3& start, const Vec3& end, float percent)
+{
+    float dot = Clamp(Dot(start, end), -1.0f, 1.0f);
+    float angle = acosf(dot) * percent;
+
+    Vec3 rv = end - start * dot;
+    rv.Normalize();
+
+    return start * Cos(angle) + rv * Sin(angle);
+}
+
+inline float AngleBetween(const Vec2& a, const Vec2& b)
+{
+    float sine = Cross(a, b);
+    float cosine = Dot(a, b);
+
+    return Atan2(sine, cosine);
 }
 
 } // namespace muli

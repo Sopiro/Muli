@@ -8,6 +8,9 @@
 namespace muli
 {
 
+class Polygon;
+class Capsule;
+
 struct BodyPair
 {
     uint32 first;
@@ -25,11 +28,10 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out);
 std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-float ComputePolygonInertia(const Vec2* vertices, int32 vertexCount, float mass);
+float ComputePolygonInertia(const Polygon* p);
 
-float ComputeCapsuleInertia(float length, float radius, float mass);
+float ComputeCapsuleInertia(const Capsule* c);
 
-// TODO: Consider polygon skin
 inline float ComputeBoxInertia(float width, float height, float mass)
 {
     return (width * width + height * height) * mass / 12.0f;

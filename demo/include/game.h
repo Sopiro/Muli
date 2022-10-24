@@ -5,24 +5,13 @@
 #include "demo.h"
 #include "dynamic_renderer.h"
 #include "input.h"
+#include "options.h"
 #include "rigidbody_renderer.h"
 
 namespace muli
 {
 
 class Application;
-
-struct DebugOptions
-{
-    bool pause = false;
-    bool step = false;
-    bool drawOutlineOnly = false;
-    bool showBVH = false;
-    bool showAABB = false;
-    bool showContactPoint = false;
-    bool showContactNormal = false;
-    bool resetCamera = true;
-};
 
 class Game final
 {

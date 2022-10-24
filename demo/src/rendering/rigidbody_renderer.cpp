@@ -1,5 +1,6 @@
 #include "rigidbody_renderer.h"
 #include "muli/util.h"
+#include "options.h"
 #include "window.h"
 
 namespace muli
@@ -81,7 +82,7 @@ void RigidBodyRenderer::Render()
             mesh->Draw(GL_TRIANGLES);
         }
 
-        if (!(body->userFlag & (1 << 1)))
+        if (!(body->userFlag & UserFlag::REMOVE_OUTLINE))
         {
             glLineWidth(1.0f);
             shader->SetColor({ 0, 0, 0 });

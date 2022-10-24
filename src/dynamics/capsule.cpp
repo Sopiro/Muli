@@ -18,7 +18,7 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, Type _type, bool
         density = _density;
         mass = _density * area;
         invMass = 1.0f / mass;
-        inertia = ComputeCapsuleInertia(length, radius, mass);
+        inertia = ComputeCapsuleInertia(this);
         invInertia = 1.0f / inertia;
     }
 
@@ -48,7 +48,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
         density = _density;
         mass = _density * area;
         invMass = 1.0f / mass;
-        inertia = ComputeCapsuleInertia(length, radius, mass);
+        inertia = ComputeCapsuleInertia(this);
         invInertia = 1.0f / inertia;
     }
 
@@ -68,7 +68,7 @@ void Capsule::SetMass(float _mass)
     density = _mass / area;
     mass = _mass;
     invMass = 1.0f / mass;
-    inertia = ComputeCapsuleInertia(length, radius, mass);
+    inertia = ComputeCapsuleInertia(this);
     invInertia = 1.0f / inertia;
 }
 
@@ -79,7 +79,7 @@ void Capsule::SetDensity(float _density)
     density = _density;
     mass = density * area;
     invMass = 1.0f / mass;
-    inertia = ComputeCapsuleInertia(length, radius, mass);
+    inertia = ComputeCapsuleInertia(this);
     invInertia = 1.0f / inertia;
 }
 
