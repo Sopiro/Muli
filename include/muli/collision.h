@@ -34,6 +34,15 @@ struct ContactManifold
     bool featureFlipped;
 };
 
+// Define a ray such that:
+// Ray = from + maxFraction * (to - from)
+struct Ray
+{
+    Vec2 from;
+    Vec2 to;
+    float maxFraction;
+};
+
 typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
 typedef float DistanceFunction(RigidBody*, RigidBody*);
 

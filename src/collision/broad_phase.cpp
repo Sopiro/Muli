@@ -58,7 +58,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
     }
 }
 
-void BroadPhase::FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback) const
+void BroadPhase::FindContacts(const std::function<void(RigidBody*, RigidBody*)>& callback) const
 {
     for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {

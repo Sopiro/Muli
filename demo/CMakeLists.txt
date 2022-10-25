@@ -51,6 +51,7 @@ set(DEMO_SOURCE_FILES
     src/demo/crank.cpp
     src/demo/terrain.cpp
     src/demo/rounded_polygon.cpp
+    src/demo/ray_casting.cpp
 )
 
 set(DEMO_HEADER_FILES
@@ -94,9 +95,3 @@ target_link_directories(demo PRIVATE ${DEP_LIB_DIR})
 target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} muli)
 
 add_dependencies(demo ${DEP_LIST_DEMO} muli)
-
-# default startup project for Visual Studio
-if(MSVC)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT demo)
-    set_property(TARGET demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/demo)
-endif()

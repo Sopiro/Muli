@@ -1,6 +1,7 @@
 #pragma once
 
 #include "aabb.h"
+#include "collision.h"
 #include "common.h"
 #include "rigidbody.h"
 #include "settings.h"
@@ -59,7 +60,9 @@ public:
 
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;
-    void Query(const AABB& aabb, std::function<bool(RigidBody*)> callback) const;
+    void Query(const AABB& aabb, const std::function<bool(RigidBody*)>& callback) const;
+
+    void RayCast(const Ray& ray, const std::function<bool(RigidBody*)>& callback) const;
 
     float ComputeTreeCost() const;
 

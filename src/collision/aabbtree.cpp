@@ -320,7 +320,7 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
         return;
     }
 
-    GrowableArray<int32, 16> stack;
+    GrowableArray<int32, 256> stack;
     stack.Push(root);
 
     while (stack.Count() != 0)
@@ -419,14 +419,17 @@ std::vector<RigidBody*> AABBTree::Query(const Vec2& point) const
         return res;
     }
 
-    GrowableArray<int32, 16> stack;
+    GrowableArray<int32, 256> stack;
     stack.Push(root);
 
     while (stack.Count() != 0)
     {
         int32 current = stack.Pop();
 
-        if (!TestPointInsideAABB(nodes[current].aabb, point)) continue;
+        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        {
+            continue;
+        }
 
         if (nodes[current].isLeaf)
         {
@@ -452,14 +455,17 @@ std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
         return res;
     }
 
-    GrowableArray<int32, 16> stack;
+    GrowableArray<int32, 256> stack;
     stack.Push(root);
 
     while (stack.Count() != 0)
     {
         int32 current = stack.Pop();
 
-        if (!TestOverlapAABB(nodes[current].aabb, aabb)) continue;
+        if (!TestOverlapAABB(nodes[current].aabb, aabb))
+        {
+            continue;
+        }
 
         if (nodes[current].isLeaf)
         {
@@ -475,26 +481,28 @@ std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
     return res;
 }
 
-void AABBTree::Query(const AABB& aabb, std::function<bool(RigidBody*)> callback) const
+void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& callback) const
 {
     if (root == nullNode)
     {
         return;
     }
 
-    GrowableArray<int32, 16> stack;
+    GrowableArray<int32, 256> stack;
     stack.Push(root);
 
     while (stack.Count() != 0)
     {
         int32 current = stack.Pop();
 
-        if (!TestOverlapAABB(nodes[current].aabb, aabb)) continue;
+        if (!TestOverlapAABB(nodes[current].aabb, aabb))
+        {
+            continue;
+        }
 
         if (nodes[current].isLeaf)
         {
             bool proceed = callback(nodes[current].body);
-
             if (proceed == false)
             {
                 return;
@@ -504,6 +512,67 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(RigidBody*)> callback)
         {
             stack.Push(nodes[current].child1);
             stack.Push(nodes[current].child2);
+        }
+    }
+}
+
+void AABBTree::RayCast(const Ray& ray, const std::function<bool(RigidBody*)>& callback) const
+{
+    Vec2 p1 = ray.from;
+    Vec2 p2 = ray.to;
+    float maxFraction = ray.maxFraction;
+
+    Vec2 d = p2 - p1;
+    muliAssert(d.Length2() > 0.0f);
+    d.Normalize();
+
+    Vec2 end = p1 + ray.maxFraction * (p2 - p1);
+    AABB rayAABB;
+    rayAABB.min = Min(p1, end);
+    rayAABB.max = Max(p1, end);
+
+    Vec2 perp = Cross(d, 1.0f); // separating axis
+    Vec2 absPerp = Abs(perp);
+
+    GrowableArray<int32, 256> stack;
+    stack.Push(root);
+
+    while (stack.Count() > 0)
+    {
+        int32 nodeID = stack.Pop();
+
+        if (nodeID == nullNode)
+        {
+            continue;
+        }
+
+        const Node* node = nodes + nodeID;
+        if (TestOverlapAABB(node->aabb, rayAABB) == false)
+        {
+            continue;
+        }
+
+        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
+        Vec2 halfDiagonal = (node->aabb.max - node->aabb.min) * 0.5f;
+
+        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, halfDiagonal);
+        if (separation > 0.0f) // Separating axis test
+        {
+            continue;
+        }
+
+        if (node->isLeaf)
+        {
+            bool proceed = callback(node->body);
+            if (proceed == false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            stack.Push(node->child1);
+            stack.Push(node->child2);
         }
     }
 }

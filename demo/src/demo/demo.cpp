@@ -386,6 +386,7 @@ extern DemoFrame windmill;
 extern DemoFrame crank;
 extern DemoFrame terrain;
 extern DemoFrame rounded_polygon;
+extern DemoFrame ray_casting;
 
 static int32 init_demos()
 {
@@ -423,6 +424,7 @@ static int32 init_demos()
     demos[demo_count++] = crank;
     demos[demo_count++] = terrain;
     demos[demo_count++] = rounded_polygon;
+    demos[demo_count++] = ray_casting;
 
     return demo_count;
 }

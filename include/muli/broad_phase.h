@@ -16,7 +16,7 @@ public:
     ~BroadPhase() noexcept;
 
     void UpdateDynamicTree(float dt);
-    void FindContacts(std::function<void(RigidBody* bodyA, RigidBody* bodyB)> callback) const;
+    void FindContacts(const std::function<void(RigidBody*, RigidBody*)>& callback) const;
     bool TestOverlap(RigidBody* bodyA, RigidBody* bodyB) const;
 
     void Add(RigidBody* body);

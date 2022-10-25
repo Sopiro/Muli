@@ -157,6 +157,8 @@ public:
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;
 
+    void Raycast(const Vec2& from, const Vec2& to, const std::function<bool(RigidBody*)>& callback);
+
     RigidBody* GetBodyList();
     RigidBody* GetBodyListTail();
     uint32 GetBodyCount() const;

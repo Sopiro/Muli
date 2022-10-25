@@ -339,6 +339,16 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     return res;
 }
 
+void World::Raycast(const Vec2& from, const Vec2& to, const std::function<bool(RigidBody*)>& callback)
+{
+    Ray r;
+    r.from = from;
+    r.to = to;
+    r.maxFraction = 1.0f;
+
+    contactManager.broadPhase.tree.RayCast(r, callback);
+}
+
 Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
 {
     Vec2 box[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
