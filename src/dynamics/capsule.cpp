@@ -165,8 +165,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         v2.y -= radius;
     }
 
-    bool hit = RayCastLineSegment(v1, v2, p1, p2, output);
-    if (hit)
+    if (RayCastLineSegment(v1, v2, p1, p2, output))
     {
         output->normal = transform.rotation * output->normal;
         return true;

@@ -157,20 +157,57 @@ bool Polygon::TestPoint(const Vec2& p) const
 {
     Vec2 localP = MulT(transform, p);
 
-    float dir = Cross(vertices[0] - localP, vertices[1] - localP);
-    for (int32 i0 = 1; i0 < vertexCount; i0++)
+    int32 index = 0;
+    float maxSeparation = -FLT_MAX;
+
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        int32 i1 = (i0 + 1) % vertexCount;
-
-        float nDir = Cross(vertices[i0] - localP, vertices[i1] - localP);
-
-        if (dir * nDir < 0)
+        Vec2 n0 = Cross(vertices[i1] - vertices[i0], 1.0f);
+        float separation = Dot(n0, localP - vertices[i0]);
+        if (separation > radius)
         {
             return false;
         }
+
+        if (separation > maxSeparation)
+        {
+            maxSeparation = separation;
+            index = i0;
+        }
+
+        i0 = i1;
     }
 
-    return true;
+    // Totally inside
+    if (maxSeparation < 0.0f)
+    {
+        return true;
+    }
+
+    // Test for polygon skin(radius)
+    Vec2 v0 = vertices[index];
+    Vec2 v1 = vertices[(index + 1) % vertexCount];
+
+    Vec2 d = localP - v0;
+    Vec2 e = v1 - v0;
+
+    float w = Dot(d, e);
+    float l2 = Dot(e, e);
+
+    if (w <= 0.0f)
+    {
+        return Dot(d, d) < radius * radius;
+    }
+    else if (w >= l2)
+    {
+        Vec2 d1 = localP - v1;
+        return Dot(d1, d1) < radius * radius;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 Vec2 Polygon::GetClosestPoint(const Vec2& p) const
