@@ -16,8 +16,11 @@ public:
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
         options.showAABB = true;
 
-        RigidBody* c = world->CreateCircle(1.0f);
-        c->SetPosition(3, 3);
+        RigidBody* b = world->CreateCircle(1.0f);
+        b->SetPosition(3, 3);
+
+        b = world->CreateCapsule(1.0f, 0.5f);
+        b->SetPosition(-3, 3);
     }
 
     ~RayCasting()
