@@ -787,28 +787,6 @@ float ComputeDistance(RigidBody* b, const Vec2& q)
     return Dist(b->GetClosestPoint(q), q);
 }
 
-Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
-{
-    RigidBody::Shape shape = b->GetShape();
-    switch (shape)
-    {
-    case RigidBody::Shape::ShapeCircle:
-    {
-        return GetClosestPoint(static_cast<Circle*>(b), q);
-    }
-    case RigidBody::Shape::ShapeCapsule:
-    {
-        return GetClosestPoint(static_cast<Capsule*>(b), q);
-    }
-    case RigidBody::Shape::ShapePolygon:
-    {
-        return GetClosestPoint(static_cast<Polygon*>(b), q);
-    }
-    default:
-        throw std::runtime_error("Not a supported shape");
-    }
-}
-
 Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);

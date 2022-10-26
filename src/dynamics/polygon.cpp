@@ -197,7 +197,15 @@ Vec2 Polygon::GetClosestPoint(const Vec2& p) const
             if (dir > 0)
             {
                 normal = (localP - v0).Normalized();
-                return transform * (v0 + normal * radius);
+                float distance = Dot(localP - v0, normal);
+                if (distance > radius)
+                {
+                    return transform * (v0 + normal * radius);
+                }
+                else
+                {
+                    return p;
+                }
             }
 
             dir = -1;
@@ -208,7 +216,15 @@ Vec2 Polygon::GetClosestPoint(const Vec2& p) const
             if (dir < 0)
             {
                 normal = (localP - v1).Normalized();
-                return transform * (v1 + normal * radius);
+                float distance = Dot(localP - v1, normal);
+                if (distance > radius)
+                {
+                    return transform * (v1 + normal * radius);
+                }
+                else
+                {
+                    return p;
+                }
             }
 
             dir = 1;
@@ -218,7 +234,7 @@ Vec2 Polygon::GetClosestPoint(const Vec2& p) const
         {
             normal = Cross(v1 - v0, 1.0f).Normalized();
             float distance = Dot(localP - v0, normal);
-            if (distance >= 0)
+            if (distance > radius)
             {
                 Vec2 closest = localP + normal * (radius - distance);
                 return transform * closest;
