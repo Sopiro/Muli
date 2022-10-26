@@ -782,144 +782,9 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
     }
 }
 
-float ComputeDistance(RigidBody* b, Vec2 q)
+float ComputeDistance(RigidBody* b, const Vec2& q)
 {
-    return Dist(GetClosestPoint(b, q), q);
-}
-
-Vec2 GetClosestPoint(Circle* b, Vec2 q)
-{
-    float radius = b->GetRadius();
-
-    Vec2 dir = (q - b->GetPosition());
-    float distance = dir.Normalize();
-
-    if (distance <= radius)
-    {
-        return q;
-    }
-    else
-    {
-        return b->GetPosition() + dir * radius;
-    }
-}
-
-Vec2 GetClosestPoint(Capsule* c, Vec2 q)
-{
-    float radius = c->GetRadius();
-
-    const Vec2& va = c->GetVertexA();
-    const Vec2& vb = c->GetVertexB();
-
-    Vec2 localQ = MulT(c->GetTransform(), q);
-    UV w = ComputeWeights(va, vb, localQ);
-
-    Vec2 closest;
-    Vec2 normal;
-    float distance;
-    if (w.v <= 0) // Region A
-    {
-        closest = va;
-        normal = localQ - va;
-        distance = normal.Normalize();
-    }
-    else if (w.v >= 1) // Region B
-    {
-        closest = vb;
-        normal = localQ - vb;
-        distance = normal.Normalize();
-    }
-    else // Region AB
-    {
-        normal.Set(0.0f, 1.0f);
-        distance = Dot(localQ - va, normal);
-
-        if (Dot(normal, localQ - va) < 0.0f)
-        {
-            normal *= -1;
-            distance *= -1;
-        }
-
-        closest = localQ + normal * -distance;
-    }
-
-    if (distance <= radius)
-    {
-        return q;
-    }
-    else
-    {
-        closest += normal * radius;
-        return c->GetTransform() * closest;
-    }
-}
-
-Vec2 GetClosestPoint(Polygon* p, Vec2 q)
-{
-    float radius = p->GetRadius();
-    const Vec2* vertices = p->GetVertices();
-    int32 vertexCount = p->GetVertexCount();
-    const Transform& t = p->GetTransform();
-    Vec2 localQ = MulT(t, q);
-
-    UV w;
-    Vec2 normal;
-    int32 dir = 0;
-    int32 i0 = 0;
-    int32 insideCheck = 0;
-
-    while (insideCheck < vertexCount)
-    {
-        int32 i1 = (i0 + 1) % vertexCount;
-
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
-
-        w = ComputeWeights(v0, v1, localQ);
-        if (w.v <= 0) // Region v0
-        {
-            if (dir > 0)
-            {
-                normal = (localQ - v0).Normalized();
-                return t * (v0 + normal * radius);
-            }
-
-            dir = -1;
-            i0 = (i0 - 1 + vertexCount) % vertexCount;
-        }
-        else if (w.v >= 1) // Region v1
-        {
-            if (dir < 0)
-            {
-                normal = (localQ - v1).Normalized();
-                return t * (v1 + normal * radius);
-            }
-
-            dir = 1;
-            i0 = (i0 + 1) % vertexCount;
-        }
-        else // Inside the region
-        {
-            normal = Cross(v1 - v0, 1.0f).Normalized();
-            float distance = Dot(localQ - v0, normal);
-            if (distance >= 0)
-            {
-                Vec2 closest = localQ + normal * (radius - distance);
-                return t * closest;
-            }
-
-            if (dir != 0)
-            {
-                return q;
-            }
-
-            ++insideCheck;
-            dir = 0;
-            i0 = (i0 + 1) % vertexCount;
-        }
-    }
-
-    return q;
+    return Dist(b->GetClosestPoint(q), q);
 }
 
 Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
@@ -944,7 +809,7 @@ Vec2 GetClosestPoint(RigidBody* b, Vec2 q)
     }
 }
 
-Edge GetIntersectingEdge(Polygon* p, Vec2 dir)
+Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
 {
     const Vec2 localDir = MulT(p->GetRotation(), dir);
     const Vec2* vertices = p->GetVertices();

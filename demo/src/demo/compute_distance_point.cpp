@@ -56,7 +56,7 @@ public:
         ComputeProperty();
         EnableCameraControl();
 
-        closest = GetClosestPoint(b, mpos);
+        closest = b->GetClosestPoint(mpos);
         distance = Dist(closest, mpos);
     }
 

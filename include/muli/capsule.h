@@ -25,6 +25,7 @@ public:
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
     virtual bool TestPoint(const Vec2& p) const override;
+    virtual Vec2 GetClosestPoint(const Vec2& p) const override;
     virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const override;
 
     float GetLength() const;

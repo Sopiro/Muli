@@ -281,6 +281,8 @@ float ComputeCapsuleInertia(const Capsule* c)
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
 {
+    output->fraction = FLT_MAX;
+
     Vec2 d = p2 - p1;
     Vec2 f = p1 - position;
     float r2 = radius * radius;

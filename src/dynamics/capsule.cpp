@@ -90,6 +90,51 @@ inline bool Capsule::TestPoint(const Vec2& p) const
     return SignedDistanceToLineSegment(localP, va, vb, radius) < 0.0f;
 }
 
+inline Vec2 Capsule::GetClosestPoint(const Vec2& p) const
+{
+    Vec2 localP = MulT(transform, p);
+    UV w = ComputeWeights(va, vb, localP);
+
+    Vec2 closest;
+    Vec2 normal;
+    float distance;
+    if (w.v <= 0) // Region A
+    {
+        closest = va;
+        normal = localP - va;
+        distance = normal.Normalize();
+    }
+    else if (w.v >= 1) // Region B
+    {
+        closest = vb;
+        normal = localP - vb;
+        distance = normal.Normalize();
+    }
+    else // Region AB
+    {
+        normal.Set(0.0f, 1.0f);
+        distance = Dot(localP - va, normal);
+
+        if (Dot(normal, localP - va) < 0.0f)
+        {
+            normal *= -1;
+            distance *= -1;
+        }
+
+        closest = localP + normal * -distance;
+    }
+
+    if (distance <= radius)
+    {
+        return p;
+    }
+    else
+    {
+        closest += normal * radius;
+        return transform * closest;
+    }
+}
+
 bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
@@ -101,6 +146,11 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     if (SignedDistanceToLineSegment(p1, v1, v2, radius) < 0.0f)
     {
         return false;
+    }
+
+    if (Abs(p1.y) <= radius)
+    {
+        goto circle_test;
     }
 
     // Translate edge along the normal
@@ -127,6 +177,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         return false;
     }
 
+circle_test:
     RayCastOutput co1;
     RayCastOutput co2;
     bool r1 = RayCastCircle(va, radius, p1, p2, &co1);
@@ -137,7 +188,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         return false;
     }
 
-    if (r1)
+    if (co1.fraction < co2.fraction)
     {
         memcpy(output, &co1, sizeof(RayCastOutput));
     }

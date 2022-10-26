@@ -55,14 +55,9 @@ typedef float DistanceFunction(RigidBody*, RigidBody*);
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold = nullptr);
 
 float ComputeDistance(RigidBody* a, RigidBody* b);
-float ComputeDistance(RigidBody* b, Vec2 q);
+float ComputeDistance(RigidBody* b, const Vec2& q);
 
-Vec2 GetClosestPoint(Circle* b, Vec2 q);
-Vec2 GetClosestPoint(Capsule* b, Vec2 q);
-Vec2 GetClosestPoint(Polygon* b, Vec2 q);
-Vec2 GetClosestPoint(RigidBody* b, Vec2 q);
-
-Edge GetIntersectingEdge(Polygon* p, Vec2 dir);
+Edge GetIntersectingEdge(Polygon* p, const Vec2& dir);
 bool SAT(Polygon* a, Polygon* b);
 
 } // namespace muli

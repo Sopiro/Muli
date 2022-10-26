@@ -153,7 +153,7 @@ Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
     }
 }
 
-inline bool Polygon::TestPoint(const Vec2& p) const
+bool Polygon::TestPoint(const Vec2& p) const
 {
     Vec2 localP = MulT(transform, p);
 
@@ -171,6 +171,71 @@ inline bool Polygon::TestPoint(const Vec2& p) const
     }
 
     return true;
+}
+
+Vec2 Polygon::GetClosestPoint(const Vec2& p) const
+{
+    Vec2 localP = MulT(transform, p);
+
+    UV w;
+    Vec2 normal;
+
+    int32 dir = 0;
+    int32 i0 = 0;
+    int32 insideCheck = 0;
+
+    while (insideCheck < vertexCount)
+    {
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        w = ComputeWeights(v0, v1, localP);
+        if (w.v <= 0) // Region v0
+        {
+            if (dir > 0)
+            {
+                normal = (localP - v0).Normalized();
+                return transform * (v0 + normal * radius);
+            }
+
+            dir = -1;
+            i0 = (i0 - 1 + vertexCount) % vertexCount;
+        }
+        else if (w.v >= 1) // Region v1
+        {
+            if (dir < 0)
+            {
+                normal = (localP - v1).Normalized();
+                return transform * (v1 + normal * radius);
+            }
+
+            dir = 1;
+            i0 = (i0 + 1) % vertexCount;
+        }
+        else // Inside the region
+        {
+            normal = Cross(v1 - v0, 1.0f).Normalized();
+            float distance = Dot(localP - v0, normal);
+            if (distance >= 0)
+            {
+                Vec2 closest = localP + normal * (radius - distance);
+                return transform * closest;
+            }
+
+            if (dir != 0)
+            {
+                return p;
+            }
+
+            ++insideCheck;
+            dir = 0;
+            i0 = (i0 + 1) % vertexCount;
+        }
+    }
+
+    return p;
 }
 
 bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const

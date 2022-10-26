@@ -62,6 +62,7 @@ public:
     virtual Edge GetFeaturedEdge(const Vec2& dir) const = 0;
     virtual bool TestPoint(const Vec2& p) const = 0;
     virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const = 0;
+    virtual Vec2 GetClosestPoint(const Vec2& p) const = 0;
 
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
