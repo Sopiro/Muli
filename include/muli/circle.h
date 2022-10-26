@@ -18,6 +18,7 @@ public:
     virtual AABB GetAABB() const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
+    virtual bool TestPoint(const Vec2& p) const override;
     virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const override;
 
 protected:
@@ -48,6 +49,11 @@ inline ContactPoint Circle::Support(const Vec2& localDir) const
 inline Edge Circle::GetFeaturedEdge(const Vec2& dir) const
 {
     return Edge{ transform.position, transform.position };
+}
+
+inline bool Circle::TestPoint(const Vec2& p) const
+{
+    return Dist2(transform.position, p) < radius * radius;
 }
 
 } // namespace muli

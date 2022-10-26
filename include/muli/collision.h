@@ -57,11 +57,6 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold = nul
 float ComputeDistance(RigidBody* a, RigidBody* b);
 float ComputeDistance(RigidBody* b, Vec2 q);
 
-bool TestPointInside(Circle* b, Vec2 q);
-bool TestPointInside(Capsule* b, Vec2 q);
-bool TestPointInside(Polygon* b, Vec2 q);
-bool TestPointInside(RigidBody* b, Vec2 q);
-
 Vec2 GetClosestPoint(Circle* b, Vec2 q);
 Vec2 GetClosestPoint(Capsule* b, Vec2 q);
 Vec2 GetClosestPoint(Polygon* b, Vec2 q);

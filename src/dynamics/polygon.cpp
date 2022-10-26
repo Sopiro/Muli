@@ -153,6 +153,26 @@ Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
     }
 }
 
+inline bool Polygon::TestPoint(const Vec2& p) const
+{
+    Vec2 localP = MulT(transform, p);
+
+    float dir = Cross(vertices[0] - localP, vertices[1] - localP);
+    for (int32 i0 = 1; i0 < vertexCount; i0++)
+    {
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        float nDir = Cross(vertices[i0] - localP, vertices[i1] - localP);
+
+        if (dir * nDir < 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     output->fraction = 0.0f;

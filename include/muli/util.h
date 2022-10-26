@@ -134,7 +134,7 @@ inline UV ComputeWeights(const Vec2& a, const Vec2& b, const Vec2& p)
     float len = dir.Normalize();
     float region = Dot(dir, p - a) / len;
 
-    return UV{ 1 - region, region };
+    return UV{ 1.0f - region, region };
 }
 
 // Linearly combine(interpolate) the vector using weights u, v
@@ -163,6 +163,19 @@ inline void print(const Vec2& v, bool lineFeed = true)
         printf("%.6f, %.6f\n", v.x, v.y);
     else
         printf("%.6f, %.6f\n", v.x, v.y);
+}
+
+float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Vec2& p2, RayCastOutput* output);
+bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Vec2& p2, RayCastOutput* output);
+
+// https://iquilezles.org/articles/distfunctions/
+inline float SignedDistanceToLineSegment(const Vec2& p, const Vec2& a, const Vec2& b, float r)
+{
+    Vec2 pa = p - a;
+    Vec2 ba = b - a;
+    float h = Clamp(Dot(pa, ba) / Dot(ba, ba), 0.0f, 1.0f);
+
+    return Length(pa - ba * h) - r;
 }
 
 } // namespace muli

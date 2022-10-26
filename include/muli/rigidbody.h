@@ -60,6 +60,7 @@ public:
     // 'locakDir' should be normalized and a local vector
     virtual ContactPoint Support(const Vec2& localDir) const = 0;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const = 0;
+    virtual bool TestPoint(const Vec2& p) const = 0;
     virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const = 0;
 
     const Transform& GetTransform() const;

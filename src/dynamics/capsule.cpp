@@ -83,129 +83,72 @@ void Capsule::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
+inline bool Capsule::TestPoint(const Vec2& p) const
+{
+    Vec2 localP = MulT(transform, p);
+
+    return SignedDistanceToLineSegment(localP, va, vb, radius) < 0.0f;
+}
+
 bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
-    // https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-
-    float r2 = radius * radius;
-
     Vec2 p1 = MulT(transform, input.from);
     Vec2 p2 = MulT(transform, input.to);
 
     Vec2 v1 = va;
     Vec2 v2 = vb;
 
-    Vec2 normal{ 0.0f, 1.0f };
-
-    if (p1.y > 0.0f)
-    {
-        v1 += normal * radius;
-        v2 += normal * radius;
-    }
-    else
-    {
-        v1 -= normal * radius;
-        v2 -= normal * radius;
-    }
-
-    Vec2 r = p2 - p1;
-    Vec2 s = v2 - v1;
-
-    float denominator = Cross(r, s);
-
-    // Parallel or collinear case
-    if (denominator == 0.0f)
-    {
-        goto test_for_circle_1;
-    }
-
-    float numeratorT = Cross(v1 - p1, s);
-
-    float t = numeratorT / denominator;
-    if (t < 0.0f || t > 1.0f)
-    {
-        goto test_for_circle_1;
-    }
-
-    float numeratorU = Cross(v1 - p1, r);
-
-    float u = numeratorU / denominator;
-    if (u < 0.0f || u > 1.0f)
-    {
-        goto test_for_circle_1;
-    }
-
-    output->fraction = t;
-    if (numeratorT > 0.0f)
-    {
-        output->normal = transform.rotation * normal;
-    }
-    else
-    {
-        output->normal = transform.rotation * -normal;
-    }
-
-    return true;
-
-test_for_circle_1:
-
-    Vec2 d = p2 - p1;
-    Vec2 f = p1 - va;
-
-    float a = Dot(d, d);
-    float b = 2.0f * Dot(f, d);
-    float c = Dot(f, f) - r2;
-
-    // Quadratic equation discriminant
-    float discriminant = b * b - 4 * a * c;
-
-    if (discriminant < 0.0f)
-    {
-        goto test_for_circle_2;
-    }
-
-    discriminant = Sqrt(discriminant);
-
-    t = (-b - discriminant) / (2.0f * a);
-    if (t >= 0.0f && t <= 1.0f)
-    {
-        output->fraction = t;
-        output->normal = transform.rotation * (f + d * t).Normalized();
-
-        return true;
-    }
-
-    return false;
-
-test_for_circle_2:
-
-    d = p2 - p1;
-    f = p1 - vb;
-
-    a = Dot(d, d);
-    b = 2.0f * Dot(f, d);
-    c = Dot(f, f) - r2;
-
-    // Quadratic equation discriminant
-    discriminant = b * b - 4 * a * c;
-
-    if (discriminant < 0.0f)
+    if (SignedDistanceToLineSegment(p1, v1, v2, radius) < 0.0f)
     {
         return false;
     }
 
-    discriminant = Sqrt(discriminant);
-
-    t = (-b - discriminant) / (2.0f * a);
-    if (t >= 0.0f && t <= 1.0f)
+    // Translate edge along the normal
+    if (p1.y > 0.0f)
     {
-        output->fraction = t;
-        output->normal = transform.rotation * (f + d * t).Normalized();
+        v1.y += radius;
+        v2.y += radius;
+    }
+    else
+    {
+        v1.y -= radius;
+        v2.y -= radius;
+    }
 
+    bool hit = RayCastLineSegment(v1, v2, p1, p2, output);
+    if (hit)
+    {
+        output->normal = transform.rotation * output->normal;
         return true;
     }
 
-    return false;
+    if (radius <= 0.0f)
+    {
+        return false;
+    }
+
+    RayCastOutput co1;
+    RayCastOutput co2;
+    bool r1 = RayCastCircle(va, radius, p1, p2, &co1);
+    bool r2 = RayCastCircle(vb, radius, p1, p2, &co2);
+
+    if (!r1 && !r2)
+    {
+        return false;
+    }
+
+    if (r1)
+    {
+        memcpy(output, &co1, sizeof(RayCastOutput));
+    }
+    else
+    {
+        memcpy(output, &co2, sizeof(RayCastOutput));
+    }
+
+    output->normal = transform.rotation * output->normal;
+
+    return true;
 }
 
 } // namespace muli

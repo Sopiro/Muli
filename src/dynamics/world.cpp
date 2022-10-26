@@ -309,7 +309,7 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
     {
         RigidBody* body = bodies[i];
 
-        if (TestPointInside(body, point))
+        if (body->TestPoint(point))
         {
             res.push_back(body);
         }

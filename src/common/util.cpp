@@ -278,4 +278,79 @@ float ComputeCapsuleInertia(const Capsule* c)
     return c->GetMass() * inertia;
 }
 
+// https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
+{
+    Vec2 d = p2 - p1;
+    Vec2 f = p1 - position;
+    float r2 = radius * radius;
+
+    float a = Dot(d, d);
+    float b = 2.0f * Dot(f, d);
+    float c = Dot(f, f) - r2;
+
+    // Quadratic equation discriminant
+    float discriminant = b * b - 4 * a * c;
+    if (discriminant < 0.0f)
+    {
+        return false;
+    }
+
+    discriminant = Sqrt(discriminant);
+
+    float t = (-b - discriminant) / (2.0f * a);
+    if (t >= 0.0f && t <= 1.0f)
+    {
+        output->fraction = t;
+        output->normal = (f + d * t).Normalized();
+
+        return true;
+    }
+
+    return false;
+}
+
+// https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
+{
+    Vec2 r = p2 - p1;
+    Vec2 s = v2 - v1;
+
+    float denominator = Cross(r, s);
+
+    // Parallel or collinear case
+    if (denominator == 0.0f)
+    {
+        return false;
+    }
+
+    float numeratorT = Cross(v1 - p1, s);
+
+    float t = numeratorT / denominator;
+    if (t < 0.0f || t > 1.0f)
+    {
+        return false;
+    }
+
+    float numeratorU = Cross(v1 - p1, r);
+
+    float u = numeratorU / denominator;
+    if (u < 0.0f || u > 1.0f)
+    {
+        return false;
+    }
+
+    output->fraction = t;
+    if (numeratorT > 0.0f)
+    {
+        output->normal = Cross(1.0f, s).Normalized();
+    }
+    else
+    {
+        output->normal = Cross(s, 1.0f).Normalized();
+    }
+
+    return true;
+}
+
 } // namespace muli
