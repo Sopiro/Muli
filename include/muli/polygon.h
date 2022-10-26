@@ -26,6 +26,7 @@ public:
     virtual AABB GetAABB() const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const override;
+    virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const override;
 
     const Vec2* GetVertices() const;
     int32 GetVertexCount() const;

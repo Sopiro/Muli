@@ -153,4 +153,12 @@ Edge Polygon::GetFeaturedEdge(const Vec2& dir) const
     }
 }
 
+bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
+{
+    output->fraction = 0.0f;
+    output->normal.SetZero();
+
+    return true;
+}
+
 } // namespace muli

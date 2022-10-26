@@ -516,17 +516,17 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& ca
     }
 }
 
-void AABBTree::RayCast(const Ray& ray, const std::function<bool(RigidBody*)>& callback) const
+void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, RigidBody*)>& callback) const
 {
-    Vec2 p1 = ray.from;
-    Vec2 p2 = ray.to;
-    float maxFraction = ray.maxFraction;
+    Vec2 p1 = input.from;
+    Vec2 p2 = input.to;
+    float maxFraction = input.maxFraction;
 
     Vec2 d = p2 - p1;
     muliAssert(d.Length2() > 0.0f);
     d.Normalize();
 
-    Vec2 end = p1 + ray.maxFraction * (p2 - p1);
+    Vec2 end = p1 + input.maxFraction * (p2 - p1);
     AABB rayAABB;
     rayAABB.min = Min(p1, end);
     rayAABB.max = Max(p1, end);
@@ -563,10 +563,24 @@ void AABBTree::RayCast(const Ray& ray, const std::function<bool(RigidBody*)>& ca
 
         if (node->isLeaf)
         {
-            bool proceed = callback(node->body);
-            if (proceed == false)
+            RayCastInput subInput;
+            subInput.from = p1;
+            subInput.to = p2;
+            subInput.maxFraction = maxFraction;
+
+            float value = callback(subInput, node->body);
+            if (value == 0.0f)
             {
                 return;
+            }
+
+            if (value > 0.0f)
+            {
+                // Update ray AABB
+                maxFraction = value;
+                Vec2 newEnd = p1 + maxFraction * (p2 - p1);
+                rayAABB.min = Min(p1, newEnd);
+                rayAABB.max = Max(p1, newEnd);
             }
         }
         else

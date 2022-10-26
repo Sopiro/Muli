@@ -83,4 +83,12 @@ void Capsule::SetDensity(float _density)
     invInertia = 1.0f / inertia;
 }
 
+bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
+{
+    output->fraction = 0.0f;
+    output->normal.SetZero();
+
+    return false;
+}
+
 } // namespace muli

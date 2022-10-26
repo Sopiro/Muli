@@ -339,14 +339,29 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     return res;
 }
 
-void World::Raycast(const Vec2& from, const Vec2& to, const std::function<bool(RigidBody*)>& callback)
+void World::Raycast(const Vec2& from,
+                    const Vec2& to,
+                    const std::function<float(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
-    Ray r;
-    r.from = from;
-    r.to = to;
-    r.maxFraction = 1.0f;
+    RayCastInput input;
+    input.from = from;
+    input.to = to;
+    input.maxFraction = 1.0f;
 
-    contactManager.broadPhase.tree.RayCast(r, callback);
+    contactManager.broadPhase.tree.RayCast(input, [&](const RayCastInput& input, RigidBody* body) -> float {
+        RayCastOutput output;
+
+        bool hit = body->RayCast(input, &output);
+        if (hit)
+        {
+            float fraction = output.fraction;
+            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+            return callback(body, point, output.normal, fraction);
+        }
+
+        return input.maxFraction;
+    });
 }
 
 Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)

@@ -36,11 +36,17 @@ struct ContactManifold
 
 // Define a ray such that:
 // Ray = from + maxFraction * (to - from)
-struct Ray
+struct RayCastInput
 {
     Vec2 from;
     Vec2 to;
     float maxFraction;
+};
+
+struct RayCastOutput
+{
+    Vec2 normal;
+    float fraction;
 };
 
 typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);

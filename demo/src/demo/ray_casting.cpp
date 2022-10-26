@@ -15,6 +15,9 @@ public:
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
         options.showAABB = true;
+
+        RigidBody* c = world->CreateCircle(1.0f);
+        c->SetPosition(3, 3);
     }
 
     ~RayCasting()
@@ -29,16 +32,21 @@ public:
         Vec2 from{ 0.0f, 3.0f };
         Vec2 to = mpos;
 
-        count = 0;
-        world->Raycast(from, to, [&](RigidBody* b) -> bool {
-            count++;
-            return true;
-        });
-
         std::vector<Vec2>& pl = game.GetPointList();
         std::vector<Vec2>& ll = game.GetLineList();
         ll.push_back(from);
         ll.push_back(to);
+
+        count = 0;
+        world->Raycast(from, to, [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> float {
+            count++;
+
+            pl.push_back(point);
+            ll.push_back(point);
+            ll.push_back(point + normal * 0.2f);
+
+            return 1.0f;
+        });
     }
 
     void UpdateUI() override

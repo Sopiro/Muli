@@ -39,9 +39,9 @@ struct Node
 
 class AABBTree
 {
-public:
     friend class BroadPhase;
 
+public:
     AABBTree();
     ~AABBTree() noexcept;
 
@@ -62,7 +62,7 @@ public:
     std::vector<RigidBody*> Query(const AABB& aabb) const;
     void Query(const AABB& aabb, const std::function<bool(RigidBody*)>& callback) const;
 
-    void RayCast(const Ray& ray, const std::function<bool(RigidBody*)>& callback) const;
+    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, RigidBody*)>& callback) const;
 
     float ComputeTreeCost() const;
 
