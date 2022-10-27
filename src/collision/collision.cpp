@@ -782,35 +782,6 @@ float ComputeDistance(RigidBody* a, RigidBody* b)
     }
 }
 
-float ComputeDistance(RigidBody* b, const Vec2& q)
-{
-    return Dist(b->GetClosestPoint(q), q);
-}
-
-Edge GetIntersectingEdge(Polygon* p, const Vec2& dir)
-{
-    const Vec2 localDir = MulT(p->GetRotation(), dir);
-    const Vec2* vertices = p->GetVertices();
-    int32 vertexCount = p->GetVertexCount();
-
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
-    {
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
-
-        if (Cross(v0, localDir) > 0 && Cross(v1, localDir) < 0)
-        {
-            const Transform& t = p->GetTransform();
-            return Edge{ t * v0, t * v1, i0, i1 };
-        }
-
-        i0 = i1;
-    }
-
-    throw std::runtime_error("Unreachable");
-}
-
 void InitializeDetectionFunctionMap()
 {
     if (dectectionFunctionInitialized)

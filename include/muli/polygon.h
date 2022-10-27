@@ -33,6 +33,8 @@ public:
     const Vec2* GetVertices() const;
     int32 GetVertexCount() const;
 
+    Edge GetIntersectingEdge(const Vec2& dir) const;
+
 protected:
     Vec2* vertices;
     int32 vertexCount;

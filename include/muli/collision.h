@@ -53,11 +53,8 @@ typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
 typedef float DistanceFunction(RigidBody*, RigidBody*);
 
 bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold = nullptr);
-
 float ComputeDistance(RigidBody* a, RigidBody* b);
-float ComputeDistance(RigidBody* b, const Vec2& q);
 
-Edge GetIntersectingEdge(Polygon* p, const Vec2& dir);
 bool SAT(Polygon* a, Polygon* b);
 
 } // namespace muli

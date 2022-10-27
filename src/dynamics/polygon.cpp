@@ -291,6 +291,27 @@ Vec2 Polygon::GetClosestPoint(const Vec2& p) const
     return p;
 }
 
+Edge Polygon::GetIntersectingEdge(const Vec2& dir) const
+{
+    Vec2 localDir = MulT(transform.rotation, dir);
+
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    {
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        if (Cross(v0, localDir) > 0 && Cross(v1, localDir) < 0)
+        {
+            return Edge{ transform * v0, transform * v1, i0, i1 };
+        }
+
+        i0 = i1;
+    }
+
+    throw std::runtime_error("Unreachable");
+}
+
 bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     output->fraction = 0.0f;
