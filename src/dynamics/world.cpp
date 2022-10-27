@@ -390,7 +390,7 @@ Polygon* World::CreatePolygon(
     const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new Polygon(vertices.data(), static_cast<int32>(vertices.size()), type, resetPosition, radius, density);
+    Polygon* p = new (mem) Polygon(vertices.data(), static_cast<int32>(vertices.size()), type, resetPosition, radius, density);
     Add(p);
     return p;
 }

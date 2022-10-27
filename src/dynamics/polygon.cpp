@@ -314,10 +314,100 @@ Edge Polygon::GetIntersectingEdge(const Vec2& dir) const
 
 bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
-    output->fraction = 0.0f;
-    output->normal.SetZero();
+    Vec2 p1 = MulT(transform, input.from);
+    Vec2 p2 = MulT(transform, input.from + (input.to - input.from) * input.maxFraction);
+    Vec2 d = p2 - p1;
 
-    return true;
+    float near = 0.0f;
+    float far = 1.0f;
+
+    int32 index = -1;
+
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    {
+        Vec2 normal = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
+
+        Vec2 v = vertices[i0] + normal * radius;
+
+        float numerator = Dot(normal, v - p1);
+        float denominator = Dot(normal, d);
+
+        if (denominator == 0.0f) // Parallel
+        {
+            if (numerator < 0.0f) // Non-collinear
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (denominator < 0.0f && numerator < near * denominator)
+            {
+                // Increase near fraction
+                near = numerator / denominator;
+                index = i0;
+            }
+            else if (denominator > 0.0f && numerator < far * denominator)
+            {
+                // Decrease far fraction
+                far = numerator / denominator;
+            }
+        }
+
+        if (far < near)
+        {
+            return false;
+        }
+
+        i0 = i1;
+    }
+
+    muliAssert(0.0f <= near && near <= input.maxFraction);
+
+    if (index >= 0)
+    {
+        Vec2 v1 = vertices[index];
+        Vec2 v2 = vertices[(index + 1) % vertexCount];
+        Vec2 e = v2 - v1;
+        Vec2 n = Cross(v2 - v1, 1.0f).Normalized();
+        Vec2 q = p1 + d * near;
+
+        float u = Dot(q - (v1 + n * radius), e) / Dot(e, e);
+
+        if (u < 0.0f)
+        {
+            if (RayCastCircle(v1, radius, p1, p2, output))
+            {
+                output->normal = transform.rotation * output->normal;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (u > 1.0f)
+        {
+            if (RayCastCircle(v2, radius, p1, p2, output))
+            {
+                output->normal = transform.rotation * output->normal;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            output->fraction = near;
+            output->normal = transform.rotation * n;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 } // namespace muli

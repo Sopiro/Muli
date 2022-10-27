@@ -21,6 +21,10 @@ public:
 
         b = world->CreateCapsule(1.0f, 0.5f);
         b->SetPosition(-3, 3);
+
+        b = world->CreateBox(1.0f, RigidBody::Dynamic, 0.1f);
+        b->SetPosition(1, 3);
+        b->userFlag = UserFlag::RENDER_POLYGON_RADIUS;
     }
 
     ~RayCasting()

@@ -292,7 +292,7 @@ float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Ve
     float c = Dot(f, f) - r2;
 
     // Quadratic equation discriminant
-    float discriminant = b * b - 4 * a * c;
+    float discriminant = b * b - 4.0f * a * c;
     if (discriminant < 0.0f)
     {
         return false;
