@@ -312,13 +312,14 @@ float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Ve
     return false;
 }
 
-// https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
 bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
 {
-    Vec2 r = p2 - p1;
-    Vec2 s = v2 - v1;
+    Vec2 d = p2 - p1;
+    Vec2 e = v2 - v1;
+    Vec2 normal = Cross(e, 1.0f);
+    normal.Normalize();
 
-    float denominator = Cross(r, s);
+    float denominator = Dot(normal, d);
 
     // Parallel or collinear case
     if (denominator == 0.0f)
@@ -326,18 +327,19 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Ve
         return false;
     }
 
-    float numeratorT = Cross(v1 - p1, s);
+    float numeratorT = Dot(normal, v1 - p1);
 
     float t = numeratorT / denominator;
-    if (t < 0.0f || t > 1.0f)
+    if (t < 0.0f || 1.0f < t)
     {
         return false;
     }
 
-    float numeratorU = Cross(v1 - p1, r);
+    // Point on the v1-v2 line
+    Vec2 q = p1 + t * d;
 
-    float u = numeratorU / denominator;
-    if (u < 0.0f || u > 1.0f)
+    float u = Dot(q - v1, e) / Dot(e, e);
+    if (u < 0.0f || 1.0f < u)
     {
         return false;
     }
@@ -345,11 +347,11 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Ve
     output->fraction = t;
     if (numeratorT > 0.0f)
     {
-        output->normal = Cross(1.0f, s).Normalized();
+        output->normal = -normal;
     }
     else
     {
-        output->normal = Cross(s, 1.0f).Normalized();
+        output->normal = normal;
     }
 
     return true;

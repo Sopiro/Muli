@@ -138,19 +138,25 @@ inline Vec2 Capsule::GetClosestPoint(const Vec2& p) const
 bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
-    Vec2 p2 = MulT(transform, input.to);
+    Vec2 p2 = MulT(transform, input.from + (input.to - input.from) * input.maxFraction);
 
     Vec2 v1 = va;
     Vec2 v2 = vb;
 
-    if (SignedDistanceToLineSegment(p1, v1, v2, radius) < 0.0f)
+    if (SignedDistanceToLineSegment(p1, v1, v2, radius) <= 0.0f)
     {
         return false;
     }
 
     if (Abs(p1.y) <= radius)
     {
-        goto circle_test;
+        Vec2 c = p1.x < 0.0f ? va : vb;
+        if (RayCastCircle(c, radius, p1, p2, output))
+        {
+            output->normal = transform.rotation * output->normal;
+            return true;
+        }
+        return false;
     }
 
     // Translate edge along the normal
@@ -176,24 +182,23 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         return false;
     }
 
-circle_test:
-    RayCastOutput co1;
-    RayCastOutput co2;
-    bool r1 = RayCastCircle(va, radius, p1, p2, &co1);
-    bool r2 = RayCastCircle(vb, radius, p1, p2, &co2);
+    RayCastOutput o1;
+    RayCastOutput o2;
+    bool r1 = RayCastCircle(va, radius, p1, p2, &o1);
+    bool r2 = RayCastCircle(vb, radius, p1, p2, &o2);
 
     if (!r1 && !r2)
     {
         return false;
     }
 
-    if (co1.fraction < co2.fraction)
+    if (o1.fraction < o2.fraction)
     {
-        memcpy(output, &co1, sizeof(RayCastOutput));
+        memcpy(output, &o1, sizeof(RayCastOutput));
     }
     else
     {
-        memcpy(output, &co2, sizeof(RayCastOutput));
+        memcpy(output, &o2, sizeof(RayCastOutput));
     }
 
     output->normal = transform.rotation * output->normal;

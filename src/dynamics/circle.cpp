@@ -66,7 +66,7 @@ bool Circle::RayCast(const RayCastInput& input, RayCastOutput* output) const
     discriminant = Sqrt(discriminant);
 
     float t = (-b - discriminant) / (2.0f * a);
-    if (t >= 0.0f && t <= 1.0f)
+    if (t >= 0.0f && t <= input.maxFraction)
     {
         output->fraction = t;
         output->normal = (f + d * t).Normalized();
