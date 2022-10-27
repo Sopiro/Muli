@@ -156,7 +156,10 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
             output->normal = transform.rotation * output->normal;
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     // Translate edge along the normal
@@ -171,39 +174,72 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         v2.y -= radius;
     }
 
-    if (RayCastLineSegment(v1, v2, p1, p2, output))
+    // Ray casting to a line segment
+    Vec2 d = p2 - p1;
+    Vec2 e = v2 - v1;
+    Vec2 normal{ 0.0f, 1.0f };
+
+    float denominator = Dot(normal, d);
+
+    // Parallel or collinear case
+    if (denominator == 0.0f)
     {
-        output->normal = transform.rotation * output->normal;
+        return false;
+    }
+
+    float numerator = Dot(normal, v1 - p1);
+
+    float t = numerator / denominator;
+    if (t < 0.0f || 1.0f < t)
+    {
+        return false;
+    }
+
+    // Point on the v1-v2 line
+    Vec2 q = p1 + t * d;
+
+    float l2 = Dot(e, e);
+    muliAssert(l2 > 0.0f);
+
+    float u = Dot(q - v1, e) / l2;
+    if (u < 0.0f)
+    {
+        if (RayCastCircle(va, radius, p1, p2, output))
+        {
+            output->normal = transform.rotation * output->normal;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if (u > 1.0f)
+    {
+        if (RayCastCircle(vb, radius, p1, p2, output))
+        {
+            output->normal = transform.rotation * output->normal;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else // Inside the edge region
+    {
+        output->fraction = t;
+        if (numerator > 0.0f)
+        {
+            output->normal = transform.rotation * -normal;
+        }
+        else
+        {
+            output->normal = transform.rotation * normal;
+        }
+
         return true;
     }
-
-    if (radius <= 0.0f)
-    {
-        return false;
-    }
-
-    RayCastOutput o1;
-    RayCastOutput o2;
-    bool r1 = RayCastCircle(va, radius, p1, p2, &o1);
-    bool r2 = RayCastCircle(vb, radius, p1, p2, &o2);
-
-    if (!r1 && !r2)
-    {
-        return false;
-    }
-
-    if (o1.fraction < o2.fraction)
-    {
-        memcpy(output, &o1, sizeof(RayCastOutput));
-    }
-    else
-    {
-        memcpy(output, &o2, sizeof(RayCastOutput));
-    }
-
-    output->normal = transform.rotation * output->normal;
-
-    return true;
 }
 
 } // namespace muli
