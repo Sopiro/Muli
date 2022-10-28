@@ -553,9 +553,9 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
         }
 
         Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
-        Vec2 halfDiagonal = (node->aabb.max - node->aabb.min) * 0.5f;
+        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
 
-        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, halfDiagonal);
+        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
         if (separation > 0.0f) // Separating axis test
         {
             continue;

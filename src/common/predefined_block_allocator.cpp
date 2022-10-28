@@ -30,10 +30,11 @@ static constexpr int32 blockSizes[predefinedBlockSizeCount] = {
     256, // 8
     320, // 9
     384, // 10
-    448, // 11
-    512, // 12
-    640, // 13
-    704, // 14
+    416, // 11
+    448, // 12
+    512, // 13
+    640, // 14
+    704, // 15
 };
 
 static constexpr int32 chunkSize = 16 * 1024;

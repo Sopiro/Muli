@@ -178,6 +178,7 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
 float ComputePolygonInertia(const Polygon* p)
 {
     const Vec2* vertices = p->GetVertices();
+    const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
     float radius = p->GetRadius();
 
@@ -213,9 +214,9 @@ float ComputePolygonInertia(const Polygon* p)
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
 
-        Vec2 normal = v1 - v0;
-        float length = normal.Normalize();
-        normal = Cross(normal, 1.0f);
+        Vec2 edge = v1 - v0;
+        float length = edge.Normalize();
+        Vec2 normal = Cross(edge, 1.0f);
 
         Vec2 mid = (v0 + v1) * 0.5f + normal * radius * 0.5f; // Mid point of edge rect
 
@@ -234,8 +235,8 @@ float ComputePolygonInertia(const Polygon* p)
     {
         int32 i2 = (i1 + 1) % vertexCount;
 
-        Vec2 n0 = (Cross(vertices[i1] - vertices[i0], 1.0f)).Normalized();
-        Vec2 n1 = (Cross(vertices[i2] - vertices[i1], 1.0f)).Normalized();
+        Vec2 n0 = normals[i0];
+        Vec2 n1 = normals[i1];
 
         float theta = AngleBetween(n0, n1);
 

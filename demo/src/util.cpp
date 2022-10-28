@@ -49,6 +49,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
         float radius = p->GetRadius();
 
         const Vec2* vertices = p->GetVertices();
+        const Vec2* normals = p->GetNormals();
         int32 vertexCount = p->GetVertexCount();
 
         std::vector<Vec2> vertices2;
@@ -73,8 +74,8 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
             const Vec2& v1 = vertices[i1];
             const Vec2& v2 = vertices[i2];
 
-            Vec2 n0 = Cross(v1 - v0, 1.0f).Normalized();
-            Vec2 n1 = Cross(v2 - v1, 1.0f).Normalized();
+            Vec2 n0 = normals[i0];
+            Vec2 n1 = normals[i1];
 
             Vec2 vn0 = v0 + n0 * radius;
 

@@ -12,19 +12,26 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
     if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
     {
         vertices = (Vec2*)malloc(vertexCount * sizeof(Vec2));
+        normals = (Vec2*)malloc(vertexCount * sizeof(Vec2));
     }
     else
     {
         vertices = localVertices;
+        normals = localNormals;
     }
 
     ComputeConvexHull(_vertices, vertexCount, vertices);
 
     // Traslate center of mass to the origin
+
     Vec2 centerOfMass{ 0.0f };
-    for (int32 i = 0; i < vertexCount; i++)
+    int32 i0 = vertexCount - 1;
+    for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        centerOfMass += vertices[i];
+        centerOfMass += vertices[i0];
+        normals[i0] = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
+
+        i0 = i1;
     }
     centerOfMass *= 1.0f / vertexCount;
 
@@ -64,6 +71,7 @@ Polygon::~Polygon()
     if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
     {
         free(vertices);
+        free(normals);
     }
 }
 
@@ -163,7 +171,7 @@ bool Polygon::TestPoint(const Vec2& p) const
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        Vec2 n0 = Cross(vertices[i1] - vertices[i0], 1.0f);
+        Vec2 n0 = normals[i0];
         float separation = Dot(n0, localP - vertices[i0]);
         if (separation > radius)
         {
@@ -269,7 +277,7 @@ Vec2 Polygon::GetClosestPoint(const Vec2& p) const
         }
         else // Inside the region
         {
-            normal = Cross(v1 - v0, 1.0f).Normalized();
+            normal = normals[i0];
             float distance = Dot(localP - v0, normal);
             if (distance > radius)
             {
@@ -326,8 +334,7 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        Vec2 normal = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
-
+        Vec2 normal = normals[i0];
         Vec2 v = vertices[i0] + normal * radius;
 
         float numerator = Dot(normal, v - p1);
@@ -369,8 +376,8 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
     {
         Vec2 v1 = vertices[index];
         Vec2 v2 = vertices[(index + 1) % vertexCount];
+        Vec2 n = normals[index];
         Vec2 e = v2 - v1;
-        Vec2 n = Cross(v2 - v1, 1.0f).Normalized();
         Vec2 q = p1 + d * near;
 
         float u = Dot(q - (v1 + n * radius), e) / Dot(e, e);

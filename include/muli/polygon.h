@@ -31,17 +31,20 @@ public:
     virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const override;
 
     const Vec2* GetVertices() const;
+    const Vec2* GetNormals() const;
     int32 GetVertexCount() const;
 
     Edge GetIntersectingEdge(const Vec2& dir) const;
 
 protected:
     Vec2* vertices;
+    Vec2* normals;
     int32 vertexCount;
     float area;
 
 private:
     Vec2 localVertices[MAX_LOCAL_POLYGON_VERTICES];
+    Vec2 localNormals[MAX_LOCAL_POLYGON_VERTICES];
 };
 
 inline float Polygon::GetArea() const
@@ -52,6 +55,11 @@ inline float Polygon::GetArea() const
 inline const Vec2* Polygon::GetVertices() const
 {
     return vertices;
+}
+
+inline const Vec2* Polygon::GetNormals() const
+{
+    return normals;
 }
 
 inline int32 Polygon::GetVertexCount() const

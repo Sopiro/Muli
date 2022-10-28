@@ -45,8 +45,16 @@ struct Edge
 
     void ComputeProperty()
     {
-        dir = (p1.position == p2.position) ? Vec2{ 0.0f } : (p2.position - p1.position).Normalized();
-        normal = dir.Skew();
+        if (p1.position == p2.position)
+        {
+            dir.SetZero();
+        }
+        else
+        {
+            dir = (p2.position - p1.position).Normalized();
+        }
+
+        normal = Cross(1.0f, dir);
     }
 
     float GetLength() const

@@ -8,7 +8,7 @@ namespace muli
 struct Chunk;
 struct Block;
 
-constexpr int32 predefinedBlockSizeCount = 15;
+constexpr int32 predefinedBlockSizeCount = 16;
 
 class PredefinedBlockAllocator
 {

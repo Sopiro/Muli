@@ -76,7 +76,7 @@ static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
         if (simplex.VertexCount() == 2)
         {
             // Avoid floating point error
-            dir = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
+            dir = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
             distance = Dot(dir, origin - simplex.vertices[0]);
             if (distance < 0)
             {
@@ -332,6 +332,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     Vec2 pb = b->GetPosition();
 
     const Vec2* vertices = p->GetVertices();
+    const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
     Vec2 localP = MulT(a->GetTransform(), pb);
@@ -340,12 +341,11 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     float r2 = a->GetRadius() + b->GetRadius();
 
     int32 index;
-    Vec2 normal;
 
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
-        Vec2 n0 = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
+        Vec2 n0 = normals[i0];
 
         float separation = Dot(n0, localP - vertices[i0]);
         if (separation > r2)
@@ -357,7 +357,6 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
         {
             minSeparation = separation;
             index = i0;
-            normal = n0;
         }
 
         i0 = i1;
@@ -371,7 +370,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
             return true;
         }
 
-        normal = p->GetRotation() * normal;
+        Vec2 normal = p->GetRotation() * normals[index];
         Vec2 v = p->GetTransform() * vertices[index];
 
         manifold->contactNormal = normal;
@@ -387,6 +386,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
 
     Vec2 v0 = vertices[index];
     Vec2 v1 = vertices[(index + 1) % vertexCount];
+    Vec2 normal;
 
     UV w = ComputeWeights(v0, v1, localP);
     float distance;
@@ -404,6 +404,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     }
     else // Inside the region
     {
+        normal = normals[index];
         distance = Dot(normal, localP - v0);
     }
 
@@ -421,7 +422,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     Vec2 v = p->GetTransform() * vertices[index];
 
     manifold->contactNormal = normal;
-    manifold->contactTangent = Vec2{ -normal.y, normal.x };
+    manifold->contactTangent = Cross(1.0f, normal);
     manifold->penetrationDepth = r2 - distance;
     manifold->contactPoints[0] = ContactPoint{ pb + normal * -b->GetRadius(), -1 };
     manifold->referencePoint = ContactPoint{ v + normal * a->GetRadius(), index };
@@ -461,7 +462,7 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
                 supportB.position = b->GetTransform() * (supportB.position + localDirB * b->GetRadius());
 
                 manifold->contactNormal = normal;
-                manifold->contactTangent = normal.Skew();
+                manifold->contactTangent = Cross(1.0f, normal);
                 manifold->contactPoints[0] = supportB;
                 manifold->numContacts = 1;
                 manifold->referencePoint = supportA;
@@ -486,7 +487,7 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
                     return true;
                 }
 
-                Vec2 normal = (simplex.vertices[1] - simplex.vertices[0]).Skew().Normalized();
+                Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
                 Vec2 k = origin - simplex.vertices[0];
                 if (Dot(normal, k) < 0)
                 {
@@ -528,12 +529,12 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
 
         case 2:
         {
-            Vec2 n = (simplex.vertices[1] - simplex.vertices[0]).Normalized().Skew();
-            Vec2 normalSupport = CSOSupport(a, b, n);
+            Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
+            Vec2 normalSupport = CSOSupport(a, b, normal);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(CSOSupport(a, b, -n));
+                simplex.AddVertex(CSOSupport(a, b, -normal));
             }
             else
             {
@@ -648,6 +649,7 @@ static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
 {
     Polygon* p = static_cast<Polygon*>(a);
     const Vec2* vertices = p->GetVertices();
+    const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
     Vec2 localC = MulT(p->GetTransform(), b->GetPosition());
@@ -704,7 +706,7 @@ static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
         }
         else // Inside the region
         {
-            Vec2 normal = Cross(v1 - v0, 1.0f).Normalized();
+            Vec2 normal = normals[i0];
             float d = Dot(localC - v0, normal);
             if (d >= 0)
             {
