@@ -45,7 +45,7 @@ void Game::UpdateUI()
     // ImGui::ShowDemoWindow();
 
     // ImGui Windows
-    ImGui::SetNextWindowPos({ 10, 10 }, ImGuiCond_Once, { 0.0f, 0.0f });
+    ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
     ImGui::SetNextWindowSize({ 240, 500 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))

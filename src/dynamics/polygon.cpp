@@ -326,6 +326,9 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
     Vec2 p2 = MulT(transform, input.from + (input.to - input.from) * input.maxFraction);
     Vec2 d = p2 - p1;
 
+    // Offset for polygon skin
+    float offset = (radius <= DEFAULT_RADIUS) ? 0.0f : radius;
+
     float near = 0.0f;
     float far = 1.0f;
 
@@ -335,7 +338,7 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
     for (int32 i1 = 0; i1 < vertexCount; i1++)
     {
         Vec2 normal = normals[i0];
-        Vec2 v = vertices[i0] + normal * radius;
+        Vec2 v = vertices[i0] + normal * offset;
 
         float numerator = Dot(normal, v - p1);
         float denominator = Dot(normal, d);
@@ -374,9 +377,17 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 
     if (index >= 0)
     {
+        Vec2 n = normals[index];
+
+        if (offset == 0.0f)
+        {
+            output->fraction = near;
+            output->normal = transform.rotation * n;
+            return true;
+        }
+
         Vec2 v1 = vertices[index];
         Vec2 v2 = vertices[(index + 1) % vertexCount];
-        Vec2 n = normals[index];
         Vec2 e = v2 - v1;
         Vec2 q = p1 + d * near;
 
