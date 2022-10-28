@@ -323,14 +323,14 @@ Edge Polygon::GetIntersectingEdge(const Vec2& dir) const
 bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
-    Vec2 p2 = MulT(transform, input.from + (input.to - input.from) * input.maxFraction);
+    Vec2 p2 = MulT(transform, input.to);
     Vec2 d = p2 - p1;
 
     // Offset for polygon skin
     float offset = (radius <= DEFAULT_RADIUS) ? 0.0f : radius;
 
     float near = 0.0f;
-    float far = 1.0f;
+    float far = input.maxFraction;
 
     int32 index = -1;
 
@@ -395,9 +395,28 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
 
         if (u < 0.0f)
         {
-            if (RayCastCircle(v1, radius, p1, p2, output))
+            // Ray cast to a v1 circle
+            Vec2 f = p1 - v1;
+
+            float a = Dot(d, d);
+            float b = 2.0f * Dot(f, d);
+            float c = Dot(f, f) - radius * radius;
+
+            // Quadratic equation discriminant
+            float discriminant = b * b - 4 * a * c;
+
+            if (discriminant < 0.0f)
             {
-                output->normal = transform.rotation * output->normal;
+                return false;
+            }
+
+            discriminant = Sqrt(discriminant);
+
+            float t = (-b - discriminant) / (2.0f * a);
+            if (0.0f <= t && t <= input.maxFraction)
+            {
+                output->fraction = t;
+                output->normal = transform.rotation * (f + d * t).Normalized();
                 return true;
             }
             else
@@ -407,9 +426,28 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
         }
         else if (u > 1.0f)
         {
-            if (RayCastCircle(v2, radius, p1, p2, output))
+            // Ray cast to a v2 circle
+            Vec2 f = p1 - v2;
+
+            float a = Dot(d, d);
+            float b = 2.0f * Dot(f, d);
+            float c = Dot(f, f) - radius * radius;
+
+            // Quadratic equation discriminant
+            float discriminant = b * b - 4 * a * c;
+
+            if (discriminant < 0.0f)
             {
-                output->normal = transform.rotation * output->normal;
+                return false;
+            }
+
+            discriminant = Sqrt(discriminant);
+
+            float t = (-b - discriminant) / (2.0f * a);
+            if (0.0f <= t && t <= input.maxFraction)
+            {
+                output->fraction = t;
+                output->normal = transform.rotation * (f + d * t).Normalized();
                 return true;
             }
             else

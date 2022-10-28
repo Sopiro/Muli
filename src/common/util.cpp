@@ -280,12 +280,10 @@ float ComputeCapsuleInertia(const Capsule* c)
 }
 
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
-float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
+float RayCastCircle(const Vec2& position, float radius, const RayCastInput& input, RayCastOutput* output)
 {
-    output->fraction = FLT_MAX;
-
-    Vec2 d = p2 - p1;
-    Vec2 f = p1 - position;
+    Vec2 d = input.to - input.from;
+    Vec2 f = input.from - position;
     float r2 = radius * radius;
 
     float a = Dot(d, d);
@@ -294,6 +292,7 @@ float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Ve
 
     // Quadratic equation discriminant
     float discriminant = b * b - 4.0f * a * c;
+
     if (discriminant < 0.0f)
     {
         return false;
@@ -302,7 +301,7 @@ float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Ve
     discriminant = Sqrt(discriminant);
 
     float t = (-b - discriminant) / (2.0f * a);
-    if (t >= 0.0f && t <= 1.0f)
+    if (0.0f <= t && t <= input.maxFraction)
     {
         output->fraction = t;
         output->normal = (f + d * t).Normalized();
@@ -313,9 +312,9 @@ float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Ve
     return false;
 }
 
-bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Vec2& p2, RayCastOutput* output)
+bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& input, RayCastOutput* output)
 {
-    Vec2 d = p2 - p1;
+    Vec2 d = input.from - input.to;
     Vec2 e = v2 - v1;
     Vec2 normal = Cross(e, 1.0f);
     normal.Normalize();
@@ -328,7 +327,7 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Ve
         return false;
     }
 
-    float numeratorT = Dot(normal, v1 - p1);
+    float numeratorT = Dot(normal, v1 - input.from);
 
     float t = numeratorT / denominator;
     if (t < 0.0f || 1.0f < t)
@@ -337,7 +336,7 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Ve
     }
 
     // Point on the v1-v2 line
-    Vec2 q = p1 + t * d;
+    Vec2 q = input.from + t * d;
 
     float u = Dot(q - v1, e) / Dot(e, e);
     if (u < 0.0f || 1.0f < u)

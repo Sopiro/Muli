@@ -526,13 +526,13 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     muliAssert(d.Length2() > 0.0f);
     d.Normalize();
 
-    Vec2 end = p1 + input.maxFraction * (p2 - p1);
+    Vec2 perp = Cross(d, 1.0f); // separating axis
+    Vec2 absPerp = Abs(perp);
+
+    Vec2 end = p1 + maxFraction * (p2 - p1);
     AABB rayAABB;
     rayAABB.min = Min(p1, end);
     rayAABB.max = Max(p1, end);
-
-    Vec2 perp = Cross(d, 1.0f); // separating axis
-    Vec2 absPerp = Abs(perp);
 
     GrowableArray<int32, 256> stack;
     stack.Push(root);
@@ -540,7 +540,6 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     while (stack.Count() > 0)
     {
         int32 nodeID = stack.Pop();
-
         if (nodeID == nullNode)
         {
             continue;

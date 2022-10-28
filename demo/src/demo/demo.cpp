@@ -387,6 +387,7 @@ extern DemoFrame crank;
 extern DemoFrame terrain;
 extern DemoFrame rounded_polygon;
 extern DemoFrame ray_casting;
+extern DemoFrame line_of_sight;
 
 static int32 init_demos()
 {
@@ -425,6 +426,7 @@ static int32 init_demos()
     demos[demo_count++] = terrain;
     demos[demo_count++] = rounded_polygon;
     demos[demo_count++] = ray_casting;
+    demos[demo_count++] = line_of_sight;
 
     return demo_count;
 }

@@ -165,8 +165,8 @@ inline void print(const Vec2& v, bool lineFeed = true)
         printf("%.6f, %.6f\n", v.x, v.y);
 }
 
-float RayCastCircle(const Vec2& position, float radius, const Vec2& p1, const Vec2& p2, RayCastOutput* output);
-bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const Vec2& p1, const Vec2& p2, RayCastOutput* output);
+float RayCastCircle(const Vec2& position, float radius, const RayCastInput& input, RayCastOutput* output);
+bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& input, RayCastOutput* output);
 
 // https://iquilezles.org/articles/distfunctions/
 inline float SignedDistanceToLineSegment(const Vec2& p, const Vec2& a, const Vec2& b, float r)

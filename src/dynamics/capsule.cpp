@@ -138,7 +138,7 @@ inline Vec2 Capsule::GetClosestPoint(const Vec2& p) const
 bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
-    Vec2 p2 = MulT(transform, input.from + (input.to - input.from) * input.maxFraction);
+    Vec2 p2 = MulT(transform, input.to);
 
     Vec2 v1 = va;
     Vec2 v2 = vb;
@@ -150,10 +150,30 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
 
     if (Abs(p1.y) <= radius)
     {
-        Vec2 c = p1.x < 0.0f ? va : vb;
-        if (RayCastCircle(c, radius, p1, p2, output))
+        Vec2 v = p1.x < 0.0f ? va : vb;
+
+        Vec2 d = p2 - p1;
+        Vec2 f = p1 - v;
+
+        float a = Dot(d, d);
+        float b = 2.0f * Dot(f, d);
+        float c = Dot(f, f) - radius * radius;
+
+        // Quadratic equation discriminant
+        float discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0.0f)
         {
-            output->normal = transform.rotation * output->normal;
+            return false;
+        }
+
+        discriminant = Sqrt(discriminant);
+
+        float t = (-b - discriminant) / (2.0f * a);
+        if (0.0f <= t && t <= input.maxFraction)
+        {
+            output->fraction = t;
+            output->normal = transform.rotation * (f + d * t).Normalized();
             return true;
         }
         else
@@ -190,7 +210,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     float numerator = Dot(normal, v1 - p1);
 
     float t = numerator / denominator;
-    if (t < 0.0f || 1.0f < t)
+    if (t < 0.0f || input.maxFraction < t)
     {
         return false;
     }
@@ -204,9 +224,28 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     float u = Dot(q - v1, e) / l2;
     if (u < 0.0f)
     {
-        if (RayCastCircle(va, radius, p1, p2, output))
+        // Ray cast to va circle
+        Vec2 f = p1 - va;
+
+        float a = Dot(d, d);
+        float b = 2.0f * Dot(f, d);
+        float c = Dot(f, f) - radius * radius;
+
+        // Quadratic equation discriminant
+        float discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0.0f)
         {
-            output->normal = transform.rotation * output->normal;
+            return false;
+        }
+
+        discriminant = Sqrt(discriminant);
+
+        float t = (-b - discriminant) / (2.0f * a);
+        if (0.0f <= t && t <= input.maxFraction)
+        {
+            output->fraction = t;
+            output->normal = transform.rotation * (f + d * t).Normalized();
             return true;
         }
         else
@@ -216,9 +255,28 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     }
     else if (u > 1.0f)
     {
-        if (RayCastCircle(vb, radius, p1, p2, output))
+        // Ray cast to vb circle
+        Vec2 f = p1 - vb;
+
+        float a = Dot(d, d);
+        float b = 2.0f * Dot(f, d);
+        float c = Dot(f, f) - radius * radius;
+
+        // Quadratic equation discriminant
+        float discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0.0f)
         {
-            output->normal = transform.rotation * output->normal;
+            return false;
+        }
+
+        discriminant = Sqrt(discriminant);
+
+        float t = (-b - discriminant) / (2.0f * a);
+        if (0.0f <= t && t <= input.maxFraction)
+        {
+            output->fraction = t;
+            output->normal = transform.rotation * (f + d * t).Normalized();
             return true;
         }
         else

@@ -339,9 +339,10 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     return res;
 }
 
-void World::Raycast(const Vec2& from,
-                    const Vec2& to,
-                    const std::function<float(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+void World::RayCastAny(
+    const Vec2& from,
+    const Vec2& to,
+    const std::function<float(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
     RayCastInput input;
     input.from = from;
@@ -362,6 +363,36 @@ void World::Raycast(const Vec2& from,
 
         return input.maxFraction;
     });
+}
+
+bool World::RayCastClosest(
+    const Vec2& from,
+    const Vec2& to,
+    const std::function<void(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+{
+    bool hit = false;
+    RigidBody* closestBody;
+    Vec2 closestPoint;
+    Vec2 closestNormal;
+    float closestFraction;
+
+    RayCastAny(from, to, [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> float {
+        hit = true;
+        closestBody = body;
+        closestPoint = point;
+        closestNormal = normal;
+        closestFraction = fraction;
+
+        return fraction;
+    });
+
+    if (hit)
+    {
+        callback(closestBody, closestPoint, closestNormal, closestFraction);
+        return true;
+    }
+
+    return false;
 }
 
 Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
