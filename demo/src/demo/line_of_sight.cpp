@@ -20,9 +20,9 @@ public:
 
         RigidBody* b;
 
-        for (int32 i = 0; i < count; i++)
+        for (int32 i = 0; i < count; ++i)
         {
-            for (int32 j = 0; j < count; j++)
+            for (int32 j = 0; j < count; ++j)
             {
                 float r = LinearRand(0.0f, 3.0f);
                 if (r < 0.5f)

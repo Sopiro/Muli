@@ -26,7 +26,7 @@ public:
         bool t = LinearRand(0.0f, 1.0f) > 0.5;
 
         int count = 12;
-        for (int i = 1; i < count; i++)
+        for (int i = 1; i < count; ++i)
         {
             RigidBody* b2 = world->CreateBox(sizeW, sizeH);
             b2->SetMass(1.0f);

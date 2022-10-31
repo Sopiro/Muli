@@ -98,6 +98,46 @@ public:
         ++count;
     }
 
+    void Push(T&& data)
+    {
+        if (count == capacity)
+        {
+            T* old = array;
+            capacity *= 2;
+
+            array = (T*)malloc(capacity * sizeof(T));
+            memcpy(array, old, count * sizeof(T));
+
+            if (old != stack_array)
+            {
+                free(old);
+            }
+        }
+
+        array[count] = data;
+        ++count;
+    }
+
+    template <typename... Args>
+    T& Emplace(Args&&... args)
+    {
+        if (count == capacity)
+        {
+            T* old = array;
+            capacity *= 2;
+
+            array = (T*)malloc(capacity * sizeof(T));
+            memcpy(array, old, count * sizeof(T));
+
+            if (old != stack_array)
+            {
+                free(old);
+            }
+        }
+
+        return *(array + count++) = T(std::forward<Args>(args)...);
+    }
+
     T Pop()
     {
         assert(count > 0);

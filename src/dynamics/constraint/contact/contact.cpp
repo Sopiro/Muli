@@ -35,7 +35,7 @@ void Contact::Update()
     bool wasTouching = touching;
     touching = collisionDetectionFunction(bodyA, bodyB, &manifold);
 
-    for (uint32 i = 0; i < MAX_CONTACT_POINT; i++)
+    for (uint32 i = 0; i < MAX_CONTACT_POINT; ++i)
     {
         oldNormalImpulse[i] = normalSolvers[i].impulseSum;
         normalSolvers[i].impulseSum = 0.0f;
@@ -60,10 +60,10 @@ void Contact::Update()
     }
 
     // Warm start the contact solver
-    for (uint32 n = 0; n < manifold.numContacts; n++)
+    for (uint32 n = 0; n < manifold.numContacts; ++n)
     {
         uint32 o = 0;
-        for (; o < oldManifold.numContacts; o++)
+        for (; o < oldManifold.numContacts; ++o)
         {
             if (manifold.contactPoints[n].id == oldManifold.contactPoints[o].id)
             {
@@ -83,7 +83,7 @@ void Contact::Update()
 
 void Contact::Prepare()
 {
-    for (uint32 i = 0; i < manifold.numContacts; i++)
+    for (uint32 i = 0; i < manifold.numContacts; ++i)
     {
         normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::Normal);
         tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::Tangent);
@@ -99,14 +99,14 @@ void Contact::Prepare()
 void Contact::SolveVelocityConstraint()
 {
     // Solve tangential constraint first
-    for (uint32 i = 0; i < manifold.numContacts; i++)
+    for (uint32 i = 0; i < manifold.numContacts; ++i)
     {
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
     if (manifold.numContacts == 1 || !settings.BLOCK_SOLVE || (blockSolver.enabled == false))
     {
-        for (uint32 i = 0; i < manifold.numContacts; i++)
+        for (uint32 i = 0; i < manifold.numContacts; ++i)
         {
             normalSolvers[i].Solve();
         }
@@ -127,7 +127,7 @@ bool Contact::SolvePositionConstraint()
     cAngularImpulseB = 0.0f;
 
     // Solve position constraint
-    for (uint32 i = 0; i < manifold.numContacts; i++)
+    for (uint32 i = 0; i < manifold.numContacts; ++i)
     {
         solved &= positionSolvers[i].Solve();
     }

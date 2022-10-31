@@ -132,7 +132,7 @@ bool Demo::EnablePolygonCreate()
             hull = ComputeConvexHull(points);
         }
 
-        for (uint32 i = 0; i < hull.size(); i++)
+        for (uint32 i = 0; i < hull.size(); ++i)
         {
             Vec2& v0 = hull[i];
             Vec2& v1 = hull[(i + 1) % hull.size()];

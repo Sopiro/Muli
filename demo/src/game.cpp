@@ -153,7 +153,7 @@ void Game::UpdateUI()
             {
                 if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 26 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
-                    for (uint32 i = 0; i < demo_count; i++)
+                    for (uint32 i = 0; i < demo_count; ++i)
                     {
                         const bool selected = (demoIndex == i);
 
@@ -328,7 +328,7 @@ void Game::Render()
 
             const ContactManifold& m = c->GetContactManifold();
 
-            for (uint32 j = 0; j < m.numContacts; j++)
+            for (uint32 j = 0; j < m.numContacts; ++j)
             {
                 const Vec2& cp = m.contactPoints[j].position;
 

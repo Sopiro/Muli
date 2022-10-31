@@ -16,7 +16,7 @@ void RigidBodyRenderer::Render()
 {
     shader->Use();
 
-    for (uint32 i = 0; i < bodiesAndMeshes.size(); i++)
+    for (uint32 i = 0; i < bodiesAndMeshes.size(); ++i)
     {
         RigidBody* body = bodiesAndMeshes[i].first;
         RigidBody::Type type = body->GetType();

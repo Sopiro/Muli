@@ -19,7 +19,7 @@ public:
         float range = 2.0f;
         uint32 count = 10;
 
-        for (uint32 i = 0; i < count; i++)
+        for (uint32 i = 0; i < count; ++i)
         {
             vertices.push_back(LinearRand(Vec2{ -range }, Vec2{ range }));
         }
@@ -57,7 +57,7 @@ public:
 
         pl = vertices;
 
-        for (uint32 i = 0; i < convexHull.size(); i++)
+        for (uint32 i = 0; i < convexHull.size(); ++i)
         {
             Vec2& v0 = convexHull[i];
             Vec2& v1 = convexHull[(i + 1) % convexHull.size()];

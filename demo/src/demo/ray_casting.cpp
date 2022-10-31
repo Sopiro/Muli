@@ -48,7 +48,7 @@ public:
 
         count = 0;
         world->RayCastAny(from, to, [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> float {
-            count++;
+            ++count;
 
             if (closest == false)
             {

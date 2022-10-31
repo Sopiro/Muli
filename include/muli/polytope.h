@@ -27,9 +27,9 @@ public:
 
 inline Polytope::Polytope(const Simplex& simplex)
 {
-    vertices.Push(simplex.vertices[0]);
-    vertices.Push(simplex.vertices[1]);
-    vertices.Push(simplex.vertices[2]);
+    vertices.Emplace(simplex.vertices[0]);
+    vertices.Emplace(simplex.vertices[1]);
+    vertices.Emplace(simplex.vertices[2]);
 }
 
 } // namespace muli

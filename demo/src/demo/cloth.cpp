@@ -24,9 +24,9 @@ public:
 
         float yStart = 2.0f;
 
-        for (uint32 j = 0; j < rows; j++)
+        for (uint32 j = 0; j < rows; ++j)
         {
-            for (uint32 i = 0; i < cols; i++)
+            for (uint32 i = 0; i < cols; ++i)
             {
                 Circle* c = world->CreateCircle(radius);
 
@@ -40,9 +40,9 @@ public:
             }
         }
 
-        for (uint32 j = 0; j < rows; j++)
+        for (uint32 j = 0; j < rows; ++j)
         {
-            for (uint32 i = 0; i < cols; i++)
+            for (uint32 i = 0; i < cols; ++i)
             {
                 Circle* c00 = circles[j][i];
 

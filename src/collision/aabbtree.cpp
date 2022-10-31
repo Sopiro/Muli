@@ -52,7 +52,7 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
     float bestCost = SAH(Union(nodes[root].aabb, aabb));
 
     GrowableArray<std::pair<int32, float>, 256> stack;
-    stack.Push({ root, 0.0f });
+    stack.Emplace(root, 0.0f);
 
     while (stack.Count() != 0)
     {
@@ -77,8 +77,8 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
         {
             if (!nodes[current].isLeaf)
             {
-                stack.Push({ nodes[current].child1, inheritedCost });
-                stack.Push({ nodes[current].child2, inheritedCost });
+                stack.Emplace(nodes[current].child1, inheritedCost);
+                stack.Emplace(nodes[current].child2, inheritedCost);
             }
         }
     }
@@ -221,7 +221,7 @@ void AABBTree::Rotate(int32 node)
     }
 
     uint32 bestDiffIndex = 0;
-    for (uint32 i = 1; i < count; i++)
+    for (uint32 i = 1; i < count; ++i)
     {
         if (costDiffs[i] < costDiffs[bestDiffIndex]) bestDiffIndex = i;
     }
@@ -321,7 +321,7 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
     }
 
     GrowableArray<int32, 256> stack;
-    stack.Push(root);
+    stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
@@ -329,8 +329,8 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
 
         if (!nodes[current].isLeaf)
         {
-            stack.Push(nodes[current].child1);
-            stack.Push(nodes[current].child2);
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
         }
 
         const Node* node = nodes + current;
@@ -420,7 +420,7 @@ std::vector<RigidBody*> AABBTree::Query(const Vec2& point) const
     }
 
     GrowableArray<int32, 256> stack;
-    stack.Push(root);
+    stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
@@ -437,8 +437,8 @@ std::vector<RigidBody*> AABBTree::Query(const Vec2& point) const
         }
         else
         {
-            stack.Push(nodes[current].child1);
-            stack.Push(nodes[current].child2);
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
         }
     }
 
@@ -456,7 +456,7 @@ std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
     }
 
     GrowableArray<int32, 256> stack;
-    stack.Push(root);
+    stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
@@ -473,8 +473,8 @@ std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
         }
         else
         {
-            stack.Push(nodes[current].child1);
-            stack.Push(nodes[current].child2);
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
         }
     }
 
@@ -489,7 +489,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& ca
     }
 
     GrowableArray<int32, 256> stack;
-    stack.Push(root);
+    stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
@@ -510,8 +510,8 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& ca
         }
         else
         {
-            stack.Push(nodes[current].child1);
-            stack.Push(nodes[current].child2);
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
         }
     }
 }
@@ -535,7 +535,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     rayAABB.max = Max(p1, end);
 
     GrowableArray<int32, 256> stack;
-    stack.Push(root);
+    stack.Emplace(root);
 
     while (stack.Count() > 0)
     {
@@ -584,8 +584,8 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
         }
         else
         {
-            stack.Push(node->child1);
-            stack.Push(node->child2);
+            stack.Emplace(node->child1);
+            stack.Emplace(node->child2);
         }
     }
 }

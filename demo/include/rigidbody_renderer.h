@@ -59,7 +59,7 @@ inline void RigidBodyRenderer::Unregister(RigidBody* body)
 {
     size_t idx = bodiesAndMeshes.size();
 
-    for (size_t i = 0; i < bodiesAndMeshes.size(); i++)
+    for (size_t i = 0; i < bodiesAndMeshes.size(); ++i)
     {
         if (bodiesAndMeshes[i].first == body)
         {
@@ -76,7 +76,7 @@ inline void RigidBodyRenderer::Unregister(RigidBody* body)
 
 inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32 i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); ++i)
     {
         Unregister(bodies[i]);
     }

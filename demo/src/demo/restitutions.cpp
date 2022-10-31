@@ -21,7 +21,7 @@ public:
         bool r = LinearRand(0.0f, 1.0f) > 0.5f;
 
         RigidBody* b;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; ++i)
         {
             if (r)
                 b = world->CreateBox(size);

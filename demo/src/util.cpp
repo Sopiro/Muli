@@ -25,7 +25,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
         std::vector<Vec2> texCoords;
         vertices.reserve(circlePolygonCount);
 
-        for (uint32 i = 0; i < circlePolygonCount; i++)
+        for (uint32 i = 0; i < circlePolygonCount; ++i)
         {
             float currentAngle = angle * i;
 
@@ -57,7 +57,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
         vertices2.reserve(vertexCount * 2 + circlePolygonCount);
         vertices3.reserve(vertexCount * 2 + circlePolygonCount);
 
-        for (int32 i0 = 0; i0 < vertexCount; i0++)
+        for (int32 i0 = 0; i0 < vertexCount; ++i0)
         {
             int32 i1 = (i0 + 1) % vertexCount;
             int32 i2 = (i0 + 2) % vertexCount;
@@ -85,7 +85,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
             float theta = AngleBetween(n0, n1);
             float cCount = circlePolygonCount * theta / (2.0f * MULI_PI);
 
-            for (int32 j = 0; j < cCount; j++)
+            for (int32 j = 0; j < cCount; ++j)
             {
                 float per = j / cCount;
                 Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
@@ -112,7 +112,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
         // Start from bottom right
         float angle = MULI_PI * 2.0f / circlePolygonCount;
-        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
+        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
             float currentAngle = -MULI_PI / 2.0f + angle * i;
 
@@ -131,7 +131,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
         texCoords.emplace_back(-l / 2.0f, r);
 
         // Left top to left bottom
-        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; i++)
+        for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
             float currentAngle = MULI_PI / 2.0f + angle * i;
 

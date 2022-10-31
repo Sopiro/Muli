@@ -46,7 +46,7 @@ public:
                                            b1->GetPosition() + Vec2{ -sizeX / 2.0f, -0.03f }, -1.0f, frequency, 1.0f);
         }
 
-        for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); i++)
+        for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); ++i)
         {
             RigidBody* b2 = world->CreateBox(sizeX, sizeY);
             b2->SetMass(10.0f);

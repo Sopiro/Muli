@@ -33,7 +33,7 @@ void Island::Solve()
     bool awakeIsland = false;
 
     // Integrate forces, yield tentative velocities that possibly violate the constraint
-    for (uint32 i = 0; i < bodyCount; i++)
+    for (uint32 i = 0; i < bodyCount; ++i)
     {
         RigidBody* b = bodies[i];
 
@@ -99,18 +99,18 @@ void Island::Solve()
     }
 
     // Prepare constraints for solving step
-    for (uint32 i = 0; i < contactCount; i++)
+    for (uint32 i = 0; i < contactCount; ++i)
     {
         contacts[i]->Prepare();
     }
-    for (uint32 i = 0; i < jointCount; i++)
+    for (uint32 i = 0; i < jointCount; ++i)
     {
         joints[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
-    for (uint32 i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; i++)
+    for (uint32 i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -125,12 +125,12 @@ void Island::Solve()
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = 0; j < contactCount; j++)
+        for (uint32 j = 0; j < contactCount; ++j)
         {
             contacts[j]->SolveVelocityConstraint();
         }
 #endif
-        for (uint32 j = 0; j < jointCount; j++)
+        for (uint32 j = 0; j < jointCount; ++j)
         {
             joints[j]->SolveVelocityConstraint();
         }
@@ -138,7 +138,7 @@ void Island::Solve()
     }
 
     // Update positions using corrected velocities (Semi-implicit euler integration)
-    for (uint32 i = 0; i < bodyCount; i++)
+    for (uint32 i = 0; i < bodyCount; ++i)
     {
         RigidBody* b = bodies[i];
 
@@ -159,7 +159,7 @@ void Island::Solve()
         }
     }
 
-    for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; i++)
+    for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;
@@ -177,12 +177,12 @@ void Island::Solve()
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = 0; j < contactCount; j++)
+        for (uint32 j = 0; j < contactCount; ++j)
         {
             contactSolved &= contacts[j]->SolvePositionConstraint();
         }
 #endif
-        for (uint32 j = 0; j < jointCount; j++)
+        for (uint32 j = 0; j < jointCount; ++j)
         {
             jointSolved &= joints[j]->SolvePositionConstraint();
         }

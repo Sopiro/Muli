@@ -21,7 +21,7 @@ public:
         float size = 1.0f;
         float range = size * 0.7f;
 
-        for (int32 i = 0; i < 2; i++)
+        for (int32 i = 0; i < 2; ++i)
         {
             float r = LinearRand(0.0f, 3.0f);
             RigidBody* b;

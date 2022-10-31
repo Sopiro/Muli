@@ -9,7 +9,7 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
     float minDistance = FLT_MAX;
     Vec2 minNormal{ 0.0f };
 
-    for (uint32 i = 0; i < vertices.Count(); i++)
+    for (uint32 i = 0; i < vertices.Count(); ++i)
     {
         uint32 j = (i + 1) % vertices.Count();
 

@@ -46,7 +46,7 @@ struct SizeMap
     {
         int32 j = 0;
         values[0] = 0;
-        for (int32 i = 1; i <= maxPredefinedBlockSize; i++)
+        for (int32 i = 1; i <= maxPredefinedBlockSize; ++i)
         {
             if (i <= blockSizes[j])
             {

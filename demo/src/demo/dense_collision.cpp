@@ -21,7 +21,7 @@ public:
         b->SetLinearVelocity(12.0f, 0.0f);
         b->SetAngularVelocity(1.0f);
 
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 500; ++i)
         {
             Circle* c = world->CreateCircle(r);
             c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);

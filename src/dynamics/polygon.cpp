@@ -26,7 +26,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
 
     Vec2 centerOfMass{ 0.0f };
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         centerOfMass += vertices[i0];
         normals[i0] = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
@@ -38,7 +38,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
     // Compute area
     area = 0;
     vertices[0] -= centerOfMass;
-    for (int32 i = 1; i < vertexCount; i++)
+    for (int32 i = 1; i < vertexCount; ++i)
     {
         vertices[i] -= centerOfMass;
         area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // inside triangle
@@ -107,7 +107,7 @@ AABB Polygon::GetAABB() const
     Vec2 min = transform * vertices[0];
     Vec2 max = min;
 
-    for (int32 i = 1; i < vertexCount; i++)
+    for (int32 i = 1; i < vertexCount; ++i)
     {
         Vec2 v = transform * vertices[i];
 
@@ -126,7 +126,7 @@ ContactPoint Polygon::Support(const Vec2& localDir) const
     int32 index = 0;
     float maxValue = Dot(localDir, vertices[index]);
 
-    for (int32 i = 1; i < vertexCount; i++)
+    for (int32 i = 1; i < vertexCount; ++i)
     {
         float value = Dot(localDir, vertices[i]);
         if (value > maxValue)
@@ -174,7 +174,7 @@ bool Polygon::TestPoint(const Vec2& p) const
     float maxSeparation = -FLT_MAX;
 
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         Vec2 n0 = normals[i0];
         float separation = Dot(n0, localP - vertices[i0]);
@@ -309,7 +309,7 @@ Edge Polygon::GetIntersectingEdge(const Vec2& dir) const
     Vec2 localDir = MulT(transform.rotation, dir);
 
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -340,7 +340,7 @@ bool Polygon::RayCast(const RayCastInput& input, RayCastOutput* output) const
     int32 index = -1;
 
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         Vec2 normal = normals[i0];
         Vec2 v = vertices[i0] + normal * offset;

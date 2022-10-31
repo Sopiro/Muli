@@ -233,7 +233,7 @@ void World::Destroy(RigidBody* body)
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32 i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); ++i)
     {
         Destroy(bodies[i]);
     }
@@ -246,7 +246,7 @@ void World::BufferDestroy(RigidBody* body)
 
 void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32 i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); ++i)
     {
         BufferDestroy(bodies[i]);
     }
@@ -281,7 +281,7 @@ void World::Destroy(Joint* joint)
 
 void World::Destroy(const std::vector<Joint*>& joints)
 {
-    for (uint32 i = 0; i < joints.size(); i++)
+    for (uint32 i = 0; i < joints.size(); ++i)
     {
         Destroy(joints[i]);
     }
@@ -294,7 +294,7 @@ void World::BufferDestroy(Joint* joint)
 
 void World::BufferDestroy(const std::vector<Joint*>& joints)
 {
-    for (uint32 i = 0; i < joints.size(); i++)
+    for (uint32 i = 0; i < joints.size(); ++i)
     {
         BufferDestroy(joints[i]);
     }
@@ -305,7 +305,7 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
     std::vector<RigidBody*> res;
     std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(point);
 
-    for (uint32 i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); ++i)
     {
         RigidBody* body = bodies[i];
 
@@ -326,7 +326,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     Vec2 box[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
     Polygon t{ box, 4, RigidBody::Type::Dynamic, false, 0.0f };
 
-    for (uint32 i = 0; i < bodies.size(); i++)
+    for (uint32 i = 0; i < bodies.size(); ++i)
     {
         RigidBody* body = bodies[i];
 
@@ -436,7 +436,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float
     std::vector<float> angles;
     angles.reserve(vertexCount);
 
-    for (int32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; ++i)
     {
         angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - FLT_EPSILON));
     }
@@ -446,7 +446,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);
 
-    for (int32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; ++i)
     {
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
@@ -475,7 +475,7 @@ Polygon* World::CreateRegularPolygon(float length, int32 vertexCount, float init
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);
 
-    for (int32 i = 0; i < vertexCount; i++)
+    for (int32 i = 0; i < vertexCount; ++i)
     {
         float currentAngle = angleStart + angle * i;
 

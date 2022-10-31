@@ -58,7 +58,7 @@ static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
     Vec2 supportPoint = CSOSupport(a, b, dir);
     simplex.AddVertex(supportPoint);
 
-    for (uint32 k = 0; k < GJK_MAX_ITERATION; k++)
+    for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
     {
         ClosestPoint closestPoint = simplex.GetClosestPoint(origin);
 
@@ -126,7 +126,7 @@ static EPAResult EPA(RigidBody* a, RigidBody* b, const Simplex& simplex)
 
     ClosestEdgeInfo closestEdge{ 0, FLT_MAX, Vec2{ 0.0f } };
 
-    for (uint32 i = 0; i < EPA_MAX_ITERATION; i++)
+    for (uint32 i = 0; i < EPA_MAX_ITERATION; ++i)
     {
         closestEdge = polytope.GetClosestEdge();
         const Vec2 supportPoint = CSOSupport(a, b, closestEdge.normal);
@@ -343,7 +343,7 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     int32 index;
 
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         Vec2 n0 = normals[i0];
 
@@ -828,7 +828,7 @@ static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Ve
     float maxSeparation = -FLT_MAX;
 
     size_t i0 = va.size() - 1;
-    for (size_t i1 = 0; i1 < va.size(); i1++)
+    for (size_t i1 = 0; i1 < va.size(); ++i1)
     {
         const Vec2& va0 = va[i0];
         const Vec2& va1 = va[i1];
@@ -837,7 +837,7 @@ static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Ve
         Vec2 normal = Cross((va1 - va0).Normalized(), 1.0f);
         float separation = FLT_MAX;
 
-        for (size_t j = 0; j < vb.size(); j++)
+        for (size_t j = 0; j < vb.size(); ++j)
         {
             const Vec2& vb0 = vb[j];
 

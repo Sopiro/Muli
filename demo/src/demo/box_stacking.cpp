@@ -18,7 +18,7 @@ public:
         // float error = 0.015f;
         float error = 0.0f;
 
-        for (uint32 i = 0; i < 20; i++)
+        for (uint32 i = 0; i < 20; ++i)
         {
             RigidBody* b = world->CreateBox(size);
             b->SetPosition(LinearRand(-error, error), start + i * (size + gap));

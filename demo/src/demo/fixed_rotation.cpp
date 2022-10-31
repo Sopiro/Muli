@@ -21,7 +21,7 @@ public:
         float d = 1;
 
         uint32 count = 20;
-        for (uint32 i = 0; i < count; i++)
+        for (uint32 i = 0; i < count; ++i)
         {
             if (i % (count / 4) == 0)
             {

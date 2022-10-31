@@ -11,7 +11,7 @@ public:
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
 
-        for (uint32 i = 0; i < 50; i++)
+        for (uint32 i = 0; i < 50; ++i)
         {
             RigidBody* b1 = world->CreateRegularPolygon(0.12f);
             b1->SetPosition(-0.3f, 0);

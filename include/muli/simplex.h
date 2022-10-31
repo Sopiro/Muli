@@ -48,13 +48,12 @@ inline void Simplex::AddVertex(const Vec2& vertex)
 {
     muliAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
 
-    vertices[count] = vertex;
-    count++;
+    vertices[count++] = vertex;
 }
 
 inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 {
-    for (uint32 i = 0; i < count; i++)
+    for (uint32 i = 0; i < count; ++i)
     {
         if (vertex == vertices[i]) return true;
     }
@@ -66,7 +65,7 @@ inline void Simplex::Shrink(const uint32* _indices, uint32 _count)
 {
     Vec2 tmp[MAX_SIMPLEX_VERTEX_COUNT];
 
-    for (uint32 i = 0; i < _count; i++)
+    for (uint32 i = 0; i < _count; ++i)
     {
         tmp[i] = vertices[_indices[i]];
     }

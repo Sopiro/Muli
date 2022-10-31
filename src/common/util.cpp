@@ -17,7 +17,7 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
 
     // Find the lowest vertex
     int32 index = 0;
-    for (int32 i = 1; i < vertexCount; i++)
+    for (int32 i = 1; i < vertexCount; ++i)
     {
         if (vertices[i].y < vertices[index].y)
         {
@@ -46,7 +46,7 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
 
         if (v0 == v1)
         {
-            i++;
+            ++i;
         }
         else
         {
@@ -100,7 +100,7 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     }
 
     uint32 index = 0;
-    for (uint32 i = 1; i < vertices.size(); i++)
+    for (uint32 i = 1; i < vertices.size(); ++i)
     {
         if (vertices[i].y < vertices[index].y)
         {
@@ -189,7 +189,7 @@ float ComputePolygonInertia(const Polygon* p)
     float denominator = 0.0f;
 
     int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -209,7 +209,7 @@ float ComputePolygonInertia(const Polygon* p)
     float invArea = 1.0f / p->GetArea();
 
     i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
@@ -231,7 +231,7 @@ float ComputePolygonInertia(const Polygon* p)
 
     // Consider corner arc inertia
     i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; i1++)
+    for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         int32 i2 = (i1 + 1) % vertexCount;
 

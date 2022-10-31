@@ -21,7 +21,7 @@ public:
 
         float r = 0.3f;
 
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; ++i)
         {
             Capsule* c = world->CreateCapsule(r, r / 2.0f);
             c->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,

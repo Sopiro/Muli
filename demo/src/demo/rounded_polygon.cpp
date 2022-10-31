@@ -19,9 +19,9 @@ public:
         float xStart = -(rows - 1) * (size + xGap) / 2.0f;
         float yStart = 1.0f;
 
-        for (int y = 0; y < rows; y++)
+        for (int y = 0; y < rows; ++y)
         {
-            for (int x = 0; x < rows - y; x++)
+            for (int x = 0; x < rows - y; ++x)
             {
                 Polygon* b = world->CreateRandomConvexPolygon(size, 6, 0.08f);
 

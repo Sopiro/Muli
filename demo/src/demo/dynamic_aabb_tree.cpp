@@ -22,7 +22,7 @@ public:
 
         srand(static_cast<uint32>(std::hash<std::string>{}(seed)));
 
-        for (int32 i = 0; i < 10; i++)
+        for (int32 i = 0; i < 10; ++i)
         {
             float r = Random(0.0f, 3.0f);
             RigidBody* b;
@@ -62,7 +62,7 @@ public:
             if (ImGui::Button("Random generate"))
             {
                 std::string newSeed = std::to_string((int32)LinearRand(0, INT32_MAX));
-                strcpy_s(seed, newSeed.c_str());
+                strcpy(seed, newSeed.c_str());
 
                 game.RestartDemo();
             }
