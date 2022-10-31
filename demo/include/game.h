@@ -34,6 +34,7 @@ public:
     std::vector<Vec2>& GetPointList();
     std::vector<Vec2>& GetLineList();
     float GetTime() const;
+    void RestartDemo();
 
 private:
     Application& app;
@@ -84,6 +85,11 @@ inline Vec2 Game::GetWorldMousePosition() const
 inline float Game::GetTime() const
 {
     return time;
+}
+
+inline void Game::RestartDemo()
+{
+    InitDemo(demoIndex);
 }
 
 } // namespace muli

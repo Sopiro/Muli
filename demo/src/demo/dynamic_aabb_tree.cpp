@@ -5,6 +5,8 @@
 namespace muli
 {
 
+static char seed[20] = "woowakgood";
+
 class DynamicAABBTree : public Demo
 {
 public:
@@ -18,9 +20,11 @@ public:
         float size = 0.2f;
         float range = 3.0f;
 
+        srand(static_cast<uint32>(std::hash<std::string>{}(seed)));
+
         for (int32 i = 0; i < 10; i++)
         {
-            float r = LinearRand(0.0f, 3.0f);
+            float r = Random(0.0f, 3.0f);
             RigidBody* b;
 
             if (r < 1.0f)
@@ -36,8 +40,11 @@ public:
                 b = world->CreateCapsule(size, size / 2.0f);
             }
 
-            b->SetPosition(LinearRand(Vec2{ -range, -range }, Vec2{ range, range }));
-            b->SetRotation(LinearRand(0.0f, MULI_PI));
+            float x = Random(-range, range);
+            float y = Random(-range, range);
+
+            b->SetPosition(x, y);
+            b->SetRotation(Random(0.0f, MULI_PI));
         }
 
         camera.position.SetZero();
@@ -45,12 +52,27 @@ public:
 
     void UpdateUI() override
     {
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
-        ImGui::Begin("Overlay", NULL,
-                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Tree cost: %.4f", world->GetBVH().ComputeTreeCost());
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
+
+        if (ImGui::Begin("Options"))
+        {
+            ImGui::Text("Tree cost: %.4f", world->GetBVH().ComputeTreeCost());
+            ImGui::InputText("Seed", seed, 20);
+            if (ImGui::Button("Random generate"))
+            {
+                std::string newSeed = std::to_string((int32)LinearRand(0, INT32_MAX));
+                strcpy_s(seed, newSeed.c_str());
+
+                game.RestartDemo();
+            }
+        }
         ImGui::End();
+    }
+
+    float Random(float left, float right)
+    {
+        return (rand() / (float)RAND_MAX) * (right - left) + left;
     }
 
     ~DynamicAABBTree()

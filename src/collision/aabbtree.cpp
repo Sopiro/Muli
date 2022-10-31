@@ -51,7 +51,7 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
     int32 bestSibling = root;
     float bestCost = SAH(Union(nodes[root].aabb, aabb));
 
-    GrowableArray<std::pair<int32, float>, 16> stack;
+    GrowableArray<std::pair<int32, float>, 256> stack;
     stack.Push({ root, 0.0f });
 
     while (stack.Count() != 0)
