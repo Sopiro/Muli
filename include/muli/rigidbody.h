@@ -40,6 +40,7 @@ public:
     {
         FlagIsland = 1 << 0,
         FlagSleeping = 1 << 1,
+        FlagFixedRotation = 1 << 2,
     };
 
     RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
@@ -57,7 +58,7 @@ public:
     virtual AABB GetAABB() const = 0;
 
     // Returns the fardest vertex in the 'dir' direction
-    // 'locakDir' should be normalized and a local vector
+    // 'localDir' should be normalized and a local vector
     virtual ContactPoint Support(const Vec2& localDir) const = 0;
     virtual Edge GetFeaturedEdge(const Vec2& dir) const = 0;
     virtual bool TestPoint(const Vec2& p) const = 0;
@@ -105,6 +106,8 @@ public:
     const CollisionFilter& GetCollisionFilter() const;
     void SetCollisionFilter(const CollisionFilter& _filter);
     bool IsSleeping() const;
+    void SetFixedRotation(bool fixed);
+    bool IsRotationFixed() const;
 
     uint32 GetID() const;
     uint32 GetIslandID() const;
@@ -419,6 +422,25 @@ inline void RigidBody::SetCollisionFilter(const CollisionFilter& _filter)
 inline bool RigidBody::IsSleeping() const
 {
     return flag & Flag::FlagSleeping;
+}
+
+inline void RigidBody::SetFixedRotation(bool fixed)
+{
+    if (fixed)
+    {
+        flag |= FlagFixedRotation;
+    }
+    else
+    {
+        flag &= ~FlagFixedRotation;
+    }
+
+    SetDensity(density);
+}
+
+inline bool RigidBody::IsRotationFixed() const
+{
+    return (flag & FlagFixedRotation) == FlagFixedRotation;
 }
 
 inline uint32 RigidBody::GetID() const

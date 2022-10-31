@@ -44,7 +44,15 @@ void BlockSolver::Prepare(Contact* contact)
     k[1][0] = k[0][1];
     // clang-format on
 
-    m = k.GetInverse();
+    if (k.GetDeterminant() != 0.0f)
+    {
+        enabled = true;
+        m = k.GetInverse();
+    }
+    else
+    {
+        enabled = false;
+    }
 }
 
 void BlockSolver::Solve()
@@ -136,7 +144,7 @@ void BlockSolver::Solve()
         x.x = nc1->m * -b.x;
         x.y = 0.0f;
         vn1 = 0.0f;
-        vn2 = k[1][0] * x.x + b.y;
+        vn2 = k[0][1] * x.x + b.y;
         if (x.x >= 0.0f && vn2 >= 0.0f) break;
 
         //
@@ -148,7 +156,7 @@ void BlockSolver::Solve()
         //
         x.x = 0.0f;
         x.y = nc2->m * -b.y;
-        vn1 = k[0][1] * x.y + b.x;
+        vn1 = k[1][0] * x.y + b.x;
         vn2 = 0.0f;
         if (x.y >= 0.0f && vn1 >= 0.0f) break;
 
@@ -176,7 +184,7 @@ void BlockSolver::Solve()
     Vec2 d = x - a;
     ApplyImpulse(d);
 
-    // Acontactumulate
+    // Accumulate
     nc1->impulseSum = x.x;
     nc2->impulseSum = x.y;
 }

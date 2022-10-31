@@ -15,10 +15,10 @@ enum ContactType : uint8
 
 struct Jacobian
 {
-    Vec2 va;
-    float wa;
-    Vec2 vb;
-    float wb;
+    Vec2 va;  // -normal
+    float wa; // -ra × normal
+    Vec2 vb;  //  normal
+    float wb; //  rb × normal
 };
 
 class ContactSolver

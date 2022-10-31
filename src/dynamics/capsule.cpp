@@ -65,11 +65,7 @@ void Capsule::SetMass(float _mass)
 {
     muliAssert(_mass > 0);
 
-    density = _mass / area;
-    mass = _mass;
-    invMass = 1.0f / mass;
-    inertia = ComputeCapsuleInertia(this);
-    invInertia = 1.0f / inertia;
+    SetDensity(_mass / area);
 }
 
 void Capsule::SetDensity(float _density)
@@ -79,8 +75,17 @@ void Capsule::SetDensity(float _density)
     density = _density;
     mass = density * area;
     invMass = 1.0f / mass;
-    inertia = ComputeCapsuleInertia(this);
-    invInertia = 1.0f / inertia;
+
+    if ((flag & FlagFixedRotation) == 0)
+    {
+        inertia = ComputeCapsuleInertia(this);
+        invInertia = 1.0f / inertia;
+    }
+    else
+    {
+        inertia = 0.0f;
+        invInertia = 0.0f;
+    }
 }
 
 inline bool Capsule::TestPoint(const Vec2& p) const

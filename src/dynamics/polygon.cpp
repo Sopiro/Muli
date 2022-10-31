@@ -79,11 +79,7 @@ void Polygon::SetMass(float _mass)
 {
     muliAssert(_mass > 0);
 
-    density = _mass / area;
-    mass = _mass;
-    invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(this);
-    invInertia = 1.0f / inertia;
+    SetDensity(_mass / area);
 }
 
 void Polygon::SetDensity(float _density)
@@ -93,8 +89,17 @@ void Polygon::SetDensity(float _density)
     density = _density;
     mass = _density * area;
     invMass = 1.0f / mass;
-    inertia = ComputePolygonInertia(this);
-    invInertia = 1.0f / inertia;
+
+    if ((flag & FlagFixedRotation) == 0)
+    {
+        inertia = ComputePolygonInertia(this);
+        invInertia = 1.0f / inertia;
+    }
+    else
+    {
+        inertia = 0.0f;
+        invInertia = 0.0f;
+    }
 }
 
 AABB Polygon::GetAABB() const

@@ -28,7 +28,10 @@ RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
 
 RigidBody::~RigidBody()
 {
-    if (moved) return;
+    if (moved)
+    {
+        return;
+    }
 
     world = nullptr;
     id = 0;

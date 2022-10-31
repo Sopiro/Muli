@@ -356,6 +356,11 @@ struct Mat2
 
         return t;
     }
+
+    float GetDeterminant() const
+    {
+        return ex.x * ey.y - ey.x * ex.y;
+    }
 };
 
 struct Mat3

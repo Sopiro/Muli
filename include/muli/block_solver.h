@@ -11,6 +11,8 @@ struct Jacobian;
 
 class BlockSolver
 {
+    friend class Contact;
+
 public:
     void Prepare(Contact* contact);
     void Solve();
@@ -26,6 +28,8 @@ private:
 
     Mat2 k;
     Mat2 m;
+
+    bool enabled;
 
     void ApplyImpulse(const Vec2& lambda);
 };

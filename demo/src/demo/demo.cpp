@@ -377,7 +377,7 @@ extern DemoFrame compute_distance_point;
 extern DemoFrame collision_detection;
 extern DemoFrame cloth;
 extern DemoFrame collision_filtering;
-extern DemoFrame angle_joint_test;
+extern DemoFrame fixed_rotation;
 extern DemoFrame weld_joint_test;
 extern DemoFrame prismatic_joint_test;
 extern DemoFrame conveyor_belt;
@@ -416,7 +416,7 @@ static int32 init_demos()
     demos[demo_count++] = collision_detection;
     demos[demo_count++] = cloth;
     demos[demo_count++] = collision_filtering;
-    demos[demo_count++] = angle_joint_test;
+    demos[demo_count++] = fixed_rotation;
     demos[demo_count++] = weld_joint_test;
     demos[demo_count++] = prismatic_joint_test;
     demos[demo_count++] = conveyor_belt;

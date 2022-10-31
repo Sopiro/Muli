@@ -104,7 +104,7 @@ void Contact::SolveVelocityConstraint()
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
-    if (manifold.numContacts == 1 || !settings.BLOCK_SOLVE)
+    if (manifold.numContacts == 1 || !settings.BLOCK_SOLVE || (blockSolver.enabled == false))
     {
         for (uint32 i = 0; i < manifold.numContacts; i++)
         {

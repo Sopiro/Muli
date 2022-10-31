@@ -3,10 +3,10 @@
 namespace muli
 {
 
-class AngleJointTest : public Demo
+class FixedRotation : public Demo
 {
 public:
-    AngleJointTest(Game& game)
+    FixedRotation(Game& game)
         : Demo(game)
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
@@ -20,10 +20,10 @@ public:
         float px = 0.0;
         float d = 1;
 
-        uint32 count = 15;
+        uint32 count = 20;
         for (uint32 i = 0; i < count; i++)
         {
-            if (i % (count / 3) == 0)
+            if (i % (count / 4) == 0)
             {
                 d *= -1;
             }
@@ -31,7 +31,7 @@ public:
             RigidBody* b = world->CreateBox(size);
             px += d * error;
             b->SetPosition(px, start + i * (size + gap));
-            world->CreateAngleJoint(ground, b, 2, 1, 1);
+            b->SetFixedRotation(true);
         }
 
         // RigidBody* b1 = world->CreateBox(0.5f);
@@ -44,10 +44,10 @@ public:
 
     static Demo* Create(Game& game)
     {
-        return new AngleJointTest(game);
+        return new FixedRotation(game);
     }
 };
 
-DemoFrame angle_joint_test{ "Freeze rotation: angle joint", AngleJointTest::Create };
+DemoFrame fixed_rotation{ "Fixed rotation", FixedRotation::Create };
 
 } // namespace muli

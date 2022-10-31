@@ -25,11 +25,7 @@ void Circle::SetMass(float _mass)
 {
     muliAssert(_mass > 0);
 
-    density = _mass / area;
-    mass = _mass;
-    invMass = 1.0f / mass;
-    inertia = ComputeCircleInertia(radius, mass);
-    invInertia = 1.0f / inertia;
+    SetDensity(_mass / area);
 }
 
 void Circle::SetDensity(float _density)
@@ -39,8 +35,17 @@ void Circle::SetDensity(float _density)
     density = _density;
     mass = density * area;
     invMass = 1.0f / mass;
-    inertia = ComputeCircleInertia(radius, mass);
-    invInertia = 1.0f / inertia;
+
+    if ((flag & FlagFixedRotation) == 0)
+    {
+        inertia = ComputeCircleInertia(radius, mass);
+        invInertia = 1.0f / inertia;
+    }
+    else
+    {
+        inertia = 0.0f;
+        invInertia = 0.0f;
+    }
 }
 
 bool Circle::RayCast(const RayCastInput& input, RayCastOutput* output) const

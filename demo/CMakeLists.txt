@@ -42,7 +42,7 @@ set(DEMO_SOURCE_FILES
     src/demo/compute_distance_point.cpp
     src/demo/cloth.cpp
     src/demo/collision_filtering.cpp
-    src/demo/angle_joint_test.cpp
+    src/demo/fixed_rotation.cpp
     src/demo/weld_joint_test.cpp
     src/demo/prismatic_joint_test.cpp
     src/demo/conveyor_belt.cpp
