@@ -25,13 +25,13 @@ public:
     Window(Window&&) noexcept = delete;
     Window& operator=(const Window&&) noexcept = delete;
 
-    void SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback);
+    void SetFramebufferSizeChangeCallback(const std::function<void(int width, int height)>& callback);
 
     Vec2 GetWindowSize() const;
     int32 GetRefreshRate() const;
 
 private:
-    static Window* window;
+    inline static Window* window;
     Window(int width, int height, std::string title);
 
     int width;
@@ -124,7 +124,7 @@ inline void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoff
     Input::mouseScroll.y = static_cast<float>(yoffset);
 }
 
-inline void Window::SetFramebufferSizeChangeCallback(std::function<void(int width, int height)> callback)
+inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int width, int height)>& callback)
 {
     framebufferSizeChangeCallback = callback;
 }

@@ -3,8 +3,6 @@
 namespace muli
 {
 
-Window* Window::window = nullptr;
-
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -21,7 +19,7 @@ Window::Window(int width, int height, std::string title)
 
     if (!glfwInit())
     {
-        const char* description = nullptr;
+        const char* description;
         glfwGetError(&description);
         SPDLOG_ERROR("failed to initialize glfw: {}", description);
         exit(1);
@@ -58,7 +56,7 @@ Window::Window(int width, int height, std::string title)
         exit(1);
     }
 
-    auto version = glGetString(GL_VERSION);
+    const char* version = (const char*)glGetString(GL_VERSION);
     SPDLOG_INFO("OpenGL context version: {}", version);
 
     // Setup Dear ImGui context
