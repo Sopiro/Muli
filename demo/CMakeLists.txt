@@ -53,6 +53,7 @@ set(DEMO_SOURCE_FILES
     src/demo/rounded_polygon.cpp
     src/demo/ray_casting.cpp
     src/demo/line_of_sight.cpp
+    src/demo/ragdoll.cpp
 )
 
 set(DEMO_HEADER_FILES
