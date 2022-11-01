@@ -54,6 +54,7 @@ set(DEMO_SOURCE_FILES
     src/demo/ray_casting.cpp
     src/demo/line_of_sight.cpp
     src/demo/ragdoll.cpp
+    src/demo/ragdoll_100.cpp
 )
 
 set(DEMO_HEADER_FILES

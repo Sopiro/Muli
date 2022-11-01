@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
 #if defined(_WIN32) && defined(_DEBUG)
     // Enable memory-leak reports
-    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
     std::cout << "Circle: " << sizeof(muli::Circle) << '\n';

@@ -4,31 +4,13 @@
 namespace muli
 {
 
-class Ragdoll : public Demo
+class Ragdoll100 : public Demo
 {
 public:
-    Ragdoll(Game& game)
+    Ragdoll100(Game& game)
         : Demo(game)
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
-
-        // CollisionFilter filter;
-        // filter.filter = 1 << 1;
-        // filter.mask = ~(1 << 1);
-
-        CreateRagdoll(0.0f, 5.0f, 1.0f);
-
-        RigidBody* c = world->CreateCircle(0.6f);
-        float r = LinearRand(0.0f, MULI_PI);
-        Vec2 p{ Cos(r), Sin(r) };
-        p *= 8.0f;
-
-        c->SetLinearVelocity(-p * LinearRand(4.0f, 8.0f) + Vec2{ 0.0f, LinearRand(5.0f, 15.0f) });
-        p.y += 0.5f;
-        c->SetPosition(p);
-
-        camera.scale = Vec2{ 1.5f };
-        camera.position.y += 1.7f;
     }
 
     void CreateRagdoll(float headX, float headY, float scale)
@@ -38,6 +20,7 @@ public:
         float headRadius = 0.3f * scale;
 
         RigidBody* head = world->CreateCircle(headRadius);
+        game.RegisterRenderBody(head);
         head->SetPosition(headX, headY);
 
         float bodyWidth = 0.8f * scale;
@@ -45,6 +28,7 @@ public:
         float neckGap = 0.05f * scale;
 
         RigidBody* body = world->CreateBox(bodyWidth, bodyHeight);
+        game.RegisterRenderBody(body);
         body->SetPosition(headX, headY - headRadius - bodyHeight / 2.0f - neckGap);
 
         {
@@ -73,6 +57,11 @@ public:
             RigidBody* leftLowerArm =
                 world->CreateCapsule(Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
                                      Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius);
+
+            game.RegisterRenderBody(rightUpperArm);
+            game.RegisterRenderBody(rightLowerArm);
+            game.RegisterRenderBody(leftUpperArm);
+            game.RegisterRenderBody(leftLowerArm);
 
             {
                 float armMotorTorque = rightUpperArm->GetMass() * 2.0f * Sqrt(scale);
@@ -116,6 +105,11 @@ public:
                 world->CreateCapsule(Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
                                      Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius);
 
+            game.RegisterRenderBody(rightUpperLeg);
+            game.RegisterRenderBody(rightLowerLeg);
+            game.RegisterRenderBody(leftUpperLeg);
+            game.RegisterRenderBody(leftLowerLeg);
+
             {
                 float legMotorTorque = rightUpperLeg->GetMass() * 3.0f * Sqrt(scale);
                 float legMotorFrequency = 15.0f;
@@ -136,17 +130,28 @@ public:
         }
     }
 
-    void Step()
+    int32 count = 0;
+    float t0 = 0;
+
+    void Step() override
     {
         Demo::Step();
+
+        float t1 = game.GetTime();
+        if (count < 100 && t0 + 0.1f < t1)
+        {
+            CreateRagdoll(LinearRand(-5.0f, 5.0f), LinearRand(10.0f, 20.0f), 0.3f);
+            t0 = t1;
+            ++count;
+        }
     }
 
     static Demo* Create(Game& game)
     {
-        return new Ragdoll(game);
+        return new Ragdoll100(game);
     }
 };
 
-DemoFrame ragdoll{ "Ragdoll", Ragdoll::Create };
+DemoFrame ragdoll_100{ "Ragdoll 100", Ragdoll100::Create };
 
 } // namespace muli

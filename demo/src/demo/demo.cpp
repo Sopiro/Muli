@@ -389,6 +389,7 @@ extern DemoFrame rounded_polygon;
 extern DemoFrame ray_casting;
 extern DemoFrame line_of_sight;
 extern DemoFrame ragdoll;
+extern DemoFrame ragdoll_100;
 
 static int32 init_demos()
 {
@@ -429,6 +430,7 @@ static int32 init_demos()
     demos[demo_count++] = ray_casting;
     demos[demo_count++] = line_of_sight;
     demos[demo_count++] = ragdoll;
+    demos[demo_count++] = ragdoll_100;
 
     return demo_count;
 }
