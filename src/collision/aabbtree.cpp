@@ -34,7 +34,6 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
 {
     int32 newNode = AllocateNode();
 
-    nodes[newNode].id = nodeID++;
     nodes[newNode].aabb = aabb;
     nodes[newNode].isLeaf = true;
     nodes[newNode].body = body;
@@ -253,13 +252,27 @@ void AABBTree::Remove(RigidBody* body)
 
 void AABBTree::Rotate(int32 node)
 {
+    if (nodes[node].isLeaf)
+    {
+        return;
+    }
+
     if (nodes[node].parent == nullNode)
     {
         return;
     }
 
     int32 parent = nodes[node].parent;
-    int32 sibling = nodes[parent].child1 == node ? nodes[parent].child2 : nodes[parent].child1;
+
+    int32 sibling;
+    if (nodes[parent].child1 == node)
+    {
+        sibling = nodes[parent].child2;
+    }
+    else
+    {
+        sibling = nodes[parent].child1;
+    }
 
     uint32 count = 2;
     float costDiffs[4];
@@ -268,7 +281,7 @@ void AABBTree::Rotate(int32 node)
     costDiffs[0] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb)) - nodeArea;
     costDiffs[1] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb)) - nodeArea;
 
-    if (!nodes[sibling].isLeaf)
+    if (nodes[sibling].isLeaf == false)
     {
         float siblingArea = SAH(nodes[sibling].aabb);
         costDiffs[2] = SAH(Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb)) - siblingArea;
@@ -280,12 +293,16 @@ void AABBTree::Rotate(int32 node)
     uint32 bestDiffIndex = 0;
     for (uint32 i = 1; i < count; ++i)
     {
-        if (costDiffs[i] < costDiffs[bestDiffIndex]) bestDiffIndex = i;
+        if (costDiffs[i] < costDiffs[bestDiffIndex])
+        {
+            bestDiffIndex = i;
+        }
     }
 
-    if (costDiffs[bestDiffIndex] < 0.0)
+    // Rotate only if it reduce the suface area
+    if (costDiffs[bestDiffIndex] < 0.0f)
     {
-        // printf("Tree rotation: %d\n", bestDiffIndex);
+        // printf("Tree rotation occurred: %d\n", bestDiffIndex);
 
         switch (bestDiffIndex)
         {
@@ -688,6 +705,7 @@ int32 AABBTree::AllocateNode()
 
     int32 node = freeList;
     freeList = nodes[node].next;
+    nodes[node].id = ++nodeID;
     nodes[node].parent = nullNode;
     nodes[node].child1 = nullNode;
     nodes[node].child2 = nullNode;
@@ -701,9 +719,94 @@ void AABBTree::FreeNode(int32 node)
     muliAssert(0 <= node && node <= nodeCapacity);
     muliAssert(0 < nodeCount);
 
+    nodes[node].id = 0;
     nodes[node].next = freeList;
     freeList = node;
     --nodeCount;
+}
+
+void AABBTree::Rebuild()
+{
+    // Rebuild the optimal tree. bottom up approach.
+
+    int32* leaves = (int32*)malloc(nodeCount * sizeof(Node));
+    int32 count = 0;
+
+    // Build an array of leaf node
+    for (int32 i = 0; i < nodeCapacity; ++i)
+    {
+        // Already in the free list
+        if (nodes[i].id == 0)
+        {
+            continue;
+        }
+
+        // Clean the leaf
+        if (nodes[i].isLeaf)
+        {
+            nodes[i].parent = nullNode;
+
+            leaves[count++] = i;
+        }
+        else
+        {
+            // Free the internal node
+            FreeNode(i);
+        }
+    }
+
+    while (count > 1)
+    {
+        float minCost = FLT_MAX;
+        int32 minI = -1;
+        int32 minJ = -1;
+
+        // Find the best aabb pair
+        for (int32 i = 0; i < count; ++i)
+        {
+            AABB aabbI = nodes[leaves[i]].aabb;
+
+            for (int32 j = i + 1; j < count; ++j)
+            {
+                AABB aabbJ = nodes[leaves[j]].aabb;
+
+                AABB combined = Union(aabbI, aabbJ);
+                float cost = SAH(combined);
+
+                if (cost < minCost)
+                {
+                    minCost = cost;
+                    minI = i;
+                    minJ = j;
+                }
+            }
+        }
+
+        int32 index1 = leaves[minI];
+        int32 index2 = leaves[minJ];
+        Node* child1 = nodes + index1;
+        Node* child2 = nodes + index2;
+
+        // Create a parent(internal) node
+        int32 parentIndex = AllocateNode();
+        Node* parent = nodes + parentIndex;
+
+        parent->child1 = index1;
+        parent->child2 = index2;
+        parent->aabb = Union(child1->aabb, child2->aabb);
+        parent->parent = nullNode;
+
+        child1->parent = parentIndex;
+        child2->parent = parentIndex;
+
+        leaves[minI] = parentIndex;
+
+        leaves[minJ] = leaves[count - 1];
+        --count;
+    }
+
+    root = leaves[0];
+    free(leaves);
 }
 
 } // namespace muli

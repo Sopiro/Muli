@@ -65,6 +65,7 @@ public:
     void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, RigidBody*)>& callback) const;
 
     float ComputeTreeCost() const;
+    void Rebuild();
 
 private:
     uint32 nodeID = 0;

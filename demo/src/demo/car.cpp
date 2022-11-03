@@ -50,7 +50,7 @@ public:
 
         float motorMaxForce = 300.0f;
         float motorMaxTorque = 0.0f;
-        float motorFrequency = 15.0f;
+        float motorFrequency = 20.0f;
         float motorDampingRatio = 1.0f;
         float motorMass = wheel1->GetMass();
 
@@ -90,8 +90,6 @@ public:
 
         if (Input::IsKeyDown(GLFW_KEY_S))
         {
-            print("Asd");
-
             body->Awake();
             motor1->SetMaxTorque(100.0f);
             motor2->SetMaxTorque(100.0f);

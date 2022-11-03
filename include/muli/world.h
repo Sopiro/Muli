@@ -180,11 +180,13 @@ public:
     uint32 GetBodyCount() const;
     uint32 GetSleepingBodyCount() const;
     uint32 GetSleepingIslandCount() const;
-    const AABBTree& GetBVH() const;
     Contact* GetContacts() const;
-    Joint* GetJoints() const;
     uint32 GetContactCount() const;
+    Joint* GetJoints() const;
     uint32 GetJointCount() const;
+
+    const AABBTree& GetBVH() const;
+    void RebuildBVH();
 
     void Awake();
 
@@ -238,6 +240,11 @@ inline RigidBody* World::GetBodyListTail()
     return bodyListTail;
 }
 
+inline uint32 World::GetBodyCount() const
+{
+    return bodyCount;
+}
+
 inline uint32 World::GetSleepingBodyCount() const
 {
     return sleepingBodies;
@@ -248,14 +255,14 @@ inline uint32 World::GetSleepingIslandCount() const
     return sleepingIslands;
 }
 
-inline const AABBTree& World::GetBVH() const
-{
-    return contactManager.broadPhase.tree;
-}
-
 inline Contact* World::GetContacts() const
 {
     return contactManager.contactList;
+}
+
+inline uint32 World::GetContactCount() const
+{
+    return contactManager.contactCount;
 }
 
 inline Joint* World::GetJoints() const
@@ -263,19 +270,19 @@ inline Joint* World::GetJoints() const
     return jointList;
 }
 
-inline uint32 World::GetBodyCount() const
-{
-    return bodyCount;
-}
-
 inline uint32 World::GetJointCount() const
 {
     return jointCount;
 }
 
-inline uint32 World::GetContactCount() const
+inline const AABBTree& World::GetBVH() const
 {
-    return contactManager.contactCount;
+    return contactManager.broadPhase.tree;
+}
+
+inline void World::RebuildBVH()
+{
+    contactManager.broadPhase.tree.Rebuild();
 }
 
 } // namespace muli

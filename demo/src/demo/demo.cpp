@@ -273,6 +273,7 @@ bool Demo::EnableAddForce()
                 Vec2 f = mStartGlobal - mpos;
                 f *= settings.INV_DT * ft->GetMass() * 3.0f;
 
+                ft->Awake();
                 ft->AddForce(mStartLocal, f);
             }
 

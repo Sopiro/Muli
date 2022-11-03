@@ -53,18 +53,27 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
+        ImGui::SetNextWindowSize({ 200, 145 }, ImGuiCond_Once);
 
         if (ImGui::Begin("Options"))
         {
             ImGui::Text("Tree cost: %.4f", world->GetBVH().ComputeTreeCost());
             ImGui::InputText("Seed", seed, 20);
+            ImGui::Separator();
+            if (ImGui::Button("Generate"))
+            {
+                game.RestartDemo();
+            }
             if (ImGui::Button("Random generate"))
             {
                 std::string newSeed = std::to_string((int32)LinearRand(0, INT32_MAX));
                 strcpy(seed, newSeed.c_str());
 
                 game.RestartDemo();
+            }
+            if (ImGui::Button("Rebuild optimal tree"))
+            {
+                world->RebuildBVH();
             }
         }
         ImGui::End();
