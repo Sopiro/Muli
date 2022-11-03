@@ -48,6 +48,8 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
     }
 
     // Find the best sibling for the new leaf
+
+#if 1
     int32 bestSibling = root;
     float bestCost = SAH(Union(nodes[root].aabb, aabb));
 
@@ -63,10 +65,10 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
         AABB combined = Union(nodes[current].aabb, aabb);
         float directCost = SAH(combined);
 
-        float costForCurrent = directCost + inheritedCost;
-        if (costForCurrent < bestCost)
+        float cost = directCost + inheritedCost;
+        if (cost < bestCost)
         {
-            bestCost = costForCurrent;
+            bestCost = cost;
             bestSibling = current;
         }
 
@@ -82,6 +84,61 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
             }
         }
     }
+#else
+    // O(log n)
+    // This method is faster when inserting a new node, but builds a slightly bad quality tree.
+    int32 bestSibling = root;
+    while (nodes[bestSibling].isLeaf == false)
+    {
+        int32 child1 = nodes[bestSibling].child1;
+        int32 child2 = nodes[bestSibling].child2;
+
+        float area = SAH(nodes[bestSibling].aabb);
+        AABB combined = Union(nodes[bestSibling].aabb, aabb);
+        float combinedArea = SAH(combined);
+
+        float cost = combinedArea;
+        float inheritanceCost = combinedArea - area;
+
+        float cost1;
+        if (nodes[child1].isLeaf)
+        {
+            cost1 = SAH(Union(nodes[child1].aabb, aabb)) + inheritanceCost;
+        }
+        else
+        {
+            float newArea = SAH(Union(nodes[child1].aabb, aabb));
+            float oldArea = SAH(nodes[child1].aabb);
+            cost1 = (newArea - oldArea) + inheritanceCost; // Lower bound cost required when descending down to child1
+        }
+
+        float cost2;
+        if (nodes[child2].isLeaf)
+        {
+            cost2 = SAH(Union(nodes[child2].aabb, aabb)) + inheritanceCost;
+        }
+        else
+        {
+            float newArea = SAH(Union(nodes[child2].aabb, aabb));
+            float oldArea = SAH(nodes[child2].aabb);
+            cost2 = (newArea - oldArea) + inheritanceCost; // Lower bound cost required when descending down to child2
+        }
+
+        if (cost < cost1 && cost < cost2)
+        {
+            break;
+        }
+
+        if (cost1 < cost2)
+        {
+            bestSibling = child1;
+        }
+        else
+        {
+            bestSibling = child2;
+        }
+    }
+#endif
 
     // Create a new parent
     int32 oldParent = nodes[bestSibling].parent;
