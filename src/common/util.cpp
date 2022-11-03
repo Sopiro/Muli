@@ -33,7 +33,17 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
                                Vec2 ra = a - bottom;
                                Vec2 rb = b - bottom;
 
-                               return Atan2(ra.y, ra.x) < Atan2(rb.y, rb.x);
+                               float angleA = Atan2(ra.y, ra.x);
+                               float angleB = Atan2(rb.y, rb.x);
+
+                               if (angleA == angleB)
+                               {
+                                   return Dist2(bottom, a) < Dist2(bottom, b);
+                               }
+                               else
+                               {
+                                   return angleA < angleB;
+                               }
                            });
     muliAssert(sorted[0] == bottom);
 
@@ -116,7 +126,17 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
                                Vec2 ra = a - bottom;
                                Vec2 rb = b - bottom;
 
-                               return Atan2(ra.y, ra.x) < Atan2(rb.y, rb.x);
+                               float angleA = Atan2(ra.y, ra.x);
+                               float angleB = Atan2(rb.y, rb.x);
+
+                               if (angleA == angleB)
+                               {
+                                   return Dist2(bottom, a) < Dist2(bottom, b);
+                               }
+                               else
+                               {
+                                   return angleA < angleB;
+                               }
                            });
     muliAssert(sorted[0] == bottom);
 

@@ -240,6 +240,21 @@ void Game::Render()
             lines.push_back(anchorB);
         }
         break;
+        case Joint::Type::JointLine:
+        {
+            RigidBody* ba = j->GetBodyA();
+            RigidBody* bb = j->GetBodyB();
+            LineJoint* lj = static_cast<LineJoint*>(j);
+
+            const Vec2& anchorA = ba->GetTransform() * lj->GetLocalAnchorA();
+            const Vec2& anchorB = bb->GetTransform() * lj->GetLocalAnchorB();
+
+            points.push_back(anchorA);
+            points.push_back(anchorB);
+
+            lines.push_back(anchorA);
+            lines.push_back(anchorB);
+        }
         case Joint::Type::JointPrismatic:
         {
             RigidBody* ba = j->GetBodyA();

@@ -16,6 +16,7 @@
 #include "distance_joint.h"
 #include "grab_joint.h"
 #include "joint.h"
+#include "line_joint.h"
 #include "motor_joint.h"
 #include "prismatic_joint.h"
 #include "pulley_joint.h"
@@ -126,6 +127,15 @@ public:
         RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     WeldJoint* CreateWeldJoint(
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    LineJoint* CreateLineJoint(RigidBody* bodyA,
+                               RigidBody* bodyB,
+                               Vec2 anchorA,
+                               Vec2 dir,
+                               float frequency = 10.0f,
+                               float dampingRatio = 1.0f,
+                               float jointMass = 1.0f);
+    LineJoint* CreateLineJoint(
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     PrismaticJoint* CreatePrismaticJoint(RigidBody* bodyA,
                                          RigidBody* bodyB,
                                          const Vec2& anchor,

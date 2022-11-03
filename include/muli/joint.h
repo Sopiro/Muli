@@ -62,6 +62,7 @@ public:
         JointDistance,
         JointAngle,
         JointWeld,
+        JointLine,
         JointPrismatic,
         JointPulley,
         JointMotor,

@@ -27,10 +27,12 @@ public:
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
     float GetMaxForce() const;
+    void SetMaxForce(float _maxForce);
     float GetMaxTorque() const;
+    void SetMaxTorque(float _maxTorque);
     const Vec2& GetLinearOffset() const;
-    const Vec2& GetAngularOffset() const;
     void SetLinearOffset(const Vec2& _linearOffset);
+    const Vec2& GetAngularOffset() const;
     void SetAngularOffset(float _angularOffset);
 
 private:
@@ -73,9 +75,19 @@ inline float MotorJoint::GetMaxForce() const
     return maxForce;
 }
 
+inline void MotorJoint::SetMaxForce(float _maxForce)
+{
+    maxForce = _maxForce;
+}
+
 inline float MotorJoint::GetMaxTorque() const
 {
     return maxTorque;
+}
+
+inline void MotorJoint::SetMaxTorque(float _maxTorque)
+{
+    maxTorque = _maxTorque;
 }
 
 inline const Vec2& MotorJoint::GetLinearOffset() const
@@ -83,14 +95,14 @@ inline const Vec2& MotorJoint::GetLinearOffset() const
     return linearOffset;
 }
 
-inline const Vec2& MotorJoint::GetAngularOffset() const
-{
-    return angularOffset;
-}
-
 inline void MotorJoint::SetLinearOffset(const Vec2& _linearOffset)
 {
     linearOffset = _linearOffset;
+}
+
+inline const Vec2& MotorJoint::GetAngularOffset() const
+{
+    return angularOffset;
 }
 
 inline void MotorJoint::SetAngularOffset(float _angularOffset)

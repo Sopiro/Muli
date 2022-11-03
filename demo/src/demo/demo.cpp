@@ -390,6 +390,7 @@ extern DemoFrame ray_casting;
 extern DemoFrame line_of_sight;
 extern DemoFrame ragdoll;
 extern DemoFrame ragdoll_100;
+extern DemoFrame car;
 
 static int32 init_demos()
 {
@@ -431,6 +432,7 @@ static int32 init_demos()
     demos[demo_count++] = line_of_sight;
     demos[demo_count++] = ragdoll;
     demos[demo_count++] = ragdoll_100;
+    demos[demo_count++] = car;
 
     return demo_count;
 }

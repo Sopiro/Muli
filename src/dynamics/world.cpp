@@ -585,6 +585,22 @@ WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
     return wj;
 }
 
+LineJoint* World::CreateLineJoint(
+    RigidBody* bodyA, RigidBody* bodyB, Vec2 anchor, Vec2 dir, float frequency, float dampingRatio, float jointMass)
+{
+    void* mem = blockAllocator.Allocate(sizeof(LineJoint));
+    LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
+
+    Add(lj);
+    return lj;
+}
+
+LineJoint* World::CreateLineJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+{
+    return CreateLineJoint(bodyA, bodyB, bodyA->GetPosition(), (bodyB->GetPosition() - bodyA->GetPosition()).Normalized(),
+                           frequency, dampingRatio, jointMass);
+}
+
 PrismaticJoint* World::CreatePrismaticJoint(
     RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
 {
@@ -722,6 +738,9 @@ void World::FreeJoint(Joint* joint)
         break;
     case Joint::Type::JointWeld:
         blockAllocator.Free(joint, sizeof(WeldJoint));
+        break;
+    case Joint::Type::JointLine:
+        blockAllocator.Free(joint, sizeof(LineJoint));
         break;
     case Joint::Type::JointPrismatic:
         blockAllocator.Free(joint, sizeof(PrismaticJoint));

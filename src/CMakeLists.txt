@@ -26,6 +26,7 @@ set(HEADER_FILES
     ../include/muli/distance_joint.h
     ../include/muli/angle_joint.h
     ../include/muli/weld_joint.h
+    ../include/muli/line_joint.h
     ../include/muli/prismatic_joint.h
     ../include/muli/pulley_joint.h
     ../include/muli/motor_joint.h
@@ -83,6 +84,7 @@ set(SOURCE_FILES
     dynamics/constraint/joint/distance_joint.cpp
     dynamics/constraint/joint/angle_joint.cpp
     dynamics/constraint/joint/weld_joint.cpp
+    dynamics/constraint/joint/line_joint.cpp
     dynamics/constraint/joint/prismatic_joint.cpp
     dynamics/constraint/joint/pulley_joint.cpp
     dynamics/constraint/joint/motor_joint.cpp

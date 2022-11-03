@@ -2,6 +2,26 @@ set(WINDOW_TITLE "Muli Engine Demo")
 set(WINDOW_WIDTH 1280)
 set(WINDOW_HEIGHT 720)
 
+set(DEMO_HEADER_FILES
+    include/mesh.h
+    include/renderer.h
+    include/shader.h
+    include/dynamic_renderer.h
+    include/dynamic_shader.h
+    include/rigidbody_renderer.h
+    include/rigidbody_shader.h
+
+    include/application.h
+    include/window.h
+    include/camera.h
+    include/common.h
+    include/demo.h
+    include/game.h
+    include/input.h
+    include/util.h
+    include/options.h
+)
+
 set(DEMO_SOURCE_FILES
     src/main.cpp
     src/window.cpp
@@ -55,26 +75,7 @@ set(DEMO_SOURCE_FILES
     src/demo/line_of_sight.cpp
     src/demo/ragdoll.cpp
     src/demo/ragdoll_100.cpp
-)
-
-set(DEMO_HEADER_FILES
-    include/mesh.h
-    include/renderer.h
-    include/shader.h
-    include/dynamic_renderer.h
-    include/dynamic_shader.h
-    include/rigidbody_renderer.h
-    include/rigidbody_shader.h
-
-    include/application.h
-    include/window.h
-    include/camera.h
-    include/common.h
-    include/demo.h
-    include/game.h
-    include/input.h
-    include/util.h
-    include/options.h
+    src/demo/car.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

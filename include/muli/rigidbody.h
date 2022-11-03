@@ -75,6 +75,7 @@ public:
     void SetRotation(float _angle);
     float GetAngle() const;
     void Translate(const Vec2& d);
+    void Translate(float dx, float dy);
     void Rotate(float a);
 
     void AddForce(const Vec2& localPosition, const Vec2& force);
@@ -139,6 +140,7 @@ protected:
     friend class DistanceJoint;
     friend class AngleJoint;
     friend class WeldJoint;
+    friend class LineJoint;
     friend class PrismaticJoint;
     friend class PulleyJoint;
     friend class MotorJoint;
@@ -237,6 +239,12 @@ inline float RigidBody::GetAngle() const
 inline void RigidBody::Translate(const Vec2& d)
 {
     transform.position += d;
+}
+
+inline void RigidBody::Translate(float dx, float dy)
+{
+    transform.position.x += dx;
+    transform.position.y += dy;
 }
 
 inline void RigidBody::Rotate(float a)
