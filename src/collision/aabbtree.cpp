@@ -142,7 +142,6 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
     // Create a new parent
     int32 oldParent = nodes[bestSibling].parent;
     int32 newParent = AllocateNode();
-    nodes[newParent].id = nodeID++;
     nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
     nodes[newParent].isLeaf = false;
     nodes[newParent].body = nullptr;
