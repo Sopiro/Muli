@@ -613,6 +613,11 @@ inline Vec2 operator*(const Vec2& v, float s)
     return Vec2{ v.x * s, v.y * s };
 }
 
+inline Vec2 operator*(float s, const Vec2& v)
+{
+    return Vec2{ v.x * s, v.y * s };
+}
+
 inline Vec2 operator/(const Vec2& v, float s)
 {
     return v * (1.0f / s);
@@ -678,6 +683,11 @@ inline Vec3 operator-(const Vec3& a, const Vec3& b)
 }
 
 inline Vec3 operator*(const Vec3& v, float s)
+{
+    return Vec3{ v.x * s, v.y * s, v.z * s };
+}
+
+inline Vec3 operator*(float s, const Vec3& v)
 {
     return Vec3{ v.x * s, v.y * s, v.z * s };
 }
@@ -1066,26 +1076,33 @@ inline float Round(float s)
     return roundf(s);
 }
 
-inline Vec2 Slerp(const Vec2& start, const Vec2& end, float percent)
+inline float DegToRad(float degrees)
+{
+    return degrees * MULI_PI / 180.0f;
+}
+
+template <typename T>
+inline T Lerp(const T& a, const T& b, float t)
+{
+    return a * (1.0f - t) + b * t;
+}
+
+template <typename T>
+inline T Slerp(const T& start, const T& end, float percent)
 {
     float dot = Clamp(Dot(start, end), -1.0f, 1.0f);
     float angle = acosf(dot) * percent;
 
-    Vec2 rv = end - start * dot;
+    T rv = end - start * dot;
     rv.Normalize();
 
     return start * Cos(angle) + rv * Sin(angle);
 }
 
-inline Vec3 Slerp(const Vec3& start, const Vec3& end, float percent)
+template <typename T>
+inline T Reflect(const T& v, const T& n)
 {
-    float dot = Clamp(Dot(start, end), -1.0f, 1.0f);
-    float angle = acosf(dot) * percent;
-
-    Vec3 rv = end - start * dot;
-    rv.Normalize();
-
-    return start * Cos(angle) + rv * Sin(angle);
+    return v - 2 * Dot(v, n) * n;
 }
 
 inline float AngleBetween(const Vec2& a, const Vec2& b)
@@ -1094,6 +1111,23 @@ inline float AngleBetween(const Vec2& a, const Vec2& b)
     float cosine = Dot(a, b);
 
     return Atan2(sine, cosine);
+}
+
+inline Vec2 PolarToCart(float theta, float r)
+{
+    float x = Cos(theta);
+    float y = Sin(theta);
+
+    return Vec2{ x, y } * r;
+}
+
+inline Vec3 PolarToCart(float phi, float theta, float r)
+{
+    float x = Sin(phi) * Cos(theta);
+    float y = Sin(phi) * Sin(theta);
+    float z = Cos(phi);
+
+    return Vec3{ x, y, z } * r;
 }
 
 } // namespace muli
