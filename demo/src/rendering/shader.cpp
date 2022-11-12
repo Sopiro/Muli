@@ -16,7 +16,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     {
         char infoLog[1024];
         glGetShaderInfoLog(vertexShader, 1024, nullptr, infoLog);
-        SPDLOG_ERROR("failed to compile vertex shader: {}", infoLog);
+        std::printf("failed to compile vertex shader: %s\n", infoLog);
         exit(1);
     }
 
@@ -31,7 +31,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     {
         char infoLog[1024];
         glGetShaderInfoLog(fragmentShader, 1024, nullptr, infoLog);
-        SPDLOG_ERROR("failed to compile fragment shader: {}", infoLog);
+        std::printf("failed to compile fragment shader: %s\n", infoLog);
         exit(1);
     }
 
@@ -47,7 +47,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     {
         char infoLog[1024];
         glGetProgramInfoLog(shaderProgram, 1024, nullptr, infoLog);
-        SPDLOG_ERROR("failed to link program: {}", infoLog);
+        std::printf("failed to link program: %s\n", infoLog);
         exit(1);
     }
 

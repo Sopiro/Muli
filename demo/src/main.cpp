@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     std::cout << "Revolute joint: " << sizeof(muli::RevoluteJoint) << '\n';
     std::cout << "Prismatic joint: " << sizeof(muli::PrismaticJoint) << '\n';
     std::cout << "Pulley joint: " << sizeof(muli::PulleyJoint) << '\n';
-    std::cout << "Weld joint: " << sizeof(muli::WeldJoint) << std::endl;
+    std::cout << "Weld joint: " << sizeof(muli::WeldJoint) << '\n' << std::endl;
 
     muli::Application* app = muli::Application::Create(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 

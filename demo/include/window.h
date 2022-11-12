@@ -60,8 +60,6 @@ inline Window& Window::Get()
 
 inline void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height)
 {
-    // SPDLOG_INFO("framebuffer size changed: ({} x {})", width, height);
-
     window->width = width;
     window->height = height;
 

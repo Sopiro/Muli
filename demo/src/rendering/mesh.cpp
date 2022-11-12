@@ -95,7 +95,7 @@ void Mesh::Draw(GLenum drawMode)
         break;
 
     default:
-        SPDLOG_ERROR("Not a support draw mode");
+        muliAssert(false && "Not a supported draw mode");
         break;
     }
 

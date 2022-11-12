@@ -1,20 +1,5 @@
 # install dependencies for demo project
 
-# spdlog: fast logger library
-ExternalProject_Add(
-    dep_spdlog
-    GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
-    GIT_TAG "v1.x"
-    GIT_SHALLOW 1
-    UPDATE_COMMAND ""
-    PATCH_COMMAND ""
-    TEST_COMMAND ""
-    CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DSPDLOG_BUILD_EXAMPLE=OFF
-)
-
 # glfw: cross-platform window support
 ExternalProject_Add(
     dep_glfw
@@ -63,14 +48,12 @@ add_dependencies(dep_imgui dep_glfw)
 target_include_directories(dep_imgui PRIVATE ${DEP_INCLUDE_DIR})
 
 set(DEP_LIST_DEMO
-    dep_spdlog
     dep_glfw
     dep_glad
     dep_imgui
 )
 
 set(DEP_LIBS_DEMO
-    spdlog$<$<CONFIG:Debug>:d>
     glfw3
     glad
     dep_imgui

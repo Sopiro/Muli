@@ -15,12 +15,12 @@ Application::Application(int width, int height, std::string title)
 
 Application::~Application()
 {
-    SPDLOG_INFO("Terminate program");
+    std::cout << "Terminate program" << '\n';
 }
 
 void Application::Run()
 {
-    SPDLOG_INFO("Start main loop");
+    std::cout << "Start main loop" << '\n';
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);

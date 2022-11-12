@@ -13,7 +13,7 @@ Window::Window(int width, int height, std::string title)
     muliAssert(window == nullptr);
     window = this;
 
-    SPDLOG_INFO("Initialize glfw");
+    std::puts("Initialize glfw");
 
     glfwSetErrorCallback(glfw_error_callback);
 
@@ -21,7 +21,7 @@ Window::Window(int width, int height, std::string title)
     {
         const char* description;
         glfwGetError(&description);
-        SPDLOG_ERROR("failed to initialize glfw: {}", description);
+        std::printf("failed to initialize glfw: %s", description);
         exit(1);
     }
 
@@ -37,7 +37,7 @@ Window::Window(int width, int height, std::string title)
     glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!glfwWindow)
     {
-        SPDLOG_ERROR("failed to create glfw window");
+        std::printf("%s\n", "failed to create glfw window");
         glfwTerminate();
         exit(1);
     }
@@ -51,13 +51,13 @@ Window::Window(int width, int height, std::string title)
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        SPDLOG_ERROR("failed to initialize glad");
+        std::puts("failed to initialize glad");
         glfwTerminate();
         exit(1);
     }
 
     const char* version = (const char*)glGetString(GL_VERSION);
-    SPDLOG_INFO("OpenGL context version: {}", version);
+    printf("OpenGL context version: %s\n", version);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
