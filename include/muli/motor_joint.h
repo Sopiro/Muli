@@ -32,7 +32,7 @@ public:
     void SetMaxTorque(float _maxTorque);
     const Vec2& GetLinearOffset() const;
     void SetLinearOffset(const Vec2& _linearOffset);
-    const Vec2& GetAngularOffset() const;
+    float GetAngularOffset() const;
     void SetAngularOffset(float _angularOffset);
 
 private:
@@ -100,7 +100,7 @@ inline void MotorJoint::SetLinearOffset(const Vec2& _linearOffset)
     linearOffset = _linearOffset;
 }
 
-inline const Vec2& MotorJoint::GetAngularOffset() const
+inline float MotorJoint::GetAngularOffset() const
 {
     return angularOffset;
 }

@@ -45,6 +45,11 @@ struct Vec2
         y = _y;
     }
 
+    float operator[](uint32 i) const
+    {
+        return (&x)[i];
+    }
+
     float& operator[](uint32 i)
     {
         return (&x)[i];
@@ -166,6 +171,11 @@ struct Vec3
         x = _x;
         y = _y;
         z = _z;
+    }
+
+    float operator[](uint32 i) const
+    {
+        return (&x)[i];
     }
 
     float& operator[](uint32 i)
@@ -994,6 +1004,11 @@ inline Vec2 Min(const Vec2& a, const Vec2& b)
     return Vec2(Min(a.x, b.x), Min(a.y, b.y));
 }
 
+inline Vec3 Min(const Vec3& a, const Vec3& b)
+{
+    return Vec3(Min(a.x, b.x), Min(a.y, b.y), Min(a.z, b.z));
+}
+
 template <typename T>
 inline T Max(T a, T b)
 {
@@ -1003,6 +1018,11 @@ inline T Max(T a, T b)
 inline Vec2 Max(const Vec2& a, const Vec2& b)
 {
     return Vec2(Max(a.x, b.x), Max(a.y, b.y));
+}
+
+inline Vec3 Max(const Vec3& a, const Vec3& b)
+{
+    return Vec3(Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z));
 }
 
 template <typename T>
