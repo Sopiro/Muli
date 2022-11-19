@@ -9,7 +9,7 @@ public:
     MultiPendulum(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
         float xStart = 0.0f;
         float yStart = 5.0f;

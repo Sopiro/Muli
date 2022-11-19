@@ -10,20 +10,20 @@ public:
     ConveyorBelt(Game& game)
         : Demo(game)
     {
-        RigidBody* b = world->CreateBox(3.0f, 0.2f, RigidBody::Type::Static);
+        RigidBody* b = world->CreateBox(3.0f, 0.2f, RigidBody::Type::static_body);
         b->SetPosition(-4.0f, 5.0f);
         b->SetSurfaceSpeed(2.0f);
 
-        b = world->CreateBox(5.5f, 0.2f, RigidBody::Type::Static);
+        b = world->CreateBox(5.5f, 0.2f, RigidBody::Type::static_body);
         b->SetPosition(0.5f, 4.0f);
         b->SetRotation(0.2f);
         b->SetSurfaceSpeed(2.0f);
 
-        RigidBody* br = world->CreateBox(3.5f, 0.2f, RigidBody::Type::Static);
+        RigidBody* br = world->CreateBox(3.5f, 0.2f, RigidBody::Type::static_body);
         br->SetPosition(4.55f, 1.0f);
         br->SetSurfaceSpeed(-2.0f);
 
-        RigidBody* bl = world->CreateBox(2.0f, 0.2f, RigidBody::Type::Static);
+        RigidBody* bl = world->CreateBox(2.0f, 0.2f, RigidBody::Type::static_body);
         bl->SetPosition(-4.55f, 1.0f);
         bl->SetSurfaceSpeed(-2.0f);
 

@@ -14,11 +14,11 @@ namespace muli
 static constexpr Vec2 origin{ 0.0f };
 
 static bool dectectionFunctionInitialized = false;
-DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
+DetectionFunction* DetectionFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
 void InitializeDetectionFunctionMap();
 
 static bool distanceFunctionInitialized = false;
-DistanceFunction* DistanceFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
+DistanceFunction* DistanceFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
 void InitializeDistanceFunctionMap();
 
 /*
@@ -791,14 +791,14 @@ void InitializeDetectionFunctionMap()
         return;
     }
 
-    DetectionFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &CircleVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::circle][RigidBody::Shape::circle] = &CircleVsCircle;
 
-    DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &CapsuleVsCircle;
-    DetectionFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
+    DetectionFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::circle] = &CapsuleVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::capsule] = &ConvexVsConvex;
 
-    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &PolygonVsCircle;
-    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCapsule] = &ConvexVsConvex;
-    DetectionFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapePolygon] = &ConvexVsConvex;
+    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::circle] = &PolygonVsCircle;
+    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::capsule] = &ConvexVsConvex;
+    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::polygon] = &ConvexVsConvex;
 
     dectectionFunctionInitialized = true;
 }
@@ -810,14 +810,14 @@ void InitializeDistanceFunctionMap()
         return;
     }
 
-    DistanceFunctionMap[RigidBody::Shape::ShapeCircle][RigidBody::Shape::ShapeCircle] = &ComputeDistanceCircleVsCircle;
+    DistanceFunctionMap[RigidBody::Shape::circle][RigidBody::Shape::circle] = &ComputeDistanceCircleVsCircle;
 
-    DistanceFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCircle] = &ComputeDistanceCapsuleVsCircle;
-    DistanceFunctionMap[RigidBody::Shape::ShapeCapsule][RigidBody::Shape::ShapeCapsule] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::circle] = &ComputeDistanceCapsuleVsCircle;
+    DistanceFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::capsule] = &ComputeDistanceConvexVsConvex;
 
-    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCircle] = &ComputeDistancePolygonVsCircle;
-    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapeCapsule] = &ComputeDistanceConvexVsConvex;
-    DistanceFunctionMap[RigidBody::Shape::ShapePolygon][RigidBody::Shape::ShapePolygon] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::circle] = &ComputeDistancePolygonVsCircle;
+    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::capsule] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::polygon] = &ComputeDistanceConvexVsConvex;
 
     distanceFunctionInitialized = true;
 }

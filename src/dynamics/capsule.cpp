@@ -4,14 +4,14 @@ namespace muli
 {
 
 Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, Type _type, bool _resetPosition, float _density)
-    : RigidBody(_type, Shape::ShapeCapsule)
+    : RigidBody(_type, Shape::capsule)
 {
     radius = _radius;
     Vec2 a2b = p2 - p1;
     length = a2b.Length();
     area = length * radius * 2.0f + MULI_PI * radius * radius;
 
-    if (type == RigidBody::Type::Dynamic)
+    if (type == RigidBody::Type::dynamic_body)
     {
         muliAssert(_density > 0);
 
@@ -35,13 +35,13 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, Type _type, bool
 }
 
 Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, float _density)
-    : RigidBody(_type, Shape::ShapeCapsule)
+    : RigidBody(_type, Shape::capsule)
     , length{ _length }
 {
     radius = _radius;
     area = length * radius * 2 + MULI_PI * radius * radius;
 
-    if (type == RigidBody::Type::Dynamic)
+    if (type == RigidBody::Type::dynamic_body)
     {
         muliAssert(_density > 0);
 
@@ -76,7 +76,7 @@ void Capsule::SetDensity(float _density)
     mass = density * area;
     invMass = 1.0f / mass;
 
-    if ((flag & FlagFixedRotation) == 0)
+    if ((flag & flag_fixed_rotation) == 0)
     {
         inertia = ComputeCapsuleInertia(this);
         invInertia = 1.0f / inertia;

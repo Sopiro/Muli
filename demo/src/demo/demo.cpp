@@ -165,11 +165,11 @@ bool Demo::EnablePolygonCreate()
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
-            create_body(RigidBody::Type::Dynamic);
+            create_body(RigidBody::Type::dynamic_body);
         }
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
-            create_body(RigidBody::Type::Static);
+            create_body(RigidBody::Type::static_body);
         }
     }
 
@@ -216,7 +216,7 @@ bool Demo::EnableBodyGrab()
 {
     if (target && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        if (target->GetType() == RigidBody::Type::Dynamic)
+        if (target->GetType() == RigidBody::Type::dynamic_body)
         {
             target->Awake();
             gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
@@ -246,7 +246,7 @@ bool Demo::EnableAddForce()
     static RigidBody* ft;
     static Vec2 mStartLocal;
 
-    if (target && target->GetType() != RigidBody::Type::Static)
+    if (target && target->GetType() != RigidBody::Type::static_body)
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {

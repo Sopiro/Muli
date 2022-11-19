@@ -13,9 +13,9 @@ public:
     Crank(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
-        disk = world->CreateCircle(0.5f, RigidBody::Type::Dynamic);
+        disk = world->CreateCircle(0.5f, RigidBody::Type::dynamic_body);
         disk->SetPosition(0, 1.0f);
 
         RigidBody* arm1 = world->CreateCapsule(Vec2{ 0.5f, 1.0f }, Vec2{ 0.0f, 2.0f }, 0.1f);

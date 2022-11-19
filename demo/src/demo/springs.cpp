@@ -11,7 +11,7 @@ public:
     {
         settings.APPLY_GRAVITY = false;
 
-        RigidBody* g = world->CreateBox(0.3f, 6, RigidBody::Type::Static);
+        RigidBody* g = world->CreateBox(0.3f, 6, RigidBody::Type::static_body);
         g->SetPosition(0.0f, 3.6f);
 
         RigidBody* b = world->CreateBox(0.3f);

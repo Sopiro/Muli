@@ -9,7 +9,7 @@ public:
     Pyramid(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
         int32 rows = 15;
         float boxSize = 0.4f;

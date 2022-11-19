@@ -13,7 +13,7 @@ MotorJoint::MotorJoint(RigidBody* _bodyA,
                        float _frequency,
                        float _dampingRatio,
                        float _jointMass)
-    : Joint(Joint::Type::JointMotor, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(Joint::Type::motor_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchor);
     localAnchorB = MulT(bodyB->GetTransform(), _anchor);

@@ -57,15 +57,15 @@ class Joint : public Constraint
 public:
     enum Type : uint8
     {
-        JointGrab,
-        JointRevolute,
-        JointDistance,
-        JointAngle,
-        JointWeld,
-        JointLine,
-        JointPrismatic,
-        JointPulley,
-        JointMotor,
+        grab_joint,
+        revolute_joint,
+        distance_joint,
+        angle_joint,
+        weld_joint,
+        line_joint,
+        prismatic_joint,
+        pulley_joint,
+        motor_joint,
     };
 
     Joint(Joint::Type _type,

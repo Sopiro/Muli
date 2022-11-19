@@ -6,7 +6,7 @@
 namespace muli
 {
 
-extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::ShapeCount][RigidBody::Shape::ShapeCount];
+extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
 
 Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
     : Constraint(_bodyA, _bodyB, _settings)

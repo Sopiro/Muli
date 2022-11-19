@@ -64,10 +64,10 @@ public:
         RigidBody* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
         RigidBody* tr = circles[rows - 1][cols - 1];
 
-        Circle* w1 = world->CreateCircle(0.1f, RigidBody::Type::Static);
-        Circle* w2 = world->CreateCircle(0.1f, RigidBody::Type::Static);
-        Circle* w3 = world->CreateCircle(0.1f, RigidBody::Type::Static);
-        Circle* w4 = world->CreateCircle(0.1f, RigidBody::Type::Static);
+        Circle* w1 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        Circle* w2 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        Circle* w3 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        Circle* w4 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
         w1->SetPosition(tl->GetPosition() + Vec2{ -gap, gap });
         w2->SetPosition(ml->GetPosition() + Vec2{ 0.0f, gap });
         w3->SetPosition(mr->GetPosition() + Vec2{ 0.0f, gap });

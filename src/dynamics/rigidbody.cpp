@@ -12,7 +12,7 @@ RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
     , flag{ 0 }
     , userFlag{ 0 }
 {
-    if (type != Dynamic)
+    if (type != dynamic_body)
     {
         density = 0.0f;
         mass = 0.0f;

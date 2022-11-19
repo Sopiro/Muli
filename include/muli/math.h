@@ -11,9 +11,15 @@
 #include "types.h"
 
 #define MULI_PI 3.14159265359f
+#define MULI_EPSILON FLT_EPSILON
 
 namespace muli
 {
+
+enum Identity
+{
+    identity
+};
 
 struct Vec2
 {
@@ -241,7 +247,7 @@ struct Vec3
     void Normalize()
     {
         float length = Length();
-        if (length < FLT_EPSILON)
+        if (length < MULI_EPSILON)
         {
             return;
         }
@@ -255,7 +261,7 @@ struct Vec3
     Vec3 Normalized() const
     {
         float length = Length();
-        if (length < FLT_EPSILON)
+        if (length < MULI_EPSILON)
         {
             return Vec3{ 0.0f, 0.0f, 0.0f };
         }
@@ -301,6 +307,11 @@ struct Mat2
     Vec2 ex, ey;
 
     Mat2() = default;
+
+    Mat2(Identity)
+        : Mat2(1.0f)
+    {
+    }
 
     Mat2(float v)
     {
@@ -379,6 +390,11 @@ struct Mat3
 
     Mat3() = default;
 
+    Mat3(Identity)
+        : Mat3(1.0f)
+    {
+    }
+
     Mat3(float v)
     {
         // clang-format off
@@ -443,6 +459,11 @@ struct Mat4
     Vec4 ex, ey, ez, ew;
 
     Mat4() = default;
+
+    Mat4(Identity)
+        : Mat4(1.0f)
+    {
+    }
 
     Mat4(float _v)
     {
@@ -518,6 +539,11 @@ struct Rotation
 
     Rotation() = default;
 
+    Rotation(Identity)
+        : Rotation(0.0f)
+    {
+    }
+
     explicit Rotation(float _angle)
     {
         angle = _angle;
@@ -561,10 +587,16 @@ struct Rotation
 
 struct Transform
 {
-    Vec2 position{ 0.0f, 0.0f };
-    Rotation rotation{};
+    Vec2 position;
+    Rotation rotation;
 
     Transform() = default;
+
+    Transform(Identity)
+        : position{ 0.0f }
+        , rotation{ identity }
+    {
+    }
 
     Transform(const Vec2& _position, const Rotation& _rotation)
         : position{ _position }
@@ -580,8 +612,7 @@ struct Transform
 
     void SetIdentity()
     {
-        position.x = 0.0f;
-        position.y = 0.0f;
+        position.SetZero();
         rotation.SetIdentity();
     }
 };

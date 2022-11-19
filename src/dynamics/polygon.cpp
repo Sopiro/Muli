@@ -4,7 +4,7 @@ namespace muli
 {
 
 Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _resetCenter, float _radius, float _density)
-    : RigidBody(_type, RigidBody::Shape::ShapePolygon)
+    : RigidBody(_type, RigidBody::Shape::polygon)
 {
     radius = _radius;
     vertexCount = _vertexCount;
@@ -49,7 +49,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
 
     area += MULI_PI * radius * radius; // corner arc
 
-    if (type == Dynamic)
+    if (type == dynamic_body)
     {
         muliAssert(_density > 0);
 
@@ -90,7 +90,7 @@ void Polygon::SetDensity(float _density)
     mass = _density * area;
     invMass = 1.0f / mass;
 
-    if ((flag & FlagFixedRotation) == 0)
+    if ((flag & flag_fixed_rotation) == 0)
     {
         inertia = ComputePolygonInertia(this);
         invInertia = 1.0f / inertia;

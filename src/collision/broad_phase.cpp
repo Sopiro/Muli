@@ -10,15 +10,15 @@ void BroadPhase::UpdateDynamicTree(float dt)
     for (RigidBody* body = world.bodyList; body; body = body->next)
     {
         // Clear island flag
-        body->flag &= ~RigidBody::Flag::FlagIsland;
+        body->flag &= ~RigidBody::Flag::flag_island;
 
         if (body->IsSleeping())
         {
             continue;
         }
-        if (body->type == RigidBody::Type::Static)
+        if (body->type == RigidBody::Type::static_body)
         {
-            body->flag |= RigidBody::Flag::FlagSleeping;
+            body->flag |= RigidBody::Flag::flag_sleeping;
         }
 
         int32 node = body->node;

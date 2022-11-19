@@ -9,11 +9,11 @@ namespace muli
 class Capsule : public RigidBody
 {
 public:
-    Capsule(float _length, float _radius, bool _horizontal = false, Type _type = Dynamic, float _density = DEFAULT_DENSITY);
+    Capsule(float _length, float _radius, bool _horizontal = false, Type _type = dynamic_body, float _density = DEFAULT_DENSITY);
     Capsule(const Vec2& p1,
             const Vec2& p2,
             float _radius,
-            Type _type = Dynamic,
+            Type _type = dynamic_body,
             bool _resetPosition = false,
             float _density = DEFAULT_DENSITY);
 

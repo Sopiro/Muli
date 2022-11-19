@@ -62,29 +62,29 @@ public:
     // Factory functions
 
     Polygon* CreateBox(float size,
-                       RigidBody::Type type = RigidBody::Type::Dynamic,
+                       RigidBody::Type type = RigidBody::Type::dynamic_body,
                        float radius = DEFAULT_RADIUS,
                        float density = DEFAULT_DENSITY);
     Polygon* CreateBox(float width,
                        float height,
-                       RigidBody::Type type = RigidBody::Type::Dynamic,
+                       RigidBody::Type type = RigidBody::Type::dynamic_body,
                        float radius = DEFAULT_RADIUS,
                        float density = DEFAULT_DENSITY);
-    Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::Dynamic, float density = DEFAULT_DENSITY);
+    Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = DEFAULT_DENSITY);
     Polygon* CreatePolygon(const std::vector<Vec2>& vertices,
-                           RigidBody::Type type = RigidBody::Type::Dynamic,
+                           RigidBody::Type type = RigidBody::Type::dynamic_body,
                            bool resetCenter = true,
                            float radius = DEFAULT_RADIUS,
                            float density = DEFAULT_DENSITY);
     Capsule* CreateCapsule(float length,
                            float radius,
                            bool horizontal = false,
-                           RigidBody::Type type = RigidBody::Type::Dynamic,
+                           RigidBody::Type type = RigidBody::Type::dynamic_body,
                            float density = DEFAULT_DENSITY);
     Capsule* CreateCapsule(const Vec2& p1,
                            const Vec2& p2,
                            float radius,
-                           RigidBody::Type type = RigidBody::Type::Dynamic,
+                           RigidBody::Type type = RigidBody::Type::dynamic_body,
                            bool resetPosition = false,
                            float density = DEFAULT_DENSITY);
     Polygon* CreateRandomConvexPolygon(float length,

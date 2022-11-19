@@ -39,11 +39,11 @@ void Island::Solve()
 
         if (sleeping)
         {
-            b->flag |= RigidBody::Flag::FlagSleeping;
+            b->flag |= RigidBody::Flag::flag_sleeping;
         }
         else
         {
-            b->flag &= ~RigidBody::Flag::FlagSleeping;
+            b->flag &= ~RigidBody::Flag::flag_sleeping;
         }
 
         if (sleeping)
@@ -86,7 +86,7 @@ void Island::Solve()
         }
 
         // Apply gravity
-        if (world.settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::Dynamic)
+        if (world.settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::dynamic_body)
         {
             b->linearVelocity += world.settings.GRAVITY * world.settings.DT;
         }

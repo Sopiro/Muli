@@ -10,7 +10,7 @@ public:
     Ragdoll(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
         // CollisionFilter filter;
         // filter.filter = 1 << 1;

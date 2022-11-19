@@ -23,24 +23,24 @@ public:
     // Order matters
     enum Shape : uint8
     {
-        ShapeCircle,
-        ShapeCapsule,
-        ShapePolygon,
-        ShapeCount,
+        circle,
+        capsule,
+        polygon,
+        shape_count,
     };
 
     enum Type : uint8
     {
-        Static,
-        Kinematic,
-        Dynamic,
+        static_body,
+        kinematic_body,
+        dynamic_body,
     };
 
     enum Flag
     {
-        FlagIsland = 1 << 0,
-        FlagSleeping = 1 << 1,
-        FlagFixedRotation = 1 << 2,
+        flag_island = 1 << 0,
+        flag_sleeping = 1 << 1,
+        flag_fixed_rotation = 1 << 2,
     };
 
     RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
@@ -290,12 +290,12 @@ inline int32 RigidBody::GetTreeNode() const
 inline void RigidBody::Awake()
 {
     resting = 0.0f;
-    flag &= ~Flag::FlagSleeping;
+    flag &= ~Flag::flag_sleeping;
 }
 
 inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
 {
-    if (type != Dynamic)
+    if (type != dynamic_body)
     {
         return;
     }
@@ -342,7 +342,7 @@ inline const Vec2& RigidBody::GetLinearVelocity() const
 
 inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 {
-    if (type == Static)
+    if (type == static_body)
     {
         return;
     }
@@ -352,7 +352,7 @@ inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 
 inline void RigidBody::SetLinearVelocity(float vx, float vy)
 {
-    if (type == Static)
+    if (type == static_body)
     {
         return;
     }
@@ -367,7 +367,7 @@ inline float RigidBody::GetAngularVelocity() const
 
 inline void RigidBody::SetAngularVelocity(float _angularVelocity)
 {
-    if (type == Static)
+    if (type == static_body)
     {
         return;
     }
@@ -382,7 +382,7 @@ inline const Vec2& RigidBody::GetForce() const
 
 inline void RigidBody::SetForce(const Vec2& _force)
 {
-    if (type != Dynamic)
+    if (type != dynamic_body)
     {
         return;
     }
@@ -398,7 +398,7 @@ inline float RigidBody::GetTorque() const
 
 inline void RigidBody::SetTorque(float _torque)
 {
-    if (type != Dynamic)
+    if (type != dynamic_body)
     {
         return;
     }
@@ -429,18 +429,18 @@ inline void RigidBody::SetCollisionFilter(const CollisionFilter& _filter)
 
 inline bool RigidBody::IsSleeping() const
 {
-    return flag & Flag::FlagSleeping;
+    return flag & Flag::flag_sleeping;
 }
 
 inline void RigidBody::SetFixedRotation(bool fixed)
 {
     if (fixed)
     {
-        flag |= FlagFixedRotation;
+        flag |= flag_fixed_rotation;
     }
     else
     {
-        flag &= ~FlagFixedRotation;
+        flag &= ~flag_fixed_rotation;
     }
 
     SetDensity(density);
@@ -448,7 +448,7 @@ inline void RigidBody::SetFixedRotation(bool fixed)
 
 inline bool RigidBody::IsRotationFixed() const
 {
-    return (flag & FlagFixedRotation) == FlagFixedRotation;
+    return (flag & flag_fixed_rotation) == flag_fixed_rotation;
 }
 
 inline uint32 RigidBody::GetID() const

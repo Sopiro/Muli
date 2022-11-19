@@ -14,12 +14,12 @@ PrismaticJoint::PrismaticJoint(RigidBody* _bodyA,
                                float _frequency,
                                float _dampingRatio,
                                float _jointMass)
-    : Joint(Joint::Type::JointPrismatic, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(Joint::Type::prismatic_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchor);
     localAnchorB = MulT(bodyB->GetTransform(), _anchor);
 
-    if (_dir.Length2() < FLT_EPSILON)
+    if (_dir.Length2() < MULI_EPSILON)
     {
         Vec2 d = MulT(bodyA->GetRotation(), (_bodyB->GetPosition() - _bodyA->GetPosition()).Normalized());
         localYAxis = Cross(1.0f, d);

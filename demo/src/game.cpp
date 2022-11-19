@@ -192,7 +192,7 @@ void Game::Render()
 
         switch (type)
         {
-        case Joint::Type::JointGrab:
+        case Joint::Type::grab_joint:
         {
             RigidBody* b = j->GetBodyA();
             GrabJoint* gj = static_cast<GrabJoint*>(j);
@@ -205,7 +205,7 @@ void Game::Render()
             lines.push_back(gj->GetTarget());
         }
         break;
-        case Joint::Type::JointRevolute:
+        case Joint::Type::revolute_joint:
         {
 
             RigidBody* ba = j->GetBodyA();
@@ -224,7 +224,7 @@ void Game::Render()
             lines.push_back(bb->GetPosition());
         }
         break;
-        case Joint::Type::JointDistance:
+        case Joint::Type::distance_joint:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -240,7 +240,7 @@ void Game::Render()
             lines.push_back(anchorB);
         }
         break;
-        case Joint::Type::JointLine:
+        case Joint::Type::line_joint:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -255,7 +255,7 @@ void Game::Render()
             lines.push_back(anchorA);
             lines.push_back(anchorB);
         }
-        case Joint::Type::JointPrismatic:
+        case Joint::Type::prismatic_joint:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -271,7 +271,7 @@ void Game::Render()
             lines.push_back(anchorB);
         }
         break;
-        case Joint::Type::JointPulley:
+        case Joint::Type::pulley_joint:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
@@ -295,7 +295,7 @@ void Game::Render()
             lines.push_back(groundAnchorB);
         }
         break;
-        case Joint::Type::JointMotor:
+        case Joint::Type::motor_joint:
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();

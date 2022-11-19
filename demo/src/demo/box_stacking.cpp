@@ -9,7 +9,7 @@ public:
     BoxStacking(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
         float start = 0.5f;
         float size = 0.3f;

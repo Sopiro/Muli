@@ -13,7 +13,7 @@ class Polygon : public RigidBody
 public:
     Polygon(const Vec2* _vertices,
             int32 _vertexCount,
-            RigidBody::Type _type = Dynamic,
+            RigidBody::Type _type = dynamic_body,
             bool _resetCenter = true,
             float _radius = DEFAULT_RADIUS,
             float _density = DEFAULT_DENSITY);

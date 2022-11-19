@@ -4,12 +4,12 @@ namespace muli
 {
 
 Circle::Circle(float _radius, Type _type, float _density)
-    : RigidBody(_type, Shape::ShapeCircle)
+    : RigidBody(_type, Shape::circle)
 {
     radius = _radius;
     area = MULI_PI * radius * radius;
 
-    if (type == RigidBody::Type::Dynamic)
+    if (type == RigidBody::Type::dynamic_body)
     {
         muliAssert(_density > 0);
 
@@ -36,7 +36,7 @@ void Circle::SetDensity(float _density)
     mass = density * area;
     invMass = 1.0f / mass;
 
-    if ((flag & FlagFixedRotation) == 0)
+    if ((flag & flag_fixed_rotation) == 0)
     {
         inertia = ComputeCircleInertia(radius, mass);
         invInertia = 1.0f / inertia;

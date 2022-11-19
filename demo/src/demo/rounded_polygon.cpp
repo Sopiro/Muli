@@ -10,7 +10,7 @@ public:
     RoundedPolygon(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::Static);
+        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
         int rows = 12;
         float size = 0.2f;

@@ -12,7 +12,7 @@ void ContactManager::Update(float dt)
 
     // Find contacts, insert into the contact graph
     broadPhase.FindContacts([&](RigidBody* bodyA, RigidBody* bodyB) -> void {
-        if (bodyA->GetType() != RigidBody::Type::Dynamic && bodyB->GetType() != RigidBody::Type::Dynamic)
+        if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
         {
             return;
         }
@@ -81,8 +81,8 @@ void ContactManager::Update(float dt)
         RigidBody* bodyA = c->bodyA;
         RigidBody* bodyB = c->bodyB;
 
-        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::Type::Static;
-        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::Type::Static;
+        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::Type::static_body;
+        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::Type::static_body;
 
         if (!activeA && !activeB)
         {

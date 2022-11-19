@@ -21,7 +21,7 @@ public:
             float x1 = x0 + d;
             float y1 = f(x1);
 
-            RigidBody* b = world->CreateCapsule(Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f, RigidBody::Type::Static);
+            RigidBody* b = world->CreateCapsule(Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f, RigidBody::Type::static_body);
             b->userFlag |= UserFlag::REMOVE_OUTLINE;
         }
 

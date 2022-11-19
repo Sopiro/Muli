@@ -28,14 +28,14 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::Static)
+        if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::static_body)
         {
             Vec3 color{ 1.0f };
             const CollisionFilter& cf = body->GetCollisionFilter();
 
             switch (type)
             {
-            case RigidBody::Type::Dynamic:
+            case RigidBody::Type::dynamic_body:
                 float h, s, l;
 
                 if (cf.group == 1 && cf.mask != 0xffffffff)
@@ -62,11 +62,11 @@ void RigidBodyRenderer::Render()
                 color = hsl2rgb(h, s, l);
                 break;
 
-            case RigidBody::Type::Kinematic:
+            case RigidBody::Type::kinematic_body:
                 color.Set(0.83f, 0.82f, 0.84f);
                 break;
 
-            case RigidBody::Type::Static:
+            case RigidBody::Type::static_body:
                 if (cf.group == 1 && cf.mask != 0xffffffff)
                 {
                     float h = (((cf.filter - 2) * 17) % 360) / 360.0f;

@@ -14,7 +14,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
     switch (shape)
     {
-    case RigidBody::Shape::ShapeCircle:
+    case RigidBody::Shape::circle:
     {
         Circle* c = static_cast<Circle*>(body);
         float radius = c->GetRadius();
@@ -43,7 +43,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
-    case RigidBody::Shape::ShapePolygon:
+    case RigidBody::Shape::polygon:
     {
         Polygon* p = static_cast<Polygon*>(body);
         float radius = p->GetRadius();
@@ -99,7 +99,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
-    case RigidBody::Shape::ShapeCapsule:
+    case RigidBody::Shape::capsule:
     {
         Capsule* c = static_cast<Capsule*>(body);
 

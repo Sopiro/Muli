@@ -39,12 +39,12 @@ void World::Step(float dt)
     // After building island, each island can be solved in parallel because they are independent of each other
     for (RigidBody* b = bodyList; b; b = b->next)
     {
-        if (b->type == RigidBody::Type::Static)
+        if (b->type == RigidBody::Type::static_body)
         {
             continue;
         }
 
-        if (b->flag & RigidBody::Flag::FlagSleeping || b->flag & RigidBody::Flag::FlagIsland)
+        if (b->flag & RigidBody::Flag::flag_sleeping || b->flag & RigidBody::Flag::flag_island)
         {
             continue;
         }
@@ -57,18 +57,18 @@ void World::Step(float dt)
         {
             RigidBody* t = stack[--stackPointer];
 
-            if (t->type == RigidBody::Type::Static || (t->flag & RigidBody::Flag::FlagIsland))
+            if (t->type == RigidBody::Type::static_body || (t->flag & RigidBody::Flag::flag_island))
             {
                 continue;
             }
 
-            t->flag |= RigidBody::Flag::FlagIsland;
+            t->flag |= RigidBody::Flag::flag_island;
             t->islandID = islandID;
             island.Add(t);
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
-                if (ce->other->flag & RigidBody::Flag::FlagIsland)
+                if (ce->other->flag & RigidBody::Flag::flag_island)
                 {
                     continue;
                 }
@@ -88,7 +88,7 @@ void World::Step(float dt)
                     t->Awake();
                 }
 
-                if (je->other->flag & RigidBody::Flag::FlagIsland)
+                if (je->other->flag & RigidBody::Flag::flag_island)
                 {
                     continue;
                 }
@@ -324,7 +324,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(aabb);
 
     Vec2 box[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    Polygon t{ box, 4, RigidBody::Type::Dynamic, false, 0.0f };
+    Polygon t{ box, 4, RigidBody::Type::dynamic_body, false, 0.0f };
 
     for (uint32 i = 0; i < bodies.size(); ++i)
     {
@@ -438,7 +438,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float
 
     for (int32 i = 0; i < vertexCount; ++i)
     {
-        angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - FLT_EPSILON));
+        angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - MULI_EPSILON));
     }
 
     std::sort(angles.begin(), angles.end());
@@ -452,7 +452,7 @@ Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float
     }
 
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::Dynamic, true, radius, density);
+    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::dynamic_body, true, radius, density);
     Add(p);
     return p;
 }
@@ -486,7 +486,7 @@ Polygon* World::CreateRegularPolygon(float length, int32 vertexCount, float init
     }
 
     void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::Dynamic, true, radius, density);
+    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::dynamic_body, true, radius, density);
     Add(p);
     return p;
 }
@@ -703,13 +703,13 @@ void World::FreeBody(RigidBody* body)
 
     switch (body->shape)
     {
-    case RigidBody::Shape::ShapePolygon:
+    case RigidBody::Shape::polygon:
         blockAllocator.Free(body, sizeof(Polygon));
         break;
-    case RigidBody::Shape::ShapeCircle:
+    case RigidBody::Shape::circle:
         blockAllocator.Free(body, sizeof(Circle));
         break;
-    case RigidBody::Shape::ShapeCapsule:
+    case RigidBody::Shape::capsule:
         blockAllocator.Free(body, sizeof(Capsule));
         break;
     default:
@@ -724,31 +724,31 @@ void World::FreeJoint(Joint* joint)
 
     switch (joint->type)
     {
-    case Joint::Type::JointGrab:
+    case Joint::Type::grab_joint:
         blockAllocator.Free(joint, sizeof(GrabJoint));
         break;
-    case Joint::Type::JointRevolute:
+    case Joint::Type::revolute_joint:
         blockAllocator.Free(joint, sizeof(RevoluteJoint));
         break;
-    case Joint::Type::JointDistance:
+    case Joint::Type::distance_joint:
         blockAllocator.Free(joint, sizeof(DistanceJoint));
         break;
-    case Joint::Type::JointAngle:
+    case Joint::Type::angle_joint:
         blockAllocator.Free(joint, sizeof(AngleJoint));
         break;
-    case Joint::Type::JointWeld:
+    case Joint::Type::weld_joint:
         blockAllocator.Free(joint, sizeof(WeldJoint));
         break;
-    case Joint::Type::JointLine:
+    case Joint::Type::line_joint:
         blockAllocator.Free(joint, sizeof(LineJoint));
         break;
-    case Joint::Type::JointPrismatic:
+    case Joint::Type::prismatic_joint:
         blockAllocator.Free(joint, sizeof(PrismaticJoint));
         break;
-    case Joint::Type::JointPulley:
+    case Joint::Type::pulley_joint:
         blockAllocator.Free(joint, sizeof(PulleyJoint));
         break;
-    case Joint::Type::JointMotor:
+    case Joint::Type::motor_joint:
         blockAllocator.Free(joint, sizeof(MotorJoint));
         break;
     default:

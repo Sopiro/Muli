@@ -118,68 +118,77 @@ void BlockSolver::Solve()
     b = b - (k * a);
     Vec2 x{ 0.0f }; // Lambda;
 
-    while (true)
+    //
+    // Case 1: vn = 0
+    // Both constraints are violated
+    //
+    // 0 = A * x + b'
+    //
+    // Solve for x:
+    //
+    // x = - inv(A) * b'
+    //
+    x = -(m * b);
+    if (x.x >= 0.0f && x.y >= 0.0f)
     {
-        //
-        // Case 1: vn = 0
-        // Both constraints are violated
-        //
-        // 0 = A * x + b'
-        //
-        // Solve for x:
-        //
-        // x = - inv(A) * b'
-        //
-        x = -(m * b);
-        if (x.x >= 0.0f && x.y >= 0.0f) break;
+        goto solved;
+    }
 
-        //
-        // Case 2: vn1 = 0 and x2 = 0
-        // The first constraint is violated and the second constraint is satisfied
-        //
-        //   0 = a11 * x1 + a12 * 0 + b1'
-        // vn2 = a21 * x1 + a22 * 0 + b2'
-        //
+    //
+    // Case 2: vn1 = 0 and x2 = 0
+    // The first constraint is violated and the second constraint is satisfied
+    //
+    //   0 = a11 * x1 + a12 * 0 + b1'
+    // vn2 = a21 * x1 + a22 * 0 + b2'
+    //
 
-        x.x = nc1->m * -b.x;
-        x.y = 0.0f;
-        vn1 = 0.0f;
-        vn2 = k[0][1] * x.x + b.y;
-        if (x.x >= 0.0f && vn2 >= 0.0f) break;
+    x.x = nc1->m * -b.x;
+    x.y = 0.0f;
+    vn1 = 0.0f;
+    vn2 = k[0][1] * x.x + b.y;
+    if (x.x >= 0.0f && vn2 >= 0.0f)
+    {
+        goto solved;
+    }
 
-        //
-        // Case 3: vn2 = 0 and x1 = 0
-        // The first constraint is satisfied and the second constraint is violated
-        //
-        // vn1 = a11 * 0 + a12 * x2 + b1'
-        //   0 = a21 * 0 + a22 * x2 + b2'
-        //
-        x.x = 0.0f;
-        x.y = nc2->m * -b.y;
-        vn1 = k[1][0] * x.y + b.x;
-        vn2 = 0.0f;
-        if (x.y >= 0.0f && vn1 >= 0.0f) break;
+    //
+    // Case 3: vn2 = 0 and x1 = 0
+    // The first constraint is satisfied and the second constraint is violated
+    //
+    // vn1 = a11 * 0 + a12 * x2 + b1'
+    //   0 = a21 * 0 + a22 * x2 + b2'
+    //
+    x.x = 0.0f;
+    x.y = nc2->m * -b.y;
+    vn1 = k[1][0] * x.y + b.x;
+    vn2 = 0.0f;
+    if (x.y >= 0.0f && vn1 >= 0.0f)
+    {
+        goto solved;
+    }
 
-        //
-        // Case 4: x1 = 0 and x2 = 0
-        // Both constraints are satisfied
-        //
-        // vn1 = b1
-        // vn2 = b2;
-        //
-        x.x = 0.0f;
-        x.y = 0.0f;
-        vn1 = b.x;
-        vn2 = b.y;
-        if (vn1 >= 0.0f && vn2 >= 0.0f) break;
+    //
+    // Case 4: x1 = 0 and x2 = 0
+    // Both constraints are satisfied
+    //
+    // vn1 = b1
+    // vn2 = b2;
+    //
+    x.x = 0.0f;
+    x.y = 0.0f;
+    vn1 = b.x;
+    vn2 = b.y;
+    if (vn1 >= 0.0f && vn2 >= 0.0f)
+    {
+        goto solved;
+    }
 
 // How did you reach here?! something went wrong!
 #if 0
         muliAssert(false);
 #endif
-        break;
-    }
 
+solved:
     // Get the incremental impulse
     Vec2 d = x - a;
     ApplyImpulse(d);

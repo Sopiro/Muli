@@ -15,7 +15,7 @@ PulleyJoint::PulleyJoint(RigidBody* _bodyA,
                          float _frequency,
                          float _dampingRatio,
                          float _jointMass)
-    : Joint(Joint::Type::JointPulley, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(Joint::Type::pulley_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchorA);
     localAnchorB = MulT(bodyB->GetTransform(), _anchorB);
