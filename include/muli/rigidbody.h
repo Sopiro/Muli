@@ -146,7 +146,7 @@ protected:
     friend class MotorJoint;
 
     // Center of mass in local space = (0, 0)
-    Transform transform;
+    Transform transform{ identity };
 
     Vec2 force{ 0.0f };  // N
     float torque = 0.0f; // N⋅m

@@ -590,8 +590,6 @@ struct Transform
     Vec2 position;
     Rotation rotation;
 
-    Transform() = default;
-
     Transform(Identity)
         : position{ 0.0f }
         , rotation{ identity }

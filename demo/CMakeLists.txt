@@ -82,6 +82,7 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SO
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "include" FILES ${DEMO_HEADER_FILES})
 
 add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
+
 target_compile_definitions(demo PUBLIC
     WINDOW_TITLE="${WINDOW_TITLE}"
     WINDOW_WIDTH=${WINDOW_WIDTH}
@@ -89,13 +90,7 @@ target_compile_definitions(demo PUBLIC
 )
 
 target_include_directories(demo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../extern/imgui
-    ${DEP_INCLUDE_DIR}
 )
 
-target_link_directories(demo PRIVATE ${DEP_LIB_DIR})
-target_link_libraries(demo PRIVATE ${DEP_LIBS_DEMO} muli)
-
-add_dependencies(demo ${DEP_LIST_DEMO} muli)
+target_link_libraries(demo PUBLIC muli glad glfw imgui)

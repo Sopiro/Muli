@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10)
 
 project(muli LANGUAGES CXX VERSION 0.1.0)
 
-option(BUILD_DEMO_PROJECT "Build the demo project" ON)
+option(MULI_BUILD_DEMO "Build the demo project" ON)
 
 # compiler settings
 set(CMAKE_CXX_STANDARD 17)
@@ -17,17 +17,14 @@ endif()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-set(DEP_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/install)
-set(DEP_INCLUDE_DIR ${DEP_INSTALL_DIR}/include)
-set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
 
 include(GNUInstallDirs)
 include(ExternalProject)
 
 add_subdirectory(src)
 
-if(BUILD_DEMO_PROJECT)
-    include(cmake/dependencies.cmake)
+if(MULI_BUILD_DEMO)
+    add_subdirectory(extern)
     add_subdirectory(demo)
 
     # default startup project for Visual Studio
