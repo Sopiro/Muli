@@ -49,6 +49,10 @@ set(HEADER_FILES
     ../include/muli/muli.h
     ../include/muli/math.h
     ../include/muli/types.h
+
+    ../include/muli/circle_shape.h
+    ../include/muli/capsule_shape.h
+    ../include/muli/polygon_shape.h
 )
 
 set(SOURCE_FILES
@@ -64,6 +68,9 @@ set(SOURCE_FILES
     collision/polytope.cpp
     collision/broad_phase.cpp
     collision/contact_manager.cpp
+    collision/circle_shape.cpp
+    collision/capsule_shape.cpp
+    collision/polygon_shape.cpp
 
     dynamics/world.cpp
     dynamics/island.cpp
