@@ -16,7 +16,11 @@ bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input
         return false;
     }
 
-    if (Abs(p1.y) <= radius)
+    Vec2 normal = Cross(1.0f, (v2 - v1)).Normalized();
+
+    // Signed distance along noraml
+    float distance = Dot(p1, normal);
+    if (Abs(distance) <= radius)
     {
         Vec2 v = p1.x < 0.0f ? va : vb;
 
@@ -28,7 +32,7 @@ bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input
         float c = Dot(f, f) - radius * radius;
 
         // Quadratic equation discriminant
-        float discriminant = b * b - 4 * a * c;
+        float discriminant = b * b - 4.0f * a * c;
 
         if (discriminant < 0.0f)
         {
@@ -51,21 +55,20 @@ bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input
     }
 
     // Translate edge along the normal
-    if (p1.y > 0.0f)
+    if (distance > 0.0f)
     {
-        v1.y += radius;
-        v2.y += radius;
+        v1 += normal * radius;
+        v2 += normal * radius;
     }
     else
     {
-        v1.y -= radius;
-        v2.y -= radius;
+        v1 -= normal * radius;
+        v2 -= normal * radius;
     }
 
     // Ray casting to a line segment
     Vec2 d = p2 - p1;
     Vec2 e = v2 - v1;
-    Vec2 normal{ 0.0f, 1.0f };
 
     float denominator = Dot(normal, d);
 
@@ -131,7 +134,7 @@ bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input
         float c = Dot(f, f) - radius * radius;
 
         // Quadratic equation discriminant
-        float discriminant = b * b - 4 * a * c;
+        float discriminant = b * b - 4.0f * a * c;
 
         if (discriminant < 0.0f)
         {

@@ -103,48 +103,48 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
     {
         Capsule* c = static_cast<Capsule*>(body);
 
-        float l = c->GetLength();
+        Vec2 v1 = c->GetVertexA();
+        Vec2 v2 = c->GetVertexB();
+        Vec2 normal = Cross(1.0f, v2 - v1).Normalized();
         float r = c->GetRadius();
+
+        float angleOffset = AngleBetween(Vec2{ 0.0f, 1.0f }, normal);
 
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;
-        vertices.reserve(4 + circlePolygonCount);
+
+        vertices.emplace_back(v1 - normal * r);
+        texCoords.emplace_back(v1 - normal * r);
 
         // Start from bottom right
         float angle = MULI_PI * 2.0f / circlePolygonCount;
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
-            float currentAngle = -MULI_PI / 2.0f + angle * i;
+            float currentAngle = angleOffset - MULI_PI / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;
-            corner.x += l / 2.0f;
+            corner += v2;
 
             vertices.push_back(corner);
             texCoords.emplace_back(corner.x, corner.y);
         }
 
-        vertices.emplace_back(l / 2.0f, r, 0.0f);
-        texCoords.emplace_back(l / 2.0f, r);
-
-        vertices.emplace_back(-l / 2.0f, r, 0.0f);
-        texCoords.emplace_back(-l / 2.0f, r);
+        vertices.emplace_back(v2 + normal * r);
+        texCoords.emplace_back(v2 + normal * r);
 
         // Left top to left bottom
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
-            float currentAngle = MULI_PI / 2.0f + angle * i;
+            float currentAngle = angleOffset + MULI_PI / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;
-            corner.x -= l / 2.0f;
+            corner += v1;
 
             vertices.push_back(corner);
             texCoords.emplace_back(corner.x, corner.y);
         }
-
-        vertices.emplace_back(-l / 2.0f, -r, 0.0f);
-        texCoords.emplace_back(-l / 2.0f, -r);
 
         std::vector<uint32_t> indices = Triangulate(texCoords);
 

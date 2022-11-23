@@ -62,15 +62,16 @@ inline float Capsule::GetArea() const
 
 inline AABB Capsule::GetAABB() const
 {
-    Vec2 v1 = transform * Vec2{ -length / 2.0f, 0.0f };
-    Vec2 v2 = transform * Vec2{ length / 2.0f, 0.0f };
+    Vec2 v1 = transform * va;
+    Vec2 v2 = transform * vb;
 
     return AABB{ Vec2{ Min(v1, v2) - Vec2{ radius, radius } }, Vec2{ Max(v1, v2) + Vec2{ radius, radius } } };
 }
 
 inline ContactPoint Capsule::Support(const Vec2& localDir) const
 {
-    return localDir.x > 0 ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
+    Vec2 dir = vb - va;
+    return Dot(dir, localDir) > 0.0f ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
 }
 
 inline Edge Capsule::GetFeaturedEdge(const Vec2& dir) const

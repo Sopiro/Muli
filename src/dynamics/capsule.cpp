@@ -22,15 +22,14 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, Type _type, bool
         invInertia = 1.0f / inertia;
     }
 
-    va = Vec2{ -length / 2.0f, 0.0f };
-    vb = Vec2{ length / 2.0f, 0.0f };
+    Vec2 center = (p1 + p2) * 0.5f;
+
+    va = p1 - center;
+    vb = p2 - center;
 
     if (_resetPosition == false)
     {
-        Vec2 mid = (p2 + p1) * 0.5f;
-
-        transform.position = mid;
-        transform.rotation = Atan2(a2b.y, a2b.x);
+        transform.position = center;
     }
 }
 
@@ -39,7 +38,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, Type _type, flo
     , length{ _length }
 {
     radius = _radius;
-    area = length * radius * 2 + MULI_PI * radius * radius;
+    area = length * radius * 2.0f + MULI_PI * radius * radius;
 
     if (type == RigidBody::Type::dynamic_body)
     {
@@ -148,12 +147,16 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     Vec2 v1 = va;
     Vec2 v2 = vb;
 
+    Vec2 normal = Cross(1.0f, (v2 - v1)).Normalized();
+
     if (SignedDistanceToLineSegment(p1, v1, v2, radius) <= 0.0f)
     {
         return false;
     }
 
-    if (Abs(p1.y) <= radius)
+    // Signed distance along noraml
+    float distance = Dot(p1, normal);
+    if (Abs(distance) <= radius)
     {
         Vec2 v = p1.x < 0.0f ? va : vb;
 
@@ -165,7 +168,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         float c = Dot(f, f) - radius * radius;
 
         // Quadratic equation discriminant
-        float discriminant = b * b - 4 * a * c;
+        float discriminant = b * b - 4.0f * a * c;
 
         if (discriminant < 0.0f)
         {
@@ -188,21 +191,20 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
     }
 
     // Translate edge along the normal
-    if (p1.y > 0.0f)
+    if (distance > 0.0f)
     {
-        v1.y += radius;
-        v2.y += radius;
+        v1 += normal * radius;
+        v2 += normal * radius;
     }
     else
     {
-        v1.y -= radius;
-        v2.y -= radius;
+        v1 -= normal * radius;
+        v2 -= normal * radius;
     }
 
     // Ray casting to a line segment
     Vec2 d = p2 - p1;
     Vec2 e = v2 - v1;
-    Vec2 normal{ 0.0f, 1.0f };
 
     float denominator = Dot(normal, d);
 
@@ -268,7 +270,7 @@ bool Capsule::RayCast(const RayCastInput& input, RayCastOutput* output) const
         float c = Dot(f, f) - radius * radius;
 
         // Quadratic equation discriminant
-        float discriminant = b * b - 4 * a * c;
+        float discriminant = b * b - 4.0f * a * c;
 
         if (discriminant < 0.0f)
         {

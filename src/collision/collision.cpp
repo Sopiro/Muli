@@ -291,7 +291,7 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     }
     else // Region AB: Edge vs. vertex collision
     {
-        normal.Set(0.0f, 1.0f);
+        normal = Cross(1.0f, vb - va).Normalized();
         distance = Dot(localP - va, normal);
         if (distance < 0.0f)
         {
