@@ -11,9 +11,6 @@ namespace muli
 
 class Window final
 {
-    friend class Application;
-    friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
-
 public:
     static Window& Get();
 
@@ -31,6 +28,9 @@ public:
     int32 GetRefreshRate() const;
 
 private:
+    friend class Application;
+    friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
+
     inline static Window* window;
     Window(int width, int height, std::string title);
 

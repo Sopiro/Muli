@@ -7,9 +7,9 @@ namespace muli
 
 class Island
 {
+private:
     friend class World;
 
-private:
     Island(World& _world, uint32 _bodyCapacity, uint32 _contactCapacity, uint32 _jointCapacity);
     ~Island();
 

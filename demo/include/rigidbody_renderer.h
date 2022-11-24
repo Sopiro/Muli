@@ -11,8 +11,6 @@ namespace muli
 
 class RigidBodyRenderer final : public Renderer
 {
-    friend class RigidBodyShader;
-
 public:
     RigidBodyRenderer();
 
@@ -32,6 +30,8 @@ public:
     void Reset();
 
 private:
+    friend class RigidBodyShader;
+
     // All registered rigid bodies
     std::unique_ptr<RigidBodyShader> shader{};
     std::vector<std::pair<RigidBody*, std::unique_ptr<Mesh>>> bodiesAndMeshes{};

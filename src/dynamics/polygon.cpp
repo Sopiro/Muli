@@ -24,23 +24,23 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
 
     // Traslate center of mass to the origin
 
-    Vec2 centerOfMass{ 0.0f };
+    Vec2 center{ 0.0f };
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
-        centerOfMass += vertices[i0];
+        center += vertices[i0];
         normals[i0] = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
 
         i0 = i1;
     }
-    centerOfMass *= 1.0f / vertexCount;
+    center *= 1.0f / vertexCount;
 
     // Compute area
     area = 0;
-    vertices[0] -= centerOfMass;
+    vertices[0] -= center;
     for (int32 i = 1; i < vertexCount; ++i)
     {
-        vertices[i] -= centerOfMass;
+        vertices[i] -= center;
         area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // inside triangle
         area += radius * (vertices[i - 1] - vertices[i]).Length(); // edge rect
     }
@@ -62,7 +62,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, Type _type, bool _re
 
     if (!_resetCenter)
     {
-        Translate(centerOfMass);
+        Translate(center);
     }
 }
 

@@ -23,9 +23,6 @@ struct Jacobian
 
 class ContactSolver
 {
-    friend class Contact;
-    friend class BlockSolver;
-
 public:
     enum Type : uint8
     {
@@ -37,6 +34,9 @@ public:
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:
+    friend class Contact;
+    friend class BlockSolver;
+
     Contact* c;
     ContactSolver::Type type;
 

@@ -9,14 +9,14 @@ class Contact;
 
 class PositionSolver
 {
-    friend class Contact;
-    friend class BlockSolver;
-
 public:
     void Prepare(Contact* _contact, uint32 _index);
     bool Solve();
 
 private:
+    friend class Contact;
+    friend class BlockSolver;
+
     Contact* contact;
 
     Vec2 localPlainPoint;

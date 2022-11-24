@@ -28,11 +28,6 @@ namespace muli
 
 class World final
 {
-    friend class RigidBody;
-    friend class Island;
-    friend class BroadPhase;
-    friend class ContactManager;
-
 public:
     World(const WorldSettings& simulationSettings);
     ~World() noexcept;
@@ -191,6 +186,11 @@ public:
     void Awake();
 
 private:
+    friend class RigidBody;
+    friend class Island;
+    friend class BroadPhase;
+    friend class ContactManager;
+
     StackAllocator stackAllocator;
     PredefinedBlockAllocator blockAllocator;
 

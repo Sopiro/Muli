@@ -8,8 +8,6 @@ namespace muli
 
 class RigidBodyShader final : public Shader
 {
-    friend class RigidBodyRenderer;
-
 public:
     static std::unique_ptr<RigidBodyShader> Create();
 
@@ -19,6 +17,8 @@ public:
     void SetModelMatrix(const Mat4& _modelMatrix);
 
 private:
+    friend class RigidBodyRenderer;
+
     RigidBodyShader();
 
     // uniforms

@@ -8,8 +8,6 @@ namespace muli
 
 class DynamicShader final : public Shader
 {
-    friend class DynamicRenderer;
-
 public:
     static std::unique_ptr<DynamicShader> Create();
 
@@ -19,6 +17,8 @@ public:
     void SetModelMatrix(const Mat4& _modelMatrix);
 
 private:
+    friend class DynamicRenderer;
+
     DynamicShader();
 
     // uniforms

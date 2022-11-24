@@ -9,8 +9,6 @@ namespace muli
 // Dynamic batch renderer
 class DynamicRenderer final : public Renderer
 {
-    friend class DynamicShader;
-
 public:
     DynamicRenderer();
     virtual ~DynamicRenderer();
@@ -22,6 +20,8 @@ public:
     void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
+    friend class DynamicShader;
+
     const uint32 maxVertexCount = 1024; // must be a even number
 
     // All registered rigid bodies

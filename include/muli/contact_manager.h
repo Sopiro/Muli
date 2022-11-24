@@ -10,8 +10,6 @@ extern void InitializeDetectionFunctionMap();
 
 class ContactManager
 {
-    friend class World;
-
 public:
     ContactManager(World& _world);
     ~ContactManager();
@@ -23,6 +21,8 @@ public:
     uint32 GetContactCount() const;
 
 private:
+    friend class World;
+
     World& world;
     BroadPhase broadPhase;
     Contact* contactList = nullptr;

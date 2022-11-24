@@ -32,13 +32,6 @@ struct ContactEdge
 
 class Contact : Constraint
 {
-    friend class World;
-    friend class ContactManager;
-    friend class BroadPhase;
-    friend class ContactSolver;
-    friend class BlockSolver;
-    friend class PositionSolver;
-
 public:
     Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings);
     ~Contact() noexcept = default;
@@ -57,6 +50,13 @@ public:
     bool IsTouching() const;
 
 private:
+    friend class World;
+    friend class ContactManager;
+    friend class BroadPhase;
+    friend class ContactSolver;
+    friend class BlockSolver;
+    friend class PositionSolver;
+
     DetectionFunction* collisionDetectionFunction;
 
     RigidBody* b1; // Reference body

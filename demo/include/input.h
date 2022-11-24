@@ -9,8 +9,6 @@ class Window;
 
 class Input final
 {
-    friend class Window;
-
 public:
     Input() = delete;
 
@@ -27,6 +25,8 @@ public:
     static Vec2 GetMouseScroll();
 
 private:
+    friend class Window;
+
     inline static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
     inline static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
 

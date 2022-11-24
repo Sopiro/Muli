@@ -39,8 +39,6 @@ struct Node
 
 class AABBTree
 {
-    friend class BroadPhase;
-
 public:
     AABBTree();
     ~AABBTree() noexcept;
@@ -68,6 +66,8 @@ public:
     void Rebuild();
 
 private:
+    friend class BroadPhase;
+
     uint32 nodeID = 0;
 
     Node* nodes;

@@ -9,8 +9,6 @@ namespace muli
 
 class BroadPhase
 {
-    friend class World;
-
 public:
     BroadPhase(World& _world, float _aabbMargin = DEFAULT_AABB_MARGIN, float _velocityMultiplier = DEFAULT_VELOCITY_MULTIPLIER);
     ~BroadPhase() noexcept;
@@ -24,6 +22,8 @@ public:
     void Reset();
 
 private:
+    friend class World;
+
     World& world;
     AABBTree tree;
 

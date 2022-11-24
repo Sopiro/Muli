@@ -13,7 +13,7 @@ public:
     ~CircleShape();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
-    virtual void ComputeAABB(const Transform& t, AABB* outAABB) const override;
+    virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
 };
@@ -22,6 +22,7 @@ inline CircleShape::CircleShape(float radius)
     : Shape(Shape::Type::circle, radius)
 {
     area = radius * radius * MULI_PI;
+    localPosition.SetZero();
 }
 
 inline void CircleShape::ComputeMass(float density, MassData* outMassData) const
