@@ -13,6 +13,8 @@ public:
     PolygonShape(const Vec2* _vertices, int32 _vertexCount, float radius);
     ~PolygonShape();
 
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;

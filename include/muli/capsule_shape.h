@@ -12,6 +12,8 @@ public:
     CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition = false);
     ~CapsuleShape();
 
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
@@ -50,6 +52,13 @@ inline CapsuleShape::CapsuleShape(float _length, float radius)
 {
     area = length * radius * 2.0f + MULI_PI * radius * radius;
     localPosition.SetZero();
+}
+
+inline Shape* CapsuleShape::Clone(PredefinedBlockAllocator* allocator) const
+{
+    void* mem = allocator->Allocate(sizeof(CapsuleShape));
+    CapsuleShape* shape = new (mem) CapsuleShape(*this);
+    return shape;
 }
 
 inline void CapsuleShape::ComputeMass(float density, MassData* outMassData) const

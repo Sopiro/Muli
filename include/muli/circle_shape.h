@@ -12,6 +12,8 @@ public:
     CircleShape(float radius);
     ~CircleShape();
 
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
@@ -23,6 +25,13 @@ inline CircleShape::CircleShape(float radius)
 {
     area = radius * radius * MULI_PI;
     localPosition.SetZero();
+}
+
+inline Shape* CircleShape::Clone(PredefinedBlockAllocator* allocator) const
+{
+    void* mem = allocator->Allocate(sizeof(CircleShape));
+    CircleShape* shape = new (mem) CircleShape(*this);
+    return shape;
 }
 
 inline void CircleShape::ComputeMass(float density, MassData* outMassData) const

@@ -61,6 +61,14 @@ PolygonShape::~PolygonShape()
     }
 }
 
+Shape* PolygonShape::Clone(PredefinedBlockAllocator* allocator) const
+{
+    void* mem = allocator->Allocate(sizeof(PolygonShape));
+    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, radius);
+    shape->localPosition = localPosition;
+    return shape;
+}
+
 void PolygonShape::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;

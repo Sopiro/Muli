@@ -145,6 +145,8 @@ protected:
     friend class PulleyJoint;
     friend class MotorJoint;
 
+    friend class Collider;
+
     // Center of mass in local space = (0, 0)
     Transform transform{ identity };
 

@@ -3,6 +3,7 @@
 #include "aabb.h"
 #include "collision.h"
 #include "common.h"
+#include "predefined_block_allocator.h"
 
 namespace muli
 {
@@ -27,6 +28,8 @@ public:
 
     Shape(Type type, float radius);
     virtual ~Shape();
+
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const = 0;
 
     Type GetType() const;
     float GetRadius() const;
