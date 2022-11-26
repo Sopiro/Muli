@@ -23,7 +23,7 @@ public:
         {
             for (int x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = world->CreateRandomConvexPolygon(size, 6, 0.08f);
+                RigidBody* b = world->CreateRandomConvexPolygon(size, 6, RigidBody::Type::dynamic_body, 0.08f);
 
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
                 b->SetLinearVelocity(b->GetPosition() * LinearRand(0.5f, 0.7f));

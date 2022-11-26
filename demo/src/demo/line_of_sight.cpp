@@ -41,7 +41,7 @@ public:
                 }
                 else
                 {
-                    b = world->CreateRandomConvexPolygon(0.15f, 0, 0.05f);
+                    b = world->CreateRandomConvexPolygon(0.15f, 0, RigidBody::Type::dynamic_body, 0.05f);
                     b->userFlag = UserFlag::RENDER_POLYGON_RADIUS;
                 }
 

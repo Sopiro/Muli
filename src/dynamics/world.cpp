@@ -401,44 +401,52 @@ bool World::RayCastClosest(
     return false;
 }
 
-RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateEmptyBody(RigidBody::Type type)
 {
-    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
-
     void* mem = blockAllocator.Allocate(sizeof(RigidBody));
     RigidBody* b = new (mem) RigidBody(type);
 
     Add(b);
-
-    PolygonShape box{ vertices, 4, true, radius };
-    b->AddCollider(&box);
     return b;
-}
-
-RigidBody* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
-{
-    return CreateBox(size, size, type, radius, density);
 }
 
 RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(type);
-
-    Add(b);
+    RigidBody* b = CreateEmptyBody(type);
 
     CircleShape circle{ radius };
     b->AddCollider(&circle);
     return b;
 }
 
+RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
+{
+    RigidBody* b = CreateEmptyBody(type);
+
+    CapsuleShape capsule{ length, radius, horizontal };
+    b->AddCollider(&capsule);
+    return b;
+}
+
+RigidBody* World::CreateCapsule(
+    const Vec2& p1, const Vec2& p2, float radius, RigidBody::Type type, bool resetPosition, float density)
+{
+    RigidBody* b = CreateEmptyBody(type);
+
+    Vec2 center = (p1 + p2) * 0.5f;
+    CapsuleShape capsule{ p1, p2, radius, true };
+    b->AddCollider(&capsule);
+    if (resetPosition == false)
+    {
+        b->Translate(center);
+    }
+    return b;
+}
+
 RigidBody* World::CreatePolygon(
     const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(type);
-
-    Add(b);
+    RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
     b->AddCollider(&polygon);
@@ -458,7 +466,23 @@ RigidBody* World::CreatePolygon(
     return b;
 }
 
-RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float radius, float density)
+RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
+{
+    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
+
+    RigidBody* b = CreateEmptyBody(type);
+
+    PolygonShape box{ vertices, 4, true, radius };
+    b->AddCollider(&box);
+    return b;
+}
+
+RigidBody* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
+{
+    return CreateBox(size, size, type, radius, density);
+}
+
+RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, RigidBody::Type type, float radius, float density)
 {
     if (vertexCount < 3)
     {
@@ -483,17 +507,15 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, flo
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(RigidBody::Type::dynamic_body);
-
-    Add(b);
+    RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
     b->AddCollider(&polygon);
     return b;
 }
 
-RigidBody* World::CreateRegularPolygon(float length, int32 vertexCount, float initial_angle, float radius, float density)
+RigidBody* World::CreateRegularPolygon(
+    float length, int32 vertexCount, float initial_angle, RigidBody::Type type, float radius, float density)
 {
     if (vertexCount < 3)
     {
@@ -521,42 +543,10 @@ RigidBody* World::CreateRegularPolygon(float length, int32 vertexCount, float in
         vertices.push_back(corner);
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(RigidBody::Type::dynamic_body);
-
-    Add(b);
+    RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
     b->AddCollider(&polygon);
-    return b;
-}
-
-RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
-{
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(type);
-
-    Add(b);
-
-    CapsuleShape capsule{ length, radius, horizontal };
-    b->AddCollider(&capsule);
-    return b;
-}
-RigidBody* World::CreateCapsule(
-    const Vec2& p1, const Vec2& p2, float radius, RigidBody::Type type, bool resetPosition, float density)
-{
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(type);
-
-    Add(b);
-
-    Vec2 center = (p1 + p2) * 0.5f;
-    CapsuleShape capsule{ p1, p2, radius, true };
-    b->AddCollider(&capsule);
-    if (resetPosition == false)
-    {
-        b->Translate(center);
-    }
     return b;
 }
 

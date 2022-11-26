@@ -29,11 +29,11 @@ public:
 
         if (r < 1.0f)
         {
-            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, 0.0f);
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, 0.0f);
         }
         else if (r < 2.0f)
         {
-            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, r / 10.0f);
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, r / 10.0f);
             b->userFlag |= UserFlag::RENDER_POLYGON_RADIUS;
         }
         else if (r < 3.0f)
