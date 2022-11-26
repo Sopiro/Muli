@@ -13,7 +13,7 @@ public:
 
         RigidBody* seesaw = world->CreateCapsule(6.0f, 0.05f, true);
         seesaw->SetPosition(0.0f, 0.45f);
-        seesaw->SetMass(10.0f);
+        // seesaw->SetMass(10.0f);
 
         world->CreateRevoluteJoint(ground, seesaw, seesaw->GetPosition(), -1);
 
@@ -22,11 +22,11 @@ public:
 
         b = world->CreateBox(0.2f);
         b->SetPosition(-2.8f, 1.0f);
-        b->SetMass(1.0f);
+        // b->SetMass(1.0f);
 
         b = world->CreateBox(0.5f);
         b->SetPosition(2.5f, 5.0f);
-        b->SetMass(30.0f);
+        // b->SetMass(30.0f);
 
         b = world->CreateCapsule(1.0f, 0.5f, false, RigidBody::Type::dynamic_body);
         b->SetPosition(-2.5, 240.0f);

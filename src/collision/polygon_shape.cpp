@@ -4,15 +4,13 @@
 namespace muli
 {
 
-PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, float radius)
-    : Shape(Shape::Type::polygon, radius)
+PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition, float _radius)
+    : Shape(Shape::Type::polygon, _radius)
 {
-    vertexCount = _vertexCount;
-
-    if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
+    if (_vertexCount > MAX_LOCAL_POLYGON_VERTICES)
     {
-        vertices = (Vec2*)malloc(vertexCount * sizeof(Vec2));
-        normals = (Vec2*)malloc(vertexCount * sizeof(Vec2));
+        vertices = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
+        normals = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
     }
     else
     {
@@ -20,11 +18,10 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, float radi
         normals = localNormals;
     }
 
-    ComputeConvexHull(_vertices, vertexCount, vertices);
+    ComputeConvexHull(_vertices, _vertexCount, vertices, &vertexCount);
 
     // Traslate center to the origin
 
-    Vec2 center{ 0.0f };
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
@@ -36,12 +33,18 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, float radi
     center *= 1.0f / vertexCount;
 
     // Compute area
-    area = 0;
-    vertices[0] -= center;
+    area = 0.0f;
+    if (_resetPosition)
+    {
+        vertices[0] -= center;
+    }
     for (int32 i = 1; i < vertexCount; ++i)
     {
-        vertices[i] -= center;
-        area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // inside triangle
+        if (_resetPosition)
+        {
+            vertices[i] -= center;
+        }
+        area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // internal triangle
         area += radius * (vertices[i - 1] - vertices[i]).Length(); // edge rect
     }
     area += Cross(vertices[vertexCount - 1], vertices[0]) * 0.5f;
@@ -49,12 +52,15 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, float radi
 
     area += MULI_PI * radius * radius; // corner arc
 
-    localPosition = center;
+    if (_resetPosition)
+    {
+        center.SetZero();
+    }
 }
 
 PolygonShape::~PolygonShape()
 {
-    if (vertexCount > MAX_LOCAL_POLYGON_VERTICES)
+    if (vertices != localVertices)
     {
         free(vertices);
         free(normals);
@@ -64,9 +70,135 @@ PolygonShape::~PolygonShape()
 Shape* PolygonShape::Clone(PredefinedBlockAllocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(PolygonShape));
-    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, radius);
-    shape->localPosition = localPosition;
+    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, true, radius);
+    shape->center = center;
     return shape;
+}
+
+Vec2 PolygonShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+{
+    Vec2 localQ = MulT(transform, q);
+
+    UV w;
+    Vec2 normal;
+
+    int32 dir = 0;
+    int32 i0 = 0;
+    int32 insideCheck = 0;
+
+    while (insideCheck < vertexCount)
+    {
+        int32 i1 = (i0 + 1) % vertexCount;
+
+        const Vec2& v0 = vertices[i0];
+        const Vec2& v1 = vertices[i1];
+
+        w = ComputeWeights(v0, v1, localQ);
+        if (w.v <= 0) // Region v0
+        {
+            if (dir > 0)
+            {
+                normal = (localQ - v0).Normalized();
+                float distance = Dot(localQ - v0, normal);
+                if (distance > radius)
+                {
+                    return transform * (v0 + normal * radius);
+                }
+                else
+                {
+                    return q;
+                }
+            }
+
+            dir = -1;
+            i0 = (i0 - 1 + vertexCount) % vertexCount;
+        }
+        else if (w.v >= 1) // Region v1
+        {
+            if (dir < 0)
+            {
+                normal = (localQ - v1).Normalized();
+                float distance = Dot(localQ - v1, normal);
+                if (distance > radius)
+                {
+                    return transform * (v1 + normal * radius);
+                }
+                else
+                {
+                    return q;
+                }
+            }
+
+            dir = 1;
+            i0 = (i0 + 1) % vertexCount;
+        }
+        else // Inside the region
+        {
+            normal = normals[i0];
+            float distance = Dot(localQ - v0, normal);
+            if (distance > radius)
+            {
+                Vec2 closest = localQ + normal * (radius - distance);
+                return transform * closest;
+            }
+
+            if (dir != 0)
+            {
+                return q;
+            }
+
+            ++insideCheck;
+            dir = 0;
+            i0 = (i0 + 1) % vertexCount;
+        }
+    }
+
+    return q;
+}
+
+Edge PolygonShape::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
+{
+    Vec2 localDir = MulT(transform.rotation, dir);
+    ContactPoint farthest = Support(localDir);
+
+    Vec2 curr = farthest.position;
+    int32 index = farthest.id;
+    int32 prevIndex = (index - 1 + vertexCount) % vertexCount;
+    int32 nextIndex = (index + 1) % vertexCount;
+
+    Vec2 prev = vertices[prevIndex];
+    Vec2 next = vertices[nextIndex];
+
+    Vec2 e1 = (curr - prev).Normalized();
+    Vec2 e2 = (curr - next).Normalized();
+
+    bool w = Dot(e1, localDir) <= Dot(e2, localDir);
+    if (w)
+    {
+        return Edge{ transform * prev, transform * curr, prevIndex, index };
+    }
+    else
+    {
+        return Edge{ transform * curr, transform * next, index, nextIndex };
+    }
+}
+
+ContactPoint PolygonShape::Support(const Vec2& localDir) const
+{
+    int32 index = 0;
+    float maxValue = Dot(localDir, vertices[index]);
+
+    for (int32 i = 1; i < vertexCount; ++i)
+    {
+        float value = Dot(localDir, vertices[i]);
+        if (value > maxValue)
+        {
+            index = i;
+            maxValue = value;
+        }
+    }
+
+    return ContactPoint{ vertices[index], index };
 }
 
 void PolygonShape::ComputeMass(float density, MassData* outMassData) const
@@ -82,8 +214,8 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
+        Vec2 v0 = vertices[i0] - center;
+        Vec2 v1 = vertices[i1] - center;
 
         float crs = Abs(Cross(v1, v0));
 
@@ -102,8 +234,8 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
     i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
+        Vec2& v0 = vertices[i0] - center;
+        Vec2& v1 = vertices[i1] - center;
 
         Vec2 edge = v1 - v0;
         float length = edge.Normalize();
@@ -128,12 +260,13 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
 
         Vec2 n0 = normals[i0];
         Vec2 n1 = normals[i1];
+        Vec2 v1 = vertices[i1] - center;
 
         float theta = AngleBetween(n0, n1);
 
         float areaFraction = r2 * theta * 0.5f * invArea;
         float arcInertia = r2 * 0.5f;
-        float d2 = vertices[i1].Length2();
+        float d2 = v1.Length2();
 
         inertia += (arcInertia + d2) * areaFraction;
 
@@ -142,8 +275,8 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
 
     muliAssert(inertia > 0.0f);
 
-    outMassData->inertia = outMassData->mass * (inertia + Length2(localPosition));
-    outMassData->centerOfMass = localPosition;
+    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
+    outMassData->centerOfMass = center;
 }
 
 void PolygonShape::ComputeAABB(const Transform& transform, AABB* outAABB) const

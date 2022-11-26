@@ -44,7 +44,10 @@ private:
 
 inline void RigidBodyRenderer::Register(RigidBody* body)
 {
-    bodiesAndMeshes.push_back(std::make_pair(body, GenerateMesh(body)));
+    for (const Collider* collider = body->GetColliderList(); collider; collider = collider->GetNext())
+    {
+        bodiesAndMeshes.push_back(std::make_pair(body, GenerateMesh(collider)));
+    }
 }
 
 inline void RigidBodyRenderer::Register(const std::vector<RigidBody*>& bodies)

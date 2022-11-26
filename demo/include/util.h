@@ -4,7 +4,7 @@
 namespace muli
 {
 
-std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount = 13);
+std::unique_ptr<Mesh> GenerateMesh(const Collider* body, uint32 circlePolygonCount = 13);
 
 std::vector<uint32> Triangulate(const std::vector<Vec2>& vertices);
 

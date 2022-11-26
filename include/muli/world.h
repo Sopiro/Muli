@@ -7,9 +7,7 @@
 #include "stack_allocator.h"
 #include "util.h"
 
-#include "capsule.h"
-#include "circle.h"
-#include "polygon.h"
+#include "collider.h"
 #include "rigidbody.h"
 
 #include "angle_joint.h"
@@ -56,41 +54,41 @@ public:
 
     // Factory functions
 
-    Polygon* CreateBox(float size,
-                       RigidBody::Type type = RigidBody::Type::dynamic_body,
-                       float radius = DEFAULT_RADIUS,
-                       float density = DEFAULT_DENSITY);
-    Polygon* CreateBox(float width,
-                       float height,
-                       RigidBody::Type type = RigidBody::Type::dynamic_body,
-                       float radius = DEFAULT_RADIUS,
-                       float density = DEFAULT_DENSITY);
-    Circle* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = DEFAULT_DENSITY);
-    Polygon* CreatePolygon(const std::vector<Vec2>& vertices,
-                           RigidBody::Type type = RigidBody::Type::dynamic_body,
-                           bool resetCenter = true,
-                           float radius = DEFAULT_RADIUS,
-                           float density = DEFAULT_DENSITY);
-    Capsule* CreateCapsule(float length,
-                           float radius,
-                           bool horizontal = false,
-                           RigidBody::Type type = RigidBody::Type::dynamic_body,
-                           float density = DEFAULT_DENSITY);
-    Capsule* CreateCapsule(const Vec2& p1,
-                           const Vec2& p2,
-                           float radius,
-                           RigidBody::Type type = RigidBody::Type::dynamic_body,
-                           bool resetPosition = false,
-                           float density = DEFAULT_DENSITY);
-    Polygon* CreateRandomConvexPolygon(float length,
-                                       int32 vertexCount = 0,
-                                       float radius = DEFAULT_RADIUS,
-                                       float density = DEFAULT_DENSITY);
-    Polygon* CreateRegularPolygon(float length,
-                                  int32 vertexCount = 0,
-                                  float initial_angle = 0,
-                                  float radius = DEFAULT_RADIUS,
-                                  float density = DEFAULT_DENSITY);
+    RigidBody* CreateBox(float size,
+                         RigidBody::Type type = RigidBody::Type::dynamic_body,
+                         float radius = DEFAULT_RADIUS,
+                         float density = DEFAULT_DENSITY);
+    RigidBody* CreateBox(float width,
+                         float height,
+                         RigidBody::Type type = RigidBody::Type::dynamic_body,
+                         float radius = DEFAULT_RADIUS,
+                         float density = DEFAULT_DENSITY);
+    RigidBody* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = DEFAULT_DENSITY);
+    RigidBody* CreatePolygon(const std::vector<Vec2>& vertices,
+                             RigidBody::Type type = RigidBody::Type::dynamic_body,
+                             bool resetCenter = true,
+                             float radius = DEFAULT_RADIUS,
+                             float density = DEFAULT_DENSITY);
+    RigidBody* CreateCapsule(float length,
+                             float radius,
+                             bool horizontal = false,
+                             RigidBody::Type type = RigidBody::Type::dynamic_body,
+                             float density = DEFAULT_DENSITY);
+    RigidBody* CreateCapsule(const Vec2& p1,
+                             const Vec2& p2,
+                             float radius,
+                             RigidBody::Type type = RigidBody::Type::dynamic_body,
+                             bool resetPosition = false,
+                             float density = DEFAULT_DENSITY);
+    RigidBody* CreateRandomConvexPolygon(float length,
+                                         int32 vertexCount = 0,
+                                         float radius = DEFAULT_RADIUS,
+                                         float density = DEFAULT_DENSITY);
+    RigidBody* CreateRegularPolygon(float length,
+                                    int32 vertexCount = 0,
+                                    float initial_angle = 0,
+                                    float radius = DEFAULT_RADIUS,
+                                    float density = DEFAULT_DENSITY);
 
     GrabJoint* CreateGrabJoint(RigidBody* body,
                                const Vec2& anchor,

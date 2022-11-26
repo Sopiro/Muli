@@ -15,8 +15,8 @@ public:
     ~ContactManager();
 
     void Update(float dt);
-    void Add(RigidBody* body);
-    void Remove(RigidBody* body);
+    void Add(Collider* collider);
+    void Remove(Collider* collider);
     void Reset();
     uint32 GetContactCount() const;
 
@@ -43,14 +43,16 @@ inline ContactManager::~ContactManager()
     Reset();
 }
 
-inline void ContactManager::Add(RigidBody* body)
+inline void ContactManager::Add(Collider* collider)
 {
-    broadPhase.Add(body);
+    broadPhase.Add(collider);
 }
 
-inline void ContactManager::Remove(RigidBody* body)
+inline void ContactManager::Remove(Collider* collider)
 {
-    broadPhase.Remove(body);
+    broadPhase.Remove(collider);
+
+    RigidBody* body = collider->body;
 
     ContactEdge* ce = body->contactList;
     while (ce)

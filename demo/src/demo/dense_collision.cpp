@@ -16,14 +16,14 @@ public:
         float r = 0.25f;
         float spread = 10.0f;
 
-        Polygon* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
+        RigidBody* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
         b->SetLinearVelocity(12.0f, 0.0f);
         b->SetAngularVelocity(1.0f);
 
         for (int i = 0; i < 500; ++i)
         {
-            Circle* c = world->CreateCircle(r);
+            RigidBody* c = world->CreateCircle(r);
             c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);
         }
 

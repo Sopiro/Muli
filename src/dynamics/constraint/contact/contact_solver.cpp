@@ -51,12 +51,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     }
     else
     {
-        bias = -(c->b2->surfaceSpeed - c->b1->surfaceSpeed);
-
-        if (c->manifold.featureFlipped)
-        {
-            bias *= -1;
-        }
+        bias = -(c->colliderB->surfaceSpeed - c->colliderA->surfaceSpeed);
     }
 
     // clang-format off

@@ -21,69 +21,80 @@ void BroadPhase::UpdateDynamicTree(float dt)
             body->flag |= RigidBody::Flag::flag_sleeping;
         }
 
-        int32 node = body->node;
-        AABB treeAABB = tree.nodes[node].aabb;
-        AABB aabb = body->GetAABB();
-
-        if (ContainsAABB(treeAABB, aabb) && body->resting < world.settings.SLEEPING_TRESHOLD)
+        for (Collider* collider = body->colliderList; collider; collider = collider->next)
         {
-            continue;
-        }
+            int32 node = collider->node;
+            AABB treeAABB = tree.nodes[node].aabb;
+            AABB aabb = collider->GetAABB();
 
-        Vec2 d = body->linearVelocity * dt * velocityMultiplier;
+            if (ContainsAABB(treeAABB, aabb) && body->resting < world.settings.SLEEPING_TRESHOLD)
+            {
+                continue;
+            }
 
-        if (d.x > 0.0f)
-        {
-            aabb.max.x += d.x;
-        }
-        else
-        {
-            aabb.min.x += d.x;
-        }
+            Vec2 d = body->linearVelocity * dt * velocityMultiplier;
 
-        if (d.y > 0.0f)
-        {
-            aabb.max.y += d.y;
-        }
-        else
-        {
-            aabb.min.y += d.y;
-        }
+            if (d.x > 0.0f)
+            {
+                aabb.max.x += d.x;
+            }
+            else
+            {
+                aabb.min.x += d.x;
+            }
 
-        aabb.max += aabbMargin;
-        aabb.min -= aabbMargin;
+            if (d.y > 0.0f)
+            {
+                aabb.max.y += d.y;
+            }
+            else
+            {
+                aabb.min.y += d.y;
+            }
 
-        tree.Remove(body);
-        tree.Insert(body, aabb);
+            aabb.max += aabbMargin;
+            aabb.min -= aabbMargin;
+
+            tree.Remove(collider);
+            tree.Insert(collider, aabb);
+        }
     }
 }
 
-void BroadPhase::FindContacts(const std::function<void(RigidBody*, RigidBody*)>& callback) const
+void BroadPhase::FindContacts(const std::function<void(Collider*, Collider*)>& callback) const
 {
     for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
     {
-        tree.Query(tree.nodes[bodyA->node].aabb, [&](RigidBody* bodyB) -> bool {
-            if (bodyA == bodyB)
-            {
-                return true;
-            }
+        for (Collider* colliderA = bodyA->colliderList; colliderA; colliderA = colliderA->next)
+        {
+            Shape::Type typeA = colliderA->GetType();
 
-            if (bodyA->shape < bodyB->shape)
-            {
-                return true;
-            }
-            else if (bodyA->shape == bodyB->shape)
-            {
-                if (bodyA->id > bodyB->id)
+            tree.Query(tree.nodes[colliderA->node].aabb, [&](Collider* colliderB) -> bool {
+                RigidBody* bodyB = colliderB->body;
+
+                if (bodyA == bodyB)
                 {
                     return true;
                 }
-            }
 
-            callback(bodyA, bodyB);
+                Shape::Type typeB = colliderB->GetType();
+                if (typeA < typeB)
+                {
+                    return true;
+                }
+                else if (typeA == typeB)
+                {
+                    if (colliderA > colliderB)
+                    {
+                        return true;
+                    }
+                }
 
-            return true;
-        });
+                callback(colliderA, colliderB);
+
+                return true;
+            });
+        }
     }
 }
 

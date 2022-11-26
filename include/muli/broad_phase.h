@@ -14,11 +14,11 @@ public:
     ~BroadPhase() noexcept;
 
     void UpdateDynamicTree(float dt);
-    void FindContacts(const std::function<void(RigidBody*, RigidBody*)>& callback) const;
-    bool TestOverlap(RigidBody* bodyA, RigidBody* bodyB) const;
+    void FindContacts(const std::function<void(Collider*, Collider*)>& callback) const;
+    bool TestOverlap(Collider* colliderA, Collider* colliderB) const;
 
-    void Add(RigidBody* body);
-    void Remove(RigidBody* body);
+    void Add(Collider* collider);
+    void Remove(Collider* collider);
     void Reset();
 
 private:
@@ -48,23 +48,25 @@ inline void BroadPhase::Reset()
     tree.Reset();
 }
 
-inline void BroadPhase::Add(RigidBody* body)
+inline void BroadPhase::Add(Collider* collider)
 {
-    AABB fatAABB = body->GetAABB();
+    RigidBody* body = collider->body;
+    AABB fatAABB;
+    collider->shape->ComputeAABB(body->transform, &fatAABB);
     fatAABB.min -= aabbMargin;
     fatAABB.max += aabbMargin;
 
-    tree.Insert(body, fatAABB);
+    tree.Insert(collider, fatAABB);
 }
 
-inline void BroadPhase::Remove(RigidBody* body)
+inline void BroadPhase::Remove(Collider* collider)
 {
-    tree.Remove(body);
+    tree.Remove(collider);
 }
 
-inline bool BroadPhase::TestOverlap(RigidBody* bodyA, RigidBody* bodyB) const
+inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) const
 {
-    return TestOverlapAABB(tree.nodes[bodyA->node].aabb, tree.nodes[bodyB->node].aabb);
+    return TestOverlapAABB(tree.nodes[colliderA->node].aabb, tree.nodes[colliderB->node].aabb);
 }
 
 } // namespace muli

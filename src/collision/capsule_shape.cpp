@@ -3,6 +3,85 @@
 namespace muli
 {
 
+CapsuleShape::CapsuleShape(float _length, float radius, bool horizontal)
+    : Shape(Shape::Type::capsule, radius)
+    , length{ _length }
+{
+    area = length * radius * 2.0f + MULI_PI * radius * radius;
+
+    if (horizontal)
+    {
+        va = Vec2{ -_length / 2.0f, 0.0f };
+        vb = Vec2{ _length / 2.0f, 0.0f };
+    }
+    else
+    {
+        va = Vec2{ 0.0f, -_length / 2.0f };
+        vb = Vec2{ 0.0f, _length / 2.0f };
+    }
+}
+
+CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition)
+    : Shape(capsule, radius)
+{
+    Vec2 a2b = p2 - p1;
+    length = a2b.Length();
+    area = length * radius * 2.0f + MULI_PI * radius * radius;
+
+    center = (p1 + p2) * 0.5f;
+    if (_resetPosition)
+    {
+        va = p1 - center;
+        vb = p2 - center;
+        center.SetZero();
+    }
+}
+
+Vec2 CapsuleShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+{
+    Vec2 localQ = MulT(transform, q);
+    UV w = ComputeWeights(va, vb, localQ);
+
+    Vec2 closest;
+    Vec2 normal;
+    float distance;
+    if (w.v <= 0) // Region A
+    {
+        closest = va;
+        normal = localQ - va;
+        distance = normal.Normalize();
+    }
+    else if (w.v >= 1) // Region B
+    {
+        closest = vb;
+        normal = localQ - vb;
+        distance = normal.Normalize();
+    }
+    else // Region AB
+    {
+        normal = Cross(1.0f, vb - va).Normalized();
+        distance = Dot(localQ - va, normal);
+
+        if (Dot(normal, localQ - va) < 0.0f)
+        {
+            normal *= -1;
+            distance *= -1;
+        }
+
+        closest = localQ + normal * -distance;
+    }
+
+    if (distance <= radius)
+    {
+        return q;
+    }
+    else
+    {
+        closest += normal * radius;
+        return transform * closest;
+    }
+}
+
 bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);

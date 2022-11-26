@@ -8,9 +8,6 @@
 namespace muli
 {
 
-class Polygon;
-class Capsule;
-
 struct BodyPair
 {
     uint32 first;
@@ -24,23 +21,8 @@ union PairID
 };
 
 // Compute CCW Convex hull
-void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out);
+void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
 std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
-
-// https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-float ComputePolygonInertia(const Polygon* p);
-
-float ComputeCapsuleInertia(const Capsule* c);
-
-inline float ComputeBoxInertia(float width, float height, float mass)
-{
-    return (width * width + height * height) * mass / 12.0f;
-}
-
-inline float ComputeCircleInertia(float radius, float mass)
-{
-    return mass * radius * radius / 2.0f;
-}
 
 // Cantor pairing function, ((N, N) -> N) mapping function
 // https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function
@@ -163,6 +145,11 @@ inline void print(const Vec2& v, bool lineFeed = true)
         printf("%.6f, %.6f\n", v.x, v.y);
     else
         printf("%.6f, %.6f\n", v.x, v.y);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Vec2& v)
+{
+    return out << v.x << ' ' << v.y << '\n';
 }
 
 float RayCastCircle(const Vec2& position, float radius, const RayCastInput& input, RayCastOutput* output);

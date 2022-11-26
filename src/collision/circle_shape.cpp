@@ -3,9 +3,31 @@
 namespace muli
 {
 
+CircleShape::CircleShape(float _radius)
+    : Shape(Shape::Type::circle, _radius)
+{
+    area = radius * radius * MULI_PI;
+}
+
+Vec2 CircleShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+{
+    Vec2 position = transform * center;
+    Vec2 dir = (q - position);
+
+    float distance = dir.Normalize();
+    if (distance <= radius)
+    {
+        return q;
+    }
+    else
+    {
+        return position + dir * radius;
+    }
+}
+
 bool CircleShape::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
-    Vec2 position = transform * localPosition;
+    Vec2 position = transform * center;
 
     Vec2 d = input.to - input.from;
     Vec2 f = input.from - position;

@@ -1,17 +1,14 @@
 #include "muli/util.h"
 #include "muli/aabb.h"
-#include "muli/capsule.h"
-#include "muli/circle.h"
-#include "muli/polygon.h"
 
 namespace muli
 {
 
-void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
+void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount)
 {
     if (vertexCount < 3)
     {
-        memcpy(out, vertices, vertexCount);
+        memcpy(outVertices, vertices, vertexCount);
         return;
     }
 
@@ -65,22 +62,23 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
     }
 
     int32 sp = 0; // stack pointer
-    out[sp++] = sorted[i++];
-    out[sp++] = sorted[i++];
+    *outVertexCount = vertexCount - i;
+    outVertices[sp++] = sorted[i++];
+    outVertices[sp++] = sorted[i++];
 
     while (i < vertexCount)
     {
         Vec2& v = sorted[i];
         int32 l = sp;
 
-        if (v == out[l - 1])
+        if (v == outVertices[l - 1])
         {
             ++i;
             continue;
         }
 
-        Vec2 d1 = out[l - 1] - out[l - 2];
-        Vec2 d2 = v - out[l - 1];
+        Vec2 d1 = outVertices[l - 1] - outVertices[l - 2];
+        Vec2 d2 = v - outVertices[l - 1];
 
         if (Cross(d1, d2) <= 0)
         {
@@ -88,13 +86,13 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* out)
 
             if (l < 3)
             {
-                out[sp++] = v;
+                outVertices[sp++] = v;
                 break;
             }
         }
         else
         {
-            out[sp++] = v;
+            outVertices[sp++] = v;
             ++i;
         }
     }
@@ -193,110 +191,6 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     }
 
     return s;
-}
-
-float ComputePolygonInertia(const Polygon* p)
-{
-    const Vec2* vertices = p->GetVertices();
-    const Vec2* normals = p->GetNormals();
-    int32 vertexCount = p->GetVertexCount();
-    float radius = p->GetRadius();
-
-    float inertia;
-
-    // Compute polygon inertia
-    float numerator = 0.0f;
-    float denominator = 0.0f;
-
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
-    {
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
-
-        float crs = Abs(Cross(v1, v0));
-
-        numerator += crs * (Dot(v1, v1) + Dot(v1, v0) + Dot(v0, v0));
-        denominator += crs;
-
-        i0 = i1;
-    }
-
-    inertia = (numerator) / (denominator * 6.0f);
-
-    // Consider polygon skin(radius) inertia
-    float r2 = radius * radius;
-    float invArea = 1.0f / p->GetArea();
-
-    i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
-    {
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
-
-        Vec2 edge = v1 - v0;
-        float length = edge.Normalize();
-        Vec2 normal = Cross(edge, 1.0f);
-
-        Vec2 mid = (v0 + v1) * 0.5f + normal * radius * 0.5f; // Mid point of edge rect
-
-        float areaFraction = length * radius * invArea;
-        float rectInertia = (length * length + r2) / 12.0f;
-        float d2 = mid.Length2();
-
-        inertia += (rectInertia + d2) * areaFraction;
-
-        i0 = i1;
-    }
-
-    // Consider corner arc inertia
-    i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
-    {
-        int32 i2 = (i1 + 1) % vertexCount;
-
-        Vec2 n0 = normals[i0];
-        Vec2 n1 = normals[i1];
-
-        float theta = AngleBetween(n0, n1);
-
-        float areaFraction = r2 * theta * 0.5f * invArea;
-        float arcInertia = r2 * 0.5f;
-        float d2 = vertices[i1].Length2();
-
-        inertia += (arcInertia + d2) * areaFraction;
-
-        i0 = i1;
-    }
-
-    muliAssert(inertia > 0.0f);
-
-    return inertia * p->GetMass();
-}
-
-float ComputeCapsuleInertia(const Capsule* c)
-{
-    float length = c->GetLength();
-    float radius = c->GetRadius();
-    float height = radius * 2.0f;
-    float invArea = 1.0f / c->GetArea();
-
-    float inertia;
-
-    float rectArea = length * height;
-    float rectInertia = (length * length + height * height) / 12.0f;
-
-    inertia = rectInertia * rectArea * invArea;
-
-    float circleArea = MULI_PI * radius * radius;
-    float halfCircleInertia = ((MULI_PI / 4) - 8.0f / (9.0f * MULI_PI)) * radius * radius * radius * radius;
-    float dist2 = length * 0.5f + (4.0f * radius) / (MULI_PI * 3.0f);
-    dist2 *= dist2;
-
-    inertia += (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f * invArea;
-
-    // Parallel axis theorem applied
-    return c->GetMass() * inertia;
 }
 
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm

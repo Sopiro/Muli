@@ -30,15 +30,15 @@ AABBTree::~AABBTree()
     nodeCount = 0;
 }
 
-int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
+int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
 {
     int32 newNode = AllocateNode();
 
     nodes[newNode].aabb = aabb;
     nodes[newNode].isLeaf = true;
-    nodes[newNode].body = body;
+    nodes[newNode].body = collider;
     nodes[newNode].parent = nullNode;
-    body->node = newNode;
+    collider->node = newNode;
 
     if (root == nullNode)
     {
@@ -189,16 +189,16 @@ int32 AABBTree::Insert(RigidBody* body, const AABB& aabb)
     return newNode;
 }
 
-void AABBTree::Remove(RigidBody* body)
+void AABBTree::Remove(Collider* collider)
 {
-    if (body->node == nullNode)
+    if (collider->node == nullNode)
     {
         return;
     }
 
-    int32 node = body->node;
+    int32 node = collider->node;
     int32 parent = nodes[node].parent;
-    body->node = nullNode;
+    collider->node = nullNode;
 
     if (parent != nullNode) // node is not root
     {
@@ -411,7 +411,7 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
     }
 }
 
-void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const
+void AABBTree::GetCollisionPairs(std::vector<std::pair<Collider*, Collider*>>& outPairs) const
 {
     if (root == nullNode)
     {
@@ -428,7 +428,7 @@ void AABBTree::GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>&
 
 void AABBTree::CheckCollision(int32 nodeA,
                               int32 nodeB,
-                              std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
+                              std::vector<std::pair<Collider*, Collider*>>& pairs,
                               std::unordered_set<uint64>& checked) const
 {
     const uint64 key = CombineID(nodes[nodeA].id, nodes[nodeB].id).key;
@@ -482,9 +482,9 @@ void AABBTree::CheckCollision(int32 nodeA,
     }
 }
 
-std::vector<RigidBody*> AABBTree::Query(const Vec2& point) const
+std::vector<Collider*> AABBTree::Query(const Vec2& point) const
 {
-    std::vector<RigidBody*> res;
+    std::vector<Collider*> res;
     res.reserve(8);
 
     if (root == nullNode)
@@ -518,9 +518,9 @@ std::vector<RigidBody*> AABBTree::Query(const Vec2& point) const
     return res;
 }
 
-std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
+std::vector<Collider*> AABBTree::Query(const AABB& aabb) const
 {
-    std::vector<RigidBody*> res;
+    std::vector<Collider*> res;
     res.reserve(8);
 
     if (root == nullNode)
@@ -554,7 +554,7 @@ std::vector<RigidBody*> AABBTree::Query(const AABB& aabb) const
     return res;
 }
 
-void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& callback) const
+void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const
 {
     if (root == nullNode)
     {
@@ -589,7 +589,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(RigidBody*)>& ca
     }
 }
 
-void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, RigidBody*)>& callback) const
+void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Collider*)>& callback) const
 {
     Vec2 p1 = input.from;
     Vec2 p2 = input.to;

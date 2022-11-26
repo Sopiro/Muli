@@ -1,22 +1,21 @@
 #include "util.h"
 #include "common.h"
-#include "muli/capsule.h"
-#include "muli/circle.h"
-#include "muli/polygon.h"
 #include "options.h"
 
 namespace muli
 {
 
-std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
+std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygonCount)
 {
-    RigidBody::Shape shape = body->GetShape();
+    const RigidBody* body = collider->GetBody();
+    const Shape* shape = collider->GetShape();
+    Shape::Type type = collider->GetType();
 
-    switch (shape)
+    switch (type)
     {
-    case RigidBody::Shape::circle:
+    case Shape::Type::circle:
     {
-        Circle* c = static_cast<Circle*>(body);
+        const CircleShape* c = static_cast<const CircleShape*>(shape);
         float radius = c->GetRadius();
 
         float angle = MULI_PI * 2.0f / circlePolygonCount;
@@ -43,9 +42,9 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }
-    case RigidBody::Shape::polygon:
+    case Shape::Type::polygon:
     {
-        Polygon* p = static_cast<Polygon*>(body);
+        const PolygonShape* p = static_cast<const PolygonShape*>(shape);
         float radius = p->GetRadius();
 
         const Vec2* vertices = p->GetVertices();
@@ -64,7 +63,7 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
             const Vec2& v0 = vertices[i0];
 
-            if (!(p->userFlag & UserFlag::RENDER_POLYGON_RADIUS))
+            if ((body->userFlag & UserFlag::RENDER_POLYGON_RADIUS) == 0)
             {
                 vertices2.push_back(v0);
                 vertices3.push_back(v0);
@@ -99,9 +98,9 @@ std::unique_ptr<Mesh> GenerateMesh(RigidBody* body, uint32 circlePolygonCount)
 
         return std::make_unique<Mesh>(vertices3, vertices2, indices);
     }
-    case RigidBody::Shape::capsule:
+    case Shape::Type::capsule:
     {
-        Capsule* c = static_cast<Capsule*>(body);
+        const CapsuleShape* c = static_cast<const CapsuleShape*>(shape);
 
         Vec2 v1 = c->GetVertexA();
         Vec2 v2 = c->GetVertexB();

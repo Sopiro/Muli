@@ -1,38 +1,26 @@
 #include "muli/rigidbody.h"
 #include "muli/aabbtree.h"
+#include "muli/collider.h"
 #include "muli/world.h"
 
 namespace muli
 {
 
-RigidBody::RigidBody(RigidBody::Type _type, RigidBody::Shape _shape)
+RigidBody::RigidBody(RigidBody::Type _type)
     : type{ _type }
-    , shape{ _shape }
-    , node{ nullNode }
     , flag{ 0 }
     , userFlag{ 0 }
+    , mass{ 0.0f }
+    , invMass{ 0.0f }
+    , inertia{ 0.0f }
+    , invInertia{ 0.0f }
+    , colliderList{ nullptr }
+    , colliderCount{ 0 }
 {
-    if (type != dynamic_body)
-    {
-        density = 0.0f;
-        mass = 0.0f;
-        invMass = 0.0f;
-        inertia = 0.0f;
-        invInertia = 0.0f;
-    }
-    else
-    {
-        // This part is implemented by children.
-    }
 }
 
 RigidBody::~RigidBody()
 {
-    if (moved)
-    {
-        return;
-    }
-
     world = nullptr;
     id = 0;
 
@@ -42,57 +30,6 @@ RigidBody::~RigidBody()
     }
 }
 
-RigidBody::RigidBody(RigidBody&& _other) noexcept
-{
-    _other.moved = true;
-
-    // private member
-    world = _other.world;
-    id = _other.id;
-    islandID = _other.islandID;
-
-    contactList = _other.contactList;
-    _other.contactList = nullptr;
-    jointList = _other.jointList;
-    _other.jointList = nullptr;
-
-    resting = _other.resting;
-
-    node = _other.node;
-    _other.node = nullNode;
-    prev = _other.prev;
-    _other.prev = nullptr;
-    next = _other.next;
-    _other.next = nullptr;
-
-    // protected member
-    transform = _other.transform;
-
-    force = _other.force;
-    torque = _other.torque;
-
-    linearVelocity = _other.linearVelocity;
-    angularVelocity = _other.angularVelocity;
-
-    density = _other.density;
-    mass = _other.mass;
-    invMass = _other.invMass;
-    inertia = _other.inertia;
-    invInertia = _other.invInertia;
-
-    friction = _other.friction;
-    restitution = _other.restitution;
-    surfaceSpeed = _other.surfaceSpeed;
-
-    shape = _other.shape;
-    type = _other.type;
-
-    filter = _other.filter;
-
-    // public member
-    OnDestroy = std::move(_other.OnDestroy);
-}
-
 void RigidBody::NotifyForceUpdate() const
 {
     if (world)
@@ -100,5 +37,153 @@ void RigidBody::NotifyForceUpdate() const
         world->integrateForce = true;
     }
 }
+
+Collider* RigidBody::AddCollider(Shape* shape)
+{
+    muliAssert(world != nullptr);
+
+    PredefinedBlockAllocator* allocator = &world->blockAllocator;
+    void* mem = allocator->Allocate(sizeof(Collider));
+
+    Collider* collider = new (mem) Collider;
+    collider->Create(allocator, this, shape, DEFAULT_DENSITY, DEFAULT_FRICTION, DEFAULT_RESTITUTION, DEFAULT_SURFACESPEED);
+
+    collider->next = colliderList;
+    colliderList = collider;
+    ++colliderCount;
+
+    collider->body->world->contactManager.Add(collider);
+
+    ResetMassData();
+
+    return collider;
+}
+
+bool RigidBody::TestPoint(const Vec2& p) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        if (collider->TestPoint(p))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
+{
+    Vec2 closestPoint;
+
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        closestPoint = collider->GetClosestPoint(p);
+        if (closestPoint == p)
+        {
+            return closestPoint;
+        }
+    }
+
+    return closestPoint;
+}
+
+bool RigidBody::RayCast(const RayCastInput& input, RayCastOutput* output) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        if (collider->RayCast(input, output))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void RigidBody::SetCollisionFilter(const CollisionFilter& filter) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        collider->SetFilter(filter);
+    }
+}
+
+void RigidBody::SetFriction(float friction) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        collider->SetFriction(friction);
+    }
+}
+
+void RigidBody::SetRestitution(float restitution) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        collider->SetRestitution(restitution);
+    }
+}
+
+void RigidBody::SetSurfaceSpeed(float surfaceSpeed) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        collider->SetSurfaceSpeed(surfaceSpeed);
+    }
+}
+
+void RigidBody::ResetMassData()
+{
+    mass = 0.0f;
+    invMass = 0.0f;
+    inertia = 0.0f;
+    invInertia = 0.0f;
+
+    if (type == static_body || type == kinematic_body)
+    {
+        return;
+    }
+
+    Vec2 localCenter{ 0.0f };
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        MassData massData = collider->GetMassData();
+        mass += massData.mass;
+        localCenter += massData.mass * massData.centerOfMass;
+        inertia += massData.inertia;
+    }
+
+    if (mass > 0.0f)
+    {
+        invMass = 1.0f / mass;
+        localCenter *= invMass;
+    }
+
+    if (inertia > 0.0f && (flag & flag_fixed_rotation) == 0)
+    {
+        // Center the inertia about the center of mass.
+        inertia -= mass * Length2(localCenter);
+        invInertia = 1.0f / inertia;
+    }
+    else
+    {
+        inertia = 0.0f;
+        invInertia = 0.0f;
+    }
+}
+
+// Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
+// {
+//     for (Collider* collider = colliderList; collider; collider = collider->next)
+//     {
+//         if (collider->RayCast(input, output))
+//         {
+//             return true;
+//         }
+//     }
+
+//     return false;
+// }
 
 } // namespace muli

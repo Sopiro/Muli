@@ -1,5 +1,8 @@
 #include "muli/world.h"
+#include "muli/capsule_shape.h"
+#include "muli/circle_shape.h"
 #include "muli/island.h"
+#include "muli/polygon_shape.h"
 #include <iostream>
 
 namespace muli
@@ -189,7 +192,6 @@ void World::Add(RigidBody* body)
         bodyListTail = body;
     }
 
-    contactManager.Add(body);
     ++bodyCount;
 }
 
@@ -208,7 +210,10 @@ void World::Destroy(RigidBody* body)
         throw std::runtime_error("This body is not registered in this world");
     }
 
-    contactManager.Remove(body);
+    for (Collider* collider = body->colliderList; collider; collider = collider->next)
+    {
+        contactManager.Remove(collider);
+    }
 
     JointEdge* je = body->jointList;
     while (je)
@@ -220,7 +225,7 @@ void World::Destroy(RigidBody* body)
         Destroy(je0->joint);
     }
 
-    contactManager.Remove(body);
+    // contactManager.Remove(body);
 
     if (body->next) body->next->prev = body->prev;
     if (body->prev) body->prev->next = body->next;
@@ -303,15 +308,15 @@ void World::BufferDestroy(const std::vector<Joint*>& joints)
 std::vector<RigidBody*> World::Query(const Vec2& point) const
 {
     std::vector<RigidBody*> res;
-    std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(point);
+    std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(point);
 
-    for (uint32 i = 0; i < bodies.size(); ++i)
+    for (uint32 i = 0; i < colliders.size(); ++i)
     {
-        RigidBody* body = bodies[i];
+        Collider* collider = colliders[i];
 
-        if (body->TestPoint(point))
+        if (collider->TestPoint(point))
         {
-            res.push_back(body);
+            res.push_back(collider->body);
         }
     }
 
@@ -321,18 +326,20 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
 std::vector<RigidBody*> World::Query(const AABB& aabb) const
 {
     std::vector<RigidBody*> res;
-    std::vector<RigidBody*> bodies = contactManager.broadPhase.tree.Query(aabb);
+    std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(aabb);
 
-    Vec2 box[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    Polygon t{ box, 4, RigidBody::Type::dynamic_body, false, 0.0f };
+    Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
+    PolygonShape box{ vertices, 4, 0.0f };
 
-    for (uint32 i = 0; i < bodies.size(); ++i)
+    Transform t{ identity };
+
+    for (uint32 i = 0; i < colliders.size(); ++i)
     {
-        RigidBody* body = bodies[i];
+        Collider* collider = colliders[i];
 
-        if (DetectCollision(body, &t))
+        if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
-            res.push_back(body);
+            res.push_back(collider->body);
         }
     }
 
@@ -349,16 +356,16 @@ void World::RayCastAny(
     input.to = to;
     input.maxFraction = 1.0f;
 
-    contactManager.broadPhase.tree.RayCast(input, [&](const RayCastInput& input, RigidBody* body) -> float {
+    contactManager.broadPhase.tree.RayCast(input, [&](const RayCastInput& input, Collider* collider) -> float {
         RayCastOutput output;
 
-        bool hit = body->RayCast(input, &output);
+        bool hit = collider->RayCast(input, &output);
         if (hit)
         {
             float fraction = output.fraction;
             Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-            return callback(body, point, output.normal, fraction);
+            return callback(collider->body, point, output.normal, fraction);
         }
 
         return input.maxFraction;
@@ -395,38 +402,64 @@ bool World::RayCastClosest(
     return false;
 }
 
-Polygon* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
 {
-    Vec2 box[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
-    void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* b = new (mem) Polygon(box, 4, type, true, radius, density);
+    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
+
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(type);
+
     Add(b);
+
+    PolygonShape box{ vertices, 4 };
+    b->AddCollider(&box);
     return b;
 }
 
-Polygon* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
 {
     return CreateBox(size, size, type, radius, density);
 }
 
-Circle* World::CreateCircle(float radius, RigidBody::Type type, float density)
+RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(Circle));
-    Circle* c = new (mem) Circle(radius, type, density);
-    Add(c);
-    return c;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(type);
+
+    Add(b);
+
+    CircleShape circle{ radius };
+    b->AddCollider(&circle);
+    return b;
 }
 
-Polygon* World::CreatePolygon(
+RigidBody* World::CreatePolygon(
     const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices.data(), static_cast<int32>(vertices.size()), type, resetPosition, radius, density);
-    Add(p);
-    return p;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(type);
+
+    Add(b);
+
+    PolygonShape polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
+    b->AddCollider(&polygon);
+
+    Vec2 center{ 0.0f };
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        center += vertices[i];
+    }
+    center *= 1.0f / vertices.size();
+
+    if (resetPosition == false)
+    {
+        b->Translate(center);
+    }
+
+    return b;
 }
 
-Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float radius, float density)
+RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float radius, float density)
 {
     if (vertexCount < 3)
     {
@@ -451,13 +484,17 @@ Polygon* World::CreateRandomConvexPolygon(float length, int32 vertexCount, float
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::dynamic_body, true, radius, density);
-    Add(p);
-    return p;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(RigidBody::Type::dynamic_body);
+
+    Add(b);
+
+    PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
+    b->AddCollider(&polygon);
+    return b;
 }
 
-Polygon* World::CreateRegularPolygon(float length, int32 vertexCount, float initial_angle, float radius, float density)
+RigidBody* World::CreateRegularPolygon(float length, int32 vertexCount, float initial_angle, float radius, float density)
 {
     if (vertexCount < 3)
     {
@@ -485,26 +522,43 @@ Polygon* World::CreateRegularPolygon(float length, int32 vertexCount, float init
         vertices.push_back(corner);
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(Polygon));
-    Polygon* p = new (mem) Polygon(vertices.data(), vertexCount, RigidBody::Type::dynamic_body, true, radius, density);
-    Add(p);
-    return p;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(RigidBody::Type::dynamic_body);
+
+    Add(b);
+
+    PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
+    b->AddCollider(&polygon);
+    return b;
 }
 
-Capsule* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
+RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(Capsule));
-    Capsule* c = new (mem) Capsule(length, radius, horizontal, type, density);
-    Add(c);
-    return c;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(type);
+
+    Add(b);
+
+    CapsuleShape capsule{ length, radius, horizontal };
+    b->AddCollider(&capsule);
+    return b;
 }
-Capsule* World::CreateCapsule(
+RigidBody* World::CreateCapsule(
     const Vec2& p1, const Vec2& p2, float radius, RigidBody::Type type, bool resetPosition, float density)
 {
-    void* mem = blockAllocator.Allocate(sizeof(Capsule));
-    Capsule* c = new (mem) Capsule(p1, p2, radius, type, resetPosition, density);
-    Add(c);
-    return c;
+    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
+    RigidBody* b = new (mem) RigidBody(type);
+
+    Add(b);
+
+    Vec2 center = (p1 + p2) * 0.5f;
+    CapsuleShape capsule{ p1, p2, radius, true };
+    b->AddCollider(&capsule);
+    if (resetPosition == false)
+    {
+        b->Translate(center);
+    }
+    return b;
 }
 
 GrabJoint* World::CreateGrabJoint(
@@ -699,23 +753,18 @@ void World::Add(Joint* joint)
 
 void World::FreeBody(RigidBody* body)
 {
-    body->~RigidBody();
-
-    switch (body->shape)
+    Collider* c = body->colliderList;
+    while (c)
     {
-    case RigidBody::Shape::polygon:
-        blockAllocator.Free(body, sizeof(Polygon));
-        break;
-    case RigidBody::Shape::circle:
-        blockAllocator.Free(body, sizeof(Circle));
-        break;
-    case RigidBody::Shape::capsule:
-        blockAllocator.Free(body, sizeof(Capsule));
-        break;
-    default:
-        muliAssert(false);
-        break;
+        Collider* c0 = c;
+        c = c->next;
+        c0->Destroy(&blockAllocator);
+        c0->~Collider();
+        blockAllocator.Free(c0, sizeof(Collider));
     }
+
+    body->~RigidBody();
+    blockAllocator.Free(body, sizeof(RigidBody));
 }
 
 void World::FreeJoint(Joint* joint)

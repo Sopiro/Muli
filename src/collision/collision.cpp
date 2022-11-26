@@ -1,11 +1,12 @@
 #include "muli/collision.h"
-#include "muli/capsule.h"
-#include "muli/circle.h"
+#include "muli/capsule_shape.h"
+#include "muli/circle_shape.h"
 #include "muli/contact_point.h"
 #include "muli/edge.h"
-#include "muli/polygon.h"
+#include "muli/polygon_shape.h"
 #include "muli/polytope.h"
 #include "muli/rigidbody.h"
+#include "muli/shape.h"
 #include "muli/simplex.h"
 
 namespace muli
@@ -14,11 +15,11 @@ namespace muli
 static constexpr Vec2 origin{ 0.0f };
 
 static bool dectectionFunctionInitialized = false;
-DetectionFunction* DetectionFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
+DetectionFunction* DetectionFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
 void InitializeDetectionFunctionMap();
 
 static bool distanceFunctionInitialized = false;
-DistanceFunction* DistanceFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
+DistanceFunction* DistanceFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
 void InitializeDistanceFunctionMap();
 
 /*
@@ -29,13 +30,13 @@ void InitializeDistanceFunctionMap();
  *
  * 'dir' should be normalized
  */
-static Vec2 CSOSupport(RigidBody* a, RigidBody* b, const Vec2& dir)
+static Vec2 CSOSupport(Shape* a, const Transform& ta, Shape* b, const Transform& tb, const Vec2& dir)
 {
-    Vec2 localDirA = MulT(a->GetRotation(), dir);
-    Vec2 localDirB = MulT(b->GetRotation(), -dir);
+    Vec2 localDirA = MulT(ta.rotation, dir);
+    Vec2 localDirB = MulT(tb.rotation, -dir);
 
-    Vec2 supportA = a->GetTransform() * a->Support(localDirA).position;
-    Vec2 supportB = b->GetTransform() * b->Support(localDirB).position;
+    Vec2 supportA = ta * a->Support(localDirA).position;
+    Vec2 supportB = tb * b->Support(localDirB).position;
 
     return supportA - supportB;
 }
@@ -47,7 +48,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
+static GJKResult GJK(Shape* a, const Transform& ta, Shape* b, const Transform& tb, bool earlyReturn)
 {
     Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
@@ -55,7 +56,7 @@ static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
     float distance = 0.0f;
     bool collide = false;
 
-    Vec2 supportPoint = CSOSupport(a, b, dir);
+    Vec2 supportPoint = CSOSupport(a, ta, b, tb, dir);
     simplex.AddVertex(supportPoint);
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
@@ -90,7 +91,7 @@ static GJKResult GJK(RigidBody* a, RigidBody* b, bool earlyReturn)
             distance = dir.Normalize();
         }
 
-        supportPoint = CSOSupport(a, b, dir);
+        supportPoint = CSOSupport(a, ta, b, tb, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
@@ -120,7 +121,7 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(RigidBody* a, RigidBody* b, const Simplex& simplex)
+static EPAResult EPA(Shape* a, const Transform& ta, Shape* b, const Transform& tb, const Simplex& simplex)
 {
     Polytope polytope{ simplex };
 
@@ -129,7 +130,7 @@ static EPAResult EPA(RigidBody* a, RigidBody* b, const Simplex& simplex)
     for (uint32 i = 0; i < EPA_MAX_ITERATION; ++i)
     {
         closestEdge = polytope.GetClosestEdge();
-        const Vec2 supportPoint = CSOSupport(a, b, closestEdge.normal);
+        const Vec2 supportPoint = CSOSupport(a, ta, b, tb, closestEdge.normal);
         const float newDistance = Dot(closestEdge.normal, supportPoint);
 
         if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
@@ -183,10 +184,11 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
     }
 }
 
-static void FindContactPoints(Vec2 n, RigidBody* a, RigidBody* b, ContactManifold* manifold)
+static void FindContactPoints(
+    const Vec2& n, Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
-    Edge edgeA = a->GetFeaturedEdge(n);
-    Edge edgeB = b->GetFeaturedEdge(-n);
+    Edge edgeA = a->GetFeaturedEdge(ta, n);
+    Edge edgeB = b->GetFeaturedEdge(tb, -n);
 
     edgeA.Translate(n * a->GetRadius());
     edgeB.Translate(-n * b->GetRadius());
@@ -227,13 +229,13 @@ static void FindContactPoints(Vec2 n, RigidBody* a, RigidBody* b, ContactManifol
     manifold->referencePoint = ref->p1;
 }
 
-static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
+static bool CircleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
-    Vec2 pa = a->GetPosition();
-    Vec2 pb = b->GetPosition();
+    Vec2 pa = ta * a->GetCenter();
+    Vec2 pb = tb * b->GetCenter();
 
     float d = Dist2(pa, pb);
-    const float r2 = a->GetRadius() + b->GetRadius();
+    float r2 = a->GetRadius() + b->GetRadius();
 
     if (d > r2 * r2)
     {
@@ -260,12 +262,12 @@ static bool CircleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold
     }
 }
 
-static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
+static bool CapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
-    Capsule* c = static_cast<Capsule*>(a);
+    CapsuleShape* c = static_cast<CapsuleShape*>(a);
 
-    Vec2 pb = b->GetPosition();
-    Vec2 localP = MulT(a->GetTransform(), pb);
+    Vec2 pb = tb * b->GetCenter();
+    Vec2 localP = MulT(ta, pb);
 
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
@@ -312,8 +314,8 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
         return true;
     }
 
-    normal = c->GetRotation() * normal;
-    Vec2 v = c->GetTransform() * (index ? vb : va);
+    normal = ta.rotation * normal;
+    Vec2 v = ta * (index ? vb : va);
 
     manifold->contactNormal = normal;
     manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
@@ -326,16 +328,16 @@ static bool CapsuleVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     return true;
 }
 
-static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifold)
+static bool PolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
-    Polygon* p = static_cast<Polygon*>(a);
-    Vec2 pb = b->GetPosition();
+    PolygonShape* p = static_cast<PolygonShape*>(a);
+    Vec2 pb = tb * b->GetCenter();
 
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    Vec2 localP = MulT(a->GetTransform(), pb);
+    Vec2 localP = MulT(ta, pb);
 
     float minSeparation = -FLT_MAX;
     float r2 = a->GetRadius() + b->GetRadius();
@@ -370,8 +372,8 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
             return true;
         }
 
-        Vec2 normal = p->GetRotation() * normals[index];
-        Vec2 v = p->GetTransform() * vertices[index];
+        Vec2 normal = ta.rotation * normals[index];
+        Vec2 v = ta * vertices[index];
 
         manifold->contactNormal = normal;
         manifold->contactTangent = Vec2{ -normal.y, normal.x };
@@ -418,8 +420,8 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
         return true;
     }
 
-    normal = p->GetRotation() * normal;
-    Vec2 v = p->GetTransform() * vertices[index];
+    normal = ta.rotation * normal;
+    Vec2 v = ta * vertices[index];
 
     manifold->contactNormal = normal;
     manifold->contactTangent = Cross(1.0f, normal);
@@ -432,9 +434,9 @@ static bool PolygonVsCircle(RigidBody* a, RigidBody* b, ContactManifold* manifol
     return true;
 }
 
-static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold)
+static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
-    GJKResult gjkResult = GJK(a, b, false);
+    GJKResult gjkResult = GJK(a, ta, b, tb, false);
     Simplex& simplex = gjkResult.simplex;
 
     float r2 = a->GetRadius() + b->GetRadius();
@@ -453,13 +455,13 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
 
                 Vec2 normal = (origin - simplex.vertices[0]).Normalized();
 
-                Vec2 localDirA = MulT(a->GetRotation(), normal);
-                Vec2 localDirB = MulT(b->GetRotation(), -normal);
+                Vec2 localDirA = MulT(ta.rotation, normal);
+                Vec2 localDirB = MulT(tb.rotation, -normal);
 
                 ContactPoint supportA = a->Support(localDirA);
                 ContactPoint supportB = b->Support(localDirB);
-                supportA.position = a->GetTransform() * (supportA.position + localDirA * a->GetRadius());
-                supportB.position = b->GetTransform() * (supportB.position + localDirB * b->GetRadius());
+                supportA.position = ta * (supportA.position + localDirA * a->GetRadius());
+                supportB.position = tb * (supportB.position + localDirB * b->GetRadius());
 
                 manifold->contactNormal = normal;
                 manifold->contactTangent = Cross(1.0f, normal);
@@ -516,10 +518,10 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
         {
         case 1:
         {
-            Vec2 randomSupport = CSOSupport(a, b, Vec2{ 1.0f, 0.0f });
+            Vec2 randomSupport = CSOSupport(a, ta, b, tb, Vec2{ 1.0f, 0.0f });
             if (randomSupport == simplex.vertices[0])
             {
-                randomSupport = CSOSupport(a, b, Vec2{ -1.0f, 0.0f });
+                randomSupport = CSOSupport(a, ta, b, tb, Vec2{ -1.0f, 0.0f });
             }
 
             simplex.AddVertex(randomSupport);
@@ -530,11 +532,11 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
         case 2:
         {
             Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
-            Vec2 normalSupport = CSOSupport(a, b, normal);
+            Vec2 normalSupport = CSOSupport(a, ta, b, tb, normal);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(CSOSupport(a, b, -normal));
+                simplex.AddVertex(CSOSupport(a, ta, b, tb, -normal));
             }
             else
             {
@@ -543,33 +545,33 @@ static bool ConvexVsConvex(RigidBody* a, RigidBody* b, ContactManifold* manifold
         }
         }
 
-        EPAResult epaResult = EPA(a, b, simplex);
+        EPAResult epaResult = EPA(a, ta, b, tb, simplex);
 
         manifold->contactNormal = epaResult.contactNormal;
         manifold->penetrationDepth = epaResult.penetrationDepth;
     }
 
-    FindContactPoints(manifold->contactNormal, a, b, manifold);
+    FindContactPoints(manifold->contactNormal, a, ta, b, tb, manifold);
     manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
 
     return true;
 }
 
-bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold)
+bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
 {
     if (dectectionFunctionInitialized == false)
     {
         InitializeDetectionFunctionMap();
     }
 
-    RigidBody::Shape shapeA = a->GetShape();
-    RigidBody::Shape shapeB = b->GetShape();
+    Shape::Type shapeA = a->GetType();
+    Shape::Type shapeB = b->GetType();
 
     if (shapeB > shapeA)
     {
         muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
-        bool collide = DetectionFunctionMap[shapeB][shapeA](b, a, manifold);
+        bool collide = DetectionFunctionMap[shapeB][shapeA](b, tb, a, ta, manifold);
         if (manifold)
         {
             manifold->featureFlipped = true;
@@ -580,13 +582,16 @@ bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold)
     {
         muliAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
 
-        return DetectionFunctionMap[shapeA][shapeB](a, b, manifold);
+        return DetectionFunctionMap[shapeA][shapeB](a, ta, b, tb, manifold);
     }
 }
 
-static float ComputeDistanceCircleVsCircle(RigidBody* a, RigidBody* b)
+static float ComputeDistanceCircleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
 {
-    float d2 = Dist2(a->GetPosition(), b->GetPosition());
+    Vec2 pa = ta * a->GetCenter();
+    Vec2 pb = tb * b->GetCenter();
+
+    float d2 = Dist2(pa, pb);
     float r2 = a->GetRadius() + b->GetRadius();
 
     if (d2 > r2 * r2)
@@ -599,11 +604,12 @@ static float ComputeDistanceCircleVsCircle(RigidBody* a, RigidBody* b)
     }
 }
 
-static float ComputeDistanceCapsuleVsCircle(RigidBody* a, RigidBody* b)
+static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
 {
-    Vec2 localC = MulT(a->GetTransform(), b->GetPosition());
+    Vec2 pb = tb * b->GetCenter();
+    Vec2 localC = MulT(ta, pb);
 
-    Capsule* c = static_cast<Capsule*>(a);
+    CapsuleShape* c = static_cast<CapsuleShape*>(a);
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
 
@@ -645,14 +651,15 @@ static float ComputeDistanceCapsuleVsCircle(RigidBody* a, RigidBody* b)
     }
 }
 
-static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
+static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
 {
-    Polygon* p = static_cast<Polygon*>(a);
+    PolygonShape* p = static_cast<PolygonShape*>(a);
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    Vec2 localC = MulT(p->GetTransform(), b->GetPosition());
+    Vec2 pb = tb * b->GetCenter();
+    Vec2 localC = MulT(ta, pb);
 
     float r2 = a->GetRadius() + b->GetRadius();
 
@@ -734,9 +741,9 @@ static float ComputeDistancePolygonVsCircle(RigidBody* a, RigidBody* b)
     return 0.0f;
 }
 
-static float ComputeDistanceConvexVsConvex(RigidBody* a, RigidBody* b)
+static float ComputeDistanceConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
 {
-    GJKResult gr = GJK(a, b, false);
+    GJKResult gr = GJK(a, ta, b, tb, false);
 
     if (gr.collide == true)
     {
@@ -760,27 +767,27 @@ static float ComputeDistanceConvexVsConvex(RigidBody* a, RigidBody* b)
     }
 }
 
-float ComputeDistance(RigidBody* a, RigidBody* b)
+float ComputeDistance(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
 {
     if (distanceFunctionInitialized == false)
     {
         InitializeDistanceFunctionMap();
     }
 
-    RigidBody::Shape shapeA = a->GetShape();
-    RigidBody::Shape shapeB = b->GetShape();
+    Shape::Type shapeA = a->GetType();
+    Shape::Type shapeB = b->GetType();
 
     if (shapeB > shapeA)
     {
         muliAssert(DistanceFunctionMap[shapeB][shapeA] != nullptr);
 
-        return DistanceFunctionMap[shapeB][shapeA](b, a);
+        return DistanceFunctionMap[shapeB][shapeA](b, tb, a, ta);
     }
     else
     {
         muliAssert(DistanceFunctionMap[shapeA][shapeB] != nullptr);
 
-        return DistanceFunctionMap[shapeA][shapeB](a, b);
+        return DistanceFunctionMap[shapeA][shapeB](a, ta, b, tb);
     }
 }
 
@@ -791,14 +798,14 @@ void InitializeDetectionFunctionMap()
         return;
     }
 
-    DetectionFunctionMap[RigidBody::Shape::circle][RigidBody::Shape::circle] = &CircleVsCircle;
+    DetectionFunctionMap[Shape::Type::circle][Shape::Type::circle] = &CircleVsCircle;
 
-    DetectionFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::circle] = &CapsuleVsCircle;
-    DetectionFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::capsule] = &ConvexVsConvex;
+    DetectionFunctionMap[Shape::Type::capsule][Shape::Type::circle] = &CapsuleVsCircle;
+    DetectionFunctionMap[Shape::Type::capsule][Shape::Type::capsule] = &ConvexVsConvex;
 
-    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::circle] = &PolygonVsCircle;
-    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::capsule] = &ConvexVsConvex;
-    DetectionFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::polygon] = &ConvexVsConvex;
+    DetectionFunctionMap[Shape::Type::polygon][Shape::Type::circle] = &PolygonVsCircle;
+    DetectionFunctionMap[Shape::Type::polygon][Shape::Type::capsule] = &ConvexVsConvex;
+    DetectionFunctionMap[Shape::Type::polygon][Shape::Type::polygon] = &ConvexVsConvex;
 
     dectectionFunctionInitialized = true;
 }
@@ -810,62 +817,16 @@ void InitializeDistanceFunctionMap()
         return;
     }
 
-    DistanceFunctionMap[RigidBody::Shape::circle][RigidBody::Shape::circle] = &ComputeDistanceCircleVsCircle;
+    DistanceFunctionMap[Shape::Type::circle][Shape::Type::circle] = &ComputeDistanceCircleVsCircle;
 
-    DistanceFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::circle] = &ComputeDistanceCapsuleVsCircle;
-    DistanceFunctionMap[RigidBody::Shape::capsule][RigidBody::Shape::capsule] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[Shape::Type::capsule][Shape::Type::circle] = &ComputeDistanceCapsuleVsCircle;
+    DistanceFunctionMap[Shape::Type::capsule][Shape::Type::capsule] = &ComputeDistanceConvexVsConvex;
 
-    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::circle] = &ComputeDistancePolygonVsCircle;
-    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::capsule] = &ComputeDistanceConvexVsConvex;
-    DistanceFunctionMap[RigidBody::Shape::polygon][RigidBody::Shape::polygon] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::circle] = &ComputeDistancePolygonVsCircle;
+    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::capsule] = &ComputeDistanceConvexVsConvex;
+    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::polygon] = &ComputeDistanceConvexVsConvex;
 
     distanceFunctionInitialized = true;
-}
-
-// Compute signed distance between polygons
-static float ComputeSeparation(const std::vector<Vec2>& va, const std::vector<Vec2>& vb)
-{
-    float maxSeparation = -FLT_MAX;
-
-    size_t i0 = va.size() - 1;
-    for (size_t i1 = 0; i1 < va.size(); ++i1)
-    {
-        const Vec2& va0 = va[i0];
-        const Vec2& va1 = va[i1];
-
-        // Right-hand coordinate system, CCW vertex winding
-        Vec2 normal = Cross((va1 - va0).Normalized(), 1.0f);
-        float separation = FLT_MAX;
-
-        for (size_t j = 0; j < vb.size(); ++j)
-        {
-            const Vec2& vb0 = vb[j];
-
-            separation = Min(separation, Dot(normal, vb0 - va0));
-        }
-
-        maxSeparation = Max(separation, maxSeparation);
-        i0 = i1;
-    }
-
-    return maxSeparation;
-}
-
-bool SAT(Polygon* a, Polygon* b)
-{
-    const Vec2* va = a->GetVertices();
-    const Vec2* vb = b->GetVertices();
-
-    int32 vca = a->GetVertexCount();
-    int32 vcb = b->GetVertexCount();
-
-    std::vector<Vec2> wva(vca);
-    std::vector<Vec2> wvb(vcb);
-
-    std::transform(va, va + vca, wva.begin(), [&](const Vec2& v) { return a->GetTransform() * v; });
-    std::transform(vb, vb + vcb, wvb.begin(), [&](const Vec2& v) { return b->GetTransform() * v; });
-
-    return ComputeSeparation(wva, wvb) < 0 && ComputeSeparation(wvb, wva) < 0;
 }
 
 } // namespace muli

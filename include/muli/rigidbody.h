@@ -4,7 +4,6 @@
 #include "collision.h"
 #include "collision_filter.h"
 #include "common.h"
-#include "contact_point.h"
 #include "edge.h"
 #include "settings.h"
 
@@ -12,23 +11,16 @@ namespace muli
 {
 
 class World;
+class Collider;
+class Shape;
 struct Node;
 struct ContactEdge;
 struct JointEdge;
 
 // Children: Polygon, Circle
-class RigidBody
+class RigidBody final
 {
 public:
-    // Order matters
-    enum Shape : uint8
-    {
-        circle,
-        capsule,
-        polygon,
-        shape_count,
-    };
-
     enum Type : uint8
     {
         static_body,
@@ -43,27 +35,18 @@ public:
         flag_fixed_rotation = 1 << 2,
     };
 
-    RigidBody(RigidBody::Type _type, RigidBody::Shape _shape);
-    virtual ~RigidBody() noexcept;
+    RigidBody(RigidBody::Type _type);
+    ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;
 
-    RigidBody(RigidBody&& _other) noexcept;
+    RigidBody(RigidBody&& _other) noexcept = delete;
     RigidBody& operator=(RigidBody&& _other) = delete;
 
-    virtual void SetDensity(float d) = 0;
-    virtual void SetMass(float m) = 0;
-    virtual float GetArea() const = 0;
-    virtual AABB GetAABB() const = 0;
-
-    // Returns the fardest vertex in the 'dir' direction
-    // 'localDir' should be normalized and a local vector
-    virtual ContactPoint Support(const Vec2& localDir) const = 0;
-    virtual Edge GetFeaturedEdge(const Vec2& dir) const = 0;
-    virtual bool TestPoint(const Vec2& p) const = 0;
-    virtual bool RayCast(const RayCastInput& input, RayCastOutput* output) const = 0;
-    virtual Vec2 GetClosestPoint(const Vec2& p) const = 0;
+    bool TestPoint(const Vec2& q) const;
+    Vec2 GetClosestPoint(const Vec2& q) const;
+    bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
 
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
@@ -81,41 +64,40 @@ public:
     void AddForce(const Vec2& localPosition, const Vec2& force);
     void Awake();
 
-    float GetRadius() const;
-    float GetDensity() const;
     float GetMass() const;
     float GetInverseMass() const;
     float GetInertia() const;
     float GetInverseInertia() const;
-    float GetFriction() const;
-    void SetFriction(float _friction);
-    float GetRestitution() const;
-    void SetRestitution(float _restitution);
-    float GetSurfaceSpeed() const;
-    void SetSurfaceSpeed(float _surfaceSpeed);
+
     const Vec2& GetLinearVelocity() const;
     void SetLinearVelocity(const Vec2& _linearVelocity);
     void SetLinearVelocity(float vx, float vy);
     float GetAngularVelocity() const;
     void SetAngularVelocity(float _angularVelocity);
+
     const Vec2& GetForce() const;
     void SetForce(const Vec2& _force);
     float GetTorque() const;
     void SetTorque(float _torque);
+
     Type GetType() const;
-    Shape GetShape() const;
-    const CollisionFilter& GetCollisionFilter() const;
-    void SetCollisionFilter(const CollisionFilter& _filter);
     bool IsSleeping() const;
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
 
     uint32 GetID() const;
     uint32 GetIslandID() const;
-    int32 GetTreeNode() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
     World* GetWorld() const;
+
+    Collider* AddCollider(Shape* shape);
+    Collider* GetColliderList() const;
+
+    void SetCollisionFilter(const CollisionFilter& filter) const;
+    void SetFriction(float friction) const;
+    void SetRestitution(float restitution) const;
+    void SetSurfaceSpeed(float surfaceSpeed) const;
 
     // Callbacks
     std::function<void(RigidBody*)> OnDestroy = nullptr;
@@ -156,26 +138,21 @@ protected:
     Vec2 linearVelocity{ 0.0f };  // m/s
     float angularVelocity = 0.0f; // rad/s
 
-    float density; // kg/m²
-    float mass;    // kg
+    float mass; // kg
     float invMass;
     float inertia; // kg⋅m²
     float invInertia;
 
-    float radius = DEFAULT_RADIUS;
-    float friction = DEFAULT_FRICTION;
-    float restitution = DEFAULT_RESTITUTION;
-    float surfaceSpeed = DEFAULT_SURFACESPEED; // m/s (Tangential speed)
-
-    Shape shape;
     Type type;
-    CollisionFilter filter;
 
     uint16 flag;
 
-private:
-    bool moved = false;
+    Collider* colliderList;
+    int32 colliderCount;
 
+    void ResetMassData();
+
+private:
     World* world = nullptr;
     uint32 id = 0;
     uint32 islandID = 0;
@@ -187,7 +164,6 @@ private:
 
     RigidBody* prev = nullptr;
     RigidBody* next = nullptr;
-    int32 node;
 
     void NotifyForceUpdate() const;
 };
@@ -254,16 +230,6 @@ inline void RigidBody::Rotate(float a)
     transform.rotation += a;
 }
 
-inline float RigidBody::GetRadius() const
-{
-    return radius;
-}
-
-inline float RigidBody::GetDensity() const
-{
-    return density;
-}
-
 inline float RigidBody::GetMass() const
 {
     return mass;
@@ -284,11 +250,6 @@ inline float RigidBody::GetInverseInertia() const
     return invInertia;
 }
 
-inline int32 RigidBody::GetTreeNode() const
-{
-    return node;
-}
-
 inline void RigidBody::Awake()
 {
     resting = 0.0f;
@@ -305,36 +266,6 @@ inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
     force += f;
     torque += Cross(transform * localPosition - transform.position, f);
     NotifyForceUpdate();
-}
-
-inline float RigidBody::GetFriction() const
-{
-    return friction;
-}
-
-inline void RigidBody::SetFriction(float _friction)
-{
-    friction = _friction;
-}
-
-inline float RigidBody::GetRestitution() const
-{
-    return restitution;
-}
-
-inline void RigidBody::SetRestitution(float _restitution)
-{
-    restitution = _restitution;
-}
-
-inline float RigidBody::GetSurfaceSpeed() const
-{
-    return surfaceSpeed;
-}
-
-inline void RigidBody::SetSurfaceSpeed(float _surfaceSpeed)
-{
-    surfaceSpeed = _surfaceSpeed;
 }
 
 inline const Vec2& RigidBody::GetLinearVelocity() const
@@ -414,21 +345,6 @@ inline RigidBody::Type RigidBody::GetType() const
     return type;
 }
 
-inline RigidBody::Shape RigidBody::GetShape() const
-{
-    return shape;
-}
-
-inline const CollisionFilter& RigidBody::GetCollisionFilter() const
-{
-    return filter;
-}
-
-inline void RigidBody::SetCollisionFilter(const CollisionFilter& _filter)
-{
-    filter = _filter;
-}
-
 inline bool RigidBody::IsSleeping() const
 {
     return flag & Flag::flag_sleeping;
@@ -445,7 +361,7 @@ inline void RigidBody::SetFixedRotation(bool fixed)
         flag &= ~flag_fixed_rotation;
     }
 
-    SetDensity(density);
+    ResetMassData();
 }
 
 inline bool RigidBody::IsRotationFixed() const
@@ -476,6 +392,11 @@ inline RigidBody* RigidBody::GetNext() const
 inline World* RigidBody::GetWorld() const
 {
     return world;
+}
+
+inline Collider* RigidBody::GetColliderList() const
+{
+    return colliderList;
 }
 
 } // namespace muli

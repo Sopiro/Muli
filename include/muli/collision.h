@@ -18,9 +18,7 @@ namespace muli
 {
 
 class RigidBody;
-class Circle;
-class Capsule;
-class Polygon;
+class Shape;
 
 // 64byte
 struct ContactManifold
@@ -49,12 +47,12 @@ struct RayCastOutput
     float fraction;
 };
 
-typedef bool DetectionFunction(RigidBody*, RigidBody*, ContactManifold*);
-typedef float DistanceFunction(RigidBody*, RigidBody*);
+typedef bool DetectionFunction(Shape*, const Transform&, Shape*, const Transform&, ContactManifold*);
+typedef float DistanceFunction(Shape*, const Transform&, Shape*, const Transform&);
 
-bool DetectCollision(RigidBody* a, RigidBody* b, ContactManifold* manifold = nullptr);
-float ComputeDistance(RigidBody* a, RigidBody* b);
+bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold = nullptr);
+float ComputeDistance(Shape* a, const Transform& ta, Shape* b, const Transform& tb);
 
-bool SAT(Polygon* a, Polygon* b);
+// bool SAT(PolygonShape* a, PolygonShape* b);
 
 } // namespace muli

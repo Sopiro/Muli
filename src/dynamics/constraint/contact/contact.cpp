@@ -6,12 +6,14 @@
 namespace muli
 {
 
-extern DetectionFunction* DetectionFunctionMap[RigidBody::Shape::shape_count][RigidBody::Shape::shape_count];
+extern DetectionFunction* DetectionFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
 
-Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
-    : Constraint(_bodyA, _bodyB, _settings)
+Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings& _settings)
+    : Constraint(_colliderA->body, _colliderB->body, _settings)
+    , colliderA{ _colliderA }
+    , colliderB{ _colliderB }
 {
-    muliAssert(bodyA->GetShape() >= bodyB->GetShape());
+    muliAssert(colliderA->GetType() >= colliderB->GetType());
 
     touching = false;
     persistent = false;
@@ -19,10 +21,10 @@ Contact::Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _set
     manifold.numContacts = 0;
 
     beta = settings.POSITION_CORRECTION_BETA;
-    restitution = MixRestitution(bodyA->restitution, bodyB->restitution);
-    friction = MixFriction(bodyA->friction, bodyB->friction);
+    restitution = MixRestitution(colliderA->restitution, colliderB->restitution);
+    friction = MixFriction(colliderA->friction, colliderB->friction);
 
-    collisionDetectionFunction = DetectionFunctionMap[bodyA->GetShape()][bodyB->GetShape()];
+    collisionDetectionFunction = DetectionFunctionMap[colliderA->GetType()][colliderB->GetType()];
     muliAssert(collisionDetectionFunction != nullptr);
 }
 
@@ -33,7 +35,12 @@ void Contact::Update()
     float oldTangentImpulse[MAX_CONTACT_POINT];
 
     bool wasTouching = touching;
-    touching = collisionDetectionFunction(bodyA, bodyB, &manifold);
+
+    // clang-format off
+    touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
+                                          colliderB->shape, bodyB->transform,
+                                          &manifold);
+    // clang-format on
 
     for (uint32 i = 0; i < MAX_CONTACT_POINT; ++i)
     {

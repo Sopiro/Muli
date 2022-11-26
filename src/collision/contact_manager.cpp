@@ -11,13 +11,16 @@ void ContactManager::Update(float dt)
     broadPhase.UpdateDynamicTree(dt);
 
     // Find contacts, insert into the contact graph
-    broadPhase.FindContacts([&](RigidBody* bodyA, RigidBody* bodyB) -> void {
+    broadPhase.FindContacts([&](Collider* colliderA, Collider* colliderB) -> void {
+        RigidBody* bodyA = colliderA->body;
+        RigidBody* bodyB = colliderB->body;
+
         if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
         {
             return;
         }
 
-        if (EvaluateFilter(bodyA->GetCollisionFilter(), bodyB->GetCollisionFilter()) == false)
+        if (EvaluateFilter(colliderA->GetFilter(), colliderB->GetFilter()) == false)
         {
             return;
         }
@@ -33,7 +36,7 @@ void ContactManager::Update(float dt)
 
         // Create new contact
         void* mem = world.blockAllocator.Allocate(sizeof(Contact));
-        Contact* c = new (mem) Contact(bodyA, bodyB, world.settings);
+        Contact* c = new (mem) Contact(colliderA, colliderB, world.settings);
 
         // Insert into the world
         c->prev = nullptr;
@@ -78,6 +81,9 @@ void ContactManager::Update(float dt)
     Contact* c = contactList;
     while (c)
     {
+        Collider* colliderA = c->colliderA;
+        Collider* colliderB = c->colliderB;
+
         RigidBody* bodyA = c->bodyA;
         RigidBody* bodyB = c->bodyB;
 
@@ -90,7 +96,7 @@ void ContactManager::Update(float dt)
             continue;
         }
 
-        bool overlap = broadPhase.TestOverlap(bodyA, bodyB);
+        bool overlap = broadPhase.TestOverlap(colliderA, colliderB);
 
         if (!overlap)
         {

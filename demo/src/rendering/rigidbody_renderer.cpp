@@ -31,7 +31,7 @@ void RigidBodyRenderer::Render()
         if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::static_body)
         {
             Vec3 color{ 1.0f };
-            const CollisionFilter& cf = body->GetCollisionFilter();
+            const CollisionFilter& cf = body->GetColliderList()->GetFilter();
 
             switch (type)
             {

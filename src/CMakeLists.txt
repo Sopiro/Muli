@@ -14,9 +14,6 @@ set(HEADER_FILES
     ../include/muli/block_solver.h
 
     ../include/muli/rigidbody.h
-    ../include/muli/circle.h
-    ../include/muli/polygon.h
-    ../include/muli/capsule.h
 
     ../include/muli/constraint.h
 
@@ -79,9 +76,6 @@ set(SOURCE_FILES
     dynamics/island.cpp
 
     dynamics/rigidbody.cpp
-    dynamics/circle.cpp
-    dynamics/polygon.cpp
-    dynamics/capsule.cpp
 
     dynamics/constraint/contact/contact.cpp
     dynamics/constraint/contact/contact_solver.cpp

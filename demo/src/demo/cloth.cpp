@@ -20,7 +20,7 @@ public:
 
         float gap = width / rows;
 
-        Circle* circles[rows][cols];
+        RigidBody* circles[rows][cols];
 
         float yStart = 2.0f;
 
@@ -28,7 +28,7 @@ public:
         {
             for (uint32 i = 0; i < cols; ++i)
             {
-                Circle* c = world->CreateCircle(radius);
+                RigidBody* c = world->CreateCircle(radius);
 
                 float x = ((i - (cols - 1) / 2.0f) / (float)cols) * cols * gap;
                 float y = (j / (float)rows) * rows * gap + yStart;
@@ -44,16 +44,16 @@ public:
         {
             for (uint32 i = 0; i < cols; ++i)
             {
-                Circle* c00 = circles[j][i];
+                RigidBody* c00 = circles[j][i];
 
                 if (j + 1 < rows)
                 {
-                    Circle* c10 = circles[j + 1][i];
+                    RigidBody* c10 = circles[j + 1][i];
                     world->CreateDistanceJoint(c00, c10, -1.0f, 1.0f, 0.7f, 1.0f);
                 }
                 if (i + 1 < cols)
                 {
-                    Circle* c01 = circles[j][i + 1];
+                    RigidBody* c01 = circles[j][i + 1];
                     world->CreateDistanceJoint(c00, c01, -1.0f, 1.0f, 0.7f, 1.0f);
                 }
             }
@@ -64,10 +64,10 @@ public:
         RigidBody* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
         RigidBody* tr = circles[rows - 1][cols - 1];
 
-        Circle* w1 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        Circle* w2 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        Circle* w3 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        Circle* w4 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        RigidBody* w1 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        RigidBody* w2 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        RigidBody* w3 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
+        RigidBody* w4 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
         w1->SetPosition(tl->GetPosition() + Vec2{ -gap, gap });
         w2->SetPosition(ml->GetPosition() + Vec2{ 0.0f, gap });
         w3->SetPosition(mr->GetPosition() + Vec2{ 0.0f, gap });

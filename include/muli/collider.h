@@ -2,6 +2,7 @@
 
 #include "collision_filter.h"
 #include "common.h"
+#include "predefined_block_allocator.h"
 #include "rigidbody.h"
 #include "shape.h"
 
@@ -27,17 +28,36 @@ public:
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float _surfaceSpeed);
 
-    void ComputeMass(MassData* outMassData) const;
+    AABB GetAABB() const;
+    MassData GetMassData() const;
     bool TestPoint(const Vec2& q) const;
+    Vec2 GetClosestPoint(const Vec2& q) const;
     bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
 
+    Collider* GetNext() const;
+
 private:
-    Collider(RigidBody* body, Shape* shape, float density, float friction, float restitution, float surfaceSpeed);
+    friend class RigidBody;
+    friend class AABBTree;
+    friend class BroadPhase;
+    friend class Contact;
+    friend class ContactManager;
+    friend class World;
+    friend class ContactSolver;
+
+    Collider();
+    ~Collider() = default;
+    void Create(PredefinedBlockAllocator* allocator,
+                RigidBody* body,
+                Shape* shape,
+                float density,
+                float friction,
+                float restitution,
+                float surfaceSpeed);
+    void Destroy(PredefinedBlockAllocator* allocator);
 
     RigidBody* body;
     Shape* shape;
-
-    Collider* next;
 
     float density;
     float friction;
@@ -45,6 +65,9 @@ private:
     float surfaceSpeed;
 
     CollisionFilter filter;
+
+    Collider* next;
+    int32 node;
 };
 
 inline const RigidBody* Collider::GetBody() const
@@ -107,9 +130,18 @@ inline void Collider::SetSurfaceSpeed(float _surfaceSpeed)
     surfaceSpeed = _surfaceSpeed;
 }
 
-inline void Collider::ComputeMass(MassData* outMassData) const
+inline AABB Collider::GetAABB() const
 {
-    shape->ComputeMass(density, outMassData);
+    AABB aabb;
+    shape->ComputeAABB(body->transform, &aabb);
+    return aabb;
+}
+
+inline MassData Collider::GetMassData() const
+{
+    MassData massData;
+    shape->ComputeMass(density, &massData);
+    return massData;
 }
 
 inline bool Collider::TestPoint(const Vec2& q) const
@@ -117,9 +149,19 @@ inline bool Collider::TestPoint(const Vec2& q) const
     return shape->TestPoint(body->transform, q);
 }
 
+inline Vec2 Collider::GetClosestPoint(const Vec2& q) const
+{
+    return shape->GetClosestPoint(body->transform, q);
+}
+
 inline bool Collider::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     return shape->RayCast(body->transform, input, output);
+}
+
+inline Collider* Collider::GetNext() const
+{
+    return next;
 }
 
 } // namespace muli

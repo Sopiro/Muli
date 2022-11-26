@@ -8,16 +8,22 @@ namespace muli
 class CapsuleShape : public Shape
 {
 public:
-    CapsuleShape(float _length, float radius);
+    CapsuleShape(float _length, float radius, bool horizontal = false);
     CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition = false);
-    ~CapsuleShape();
+    ~CapsuleShape() = default;
 
     virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
+    virtual ContactPoint Support(const Vec2& localDir) const override;
+    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
+    virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
+
+    const Vec2& GetVertexA() const;
+    const Vec2& GetVertexB() const;
 
 private:
     float length;
@@ -26,39 +32,22 @@ private:
     Vec2 vb;
 };
 
-inline CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition)
-    : Shape(capsule, radius)
-{
-    Vec2 a2b = p2 - p1;
-    length = a2b.Length();
-    area = length * radius * 2.0f + MULI_PI * radius * radius;
-
-    Vec2 center = (p1 + p2) * 0.5f;
-
-    va = p1 - center;
-    vb = p2 - center;
-
-    if (_resetPosition == false)
-    {
-        localPosition = center;
-    }
-}
-
-inline CapsuleShape::CapsuleShape(float _length, float radius)
-    : Shape(Shape::Type::capsule, radius)
-    , length{ _length }
-    , va{ -_length / 2.0f, 0.0f }
-    , vb{ _length / 2.0f, 0.0f }
-{
-    area = length * radius * 2.0f + MULI_PI * radius * radius;
-    localPosition.SetZero();
-}
-
 inline Shape* CapsuleShape::Clone(PredefinedBlockAllocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(CapsuleShape));
     CapsuleShape* shape = new (mem) CapsuleShape(*this);
     return shape;
+}
+
+inline Edge CapsuleShape::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
+{
+    return Edge{ transform * va, transform * vb, 0, 1 };
+}
+
+inline ContactPoint CapsuleShape::Support(const Vec2& localDir) const
+{
+    Vec2 dir = vb - va;
+    return Dot(dir, localDir) > 0.0f ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
 }
 
 inline void CapsuleShape::ComputeMass(float density, MassData* outMassData) const
@@ -82,8 +71,8 @@ inline void CapsuleShape::ComputeMass(float density, MassData* outMassData) cons
 
     inertia += (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f * invArea;
 
-    outMassData->inertia = outMassData->mass * (inertia + Length2(localPosition));
-    outMassData->centerOfMass = localPosition;
+    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
+    outMassData->centerOfMass = center;
 }
 
 inline void CapsuleShape::ComputeAABB(const Transform& transform, AABB* outAABB) const
@@ -100,6 +89,16 @@ inline bool CapsuleShape::TestPoint(const Transform& transform, const Vec2& q) c
     Vec2 localQ = MulT(transform, q);
 
     return SignedDistanceToLineSegment(localQ, va, vb, radius) < 0.0f;
+}
+
+inline const Vec2& CapsuleShape::GetVertexA() const
+{
+    return va;
+}
+
+inline const Vec2& CapsuleShape::GetVertexB() const
+{
+    return vb;
 }
 
 } // namespace muli

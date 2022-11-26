@@ -33,13 +33,13 @@ struct ContactEdge
 class Contact : Constraint
 {
 public:
-    Contact(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings);
+    Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings& _settings);
     ~Contact() noexcept = default;
 
     void Update();
-    virtual void Prepare() override;
-    virtual void SolveVelocityConstraint() override;
-    virtual bool SolvePositionConstraint() override;
+    void Prepare();
+    void SolveVelocityConstraint();
+    bool SolvePositionConstraint();
 
     Contact* GetNext() const;
     Contact* GetPrev() const;
@@ -61,6 +61,9 @@ private:
 
     RigidBody* b1; // Reference body
     RigidBody* b2; // Incident body
+
+    Collider* colliderA;
+    Collider* colliderB;
 
     Contact* prev;
     Contact* next;

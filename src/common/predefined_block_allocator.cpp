@@ -5,9 +5,12 @@ namespace muli
 {
 
 //                   Sizes
-// circle           : 248
-// capsule          : 264
-// polygon          : 320
+// Circle: 32
+// Capsule: 56
+// Polygon: 184
+// Collider: 64
+// RigidBody: 208
+// Contact: 696
 
 // Angle joint      : 216
 // Grab joint       : 256

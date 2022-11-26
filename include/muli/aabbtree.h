@@ -1,9 +1,9 @@
 #pragma once
 
 #include "aabb.h"
+#include "collider.h"
 #include "collision.h"
 #include "common.h"
-#include "rigidbody.h"
 #include "settings.h"
 
 #define nullNode (-1)
@@ -33,7 +33,7 @@ struct Node
     int32 child1;
     int32 child2;
 
-    RigidBody* body;
+    Collider* body;
     int32 next;
 };
 
@@ -49,18 +49,18 @@ public:
     AABBTree(AABBTree&&) noexcept = delete;
     AABBTree& operator=(AABBTree&&) noexcept = delete;
 
-    int32 Insert(RigidBody* body, const AABB& aabb);
-    void Remove(RigidBody* body);
+    int32 Insert(Collider* collider, const AABB& aabb);
+    void Remove(Collider* collider);
     void Reset();
 
     void Traverse(std::function<void(const Node*)> callback) const;
-    void GetCollisionPairs(std::vector<std::pair<RigidBody*, RigidBody*>>& outPairs) const;
+    void GetCollisionPairs(std::vector<std::pair<Collider*, Collider*>>& outPairs) const;
 
-    std::vector<RigidBody*> Query(const Vec2& point) const;
-    std::vector<RigidBody*> Query(const AABB& aabb) const;
-    void Query(const AABB& aabb, const std::function<bool(RigidBody*)>& callback) const;
+    std::vector<Collider*> Query(const Vec2& point) const;
+    std::vector<Collider*> Query(const AABB& aabb) const;
+    void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
 
-    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, RigidBody*)>& callback) const;
+    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Collider*)>& callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();
@@ -85,7 +85,7 @@ private:
     void Swap(int32 node1, int32 node2);
     void CheckCollision(int32 nodeA,
                         int32 nodeB,
-                        std::vector<std::pair<RigidBody*, RigidBody*>>& pairs,
+                        std::vector<std::pair<Collider*, Collider*>>& pairs,
                         std::unordered_set<uint64>& checked) const;
 };
 

@@ -150,7 +150,7 @@ bool Demo::EnablePolygonCreate()
                 b->SetPosition(hull[0]);
                 break;
             case 2:
-                b = world->CreateCapsule(hull[0], hull[1], 0.05f, type);
+                b = world->CreateCapsule(hull[0], hull[1], 0.05f, type, false);
                 break;
             default:
                 b = world->CreatePolygon(hull, type, false);
