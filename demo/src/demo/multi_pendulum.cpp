@@ -18,7 +18,6 @@ public:
         float gap = 0.1f;
 
         RigidBody* b1 = world->CreateBox(sizeW, sizeH);
-        // b1->SetMass(1.0);
         b1->SetPosition(xStart - (gap + sizeW), yStart);
 
         Joint* j = world->CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
@@ -29,7 +28,6 @@ public:
         for (int i = 1; i < count; ++i)
         {
             RigidBody* b2 = world->CreateBox(sizeW, sizeH);
-            // b2->SetMass(1.0f);
             b2->SetPosition(xStart - (gap + sizeW) * (i + 1), yStart);
 
             if (t)

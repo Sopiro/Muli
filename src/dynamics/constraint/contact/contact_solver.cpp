@@ -51,7 +51,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     }
     else
     {
-        bias = -(c->colliderB->surfaceSpeed - c->colliderA->surfaceSpeed);
+        bias = -(c->colliderB->GetSurfaceSpeed() - c->colliderA->GetSurfaceSpeed());
     }
 
     // clang-format off

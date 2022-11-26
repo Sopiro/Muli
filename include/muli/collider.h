@@ -2,6 +2,7 @@
 
 #include "collision_filter.h"
 #include "common.h"
+#include "material.h"
 #include "predefined_block_allocator.h"
 #include "rigidbody.h"
 #include "shape.h"
@@ -20,7 +21,13 @@ public:
     const CollisionFilter& GetFilter() const;
     void SetFilter(const CollisionFilter& filter);
 
+    float GetMass() const;
+    void SetMass(float mass);
     float GetDensity() const;
+    void SetDensity(float density);
+
+    const Material& GetMaterial() const;
+    void SetMaterial(const Material& material);
     float GetFriction() const;
     void SetFriction(float friction);
     float GetRestitution() const;
@@ -47,24 +54,16 @@ private:
 
     Collider();
     ~Collider() = default;
-    void Create(PredefinedBlockAllocator* allocator,
-                RigidBody* body,
-                Shape* shape,
-                float density,
-                float friction,
-                float restitution,
-                float surfaceSpeed);
+
+    void Create(PredefinedBlockAllocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
     void Destroy(PredefinedBlockAllocator* allocator);
+
+    float density;
+
+    Material material;
 
     RigidBody* body;
     Shape* shape;
-
-    float density;
-    float friction;
-    float restitution;
-    float surfaceSpeed;
-
-    CollisionFilter filter;
 
     Collider* next;
     int32 node;
@@ -85,14 +84,15 @@ inline const Shape* Collider::GetShape() const
     return shape;
 }
 
-inline const CollisionFilter& Collider::GetFilter() const
+inline float Collider::GetMass() const
 {
-    return filter;
+    return shape->area * density;
 }
 
-inline void Collider::SetFilter(const CollisionFilter& _filter)
+inline void Collider::SetMass(float _mass)
 {
-    filter = _filter;
+    density = _mass / shape->area;
+    body->ResetMassData();
 }
 
 inline float Collider::GetDensity() const
@@ -100,34 +100,60 @@ inline float Collider::GetDensity() const
     return density;
 }
 
+inline void Collider::SetDensity(float _density)
+{
+    density = _density;
+    body->ResetMassData();
+}
+
+inline const Material& Collider::GetMaterial() const
+{
+    return material;
+}
+
+inline void Collider::SetMaterial(const Material& _material)
+{
+    material = _material;
+}
+
 inline float Collider::GetFriction() const
 {
-    return friction;
+    return material.friction;
 }
 
 inline void Collider::SetFriction(float _friction)
 {
-    friction = _friction;
+    material.friction = _friction;
 }
 
 inline float Collider::GetRestitution() const
 {
-    return restitution;
+    return material.restitution;
 }
 
 inline void Collider::SetRestitution(float _restitution)
 {
-    restitution = _restitution;
+    material.restitution = _restitution;
 }
 
 inline float Collider::GetSurfaceSpeed() const
 {
-    return surfaceSpeed;
+    return material.surfaceSpeed;
 }
 
 inline void Collider::SetSurfaceSpeed(float _surfaceSpeed)
 {
-    surfaceSpeed = _surfaceSpeed;
+    material.surfaceSpeed = _surfaceSpeed;
+}
+
+inline const CollisionFilter& Collider::GetFilter() const
+{
+    return material.filter;
+}
+
+inline void Collider::SetFilter(const CollisionFilter& _filter)
+{
+    material.filter = _filter;
 }
 
 inline AABB Collider::GetAABB() const

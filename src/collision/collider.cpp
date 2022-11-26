@@ -12,20 +12,13 @@ Collider::Collider()
 {
 }
 
-void Collider::Create(PredefinedBlockAllocator* allocator,
-                      RigidBody* _body,
-                      Shape* _shape,
-                      float _density,
-                      float _friction,
-                      float _restitution,
-                      float _surfaceSpeed)
+void Collider::Create(
+    PredefinedBlockAllocator* allocator, RigidBody* _body, Shape* _shape, float _density, const Material& _material)
 {
     body = _body;
     shape = _shape->Clone(allocator);
     density = _density;
-    friction = _friction;
-    restitution = _restitution;
-    surfaceSpeed = _surfaceSpeed;
+    material = _material;
 }
 
 void Collider::Destroy(PredefinedBlockAllocator* allocator)

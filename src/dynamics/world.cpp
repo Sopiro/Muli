@@ -328,7 +328,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
     std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(aabb);
 
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    PolygonShape box{ vertices, 4, 0.0f };
+    PolygonShape box{ vertices, 4, true, 0.0f };
 
     Transform t{ identity };
 
@@ -410,7 +410,7 @@ RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, flo
 
     Add(b);
 
-    PolygonShape box{ vertices, 4 };
+    PolygonShape box{ vertices, 4, true, radius };
     b->AddCollider(&box);
     return b;
 }

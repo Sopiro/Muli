@@ -15,7 +15,6 @@ public:
         b1->SetPosition(-1, 3);
         RigidBody* b2 = world->CreateBox(0.5f);
         b2->SetPosition(1, 3);
-        // b2->SetMass(5.0f);
 
         Vec2 ga = Vec2{ -1.0f, 5.0f };
         Vec2 gb = Vec2{ 1.0f, 5.0f };

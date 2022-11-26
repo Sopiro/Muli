@@ -51,7 +51,7 @@ void RigidBody::NotifyForceUpdate() const
     }
 }
 
-Collider* RigidBody::AddCollider(Shape* shape)
+Collider* RigidBody::AddCollider(Shape* _shape, float _density, const Material& _material)
 {
     muliAssert(world != nullptr);
 
@@ -59,7 +59,7 @@ Collider* RigidBody::AddCollider(Shape* shape)
     void* mem = allocator->Allocate(sizeof(Collider));
 
     Collider* collider = new (mem) Collider;
-    collider->Create(allocator, this, shape, DEFAULT_DENSITY, DEFAULT_FRICTION, DEFAULT_RESTITUTION, DEFAULT_SURFACESPEED);
+    collider->Create(allocator, this, _shape, _density, _material);
 
     collider->next = colliderList;
     colliderList = collider;

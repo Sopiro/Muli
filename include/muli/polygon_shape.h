@@ -32,7 +32,6 @@ protected:
     Vec2* vertices;
     Vec2* normals;
     int32 vertexCount;
-    float area;
 
 private:
     Vec2 localVertices[MAX_LOCAL_POLYGON_VERTICES];

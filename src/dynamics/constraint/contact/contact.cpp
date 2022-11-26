@@ -21,8 +21,8 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     manifold.numContacts = 0;
 
     beta = settings.POSITION_CORRECTION_BETA;
-    restitution = MixRestitution(colliderA->restitution, colliderB->restitution);
-    friction = MixFriction(colliderA->friction, colliderB->friction);
+    restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
+    friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
 
     collisionDetectionFunction = DetectionFunctionMap[colliderA->GetType()][colliderB->GetType()];
     muliAssert(collisionDetectionFunction != nullptr);

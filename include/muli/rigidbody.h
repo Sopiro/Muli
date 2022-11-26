@@ -5,6 +5,7 @@
 #include "collision_filter.h"
 #include "common.h"
 #include "edge.h"
+#include "material.h"
 #include "settings.h"
 
 namespace muli
@@ -17,7 +18,6 @@ struct Node;
 struct ContactEdge;
 struct JointEdge;
 
-// Children: Polygon, Circle
 class RigidBody final
 {
 public:
@@ -91,7 +91,7 @@ public:
     RigidBody* GetNext() const;
     World* GetWorld() const;
 
-    Collider* AddCollider(Shape* shape);
+    Collider* AddCollider(Shape* shape, float density = DEFAULT_DENSITY, const Material& material = default_material);
     Collider* GetColliderList() const;
 
     void SetCollisionFilter(const CollisionFilter& filter) const;
