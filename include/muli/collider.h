@@ -18,15 +18,15 @@ public:
     const Shape* GetShape() const;
 
     const CollisionFilter& GetFilter() const;
-    void SetFilter(const CollisionFilter& _filter);
+    void SetFilter(const CollisionFilter& filter);
 
     float GetDensity() const;
     float GetFriction() const;
-    void SetFriction(float _friction);
+    void SetFriction(float friction);
     float GetRestitution() const;
-    void SetRestitution(float _restitution);
+    void SetRestitution(float restitution);
     float GetSurfaceSpeed() const;
-    void SetSurfaceSpeed(float _surfaceSpeed);
+    void SetSurfaceSpeed(float surfaceSpeed);
 
     AABB GetAABB() const;
     MassData GetMassData() const;

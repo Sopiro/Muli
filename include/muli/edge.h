@@ -16,9 +16,9 @@ struct Edge
 
     Edge() = default;
 
-    Edge(const ContactPoint& cp1, const ContactPoint& cp2)
-        : p1{ cp1 }
-        , p2{ cp2 }
+    Edge(const ContactPoint& _p1, const ContactPoint& _p2)
+        : p1{ _p1 }
+        , p2{ _p2 }
     {
         ComputeProperty();
     }

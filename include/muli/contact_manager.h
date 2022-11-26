@@ -11,7 +11,7 @@ extern void InitializeDetectionFunctionMap();
 class ContactManager
 {
 public:
-    ContactManager(World& _world);
+    ContactManager(World& world);
     ~ContactManager();
 
     void Update(float dt);

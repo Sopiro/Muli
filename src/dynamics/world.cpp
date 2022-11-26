@@ -3,7 +3,6 @@
 #include "muli/circle_shape.h"
 #include "muli/island.h"
 #include "muli/polygon_shape.h"
-#include <iostream>
 
 namespace muli
 {

@@ -11,13 +11,13 @@ struct WorldSettings;
 class WeldJoint : public Joint
 {
 public:
-    WeldJoint(RigidBody* _bodyA,
-              RigidBody* _bodyB,
-              const Vec2& _anchor,
-              const WorldSettings& _settings,
-              float _frequency = -1.0f,
-              float _dampingRatio = 1.0f,
-              float _jointMass = 1.0f);
+    WeldJoint(RigidBody* bodyA,
+              RigidBody* bodyB,
+              const Vec2& anchor,
+              const WorldSettings& settings,
+              float frequency = -1.0f,
+              float dampingRatio = 1.0f,
+              float jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

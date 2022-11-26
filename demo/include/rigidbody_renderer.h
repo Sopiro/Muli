@@ -16,8 +16,8 @@ public:
 
     virtual void Render() override;
 
-    void SetProjectionMatrix(const Mat4& _projMatrix);
-    void SetViewMatrix(const Mat4& _viewMatrix);
+    void SetProjectionMatrix(const Mat4& projMatrix);
+    void SetViewMatrix(const Mat4& viewMatrix);
 
     void Register(RigidBody* body);
     void Register(const std::vector<RigidBody*>& bodies);
@@ -44,7 +44,7 @@ private:
 
 inline void RigidBodyRenderer::Register(RigidBody* body)
 {
-    for (const Collider* collider = body->GetColliderList(); collider; collider = collider->GetNext())
+    for (Collider* collider = body->GetColliderList(); collider; collider = collider->GetNext())
     {
         bodiesAndMeshes.push_back(std::make_pair(body, GenerateMesh(collider)));
     }

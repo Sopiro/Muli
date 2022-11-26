@@ -10,7 +10,7 @@ class Island
 private:
     friend class World;
 
-    Island(World& _world, uint32 _bodyCapacity, uint32 _contactCapacity, uint32 _jointCapacity);
+    Island(World& world, uint32 bodyCapacity, uint32 contactCapacity, uint32 jointCapacity);
     ~Island();
 
     void Add(RigidBody* body);

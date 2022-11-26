@@ -11,14 +11,14 @@ struct WorldSettings;
 class LineJoint : public Joint
 {
 public:
-    LineJoint(RigidBody* _bodyA,
-              RigidBody* _bodyB,
-              Vec2 _anchor,
-              Vec2 _dir,
-              const WorldSettings& _settings,
-              float _frequency = 10.0f,
-              float _dampingRatio = 1.0f,
-              float _jointMass = -1.0f);
+    LineJoint(RigidBody* bodyA,
+              RigidBody* bodyB,
+              Vec2 anchor,
+              Vec2 dir,
+              const WorldSettings& settings,
+              float frequency = 10.0f,
+              float dampingRatio = 1.0f,
+              float jointMass = -1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

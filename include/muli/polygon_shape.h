@@ -10,7 +10,7 @@ namespace muli
 class PolygonShape : public Shape
 {
 public:
-    PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition = true, float radius = DEFAULT_RADIUS);
+    PolygonShape(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
     ~PolygonShape();
 
     virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;

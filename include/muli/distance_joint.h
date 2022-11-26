@@ -11,15 +11,15 @@ struct WorldSettings;
 class DistanceJoint : public Joint
 {
 public:
-    DistanceJoint(RigidBody* _bodyA,
-                  RigidBody* _bodyB,
-                  const Vec2& _anchorA,
-                  const Vec2& _anchorB,
-                  float _length,
-                  const WorldSettings& _settings,
-                  float _frequency = 10.0f,
-                  float _dampingRatio = 1.0f,
-                  float _jointMass = 1.0f);
+    DistanceJoint(RigidBody* bodyA,
+                  RigidBody* bodyB,
+                  const Vec2& anchorA,
+                  const Vec2& anchorB,
+                  float length,
+                  const WorldSettings& settings,
+                  float frequency = 10.0f,
+                  float dampingRatio = 1.0f,
+                  float jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

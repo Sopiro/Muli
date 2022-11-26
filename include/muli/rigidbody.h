@@ -21,9 +21,9 @@ struct JointEdge;
 class RigidBody final
 {
 public:
-    enum Type : uint8
+    enum Type
     {
-        static_body,
+        static_body = 0,
         kinematic_body,
         dynamic_body,
     };
@@ -35,14 +35,14 @@ public:
         flag_fixed_rotation = 1 << 2,
     };
 
-    RigidBody(RigidBody::Type _type);
+    RigidBody(RigidBody::Type type);
     ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;
 
-    RigidBody(RigidBody&& _other) noexcept = delete;
-    RigidBody& operator=(RigidBody&& _other) = delete;
+    RigidBody(RigidBody&& other) noexcept = delete;
+    RigidBody& operator=(RigidBody&& other) = delete;
 
     bool TestPoint(const Vec2& q) const;
     Vec2 GetClosestPoint(const Vec2& q) const;
@@ -51,11 +51,11 @@ public:
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
     const Vec2& GetPosition() const;
-    void SetPosition(const Vec2& _pos);
+    void SetPosition(const Vec2& pos);
     void SetPosition(float x, float y);
     const Rotation& GetRotation() const;
-    void SetRotation(const Rotation& _rotation);
-    void SetRotation(float _angle);
+    void SetRotation(const Rotation& rotation);
+    void SetRotation(float angle);
     float GetAngle() const;
     void Translate(const Vec2& d);
     void Translate(float dx, float dy);
@@ -70,15 +70,15 @@ public:
     float GetInverseInertia() const;
 
     const Vec2& GetLinearVelocity() const;
-    void SetLinearVelocity(const Vec2& _linearVelocity);
+    void SetLinearVelocity(const Vec2& linearVelocity);
     void SetLinearVelocity(float vx, float vy);
     float GetAngularVelocity() const;
-    void SetAngularVelocity(float _angularVelocity);
+    void SetAngularVelocity(float angularVelocity);
 
     const Vec2& GetForce() const;
-    void SetForce(const Vec2& _force);
+    void SetForce(const Vec2& force);
     float GetTorque() const;
-    void SetTorque(float _torque);
+    void SetTorque(float torque);
 
     Type GetType() const;
     bool IsSleeping() const;
@@ -130,13 +130,13 @@ protected:
     friend class Collider;
 
     // Center of mass in local space = (0, 0)
-    Transform transform{ identity };
+    Transform transform;
 
-    Vec2 force{ 0.0f };  // N
-    float torque = 0.0f; // N⋅m
+    Vec2 force;   // N
+    float torque; // N⋅m
 
-    Vec2 linearVelocity{ 0.0f };  // m/s
-    float angularVelocity = 0.0f; // rad/s
+    Vec2 linearVelocity;   // m/s
+    float angularVelocity; // rad/s
 
     float mass; // kg
     float invMass;
@@ -153,17 +153,17 @@ protected:
     void ResetMassData();
 
 private:
-    World* world = nullptr;
-    uint32 id = 0;
-    uint32 islandID = 0;
+    World* world;
+    uint32 id;
+    uint32 islandID;
 
-    ContactEdge* contactList = nullptr;
-    JointEdge* jointList = nullptr;
+    ContactEdge* contactList;
+    JointEdge* jointList;
 
-    float resting = 0.0f;
+    float resting;
 
-    RigidBody* prev = nullptr;
-    RigidBody* next = nullptr;
+    RigidBody* prev;
+    RigidBody* next;
 
     void NotifyForceUpdate() const;
 };

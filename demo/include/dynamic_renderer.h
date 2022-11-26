@@ -13,8 +13,8 @@ public:
     DynamicRenderer();
     virtual ~DynamicRenderer();
 
-    void SetProjectionMatrix(const Mat4& _projMatrix);
-    void SetViewMatrix(const Mat4& _viewMatrix);
+    void SetProjectionMatrix(const Mat4& projMatrix);
+    void SetViewMatrix(const Mat4& viewMatrix);
 
     virtual void Render() override;
     void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });

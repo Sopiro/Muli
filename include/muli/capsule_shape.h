@@ -8,8 +8,8 @@ namespace muli
 class CapsuleShape : public Shape
 {
 public:
-    CapsuleShape(float _length, float radius, bool horizontal = false);
-    CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition = false);
+    CapsuleShape(float length, float radius, bool horizontal = false);
+    CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
     ~CapsuleShape() = default;
 
     virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;

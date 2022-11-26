@@ -25,7 +25,7 @@ public:
     void Clear();
     void AddVertex(const Vec2& vertex);
     bool ContainsVertex(const Vec2& vertex) const;
-    void Shrink(const uint32* _indices, uint32 _count);
+    void Shrink(const uint32* indices, uint32 count);
 
     // Returns the point closest to the q
     ClosestPoint GetClosestPoint(const Vec2& q) const;

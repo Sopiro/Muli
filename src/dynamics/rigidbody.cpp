@@ -16,6 +16,19 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , invInertia{ 0.0f }
     , colliderList{ nullptr }
     , colliderCount{ 0 }
+    , world{ nullptr }
+    , id{ 0 }
+    , islandID{ 0 }
+    , contactList{ nullptr }
+    , jointList{ nullptr }
+    , resting{ 0.0f }
+    , prev{ nullptr }
+    , next{ nullptr }
+    , transform{ identity }
+    , force{ 0.0f }
+    , torque{ 0.0f }
+    , linearVelocity{ 0.0f }
+    , angularVelocity{ 0.0f }
 {
 }
 
@@ -172,18 +185,5 @@ void RigidBody::ResetMassData()
         invInertia = 0.0f;
     }
 }
-
-// Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
-// {
-//     for (Collider* collider = colliderList; collider; collider = collider->next)
-//     {
-//         if (collider->RayCast(input, output))
-//         {
-//             return true;
-//         }
-//     }
-
-//     return false;
-// }
 
 } // namespace muli

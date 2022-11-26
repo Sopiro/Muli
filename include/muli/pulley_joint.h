@@ -11,17 +11,17 @@ struct WorldSettings;
 class PulleyJoint : public Joint
 {
 public:
-    PulleyJoint(RigidBody* _bodyA,
-                RigidBody* _bodyB,
-                const Vec2& _anchorA,
-                const Vec2& _anchorB,
-                const Vec2& _groundAnchorA,
-                const Vec2& _groundAnchorB,
-                const WorldSettings& _settings,
-                float _ratio = 1.0f,
-                float _frequency = -1.0f,
-                float _dampingRatio = 1.0f,
-                float _jointMass = 1.0f);
+    PulleyJoint(RigidBody* bodyA,
+                RigidBody* bodyB,
+                const Vec2& anchorA,
+                const Vec2& anchorB,
+                const Vec2& groundAnchorA,
+                const Vec2& groundAnchorB,
+                const WorldSettings& settings,
+                float ratio = 1.0f,
+                float frequency = -1.0f,
+                float dampingRatio = 1.0f,
+                float jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

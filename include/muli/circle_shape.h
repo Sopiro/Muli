@@ -9,7 +9,7 @@ namespace muli
 class CircleShape : public Shape
 {
 public:
-    CircleShape(float _radius);
+    CircleShape(float radius);
     ~CircleShape() = default;
 
     virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;

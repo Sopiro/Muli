@@ -10,7 +10,7 @@ namespace muli
 class BroadPhase
 {
 public:
-    BroadPhase(World& _world, float _aabbMargin = DEFAULT_AABB_MARGIN, float _velocityMultiplier = DEFAULT_VELOCITY_MULTIPLIER);
+    BroadPhase(World& world, float aabbMargin = DEFAULT_AABB_MARGIN, float velocityMultiplier = DEFAULT_VELOCITY_MULTIPLIER);
     ~BroadPhase() noexcept;
 
     void UpdateDynamicTree(float dt);

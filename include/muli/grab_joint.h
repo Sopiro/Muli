@@ -11,13 +11,13 @@ struct WorldSettings;
 class GrabJoint : public Joint
 {
 public:
-    GrabJoint(RigidBody* _body,
-              const Vec2& _anchor,
-              const Vec2& _target,
-              const WorldSettings& _settings,
-              float _frequency = 1.0f,
-              float _dampingRatio = 0.5f,
-              float _jointMass = -1.0f);
+    GrabJoint(RigidBody* body,
+              const Vec2& anchor,
+              const Vec2& target,
+              const WorldSettings& settings,
+              float frequency = 1.0f,
+              float dampingRatio = 0.5f,
+              float jointMass = -1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

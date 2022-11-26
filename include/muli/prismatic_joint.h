@@ -11,14 +11,14 @@ struct WorldSettings;
 class PrismaticJoint : public Joint
 {
 public:
-    PrismaticJoint(RigidBody* _bodyA,
-                   RigidBody* _bodyB,
-                   const Vec2& _anchor,
-                   const Vec2& _dir,
-                   const WorldSettings& _settings,
-                   float _frequency = -1.0f,
-                   float _dampingRatio = 1.0f,
-                   float _jointMass = 1.0f);
+    PrismaticJoint(RigidBody* bodyA,
+                   RigidBody* bodyB,
+                   const Vec2& anchor,
+                   const Vec2& dir,
+                   const WorldSettings& settings,
+                   float frequency = -1.0f,
+                   float dampingRatio = 1.0f,
+                   float jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;

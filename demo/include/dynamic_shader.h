@@ -11,10 +11,10 @@ class DynamicShader final : public Shader
 public:
     static std::unique_ptr<DynamicShader> Create();
 
-    void SetColor(const Vec3& _color);
-    void SetViewMatrix(const Mat4& _viewMatrix);
-    void SetProjectionMatrix(const Mat4& _projMatrix);
-    void SetModelMatrix(const Mat4& _modelMatrix);
+    void SetColor(const Vec3& color);
+    void SetViewMatrix(const Mat4& viewMatrix);
+    void SetProjectionMatrix(const Mat4& projMatrix);
+    void SetModelMatrix(const Mat4& modelMatrix);
 
 private:
     friend class DynamicRenderer;

@@ -125,28 +125,6 @@ inline Vec2 LerpVector(const Vec2& a, const Vec2& b, const UV& uv)
     return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }
 
-inline void print()
-{
-    std::cout << '\n';
-}
-
-template <typename T>
-inline void print(T msg, bool lineFeed = true)
-{
-    if (lineFeed)
-        std::cout << msg << '\n';
-    else
-        std::cout << msg;
-}
-
-inline void print(const Vec2& v, bool lineFeed = true)
-{
-    if (lineFeed)
-        printf("%.6f, %.6f\n", v.x, v.y);
-    else
-        printf("%.6f, %.6f\n", v.x, v.y);
-}
-
 inline std::ostream& operator<<(std::ostream& out, const Vec2& v)
 {
     return out << v.x << ' ' << v.y << '\n';

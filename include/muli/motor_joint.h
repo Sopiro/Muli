@@ -11,15 +11,15 @@ struct WorldSettings;
 class MotorJoint : public Joint
 {
 public:
-    MotorJoint(RigidBody* _bodyA,
-               RigidBody* _bodyB,
-               const Vec2& _anchor,
-               const WorldSettings& _settings,
-               float _maxForce = 1000.0f,
-               float _maxTorque = 1000.0f,
-               float _frequency = -1.0f,
-               float _dampingRatio = 1.0f,
-               float _jointMass = 1.0f);
+    MotorJoint(RigidBody* bodyA,
+               RigidBody* bodyB,
+               const Vec2& anchor,
+               const WorldSettings& settings,
+               float maxForce = 1000.0f,
+               float maxTorque = 1000.0f,
+               float frequency = -1.0f,
+               float dampingRatio = 1.0f,
+               float jointMass = 1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;
@@ -27,13 +27,13 @@ public:
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
     float GetMaxForce() const;
-    void SetMaxForce(float _maxForce);
+    void SetMaxForce(float maxForce);
     float GetMaxTorque() const;
-    void SetMaxTorque(float _maxTorque);
+    void SetMaxTorque(float maxTorque);
     const Vec2& GetLinearOffset() const;
-    void SetLinearOffset(const Vec2& _linearOffset);
+    void SetLinearOffset(const Vec2& linearOffset);
     float GetAngularOffset() const;
-    void SetAngularOffset(float _angularOffset);
+    void SetAngularOffset(float angularOffset);
 
 private:
     Vec2 localAnchorA;

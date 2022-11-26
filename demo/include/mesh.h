@@ -8,7 +8,7 @@ namespace muli
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32>& _indices);
+    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& texCoords, const std::vector<uint32>& indices);
     ~Mesh() noexcept;
 
     Mesh(const Mesh&) noexcept = delete;

@@ -68,13 +68,13 @@ public:
         motor_joint,
     };
 
-    Joint(Joint::Type _type,
-          RigidBody* _bodyA,
-          RigidBody* _bodyB,
-          const WorldSettings& _settings,
-          float _frequency = DEFAULT_FREQUENCY,
-          float _dampingRatio = DEFAULT_DAMPING_RATIO,
-          float _jointMass = DEFAULT_JOINT_MASS);
+    Joint(Joint::Type type,
+          RigidBody* bodyA,
+          RigidBody* bodyB,
+          const WorldSettings& settings,
+          float frequency = DEFAULT_FREQUENCY,
+          float dampingRatio = DEFAULT_DAMPING_RATIO,
+          float jointMass = DEFAULT_JOINT_MASS);
     ~Joint() noexcept;
 
     Joint(const Joint&) = delete;
@@ -84,11 +84,11 @@ public:
     Joint& operator=(Joint&&) noexcept = default;
 
     float GetFrequency() const;
-    void SetFrequency(float _frequency);
+    void SetFrequency(float frequency);
     float GetDampingRatio() const;
-    void SetDampingRatio(float _dampingRatio);
+    void SetDampingRatio(float dampingRatio);
     float GetJointMass() const;
-    void SetJointMass(float _jointMass);
+    void SetJointMass(float jointMass);
 
     bool IsSolid() const;
     Joint::Type GetType() const;

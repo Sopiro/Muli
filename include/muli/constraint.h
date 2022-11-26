@@ -11,7 +11,7 @@ struct WorldSettings;
 class Constraint
 {
 public:
-    Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings);
+    Constraint(RigidBody* bodyA, RigidBody* bodyB, const WorldSettings& settings);
     virtual ~Constraint() noexcept = default;
 
     Constraint(const Constraint&) noexcept = delete;

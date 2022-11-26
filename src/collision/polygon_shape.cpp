@@ -70,8 +70,7 @@ PolygonShape::~PolygonShape()
 Shape* PolygonShape::Clone(PredefinedBlockAllocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(PolygonShape));
-    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, true, radius);
-    shape->center = center;
+    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, false, radius);
     return shape;
 }
 
@@ -234,8 +233,8 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
     i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
-        Vec2& v0 = vertices[i0] - center;
-        Vec2& v1 = vertices[i1] - center;
+        Vec2 v0 = vertices[i0] - center;
+        Vec2 v1 = vertices[i1] - center;
 
         Vec2 edge = v1 - v0;
         float length = edge.Normalize();
