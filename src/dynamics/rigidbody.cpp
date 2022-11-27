@@ -24,6 +24,7 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , resting{ 0.0f }
     , prev{ nullptr }
     , next{ nullptr }
+    , localCenter{ 0.0f }
     , transform{ identity }
     , force{ 0.0f }
     , torque{ 0.0f }
@@ -158,7 +159,7 @@ void RigidBody::ResetMassData()
         return;
     }
 
-    Vec2 localCenter{ 0.0f };
+    localCenter.SetZero();
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
         MassData massData = collider->GetMassData();

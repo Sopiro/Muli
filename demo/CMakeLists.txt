@@ -76,6 +76,7 @@ set(DEMO_SOURCE_FILES
     src/demo/ragdoll.cpp
     src/demo/ragdoll_100.cpp
     src/demo/car.cpp
+    src/demo/compound_shape.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

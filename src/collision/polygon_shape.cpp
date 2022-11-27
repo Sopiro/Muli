@@ -20,8 +20,6 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _rese
 
     ComputeConvexHull(_vertices, _vertexCount, vertices, &vertexCount);
 
-    // Traslate center to the origin
-
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
@@ -34,26 +32,26 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _rese
 
     // Compute area
     area = 0.0f;
-    if (_resetPosition)
-    {
-        vertices[0] -= center;
-    }
     for (int32 i = 1; i < vertexCount; ++i)
     {
-        if (_resetPosition)
-        {
-            vertices[i] -= center;
-        }
-        area += Cross(vertices[i - 1], vertices[i]) * 0.5f;        // internal triangle
-        area += radius * (vertices[i - 1] - vertices[i]).Length(); // edge rect
+        Vec2 v0 = vertices[i - 1] - center;
+        Vec2 v1 = vertices[i] - center;
+        area += Cross(v0, v1) * 0.5f;        // internal triangle
+        area += radius * (v0 - v1).Length(); // edge rect
     }
-    area += Cross(vertices[vertexCount - 1], vertices[0]) * 0.5f;
-    area += radius * (vertices[vertexCount - 1] - vertices[0]).Length();
+    Vec2 v0 = vertices[vertexCount - 1] - center;
+    Vec2 v1 = vertices[0] - center;
+    area += Cross(v0, v1) * 0.5f;
+    area += radius * (v0 - v1).Length();
 
     area += MULI_PI * radius * radius; // corner arc
 
     if (_resetPosition)
     {
+        for (int32 i = 0; i < vertexCount; ++i)
+        {
+            vertices[i] -= center;
+        }
         center.SetZero();
     }
 }

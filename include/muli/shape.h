@@ -49,6 +49,7 @@ public:
 protected:
     friend class ContactManager;
     friend class Collider;
+    friend class RigidBody;
 
     Vec2 center;
 

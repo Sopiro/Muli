@@ -50,9 +50,7 @@ inline void BroadPhase::Reset()
 
 inline void BroadPhase::Add(Collider* collider)
 {
-    RigidBody* body = collider->body;
-    AABB fatAABB;
-    collider->shape->ComputeAABB(body->transform, &fatAABB);
+    AABB fatAABB = collider->GetAABB();
     fatAABB.min -= aabbMargin;
     fatAABB.max += aabbMargin;
 

@@ -15,6 +15,8 @@ void ContactManager::Update(float dt)
         RigidBody* bodyA = colliderA->body;
         RigidBody* bodyB = colliderB->body;
 
+        muliAssert(bodyA != bodyB);
+
         if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
         {
             return;
@@ -29,8 +31,18 @@ void ContactManager::Update(float dt)
         ContactEdge* e = bodyB->contactList;
         while (e)
         {
-            // This contact already exists
-            if (e->other == bodyA) return;
+            if (e->other == bodyA)
+            {
+                Collider* ceA = e->contact->colliderA;
+                Collider* ceB = e->contact->colliderB;
+
+                // This contact already exists
+                if ((colliderA == ceA && colliderB == ceB) || (colliderA == ceB && colliderB == ceA))
+                {
+                    return;
+                }
+            }
+
             e = e->next;
         }
 

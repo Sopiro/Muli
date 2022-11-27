@@ -7,7 +7,7 @@ namespace muli
 
 class Contact;
 
-enum ContactType : uint8
+enum ContactType
 {
     Normal = 0,
     Tangent
@@ -24,7 +24,7 @@ struct Jacobian
 class ContactSolver
 {
 public:
-    enum Type : uint8
+    enum Type
     {
         Normal = 0,
         Tangent
@@ -38,11 +38,9 @@ private:
     friend class BlockSolver;
 
     Contact* c;
-    ContactSolver::Type type;
+    Type type;
 
     Vec2 p;
-    Vec2 ra;
-    Vec2 rb;
     Jacobian j;
 
     float bias;

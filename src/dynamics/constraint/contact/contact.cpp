@@ -50,7 +50,7 @@ void Contact::Update()
         tangentSolvers[i].impulseSum = 0.0f;
     }
 
-    if (!touching)
+    if (touching == false)
     {
         return;
     }

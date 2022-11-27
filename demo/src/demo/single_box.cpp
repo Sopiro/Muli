@@ -22,6 +22,6 @@ public:
     }
 };
 
-DemoFrame single_box{ "Single Box", SingleBox::Create };
+DemoFrame single_box{ "Single box", SingleBox::Create };
 
 } // namespace muli

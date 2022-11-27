@@ -392,6 +392,7 @@ extern DemoFrame line_of_sight;
 extern DemoFrame ragdoll;
 extern DemoFrame ragdoll_100;
 extern DemoFrame car;
+extern DemoFrame compound_shape;
 
 static int32 init_demos()
 {
@@ -434,6 +435,7 @@ static int32 init_demos()
     demos[demo_count++] = ragdoll;
     demos[demo_count++] = ragdoll_100;
     demos[demo_count++] = car;
+    demos[demo_count++] = compound_shape;
 
     return demo_count;
 }

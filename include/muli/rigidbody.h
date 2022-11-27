@@ -48,6 +48,7 @@ public:
     Vec2 GetClosestPoint(const Vec2& q) const;
     bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
 
+    const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
     const Vec2& GetPosition() const;
@@ -65,9 +66,7 @@ public:
     void Awake();
 
     float GetMass() const;
-    float GetInverseMass() const;
     float GetInertia() const;
-    float GetInverseInertia() const;
 
     const Vec2& GetLinearVelocity() const;
     void SetLinearVelocity(const Vec2& linearVelocity);
@@ -129,7 +128,7 @@ protected:
 
     friend class Collider;
 
-    // Center of mass in local space = (0, 0)
+    Vec2 localCenter; // Center of mass
     Transform transform;
 
     Vec2 force;   // N
@@ -167,6 +166,11 @@ private:
 
     void NotifyForceUpdate() const;
 };
+
+inline const Vec2& RigidBody::GetLocalCenter() const
+{
+    return localCenter;
+}
 
 inline const Transform& RigidBody::GetTransform() const
 {
@@ -235,19 +239,9 @@ inline float RigidBody::GetMass() const
     return mass;
 }
 
-inline float RigidBody::GetInverseMass() const
-{
-    return invMass;
-}
-
 inline float RigidBody::GetInertia() const
 {
-    return inertia;
-}
-
-inline float RigidBody::GetInverseInertia() const
-{
-    return invInertia;
+    return inertia + mass * Length2(localCenter);
 }
 
 inline void RigidBody::Awake()
