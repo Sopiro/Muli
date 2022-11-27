@@ -150,8 +150,8 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->transform.position += b->linearVelocity * world.settings.DT;
-        b->transform.rotation += b->angularVelocity * world.settings.DT;
+        b->position += b->linearVelocity * world.settings.DT;
+        b->angle += b->angularVelocity * world.settings.DT;
 
         if (!TestPointInsideAABB(world.settings.VALID_REGION, b->GetPosition()))
         {
@@ -191,6 +191,12 @@ void Island::Solve()
         {
             break;
         }
+    }
+
+    for (uint32 i = 0; i < bodyCount; ++i)
+    {
+        RigidBody* b = bodies[i];
+        b->SynchronizeTransform();
     }
 }
 

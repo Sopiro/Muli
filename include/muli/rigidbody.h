@@ -49,15 +49,18 @@ public:
     bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
 
     const Vec2& GetLocalCenter() const;
+
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
     const Vec2& GetPosition() const;
     void SetPosition(const Vec2& pos);
     void SetPosition(float x, float y);
+
     const Rotation& GetRotation() const;
+    float GetAngle() const;
     void SetRotation(const Rotation& rotation);
     void SetRotation(float angle);
-    float GetAngle() const;
+
     void Translate(const Vec2& d);
     void Translate(float dx, float dy);
     void Rotate(float a);
@@ -67,6 +70,7 @@ public:
 
     float GetMass() const;
     float GetInertia() const;
+    float GetInertiaLocalOrigin() const;
 
     const Vec2& GetLinearVelocity() const;
     void SetLinearVelocity(const Vec2& linearVelocity);
@@ -128,8 +132,11 @@ protected:
 
     friend class Collider;
 
-    Vec2 localCenter; // Center of mass
     Transform transform;
+
+    Vec2 localCenter; // Center of mass
+    Vec2 position;    // Center of mass in world space
+    float angle;
 
     Vec2 force;   // N
     float torque; // N⋅m
@@ -150,6 +157,7 @@ protected:
     int32 colliderCount;
 
     void ResetMassData();
+    void SynchronizeTransform();
 
 private:
     World* world;
@@ -181,6 +189,9 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
 {
     transform.position = _pos;
     transform.rotation = _angle;
+
+    position = transform * localCenter;
+    angle = _angle;
 }
 
 inline const Vec2& RigidBody::GetPosition() const
@@ -191,11 +202,13 @@ inline const Vec2& RigidBody::GetPosition() const
 inline void RigidBody::SetPosition(const Vec2& _pos)
 {
     transform.position = _pos;
+    position = transform * localCenter;
 }
 
 inline void RigidBody::SetPosition(float x, float y)
 {
-    transform.position = Vec2{ x, y };
+    transform.position.Set(x, y);
+    position = transform * localCenter;
 }
 
 inline const Rotation& RigidBody::GetRotation() const
@@ -206,32 +219,37 @@ inline const Rotation& RigidBody::GetRotation() const
 inline void RigidBody::SetRotation(const Rotation& _rotation)
 {
     transform.rotation = _rotation;
+    angle = transform.rotation.GetAngle();
 }
 
 inline void RigidBody::SetRotation(float _angle)
 {
     transform.rotation = _angle;
+    angle = _angle;
 }
 
 inline float RigidBody::GetAngle() const
 {
-    return transform.rotation.angle;
+    return angle;
 }
 
 inline void RigidBody::Translate(const Vec2& d)
 {
     transform.position += d;
+    position = transform * localCenter;
 }
 
 inline void RigidBody::Translate(float dx, float dy)
 {
     transform.position.x += dx;
     transform.position.y += dy;
+    position = transform * localCenter;
 }
 
 inline void RigidBody::Rotate(float a)
 {
     transform.rotation += a;
+    angle += a;
 }
 
 inline float RigidBody::GetMass() const
@@ -240,6 +258,11 @@ inline float RigidBody::GetMass() const
 }
 
 inline float RigidBody::GetInertia() const
+{
+    return inertia;
+}
+
+inline float RigidBody::GetInertiaLocalOrigin() const
 {
     return inertia + mass * Length2(localCenter);
 }
@@ -258,7 +281,7 @@ inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
     }
 
     force += f;
-    torque += Cross(transform * localPosition - transform.position, f);
+    torque += Cross(localPosition - localCenter, f);
     NotifyForceUpdate();
 }
 
@@ -391,6 +414,12 @@ inline World* RigidBody::GetWorld() const
 inline Collider* RigidBody::GetColliderList() const
 {
     return colliderList;
+}
+
+inline void RigidBody::SynchronizeTransform()
+{
+    transform.rotation = angle;
+    transform.position = position - (transform.rotation * localCenter);
 }
 
 } // namespace muli

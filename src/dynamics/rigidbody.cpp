@@ -26,6 +26,8 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , next{ nullptr }
     , localCenter{ 0.0f }
     , transform{ identity }
+    , position{ 0.0f }
+    , angle{ 0.0f }
     , force{ 0.0f }
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
@@ -185,6 +187,10 @@ void RigidBody::ResetMassData()
         inertia = 0.0f;
         invInertia = 0.0f;
     }
+
+    Vec2 oldPosition = position;
+    position = transform * localCenter;
+    linearVelocity += Cross(angularVelocity, position - oldPosition);
 }
 
 } // namespace muli

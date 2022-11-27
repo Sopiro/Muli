@@ -34,10 +34,10 @@ void LineJoint::Prepare()
     // J = [-t^t, -(ra + d)×t, t^t, rb×t]
     // M = (J · M^-1 · J^t)^-1
 
-    Vec2 ra = bodyA->GetRotation() * localAnchorA;
-    Vec2 rb = bodyB->GetRotation() * localAnchorB;
-    Vec2 pa = bodyA->GetPosition() + ra;
-    Vec2 pb = bodyB->GetPosition() + rb;
+    Vec2 ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
+    Vec2 rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
+    Vec2 pa = bodyA->position + ra;
+    Vec2 pb = bodyB->position + rb;
     Vec2 d = pb - pa;
 
     t = bodyA->GetRotation() * localYAxis;

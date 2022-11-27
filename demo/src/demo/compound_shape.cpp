@@ -10,15 +10,18 @@ public:
         : Demo(game)
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body, 0.0f);
-        ground->SetPosition(0, -0.2f);
 
         RigidBody* b = world->CreateEmptyBody();
 
         Vec2 vertices[4] = { Vec2{ 2.0f, 0.0f }, Vec2{ 3.0f, 0.0f }, Vec2{ 2.0f, 3.0f }, Vec2{ 3.0f, 3.0f } };
-        PolygonShape p1{ vertices, 4, true, 0.0f };
+        PolygonShape p1{ vertices, 4, false, 0.0f };
         b->AddCollider(&p1, 2.0f);
 
-        b->SetPosition(0, 0);
+        Vec2 vertices2[4] = { Vec2{ 2.0f, 0.0f }, Vec2{ 3.0f, 0.0f }, Vec2{ 2.0f, 3.0f }, Vec2{ 3.0f, 3.0f } };
+        PolygonShape p2{ vertices2, 4, true, 0.0f };
+        b->AddCollider(&p2, 2.0f);
+
+        b->SetPosition(0, 5);
     }
 
     static Demo* Create(Game& game)

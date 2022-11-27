@@ -10,21 +10,27 @@ void PositionSolver::Prepare(Contact* _contact, uint32 index)
 {
     contact = _contact;
 
-    localPlainPoint = MulT(contact->b1->GetTransform(), contact->manifold.referencePoint.position);
-    localClipPoint = MulT(contact->b2->GetTransform(), contact->manifold.contactPoints[index].position);
-    localNormal = MulT(contact->b1->GetRotation(), contact->manifold.contactNormal);
+    Transform tA{ contact->b1->position, contact->b1->angle };
+    Transform tB{ contact->b2->position, contact->b2->angle };
+
+    localPlainPoint = MulT(tA, contact->manifold.referencePoint.position);
+    localClipPoint = MulT(tB, contact->manifold.contactPoints[index].position);
+    localNormal = MulT(tA.rotation, contact->manifold.contactNormal);
 }
 
 bool PositionSolver::Solve()
 {
-    Vec2 normal = contact->b1->GetRotation() * localNormal;
-    Vec2 planePoint = contact->b1->GetTransform() * localPlainPoint;
-    Vec2 clipPoint = contact->b2->GetTransform() * localClipPoint; // penetration point
+    Transform tA{ contact->b1->position, contact->b1->angle };
+    Transform tB{ contact->b2->position, contact->b2->angle };
+
+    Vec2 planePoint = tA * localPlainPoint;
+    Vec2 clipPoint = tB * localClipPoint; // penetration point
+    Vec2 normal = tA.rotation * localNormal;
 
     float separation = Dot(clipPoint - planePoint, normal);
 
-    Vec2 ra = clipPoint - contact->b1->GetPosition();
-    Vec2 rb = clipPoint - contact->b2->GetPosition();
+    Vec2 ra = clipPoint - tA.position;
+    Vec2 rb = clipPoint - tB.position;
 
     float ran = Cross(ra, normal);
     float rbn = Cross(rb, normal);

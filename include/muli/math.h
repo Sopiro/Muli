@@ -531,11 +531,8 @@ struct Mat4
 
 struct Rotation
 {
-    float angle = 0.0f;
-
     // sine, cosine
-    float s = 0.0f;
-    float c = 1.0f;
+    float s, c;
 
     Rotation() = default;
 
@@ -546,42 +543,37 @@ struct Rotation
 
     explicit Rotation(float _angle)
     {
-        angle = _angle;
         s = sinf(_angle);
         c = cosf(_angle);
     }
 
     void operator+=(float _angle)
     {
-        angle += _angle;
-        s = sinf(angle);
-        c = cosf(angle);
+        s = sinf(_angle);
+        c = cosf(_angle);
     }
 
     void operator-=(float _angle)
     {
-        angle -= _angle;
-        s = sinf(angle);
-        c = cosf(angle);
+        s = sinf(_angle);
+        c = cosf(_angle);
     }
 
     void operator=(float _angle)
     {
-        angle = _angle;
-        s = sinf(angle);
-        c = cosf(angle);
+        s = sinf(_angle);
+        c = cosf(_angle);
     }
 
     void SetIdentity()
     {
-        angle = 0.0f;
         s = 0.0f;
         c = 1.0f;
     }
 
     float GetAngle() const
     {
-        return angle;
+        return atan2f(s, c);
     }
 };
 
@@ -589,6 +581,8 @@ struct Transform
 {
     Vec2 position;
     Rotation rotation;
+
+    Transform() = default;
 
     Transform(Identity)
         : position{ 0.0f }
@@ -599,6 +593,12 @@ struct Transform
     Transform(const Vec2& _position, const Rotation& _rotation)
         : position{ _position }
         , rotation{ _rotation }
+    {
+    }
+
+    Transform(const Vec2& _position, float _angle)
+        : position{ _position }
+        , rotation{ _angle }
     {
     }
 

@@ -30,14 +30,8 @@ void WeldJoint::Prepare()
     // M = K^-1
 
     // Find k matrix here: https://dyn4j.org/2010/12/weld-constraint/
-    //
-    // Box2d::b2_weld_joint.cpp
-    // K = [ mA+r1y^2*iA+mB+r2y^2*iB,  -r1y*iA*r1x-r2y*iB*r2x,          -r1y*iA-r2y*iB]
-    //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB,           r1x*iA+r2x*iB]
-    //     [          -r1y*iA-r2y*iB,           r1x*iA+r2x*iB,                   iA+iB]
-
-    ra = bodyA->GetRotation() * localAnchorA;
-    rb = bodyB->GetRotation() * localAnchorB;
+    ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
+    rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
 
     Mat3 k;
 
@@ -60,11 +54,11 @@ void WeldJoint::Prepare()
 
     m = k.GetInverse();
 
-    Vec2 pa = bodyA->GetPosition() + ra;
-    Vec2 pb = bodyB->GetPosition() + rb;
+    Vec2 pa = bodyA->position + ra;
+    Vec2 pb = bodyB->position + rb;
 
     Vec2 error01 = pb - pa;
-    float error2 = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
+    float error2 = bodyB->angle - bodyA->angle - angleOffset;
 
     bias.Set(error01.x, error01.y, error2);
     bias *= beta * settings.INV_DT;

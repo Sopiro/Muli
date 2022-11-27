@@ -139,10 +139,10 @@ bool Contact::SolvePositionConstraint()
         solved &= positionSolvers[i].Solve();
     }
 
-    b1->transform.position += b1->invMass * cLinearImpulseA;
-    b1->transform.rotation += b1->invInertia * cAngularImpulseA;
-    b2->transform.position += b2->invMass * cLinearImpulseB;
-    b2->transform.rotation += b2->invInertia * cAngularImpulseB;
+    b1->position += b1->invMass * cLinearImpulseA;
+    b1->angle += b1->invInertia * cAngularImpulseA;
+    b2->position += b2->invMass * cLinearImpulseB;
+    b2->angle += b2->invInertia * cAngularImpulseB;
 
     return solved;
 }

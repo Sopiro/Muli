@@ -8,7 +8,7 @@ AngleJoint::AngleJoint(
     RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings, float _frequency, float _dampingRatio, float _jointMass)
     : Joint(Joint::Type::angle_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
 {
-    angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
+    angleOffset = bodyB->angle - bodyA->angle;
 }
 
 void AngleJoint::Prepare()
@@ -24,7 +24,7 @@ void AngleJoint::Prepare()
         m = 1.0f / k;
     }
 
-    float error = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
+    float error = bodyB->angle - bodyA->angle - angleOffset;
 
     bias = error * beta * settings.INV_DT;
 
