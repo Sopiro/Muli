@@ -47,7 +47,7 @@ public:
         Vec2 closestNormal;
 
         count = 0;
-        world->RayCastAny(from, to, [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> float {
+        world->RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
             ++count;
 
             if (closest == false)

@@ -41,6 +41,9 @@ public:
     void SolveVelocityConstraint();
     bool SolvePositionConstraint();
 
+    Collider* GetColliderA() const;
+    Collider* GetColliderB() const;
+
     Contact* GetNext() const;
     Contact* GetPrev() const;
 
@@ -90,6 +93,16 @@ private:
     Vec2 cLinearImpulseB;
     float cAngularImpulseB;
 };
+
+inline Collider* Contact::GetColliderA() const
+{
+    return colliderA;
+}
+
+inline Collider* Contact::GetColliderB() const
+{
+    return colliderB;
+}
 
 inline Contact* Contact::GetPrev() const
 {

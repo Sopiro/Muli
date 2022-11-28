@@ -80,8 +80,8 @@ public:
     Joint(const Joint&) = delete;
     Joint& operator=(const Joint&) = delete;
 
-    Joint(Joint&&) noexcept = default;
-    Joint& operator=(Joint&&) noexcept = default;
+    Joint(Joint&&) noexcept = delete;
+    Joint& operator=(Joint&&) noexcept = delete;
 
     float GetFrequency() const;
     void SetFrequency(float frequency);

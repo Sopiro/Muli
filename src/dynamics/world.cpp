@@ -23,7 +23,7 @@ void World::Step(float dt)
     settings.DT = dt;
     settings.INV_DT = 1.0f / dt;
 
-    contactManager.Update(dt);
+    contactManager.Step(dt);
 
     // Build the constraint island
     Island island{ *this, bodyCount, contactManager.contactCount, jointCount };
@@ -164,8 +164,6 @@ void World::Reset()
     jointList = nullptr;
     jointCount = 0;
 
-    uid = 0;
-
     muliAssert(blockAllocator.GetBlockCount() == 0);
 }
 
@@ -177,7 +175,6 @@ void World::Add(RigidBody* body)
     }
 
     body->world = this;
-    body->id = ++uid;
 
     if (bodyList == nullptr && bodyListTail == nullptr)
     {
@@ -348,7 +345,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
 void World::RayCastAny(
     const Vec2& from,
     const Vec2& to,
-    const std::function<float(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
     RayCastInput input;
     input.from = from;
@@ -364,7 +361,7 @@ void World::RayCastAny(
             float fraction = output.fraction;
             Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-            return callback(collider->body, point, output.normal, fraction);
+            return callback(collider, point, output.normal, fraction);
         }
 
         return input.maxFraction;
@@ -374,17 +371,17 @@ void World::RayCastAny(
 bool World::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
-    const std::function<void(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+    const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
     bool hit = false;
-    RigidBody* closestBody;
+    Collider* closestCollider;
     Vec2 closestPoint;
     Vec2 closestNormal;
     float closestFraction;
 
-    RayCastAny(from, to, [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> float {
+    RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
         hit = true;
-        closestBody = body;
+        closestCollider = collider;
         closestPoint = point;
         closestNormal = normal;
         closestFraction = fraction;
@@ -394,7 +391,7 @@ bool World::RayCastClosest(
 
     if (hit)
     {
-        callback(closestBody, closestPoint, closestNormal, closestFraction);
+        callback(closestCollider, closestPoint, closestNormal, closestFraction);
         return true;
     }
 

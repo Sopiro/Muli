@@ -13,8 +13,6 @@ public:
     PolygonShape(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
     ~PolygonShape();
 
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
-
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
@@ -29,6 +27,8 @@ public:
     float GetArea() const;
 
 protected:
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+
     Vec2* vertices;
     Vec2* normals;
     int32 vertexCount;

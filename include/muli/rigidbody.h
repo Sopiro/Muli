@@ -46,10 +46,16 @@ public:
 
     bool TestPoint(const Vec2& q) const;
     Vec2 GetClosestPoint(const Vec2& q) const;
-    bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
+    void RayCastAny(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+    bool RayCastClosest(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
 
     const Vec2& GetLocalCenter() const;
-
     const Transform& GetTransform() const;
     void SetTransform(const Vec2& pos, float angle);
     const Vec2& GetPosition() const;
@@ -88,14 +94,15 @@ public:
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
 
-    uint32 GetID() const;
     uint32 GetIslandID() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
     World* GetWorld() const;
 
     Collider* AddCollider(Shape* shape, float density = DEFAULT_DENSITY, const Material& material = default_material);
+    void RemoveCollider(Collider* collider);
     Collider* GetColliderList() const;
+    int32 GetColliderCount() const;
 
     void SetCollisionFilter(const CollisionFilter& filter) const;
     void SetFriction(float friction) const;
@@ -161,7 +168,6 @@ protected:
 
 private:
     World* world;
-    uint32 id;
     uint32 islandID;
 
     ContactEdge* contactList;
@@ -386,11 +392,6 @@ inline bool RigidBody::IsRotationFixed() const
     return (flag & flag_fixed_rotation) == flag_fixed_rotation;
 }
 
-inline uint32 RigidBody::GetID() const
-{
-    return id;
-}
-
 inline uint32 RigidBody::GetIslandID() const
 {
     return islandID;
@@ -414,6 +415,11 @@ inline World* RigidBody::GetWorld() const
 inline Collider* RigidBody::GetColliderList() const
 {
     return colliderList;
+}
+
+inline int32 RigidBody::GetColliderCount() const
+{
+    return colliderCount;
 }
 
 inline void RigidBody::SynchronizeTransform()

@@ -14,7 +14,7 @@ public:
     ContactManager(World& world);
     ~ContactManager();
 
-    void Update(float dt);
+    void Step(float dt);
     void Add(Collider* collider);
     void Remove(Collider* collider);
     void Reset();
@@ -22,6 +22,7 @@ public:
 
 private:
     friend class World;
+    friend class RigidBody;
 
     World& world;
     BroadPhase broadPhase;

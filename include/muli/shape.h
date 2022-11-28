@@ -31,8 +31,6 @@ public:
     Shape(Type type, float radius);
     virtual ~Shape() = default;
 
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const = 0;
-
     Type GetType() const;
     float GetRadius() const;
     float GetArea() const;
@@ -51,9 +49,11 @@ protected:
     friend class Collider;
     friend class RigidBody;
 
-    Vec2 center;
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const = 0;
 
     Type type;
+
+    Vec2 center;
     float radius;
     float area;
 };

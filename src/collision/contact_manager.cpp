@@ -5,7 +5,7 @@
 namespace muli
 {
 
-void ContactManager::Update(float dt)
+void ContactManager::Step(float dt)
 {
     // Update the dynamic AABB tree node
     broadPhase.UpdateDynamicTree(dt);

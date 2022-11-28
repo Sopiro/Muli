@@ -40,6 +40,8 @@ void Collider::Destroy(PredefinedBlockAllocator* allocator)
         muliAssert(false);
         break;
     }
+
+    shape = nullptr;
 }
 
 } // namespace muli

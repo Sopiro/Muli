@@ -17,7 +17,6 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , colliderList{ nullptr }
     , colliderCount{ 0 }
     , world{ nullptr }
-    , id{ 0 }
     , islandID{ 0 }
     , contactList{ nullptr }
     , jointList{ nullptr }
@@ -38,7 +37,6 @@ RigidBody::RigidBody(RigidBody::Type _type)
 RigidBody::~RigidBody()
 {
     world = nullptr;
-    id = 0;
 
     if (OnDestroy != nullptr)
     {
@@ -75,6 +73,56 @@ Collider* RigidBody::AddCollider(Shape* _shape, float _density, const Material& 
     return collider;
 }
 
+void RigidBody::RemoveCollider(Collider* collider)
+{
+    if (collider == nullptr)
+    {
+        return;
+    }
+
+    muliAssert(collider->body == this);
+
+    Collider* c = colliderList;
+    while (c)
+    {
+        if (c == collider)
+        {
+            c = collider->next;
+            break;
+        }
+
+        c = c->next;
+    }
+
+    // Destroy any contacts associated with the collider
+    ContactEdge* e = contactList;
+    while (e)
+    {
+        Contact* contact = e->contact;
+        e = e->next;
+
+        Collider* colliderA = contact->GetColliderA();
+        Collider* colliderB = contact->GetColliderB();
+
+        if (collider == colliderA || collider == colliderB)
+        {
+            world->contactManager.Destroy(contact);
+        }
+    }
+
+    PredefinedBlockAllocator* allocator = &world->blockAllocator;
+
+    collider->Destroy(allocator);
+    collider->body = nullptr;
+    collider->next = nullptr;
+    collider->~Collider();
+    allocator->Free(collider, sizeof(Collider));
+
+    --colliderCount;
+
+    ResetMassData();
+}
+
 bool RigidBody::TestPoint(const Vec2& p) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
@@ -104,14 +152,56 @@ Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
     return closestPoint;
 }
 
-bool RigidBody::RayCast(const RayCastInput& input, RayCastOutput* output) const
+void RigidBody::RayCastAny(
+    const Vec2& from,
+    const Vec2& to,
+    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const
 {
+    RayCastInput input;
+    input.from = from;
+    input.to = to;
+    input.maxFraction = 1.0f;
+
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
-        if (collider->RayCast(input, output))
+        RayCastOutput output;
+
+        bool hit = collider->RayCast(input, &output);
+        if (hit)
         {
-            return true;
+            float fraction = output.fraction;
+            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+            callback(collider, point, output.normal, fraction);
         }
+    }
+}
+
+bool RigidBody::RayCastClosest(
+    const Vec2& from,
+    const Vec2& to,
+    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const
+{
+    bool hit = false;
+    Collider* closestCollider;
+    Vec2 closestPoint;
+    Vec2 closestNormal;
+    float closestFraction;
+
+    RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+        hit = true;
+        closestCollider = collider;
+        closestPoint = point;
+        closestNormal = normal;
+        closestFraction = fraction;
+
+        return fraction;
+    });
+
+    if (hit)
+    {
+        callback(closestCollider, closestPoint, closestNormal, closestFraction);
+        return true;
     }
 
     return false;

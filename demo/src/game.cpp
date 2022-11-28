@@ -139,7 +139,6 @@ void Game::UpdateUI()
 
                 if (t)
                 {
-                    ImGui::Text("ID: %d", t->GetID());
                     ImGui::Text("Mass: %.4f", t->GetMass());
                     ImGui::Text("Inertia: %.4f", t->GetInertia());
                     ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);

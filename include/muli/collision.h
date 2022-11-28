@@ -53,6 +53,4 @@ typedef float DistanceFunction(Shape*, const Transform&, Shape*, const Transform
 bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold = nullptr);
 float ComputeDistance(Shape* a, const Transform& ta, Shape* b, const Transform& tb);
 
-// bool SAT(PolygonShape* a, PolygonShape* b);
-
 } // namespace muli

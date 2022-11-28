@@ -589,6 +589,41 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
     }
 }
 
+void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const
+{
+    if (root == nullNode)
+    {
+        return;
+    }
+
+    GrowableArray<int32, 256> stack;
+    stack.Emplace(root);
+
+    while (stack.Count() != 0)
+    {
+        int32 current = stack.Pop();
+
+        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        {
+            continue;
+        }
+
+        if (nodes[current].isLeaf)
+        {
+            bool proceed = callback(nodes[current].body);
+            if (proceed == false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
+        }
+    }
+}
+
 void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Collider*)>& callback) const
 {
     Vec2 p1 = input.from;

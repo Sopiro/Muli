@@ -12,8 +12,6 @@ public:
     CircleShape(float radius);
     ~CircleShape() = default;
 
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
-
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
@@ -21,6 +19,9 @@ public:
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
     virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
+
+protected:
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
 };
 
 inline Shape* CircleShape::Clone(PredefinedBlockAllocator* allocator) const

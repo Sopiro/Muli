@@ -70,7 +70,7 @@ public:
             ll.push_back(mpos);
 
             if (!world->RayCastClosest(mpos, to,
-                                       [&](RigidBody* body, const Vec2& point, const Vec2& normal, float fraction) -> void {
+                                       [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
                                            pl.push_back(point);
                                            ll.push_back(point);
                                        }))

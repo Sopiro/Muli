@@ -163,13 +163,14 @@ public:
     std::vector<RigidBody*> Query(const Vec2& point) const;
     std::vector<RigidBody*> Query(const AABB& aabb) const;
 
-    void RayCastAny(const Vec2& from,
-                    const Vec2& to,
-                    const std::function<float(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback);
+    void RayCastAny(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback);
     bool RayCastClosest(
         const Vec2& from,
         const Vec2& to,
-        const std::function<void(RigidBody* body, const Vec2& point, const Vec2& normal, float fraction)>& callback);
+        const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback);
 
     RigidBody* GetBodyList();
     RigidBody* GetBodyListTail();
@@ -192,11 +193,7 @@ private:
     friend class BroadPhase;
     friend class ContactManager;
 
-    StackAllocator stackAllocator;
-    PredefinedBlockAllocator blockAllocator;
-
     const WorldSettings& settings;
-    uint32 uid = 0;
 
     ContactManager contactManager;
 
@@ -220,6 +217,9 @@ private:
     void Add(Joint* joint);
     void FreeBody(RigidBody* body);
     void FreeJoint(Joint* joint);
+
+    StackAllocator stackAllocator;
+    PredefinedBlockAllocator blockAllocator;
 };
 
 inline void World::Awake()

@@ -56,9 +56,10 @@ public:
     void Traverse(std::function<void(const Node*)> callback) const;
     void GetCollisionPairs(std::vector<std::pair<Collider*, Collider*>>& outPairs) const;
 
-    std::vector<Collider*> Query(const Vec2& point) const;
-    std::vector<Collider*> Query(const AABB& aabb) const;
     void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
+    void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
+    std::vector<Collider*> Query(const AABB& aabb) const;
+    std::vector<Collider*> Query(const Vec2& point) const;
 
     void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Collider*)>& callback) const;
 

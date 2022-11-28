@@ -12,8 +12,6 @@ public:
     CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
     ~CapsuleShape() = default;
 
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
-
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
@@ -24,6 +22,9 @@ public:
 
     const Vec2& GetVertexA() const;
     const Vec2& GetVertexB() const;
+
+protected:
+    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
 
 private:
     float length;
