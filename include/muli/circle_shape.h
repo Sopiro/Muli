@@ -9,7 +9,7 @@ namespace muli
 class CircleShape : public Shape
 {
 public:
-    CircleShape(float radius);
+    CircleShape(float radius, const Vec2& center = Vec2{ 0.0f });
     ~CircleShape() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;

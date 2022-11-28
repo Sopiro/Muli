@@ -8,7 +8,7 @@ namespace muli
 class CapsuleShape : public Shape
 {
 public:
-    CapsuleShape(float length, float radius, bool horizontal = false);
+    CapsuleShape(float length, float radius, bool horizontal = false, const Vec2& center = Vec2{ 0.0f });
     CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
     ~CapsuleShape() = default;
 

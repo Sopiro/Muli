@@ -3,22 +3,27 @@
 namespace muli
 {
 
-CapsuleShape::CapsuleShape(float _length, float radius, bool horizontal)
-    : Shape(Shape::Type::capsule, radius)
+CapsuleShape::CapsuleShape(float _length, float _radius, bool _horizontal, const Vec2& _center)
+    : Shape(Shape::Type::capsule, _radius)
     , length{ _length }
 {
     area = length * radius * 2.0f + MULI_PI * radius * radius;
 
-    if (horizontal)
+    if (_horizontal)
     {
-        va = Vec2{ -_length / 2.0f, 0.0f };
-        vb = Vec2{ _length / 2.0f, 0.0f };
+        va = Vec2{ -length / 2.0f, 0.0f };
+        vb = Vec2{ length / 2.0f, 0.0f };
     }
     else
     {
-        va = Vec2{ 0.0f, -_length / 2.0f };
-        vb = Vec2{ 0.0f, _length / 2.0f };
+        va = Vec2{ 0.0f, -length / 2.0f };
+        vb = Vec2{ 0.0f, length / 2.0f };
     }
+
+    center = _center;
+
+    va += center;
+    vb += center;
 }
 
 CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition)

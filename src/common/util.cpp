@@ -9,6 +9,7 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertice
     if (vertexCount < 3)
     {
         memcpy(outVertices, vertices, vertexCount);
+        *outVertexCount = vertexCount;
         return;
     }
 

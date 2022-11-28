@@ -30,13 +30,13 @@ void InitializeDistanceFunctionMap();
  *
  * 'dir' should be normalized
  */
-static Vec2 CSOSupport(Shape* a, const Transform& ta, Shape* b, const Transform& tb, const Vec2& dir)
+static Vec2 CSOSupport(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Vec2& dir)
 {
-    Vec2 localDirA = MulT(ta.rotation, dir);
-    Vec2 localDirB = MulT(tb.rotation, -dir);
+    Vec2 localDirA = MulT(tfA.rotation, dir);
+    Vec2 localDirB = MulT(tfB.rotation, -dir);
 
-    Vec2 supportA = ta * a->Support(localDirA).position;
-    Vec2 supportB = tb * b->Support(localDirB).position;
+    Vec2 supportA = tfA * a->Support(localDirA).position;
+    Vec2 supportB = tfB * b->Support(localDirB).position;
 
     return supportA - supportB;
 }
@@ -48,7 +48,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(Shape* a, const Transform& ta, Shape* b, const Transform& tb, bool earlyReturn)
+static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, bool earlyReturn)
 {
     Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
@@ -56,7 +56,7 @@ static GJKResult GJK(Shape* a, const Transform& ta, Shape* b, const Transform& t
     float distance = 0.0f;
     bool collide = false;
 
-    Vec2 supportPoint = CSOSupport(a, ta, b, tb, dir);
+    Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, dir);
     simplex.AddVertex(supportPoint);
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
@@ -91,7 +91,7 @@ static GJKResult GJK(Shape* a, const Transform& ta, Shape* b, const Transform& t
             distance = dir.Normalize();
         }
 
-        supportPoint = CSOSupport(a, ta, b, tb, dir);
+        supportPoint = CSOSupport(a, tfA, b, tfB, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
@@ -121,7 +121,7 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(Shape* a, const Transform& ta, Shape* b, const Transform& tb, const Simplex& simplex)
+static EPAResult EPA(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Simplex& simplex)
 {
     Polytope polytope{ simplex };
 
@@ -130,7 +130,7 @@ static EPAResult EPA(Shape* a, const Transform& ta, Shape* b, const Transform& t
     for (uint32 i = 0; i < EPA_MAX_ITERATION; ++i)
     {
         closestEdge = polytope.GetClosestEdge();
-        const Vec2 supportPoint = CSOSupport(a, ta, b, tb, closestEdge.normal);
+        const Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, closestEdge.normal);
         const float newDistance = Dot(closestEdge.normal, supportPoint);
 
         if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
@@ -185,10 +185,10 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
 }
 
 static void FindContactPoints(
-    const Vec2& n, Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+    const Vec2& n, Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    Edge edgeA = a->GetFeaturedEdge(ta, n);
-    Edge edgeB = b->GetFeaturedEdge(tb, -n);
+    Edge edgeA = a->GetFeaturedEdge(tfA, n);
+    Edge edgeB = b->GetFeaturedEdge(tfB, -n);
 
     edgeA.Translate(n * a->GetRadius());
     edgeB.Translate(-n * b->GetRadius());
@@ -229,10 +229,10 @@ static void FindContactPoints(
     manifold->referencePoint = ref->p1;
 }
 
-static bool CircleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+static bool CircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    Vec2 pa = ta * a->GetCenter();
-    Vec2 pb = tb * b->GetCenter();
+    Vec2 pa = tfA * a->GetCenter();
+    Vec2 pb = tfB * b->GetCenter();
 
     float d = Dist2(pa, pb);
     float r2 = a->GetRadius() + b->GetRadius();
@@ -262,12 +262,12 @@ static bool CircleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transf
     }
 }
 
-static bool CapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+static bool CapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     CapsuleShape* c = static_cast<CapsuleShape*>(a);
 
-    Vec2 pb = tb * b->GetCenter();
-    Vec2 localP = MulT(ta, pb);
+    Vec2 pb = tfB * b->GetCenter();
+    Vec2 localP = MulT(tfA, pb);
 
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
@@ -314,8 +314,8 @@ static bool CapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Trans
         return true;
     }
 
-    normal = ta.rotation * normal;
-    Vec2 v = ta * (index ? vb : va);
+    normal = tfA.rotation * normal;
+    Vec2 v = tfA * (index ? vb : va);
 
     manifold->contactNormal = normal;
     manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
@@ -328,16 +328,16 @@ static bool CapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Trans
     return true;
 }
 
-static bool PolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+static bool PolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     PolygonShape* p = static_cast<PolygonShape*>(a);
-    Vec2 pb = tb * b->GetCenter();
+    Vec2 pb = tfB * b->GetCenter();
 
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    Vec2 localP = MulT(ta, pb);
+    Vec2 localP = MulT(tfA, pb);
 
     float minSeparation = -FLT_MAX;
     float r2 = a->GetRadius() + b->GetRadius();
@@ -372,8 +372,8 @@ static bool PolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Trans
             return true;
         }
 
-        Vec2 normal = ta.rotation * normals[index];
-        Vec2 v = ta * vertices[index];
+        Vec2 normal = tfA.rotation * normals[index];
+        Vec2 v = tfA * vertices[index];
 
         manifold->contactNormal = normal;
         manifold->contactTangent = Vec2{ -normal.y, normal.x };
@@ -420,8 +420,8 @@ static bool PolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Trans
         return true;
     }
 
-    normal = ta.rotation * normal;
-    Vec2 v = ta * vertices[index];
+    normal = tfA.rotation * normal;
+    Vec2 v = tfA * vertices[index];
 
     manifold->contactNormal = normal;
     manifold->contactTangent = Cross(1.0f, normal);
@@ -434,9 +434,9 @@ static bool PolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Trans
     return true;
 }
 
-static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    GJKResult gjkResult = GJK(a, ta, b, tb, false);
+    GJKResult gjkResult = GJK(a, tfA, b, tfB, false);
     Simplex& simplex = gjkResult.simplex;
 
     float r2 = a->GetRadius() + b->GetRadius();
@@ -455,13 +455,13 @@ static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transf
 
                 Vec2 normal = (origin - simplex.vertices[0]).Normalized();
 
-                Vec2 localDirA = MulT(ta.rotation, normal);
-                Vec2 localDirB = MulT(tb.rotation, -normal);
+                Vec2 localDirA = MulT(tfA.rotation, normal);
+                Vec2 localDirB = MulT(tfB.rotation, -normal);
 
                 ContactPoint supportA = a->Support(localDirA);
                 ContactPoint supportB = b->Support(localDirB);
-                supportA.position = ta * (supportA.position + localDirA * a->GetRadius());
-                supportB.position = tb * (supportB.position + localDirB * b->GetRadius());
+                supportA.position = tfA * (supportA.position + localDirA * a->GetRadius());
+                supportB.position = tfB * (supportB.position + localDirB * b->GetRadius());
 
                 manifold->contactNormal = normal;
                 manifold->contactTangent = Cross(1.0f, normal);
@@ -518,10 +518,10 @@ static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transf
         {
         case 1:
         {
-            Vec2 randomSupport = CSOSupport(a, ta, b, tb, Vec2{ 1.0f, 0.0f });
+            Vec2 randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ 1.0f, 0.0f });
             if (randomSupport == simplex.vertices[0])
             {
-                randomSupport = CSOSupport(a, ta, b, tb, Vec2{ -1.0f, 0.0f });
+                randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ -1.0f, 0.0f });
             }
 
             simplex.AddVertex(randomSupport);
@@ -532,11 +532,11 @@ static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transf
         case 2:
         {
             Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
-            Vec2 normalSupport = CSOSupport(a, ta, b, tb, normal);
+            Vec2 normalSupport = CSOSupport(a, tfA, b, tfB, normal);
 
             if (simplex.ContainsVertex(normalSupport))
             {
-                simplex.AddVertex(CSOSupport(a, ta, b, tb, -normal));
+                simplex.AddVertex(CSOSupport(a, tfA, b, tfB, -normal));
             }
             else
             {
@@ -545,19 +545,19 @@ static bool ConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transf
         }
         }
 
-        EPAResult epaResult = EPA(a, ta, b, tb, simplex);
+        EPAResult epaResult = EPA(a, tfA, b, tfB, simplex);
 
         manifold->contactNormal = epaResult.contactNormal;
         manifold->penetrationDepth = epaResult.penetrationDepth;
     }
 
-    FindContactPoints(manifold->contactNormal, a, ta, b, tb, manifold);
+    FindContactPoints(manifold->contactNormal, a, tfA, b, tfB, manifold);
     manifold->contactTangent = Vec2{ -manifold->contactNormal.y, manifold->contactNormal.x };
 
     return true;
 }
 
-bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& tb, ContactManifold* manifold)
+bool DetectCollision(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     if (dectectionFunctionInitialized == false)
     {
@@ -571,7 +571,7 @@ bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& t
     {
         muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
-        bool collide = DetectionFunctionMap[shapeB][shapeA](b, tb, a, ta, manifold);
+        bool collide = DetectionFunctionMap[shapeB][shapeA](b, tfB, a, tfA, manifold);
         if (manifold)
         {
             manifold->featureFlipped = true;
@@ -582,14 +582,14 @@ bool DetectCollision(Shape* a, const Transform& ta, Shape* b, const Transform& t
     {
         muliAssert(DetectionFunctionMap[shapeA][shapeB] != nullptr);
 
-        return DetectionFunctionMap[shapeA][shapeB](a, ta, b, tb, manifold);
+        return DetectionFunctionMap[shapeA][shapeB](a, tfA, b, tfB, manifold);
     }
 }
 
-static float ComputeDistanceCircleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
+static float ComputeDistanceCircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
-    Vec2 pa = ta * a->GetCenter();
-    Vec2 pb = tb * b->GetCenter();
+    Vec2 pa = tfA * a->GetCenter();
+    Vec2 pb = tfB * b->GetCenter();
 
     float d2 = Dist2(pa, pb);
     float r2 = a->GetRadius() + b->GetRadius();
@@ -604,10 +604,10 @@ static float ComputeDistanceCircleVsCircle(Shape* a, const Transform& ta, Shape*
     }
 }
 
-static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
+static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
-    Vec2 pb = tb * b->GetCenter();
-    Vec2 localC = MulT(ta, pb);
+    Vec2 pb = tfB * b->GetCenter();
+    Vec2 localC = MulT(tfA, pb);
 
     CapsuleShape* c = static_cast<CapsuleShape*>(a);
     Vec2 va = c->GetVertexA();
@@ -651,15 +651,15 @@ static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& ta, Shape
     }
 }
 
-static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
+static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
     PolygonShape* p = static_cast<PolygonShape*>(a);
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    Vec2 pb = tb * b->GetCenter();
-    Vec2 localC = MulT(ta, pb);
+    Vec2 pb = tfB * b->GetCenter();
+    Vec2 localC = MulT(tfA, pb);
 
     float r2 = a->GetRadius() + b->GetRadius();
 
@@ -741,9 +741,9 @@ static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& ta, Shape
     return 0.0f;
 }
 
-static float ComputeDistanceConvexVsConvex(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
+static float ComputeDistanceConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
-    GJKResult gr = GJK(a, ta, b, tb, false);
+    GJKResult gr = GJK(a, tfA, b, tfB, false);
 
     if (gr.collide == true)
     {
@@ -767,7 +767,7 @@ static float ComputeDistanceConvexVsConvex(Shape* a, const Transform& ta, Shape*
     }
 }
 
-float ComputeDistance(Shape* a, const Transform& ta, Shape* b, const Transform& tb)
+float ComputeDistance(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
     if (distanceFunctionInitialized == false)
     {
@@ -781,13 +781,13 @@ float ComputeDistance(Shape* a, const Transform& ta, Shape* b, const Transform& 
     {
         muliAssert(DistanceFunctionMap[shapeB][shapeA] != nullptr);
 
-        return DistanceFunctionMap[shapeB][shapeA](b, tb, a, ta);
+        return DistanceFunctionMap[shapeB][shapeA](b, tfB, a, tfA);
     }
     else
     {
         muliAssert(DistanceFunctionMap[shapeA][shapeB] != nullptr);
 
-        return DistanceFunctionMap[shapeA][shapeB](a, ta, b, tb);
+        return DistanceFunctionMap[shapeA][shapeB](a, tfA, b, tfB);
     }
 }
 

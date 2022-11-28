@@ -3,10 +3,11 @@
 namespace muli
 {
 
-CircleShape::CircleShape(float _radius)
+CircleShape::CircleShape(float _radius, const Vec2& _center)
     : Shape(Shape::Type::circle, _radius)
 {
     area = radius * radius * MULI_PI;
+    center = _center;
 }
 
 Vec2 CircleShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
