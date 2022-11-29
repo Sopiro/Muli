@@ -16,14 +16,18 @@ void RigidBodyRenderer::Render()
 {
     shader->Use();
 
-    for (uint32 i = 0; i < bodiesAndMeshes.size(); ++i)
+    for (uint32 i = 0; i < collidersAndMeshes.size(); ++i)
     {
-        RigidBody* body = bodiesAndMeshes[i].first;
+        Collider* collider = collidersAndMeshes[i].first;
+        RigidBody* body = collider->GetBody();
+
         RigidBody::Type type = body->GetType();
 
-        std::unique_ptr<Mesh>& mesh = bodiesAndMeshes[i].second;
+        std::unique_ptr<Mesh>& mesh = collidersAndMeshes[i].second;
 
-        Mat4 t = Mat4{ 1.0f }.Translate(body->GetPosition().x, body->GetPosition().y, 0.0f);
+        Vec2 pos = body->GetPosition();
+
+        Mat4 t = Mat4{ 1.0f }.Translate(pos.x, pos.y, 0.0f);
         Mat4 r = Mat4{ 1.0f }.Rotate(0.0f, 0.0f, body->GetAngle());
 
         shader->SetModelMatrix(t * r);
@@ -31,7 +35,7 @@ void RigidBodyRenderer::Render()
         if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::static_body)
         {
             Vec3 color{ 1.0f };
-            const CollisionFilter& cf = body->GetColliderList()->GetFilter();
+            const CollisionFilter& cf = collider->GetFilter();
 
             switch (type)
             {
@@ -82,7 +86,7 @@ void RigidBodyRenderer::Render()
             mesh->Draw(GL_TRIANGLES);
         }
 
-        if (!(body->userFlag & UserFlag::REMOVE_OUTLINE))
+        if (!(body->UserFlag & UserFlag::REMOVE_OUTLINE))
         {
             glLineWidth(1.0f);
             shader->SetColor({ 0, 0, 0 });

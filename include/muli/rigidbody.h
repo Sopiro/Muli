@@ -41,19 +41,8 @@ public:
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;
 
-    RigidBody(RigidBody&& other) noexcept = delete;
-    RigidBody& operator=(RigidBody&& other) = delete;
-
-    bool TestPoint(const Vec2& q) const;
-    Vec2 GetClosestPoint(const Vec2& q) const;
-    void RayCastAny(
-        const Vec2& from,
-        const Vec2& to,
-        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
-    bool RayCastClosest(
-        const Vec2& from,
-        const Vec2& to,
-        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+    RigidBody(RigidBody&&) noexcept = delete;
+    RigidBody& operator=(RigidBody&&) = delete;
 
     const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
@@ -99,8 +88,8 @@ public:
     RigidBody* GetNext() const;
     World* GetWorld() const;
 
-    Collider* AddCollider(Shape* shape, float density = DEFAULT_DENSITY, const Material& material = default_material);
-    void RemoveCollider(Collider* collider);
+    Collider* CreateCollider(Shape* shape, float density = DEFAULT_DENSITY, const Material& material = default_material);
+    void DestoryCollider(Collider* collider);
     Collider* GetColliderList() const;
     int32 GetColliderCount() const;
 
@@ -109,9 +98,20 @@ public:
     void SetRestitution(float restitution) const;
     void SetSurfaceSpeed(float surfaceSpeed) const;
 
+    bool TestPoint(const Vec2& q) const;
+    Vec2 GetClosestPoint(const Vec2& q) const;
+    void RayCastAny(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+    bool RayCastClosest(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+
     // Callbacks
-    std::function<void(RigidBody*)> OnDestroy = nullptr;
-    uint32 userFlag;
+    std::function<void(RigidBody*)> OnDestroy;
+    uint32 UserFlag;
 
 protected:
     friend class World;
@@ -279,15 +279,15 @@ inline void RigidBody::Awake()
     flag &= ~Flag::flag_sleeping;
 }
 
-inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& f)
+inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& _force)
 {
     if (type != dynamic_body)
     {
         return;
     }
 
-    force += f;
-    torque += Cross(localPosition - localCenter, f);
+    force += _force;
+    torque += Cross(localPosition - localCenter, _force);
     NotifyForceUpdate();
 }
 

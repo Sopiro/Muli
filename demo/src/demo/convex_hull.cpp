@@ -36,7 +36,7 @@ public:
         {
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
-                vertices.push_back(mpos);
+                vertices.push_back(cursorPos);
             }
         }
     }

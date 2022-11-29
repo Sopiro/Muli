@@ -135,7 +135,7 @@ void Game::UpdateUI()
 
                 ImGui::Separator();
 
-                RigidBody* t = demo->GetTarget();
+                RigidBody* t = demo->GetTargetBody();
 
                 if (t)
                 {
@@ -432,9 +432,7 @@ void Game::InitDemo(uint32 index)
 
     for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())
     {
-        rRenderer.Register(b);
-
-        b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
+        RegisterRenderBody(b);
     }
 }
 

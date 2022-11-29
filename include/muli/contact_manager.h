@@ -55,15 +55,24 @@ inline void ContactManager::Remove(Collider* collider)
 
     RigidBody* body = collider->body;
 
-    ContactEdge* ce = body->contactList;
-    while (ce)
+    // Destroy any contacts associated with the collider
+    ContactEdge* edge = body->contactList;
+    while (edge)
     {
-        ContactEdge* ce0 = ce;
-        ce = ce->next;
-        ce0->other->Awake();
-        Destroy(ce0->contact);
+        Contact* contact = edge->contact;
+        edge = edge->next;
+
+        Collider* colliderA = contact->GetColliderA();
+        Collider* colliderB = contact->GetColliderB();
+
+        if (collider == colliderA || collider == colliderB)
+        {
+            Destroy(contact);
+
+            colliderA->body->Awake();
+            colliderB->body->Awake();
+        }
     }
-    body->contactList = nullptr;
 }
 
 inline uint32 ContactManager::GetContactCount() const

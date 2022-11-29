@@ -19,10 +19,10 @@ public:
     void SetProjectionMatrix(const Mat4& projMatrix);
     void SetViewMatrix(const Mat4& viewMatrix);
 
-    void Register(RigidBody* body);
-    void Register(const std::vector<RigidBody*>& bodies);
-    void Unregister(RigidBody* body);
-    void Unregister(const std::vector<RigidBody*>& bodies);
+    void Register(Collider* body);
+    void Register(const std::vector<Collider*>& bodies);
+    void Unregister(Collider* body);
+    void Unregister(const std::vector<Collider*>& bodies);
 
     Vec2 Pick(const Vec2& screenPos) const;
 
@@ -32,9 +32,9 @@ public:
 private:
     friend class RigidBodyShader;
 
-    // All registered rigid bodies
+    // All registered colliders
     std::unique_ptr<RigidBodyShader> shader{};
-    std::vector<std::pair<RigidBody*, std::unique_ptr<Mesh>>> bodiesAndMeshes{};
+    std::vector<std::pair<Collider*, std::unique_ptr<Mesh>>> collidersAndMeshes{};
 
     Mat4 viewMatrix;
     Mat4 projMatrix;
@@ -42,46 +42,43 @@ private:
     bool drawOutlineOnly;
 };
 
-inline void RigidBodyRenderer::Register(RigidBody* body)
+inline void RigidBodyRenderer::Register(Collider* collider)
 {
-    for (Collider* collider = body->GetColliderList(); collider; collider = collider->GetNext())
+    collidersAndMeshes.push_back(std::make_pair(collider, GenerateMesh(collider)));
+}
+
+inline void RigidBodyRenderer::Register(const std::vector<Collider*>& colliders)
+{
+    for (auto c : colliders)
     {
-        bodiesAndMeshes.push_back(std::make_pair(body, GenerateMesh(collider)));
+        Register(c);
     }
 }
 
-inline void RigidBodyRenderer::Register(const std::vector<RigidBody*>& bodies)
+inline void RigidBodyRenderer::Unregister(Collider* collider)
 {
-    for (auto b : bodies)
-    {
-        Register(b);
-    }
-}
+    size_t idx = collidersAndMeshes.size();
 
-inline void RigidBodyRenderer::Unregister(RigidBody* body)
-{
-    size_t idx = bodiesAndMeshes.size();
-
-    for (size_t i = 0; i < bodiesAndMeshes.size(); ++i)
+    for (size_t i = 0; i < collidersAndMeshes.size(); ++i)
     {
-        if (bodiesAndMeshes[i].first == body)
+        if (collidersAndMeshes[i].first == collider)
         {
             idx = i;
             break;
         }
     }
 
-    if (idx < bodiesAndMeshes.size())
+    if (idx < collidersAndMeshes.size())
     {
-        bodiesAndMeshes.erase(bodiesAndMeshes.begin() + idx);
+        collidersAndMeshes.erase(collidersAndMeshes.begin() + idx);
     }
 }
 
-inline void RigidBodyRenderer::Unregister(const std::vector<RigidBody*>& bodies)
+inline void RigidBodyRenderer::Unregister(const std::vector<Collider*>& colliders)
 {
-    for (uint32 i = 0; i < bodies.size(); ++i)
+    for (uint32 i = 0; i < colliders.size(); ++i)
     {
-        Unregister(bodies[i]);
+        Unregister(colliders[i]);
     }
 }
 
@@ -104,7 +101,7 @@ inline void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
 
 inline void RigidBodyRenderer::Reset()
 {
-    bodiesAndMeshes.clear();
+    collidersAndMeshes.clear();
 }
 
 } // namespace muli

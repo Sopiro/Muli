@@ -39,7 +39,7 @@ private:
     Mat2 m;
 
     Vec2 bias;
-    Vec2 impulseSum{ 0.0f };
+    Vec2 impulseSum;
 
     void ApplyImpulse(const Vec2& lambda);
 };

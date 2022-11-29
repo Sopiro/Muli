@@ -39,8 +39,6 @@ public:
     void Step(float dt);
     void Reset();
 
-    void Add(RigidBody* body);
-    void Add(const std::vector<RigidBody*>& bodies);
     void Destroy(RigidBody* body);
     void Destroy(const std::vector<RigidBody*>& bodies);
     void Destroy(Joint* joint);
@@ -160,8 +158,8 @@ public:
                                  float dampingRatio = 1.0f,
                                  float jointMass = 1.0f);
 
-    std::vector<RigidBody*> Query(const Vec2& point) const;
-    std::vector<RigidBody*> Query(const AABB& aabb) const;
+    std::vector<Collider*> Query(const Vec2& point) const;
+    std::vector<Collider*> Query(const AABB& aabb) const;
 
     void RayCastAny(
         const Vec2& from,
@@ -198,21 +196,21 @@ private:
     ContactManager contactManager;
 
     // Doubly linked list of all registered rigid bodies
-    RigidBody* bodyList = nullptr;
-    RigidBody* bodyListTail = nullptr;
-    Joint* jointList = nullptr;
+    RigidBody* bodyList;
+    RigidBody* bodyListTail;
+    Joint* jointList;
 
-    uint32 bodyCount = 0;
-    uint32 jointCount = 0;
+    uint32 bodyCount;
+    uint32 jointCount;
 
-    uint32 numIslands = 0;
-    uint32 sleepingIslands = 0;
-    uint32 sleepingBodies = 0;
+    uint32 numIslands;
+    uint32 sleepingIslands;
+    uint32 sleepingBodies;
 
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
 
-    bool integrateForce = false;
+    bool integrateForce;
 
     void Add(Joint* joint);
     void FreeBody(RigidBody* body);

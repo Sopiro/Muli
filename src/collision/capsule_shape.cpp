@@ -26,18 +26,21 @@ CapsuleShape::CapsuleShape(float _length, float _radius, bool _horizontal, const
     vb += center;
 }
 
-CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool _resetPosition)
-    : Shape(capsule, radius)
+CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition)
+    : Shape(capsule, _radius)
 {
     Vec2 a2b = p2 - p1;
     length = a2b.Length();
     area = length * radius * 2.0f + MULI_PI * radius * radius;
 
+    va = p1;
+    vb = p2;
     center = (p1 + p2) * 0.5f;
+
     if (_resetPosition)
     {
-        va = p1 - center;
-        vb = p2 - center;
+        va -= center;
+        vb -= center;
         center.SetZero();
     }
 }

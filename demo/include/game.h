@@ -28,7 +28,7 @@ public:
     void Update(float dt);
     void Render();
 
-    Vec2 GetWorldMousePosition() const;
+    Vec2 GetWorldCursorPosition() const;
     DebugOptions& GetDebugOptions();
     void RegisterRenderBody(RigidBody* b);
     std::vector<Vec2>& GetPointList();
@@ -73,11 +73,14 @@ inline std::vector<Vec2>& Game::GetLineList()
 
 inline void Game::RegisterRenderBody(RigidBody* b)
 {
-    b->OnDestroy = [&](RigidBody* me) -> void { rRenderer.Unregister(me); };
-    rRenderer.Register(b);
+    for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+    {
+        rRenderer.Register(c);
+        c->OnDestroy = [&](Collider* me) -> void { rRenderer.Unregister(me); };
+    }
 }
 
-inline Vec2 Game::GetWorldMousePosition() const
+inline Vec2 Game::GetWorldCursorPosition() const
 {
     return rRenderer.Pick(Input::GetMousePosition());
 }

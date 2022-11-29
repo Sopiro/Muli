@@ -27,7 +27,7 @@ public:
 
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
                 b->SetLinearVelocity(b->GetPosition() * LinearRand(0.5f, 0.7f));
-                b->userFlag |= UserFlag::RENDER_POLYGON_RADIUS;
+                b->UserFlag |= UserFlag::RENDER_POLYGON_RADIUS;
             }
         }
     }
@@ -38,6 +38,6 @@ public:
     }
 };
 
-DemoFrame rounded_polygon{ "Rounded polygon", RoundedPolygon::Create };
+DemoFrame rounded_polygon{ "Rounded polygons", RoundedPolygon::Create };
 
 } // namespace muli

@@ -40,9 +40,14 @@ public:
         return camera;
     }
 
-    RigidBody* GetTarget()
+    RigidBody* GetTargetBody()
     {
-        return target;
+        return targetBody;
+    }
+
+    Collider* GetTargetCollider()
+    {
+        return targetCollider;
     }
 
 protected:
@@ -54,9 +59,10 @@ protected:
     World* world;
 
     float dt;
-    std::vector<RigidBody*> qr;
-    Vec2 mpos;
-    RigidBody* target = nullptr;
+    Vec2 cursorPos;
+    std::vector<Collider*> qr;
+    RigidBody* targetBody = nullptr;
+    Collider* targetCollider = nullptr;
     GrabJoint* gj = nullptr;
 
     void ComputeProperty();

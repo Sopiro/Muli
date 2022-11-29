@@ -14,6 +14,9 @@ public:
 
         auto f = [](float x) { return Sin(x) * 0.5f + 0.8f; };
 
+        RigidBody* b = world->CreateEmptyBody(RigidBody::Type::static_body);
+        b->UserFlag |= UserFlag::REMOVE_OUTLINE;
+
         // Capsule terrain
         for (float x0 = -10.0f; x0 < 10.0f; x0 += d)
         {
@@ -21,8 +24,9 @@ public:
             float x1 = x0 + d;
             float y1 = f(x1);
 
-            RigidBody* b = world->CreateCapsule(Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f, RigidBody::Type::static_body);
-            b->userFlag |= UserFlag::REMOVE_OUTLINE;
+            CapsuleShape capsule{ Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f };
+
+            b->CreateCollider(&capsule);
         }
 
         // Pyramid
@@ -37,7 +41,7 @@ public:
         {
             for (int x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = world->CreateBox(boxSize);
+                b = world->CreateBox(boxSize);
                 b->SetPosition(xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap));
             }
         }

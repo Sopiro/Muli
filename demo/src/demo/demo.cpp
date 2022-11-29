@@ -44,9 +44,18 @@ void Demo::UpdateInput()
 
 void Demo::ComputeProperty()
 {
-    mpos = game.GetWorldMousePosition();      // Moust position
-    qr = world->Query(mpos);                  // Query result
-    target = qr.size() > 0 ? qr[0] : nullptr; // Mouseovered body
+    cursorPos = game.GetWorldCursorPosition();
+    qr = world->Query(cursorPos); // Query result
+    if (qr.size() > 0)
+    {
+        targetCollider = qr[0]; // Mouseovered body
+        targetBody = targetCollider->GetBody();
+    }
+    else
+    {
+        targetCollider = nullptr;
+        targetBody = nullptr;
+    }
 }
 
 void Demo::EnableBodyCreate()
@@ -54,24 +63,28 @@ void Demo::EnableBodyCreate()
     static bool create;
     static Vec2 mStart;
 
-    if (!target && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (!targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
         {
-            mStart = mpos;
+            mStart = cursorPos;
             create = true;
         }
         else
         {
             RigidBody* b = world->CreateBox(0.5f);
-            b->SetPosition(mpos);
+            b->SetPosition(cursorPos);
             game.RegisterRenderBody(b);
         }
     }
 
-    if (target && !gj && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    if (targetCollider && !gj && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
-        world->Destroy(qr);
+        targetBody->DestoryCollider(targetCollider);
+        if (targetBody->GetColliderCount() == 0)
+        {
+            world->Destroy(targetBody);
+        }
     }
 
     if (create)
@@ -80,16 +93,16 @@ void Demo::EnableBodyCreate()
         auto& ll = game.GetLineList();
 
         pl.push_back(mStart);
-        pl.push_back(mpos);
+        pl.push_back(cursorPos);
         ll.push_back(mStart);
-        ll.push_back(mpos);
+        ll.push_back(cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             RigidBody* b = world->CreateBox(0.3f);
             b->SetPosition(mStart);
 
-            Vec2 f = mStart - mpos;
+            Vec2 f = mStart - cursorPos;
             f *= settings.INV_DT * b->GetMass() * 3.0f;
             b->SetForce(f);
             create = false;
@@ -128,7 +141,7 @@ bool Demo::EnablePolygonCreate()
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            points.push_back(mpos);
+            points.push_back(cursorPos);
             hull = ComputeConvexHull(points);
         }
 
@@ -183,7 +196,7 @@ void Demo::EnableBodyRemove()
 
     if (!draging && Input::IsMousePressed(GLFW_MOUSE_BUTTON_MIDDLE))
     {
-        mStart = mpos;
+        mStart = cursorPos;
         draging = true;
     }
 
@@ -191,7 +204,7 @@ void Demo::EnableBodyRemove()
     {
         auto& ll = game.GetLineList();
 
-        AABB aabb{ Min(mStart, mpos), Max(mStart, mpos) };
+        AABB aabb{ Min(mStart, cursorPos), Max(mStart, cursorPos) };
 
         ll.push_back(aabb.min);
         ll.push_back(Vec2{ aabb.min.x, aabb.max.y });
@@ -205,7 +218,20 @@ void Demo::EnableBodyRemove()
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
             auto qr = (aabb.max == aabb.min) ? world->Query(aabb.min) : world->Query(aabb);
-            world->Destroy(qr);
+
+            std::cout << qr.size() << std::endl;
+
+            for (int32 i = 0; i < qr.size(); ++i)
+            {
+                Collider* c = qr[i];
+                RigidBody* b = c->GetBody();
+                b->DestoryCollider(c);
+
+                if (b->GetColliderCount() == 0)
+                {
+                    world->Destroy(b);
+                }
+            }
 
             draging = false;
         }
@@ -214,19 +240,19 @@ void Demo::EnableBodyRemove()
 
 bool Demo::EnableBodyGrab()
 {
-    if (target && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        if (target->GetType() == RigidBody::Type::dynamic_body)
+        if (targetCollider->GetType() == RigidBody::Type::dynamic_body)
         {
-            target->Awake();
-            gj = world->CreateGrabJoint(target, mpos, mpos, 4.0f, 0.5f, target->GetMass());
+            targetBody->Awake();
+            gj = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
             gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
         }
     }
 
     if (gj)
     {
-        gj->SetTarget(mpos);
+        gj->SetTarget(cursorPos);
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             world->Destroy(gj);
@@ -246,12 +272,12 @@ bool Demo::EnableAddForce()
     static RigidBody* ft;
     static Vec2 mStartLocal;
 
-    if (target && target->GetType() != RigidBody::Type::static_body)
+    if (targetBody && targetBody->GetType() != RigidBody::Type::static_body)
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            ft = target;
-            mStartLocal = MulT(target->GetTransform(), mpos);
+            ft = targetBody;
+            mStartLocal = MulT(targetBody->GetTransform(), cursorPos);
         }
     }
 
@@ -261,16 +287,16 @@ bool Demo::EnableAddForce()
         auto& ll = game.GetLineList();
 
         pl.push_back(ft->GetTransform() * mStartLocal);
-        pl.push_back(mpos);
+        pl.push_back(cursorPos);
         ll.push_back(ft->GetTransform() * mStartLocal);
-        ll.push_back(mpos);
+        ll.push_back(cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             if (ft->GetWorld())
             {
                 Vec2 mStartGlobal = ft->GetTransform() * mStartLocal;
-                Vec2 f = mStartGlobal - mpos;
+                Vec2 f = mStartGlobal - cursorPos;
                 f *= settings.INV_DT * ft->GetMass() * 3.0f;
 
                 ft->Awake();

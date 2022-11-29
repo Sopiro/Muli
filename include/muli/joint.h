@@ -77,12 +77,6 @@ public:
           float jointMass = DEFAULT_JOINT_MASS);
     ~Joint() noexcept;
 
-    Joint(const Joint&) = delete;
-    Joint& operator=(const Joint&) = delete;
-
-    Joint(Joint&&) noexcept = delete;
-    Joint& operator=(Joint&&) noexcept = delete;
-
     float GetFrequency() const;
     void SetFrequency(float frequency);
     float GetDampingRatio() const;
@@ -93,10 +87,10 @@ public:
     bool IsSolid() const;
     Joint::Type GetType() const;
 
-    std::function<void(Joint*)> OnDestroy = nullptr;
-
     Joint* GetPrev() const;
     Joint* GetNext() const;
+
+    std::function<void(Joint*)> OnDestroy;
 
 protected:
     Joint::Type type;

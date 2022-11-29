@@ -34,7 +34,7 @@ public:
         else if (r < 2.0f)
         {
             b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, r / 10.0f);
-            b->userFlag |= UserFlag::RENDER_POLYGON_RADIUS;
+            b->UserFlag |= UserFlag::RENDER_POLYGON_RADIUS;
         }
         else if (r < 3.0f)
         {
@@ -56,8 +56,8 @@ public:
         ComputeProperty();
         EnableCameraControl();
 
-        closest = b->GetClosestPoint(mpos);
-        distance = Dist(closest, mpos);
+        closest = b->GetClosestPoint(cursorPos);
+        distance = Dist(closest, cursorPos);
     }
 
     void Render() override
@@ -70,9 +70,9 @@ public:
         // ll.push_back(mpos);
 
         pl.push_back(closest);
-        pl.push_back(mpos);
+        pl.push_back(cursorPos);
         ll.push_back(closest);
-        ll.push_back(mpos);
+        ll.push_back(cursorPos);
     }
 
     void UpdateUI() override

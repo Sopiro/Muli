@@ -9,20 +9,19 @@ namespace muli
 RigidBody::RigidBody(RigidBody::Type _type)
     : type{ _type }
     , flag{ 0 }
-    , userFlag{ 0 }
+    , world{ nullptr }
+    , islandID{ 0 }
+    , resting{ 0.0f }
+    , prev{ nullptr }
+    , next{ nullptr }
+    , colliderList{ nullptr }
+    , colliderCount{ 0 }
+    , contactList{ nullptr }
+    , jointList{ nullptr }
     , mass{ 0.0f }
     , invMass{ 0.0f }
     , inertia{ 0.0f }
     , invInertia{ 0.0f }
-    , colliderList{ nullptr }
-    , colliderCount{ 0 }
-    , world{ nullptr }
-    , islandID{ 0 }
-    , contactList{ nullptr }
-    , jointList{ nullptr }
-    , resting{ 0.0f }
-    , prev{ nullptr }
-    , next{ nullptr }
     , localCenter{ 0.0f }
     , transform{ identity }
     , position{ 0.0f }
@@ -31,17 +30,19 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
     , angularVelocity{ 0.0f }
+    , UserFlag{ 0 }
+    , OnDestroy{ nullptr }
 {
 }
 
 RigidBody::~RigidBody()
 {
-    world = nullptr;
-
-    if (OnDestroy != nullptr)
+    if (OnDestroy)
     {
         OnDestroy(this);
     }
+
+    world = nullptr;
 }
 
 void RigidBody::NotifyForceUpdate() const
@@ -52,7 +53,7 @@ void RigidBody::NotifyForceUpdate() const
     }
 }
 
-Collider* RigidBody::AddCollider(Shape* _shape, float _density, const Material& _material)
+Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Material& _material)
 {
     muliAssert(world != nullptr);
 
@@ -73,7 +74,7 @@ Collider* RigidBody::AddCollider(Shape* _shape, float _density, const Material& 
     return collider;
 }
 
-void RigidBody::RemoveCollider(Collider* collider)
+void RigidBody::DestoryCollider(Collider* collider)
 {
     if (collider == nullptr)
     {
@@ -81,41 +82,28 @@ void RigidBody::RemoveCollider(Collider* collider)
     }
 
     muliAssert(collider->body == this);
+    muliAssert(colliderCount > 0);
 
-    Collider* c = colliderList;
-    while (c)
+    // Remove collider from collider list
+    Collider** c = &colliderList;
+    while (*c)
     {
-        if (c == collider)
+        if (*c == collider)
         {
-            c = collider->next;
+            *c = collider->next;
             break;
         }
 
-        c = c->next;
+        c = &((*c)->next);
     }
 
-    // Destroy any contacts associated with the collider
-    ContactEdge* e = contactList;
-    while (e)
-    {
-        Contact* contact = e->contact;
-        e = e->next;
-
-        Collider* colliderA = contact->GetColliderA();
-        Collider* colliderB = contact->GetColliderB();
-
-        if (collider == colliderA || collider == colliderB)
-        {
-            world->contactManager.Destroy(contact);
-        }
-    }
+    // Remove collider from contact manager(broad phase)
+    world->contactManager.Remove(collider);
 
     PredefinedBlockAllocator* allocator = &world->blockAllocator;
 
-    collider->Destroy(allocator);
-    collider->body = nullptr;
-    collider->next = nullptr;
     collider->~Collider();
+    collider->Destroy(allocator);
     allocator->Free(collider, sizeof(Collider));
 
     --colliderCount;
@@ -245,13 +233,18 @@ void RigidBody::ResetMassData()
     invMass = 0.0f;
     inertia = 0.0f;
     invInertia = 0.0f;
+    localCenter.SetZero();
 
     if (type == static_body || type == kinematic_body)
     {
         return;
     }
 
-    localCenter.SetZero();
+    if (colliderCount <= 0)
+    {
+        return;
+    }
+
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
         MassData massData = collider->GetMassData();

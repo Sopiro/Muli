@@ -110,7 +110,7 @@ void ContactManager::Step(float dt)
 
         bool overlap = broadPhase.TestOverlap(colliderA, colliderB);
 
-        if (!overlap)
+        if (overlap == false)
         {
             Contact* t = c;
             c = c->GetNext();

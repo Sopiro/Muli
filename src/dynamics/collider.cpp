@@ -9,7 +9,19 @@ namespace muli
 Collider::Collider()
     : next{ nullptr }
     , node{ 0 }
+    , OnDestroy{ nullptr }
 {
+}
+
+Collider::~Collider()
+{
+    if (OnDestroy)
+    {
+        OnDestroy(this);
+    }
+
+    body = nullptr;
+    next = nullptr;
 }
 
 void Collider::Create(

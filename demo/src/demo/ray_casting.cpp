@@ -25,7 +25,7 @@ public:
 
         b = world->CreateBox(1.0f, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(1, 3);
-        b->userFlag = UserFlag::RENDER_POLYGON_RADIUS;
+        b->UserFlag = UserFlag::RENDER_POLYGON_RADIUS;
 
         b = world->CreateRegularPolygon(0.5f, 3, MULI_PI / 6.0f);
         b->SetPosition(-1, 3);
@@ -35,7 +35,7 @@ public:
     {
         Demo::Step();
 
-        Vec2 to = mpos;
+        Vec2 to = cursorPos;
 
         std::vector<Vec2>& pl = game.GetPointList();
         std::vector<Vec2>& ll = game.GetLineList();

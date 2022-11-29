@@ -42,7 +42,7 @@ public:
                 else
                 {
                     b = world->CreateRandomConvexPolygon(0.15f, 0, RigidBody::Type::dynamic_body, 0.05f);
-                    b->userFlag = UserFlag::RENDER_POLYGON_RADIUS;
+                    b->UserFlag = UserFlag::RENDER_POLYGON_RADIUS;
                 }
 
                 float y = (i - count / 2.0f) / count * size + size / 2.0f + 0.5f;
@@ -65,11 +65,11 @@ public:
         float angleDelta = MULI_PI * 2.0f / count;
         for (float angle = 0.0f; angle < MULI_PI * 2.0f; angle += angleDelta)
         {
-            Vec2 to = mpos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
+            Vec2 to = cursorPos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
 
-            ll.push_back(mpos);
+            ll.push_back(cursorPos);
 
-            if (!world->RayCastClosest(mpos, to,
+            if (!world->RayCastClosest(cursorPos, to,
                                        [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
                                            pl.push_back(point);
                                            ll.push_back(point);

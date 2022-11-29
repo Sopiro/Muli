@@ -54,8 +54,8 @@ private:
     Vec2 bias0;
     float bias1;
 
-    Vec2 linearImpulseSum{ 0.0f };
-    float angularImpulseSum = 0.0f;
+    Vec2 linearImpulseSum;
+    float angularImpulseSum;
 
     void ApplyImpulse(const Vec2& lambda0, float lambda1);
 };

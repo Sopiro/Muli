@@ -63,7 +63,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
 
             const Vec2& v0 = vertices[i0];
 
-            if ((body->userFlag & UserFlag::RENDER_POLYGON_RADIUS) == 0)
+            if ((body->UserFlag & UserFlag::RENDER_POLYGON_RADIUS) == 0)
             {
                 vertices2.push_back(v0);
                 vertices3.push_back(v0);

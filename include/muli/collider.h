@@ -13,7 +13,7 @@ namespace muli
 class Collider
 {
 public:
-    const RigidBody* GetBody() const;
+    RigidBody* GetBody() const;
 
     Shape::Type GetType() const;
     const Shape* GetShape() const;
@@ -43,6 +43,8 @@ public:
 
     Collider* GetNext() const;
 
+    std::function<void(Collider*)> OnDestroy;
+
 private:
     friend class RigidBody;
     friend class AABBTree;
@@ -53,7 +55,7 @@ private:
     friend class ContactSolver;
 
     Collider();
-    ~Collider() = default;
+    ~Collider();
 
     void Create(PredefinedBlockAllocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
     void Destroy(PredefinedBlockAllocator* allocator);
@@ -69,7 +71,7 @@ private:
     int32 node;
 };
 
-inline const RigidBody* Collider::GetBody() const
+inline RigidBody* Collider::GetBody() const
 {
     return body;
 }

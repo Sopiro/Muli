@@ -10,6 +10,15 @@ namespace muli
 World::World(const WorldSettings& simulationSettings)
     : settings{ simulationSettings }
     , contactManager{ *this }
+    , bodyList{ nullptr }
+    , bodyListTail{ nullptr }
+    , jointList{ nullptr }
+    , bodyCount{ 0 }
+    , jointCount{ 0 }
+    , numIslands{ 0 }
+    , sleepingIslands{ 0 }
+    , sleepingBodies{ 0 }
+    , integrateForce{ false }
 {
 }
 
@@ -139,14 +148,12 @@ void World::Step(float dt)
 
 void World::Reset()
 {
-    contactManager.Reset();
-
     RigidBody* b = bodyList;
     while (b)
     {
         RigidBody* b0 = b;
         b = b->next;
-        FreeBody(b0);
+        Destroy(b0);
     }
 
     Joint* j = jointList;
@@ -154,7 +161,7 @@ void World::Reset()
     {
         Joint* j0 = j;
         j = j->next;
-        FreeJoint(j0);
+        Destroy(j0);
     }
 
     bodyList = nullptr;
@@ -167,48 +174,16 @@ void World::Reset()
     muliAssert(blockAllocator.GetBlockCount() == 0);
 }
 
-void World::Add(RigidBody* body)
-{
-    if (body->world != nullptr)
-    {
-        throw std::runtime_error("This body is already registered.");
-    }
-
-    body->world = this;
-
-    if (bodyList == nullptr && bodyListTail == nullptr)
-    {
-        bodyList = body;
-        bodyListTail = body;
-    }
-    else
-    {
-        bodyListTail->next = body;
-        body->prev = bodyListTail;
-        bodyListTail = body;
-    }
-
-    ++bodyCount;
-}
-
-void World::Add(const std::vector<RigidBody*>& bodies)
-{
-    for (auto b : bodies)
-    {
-        Add(b);
-    }
-}
-
 void World::Destroy(RigidBody* body)
 {
-    if (body->world != this)
-    {
-        throw std::runtime_error("This body is not registered in this world");
-    }
+    muliAssert(body->world == this);
 
-    for (Collider* collider = body->colliderList; collider; collider = collider->next)
+    Collider* c = body->colliderList;
+    while (c)
     {
-        contactManager.Remove(collider);
+        Collider* c0 = c;
+        c = c->next;
+        body->DestoryCollider(c0);
     }
 
     JointEdge* je = body->jointList;
@@ -221,8 +196,6 @@ void World::Destroy(RigidBody* body)
         Destroy(je0->joint);
     }
 
-    // contactManager.Remove(body);
-
     if (body->next) body->next->prev = body->prev;
     if (body->prev) body->prev->next = body->next;
     if (body == bodyList) bodyList = body->next;
@@ -234,7 +207,7 @@ void World::Destroy(RigidBody* body)
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32 i = 0; i < bodies.size(); ++i)
+    for (size_t i = 0; i < bodies.size(); ++i)
     {
         Destroy(bodies[i]);
     }
@@ -247,7 +220,7 @@ void World::BufferDestroy(RigidBody* body)
 
 void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
 {
-    for (uint32 i = 0; i < bodies.size(); ++i)
+    for (size_t i = 0; i < bodies.size(); ++i)
     {
         BufferDestroy(bodies[i]);
     }
@@ -301,9 +274,9 @@ void World::BufferDestroy(const std::vector<Joint*>& joints)
     }
 }
 
-std::vector<RigidBody*> World::Query(const Vec2& point) const
+std::vector<Collider*> World::Query(const Vec2& point) const
 {
-    std::vector<RigidBody*> res;
+    std::vector<Collider*> res;
     std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(point);
 
     for (uint32 i = 0; i < colliders.size(); ++i)
@@ -312,20 +285,20 @@ std::vector<RigidBody*> World::Query(const Vec2& point) const
 
         if (collider->TestPoint(point))
         {
-            res.push_back(collider->body);
+            res.push_back(collider);
         }
     }
 
     return res;
 }
 
-std::vector<RigidBody*> World::Query(const AABB& aabb) const
+std::vector<Collider*> World::Query(const AABB& aabb) const
 {
-    std::vector<RigidBody*> res;
+    std::vector<Collider*> res;
     std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(aabb);
 
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    PolygonShape box{ vertices, 4, true, 0.0f };
+    PolygonShape box{ vertices, 4, false, 0.0f };
 
     Transform t{ identity };
 
@@ -335,7 +308,7 @@ std::vector<RigidBody*> World::Query(const AABB& aabb) const
 
         if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
-            res.push_back(collider->body);
+            res.push_back(collider);
         }
     }
 
@@ -401,10 +374,25 @@ bool World::RayCastClosest(
 RigidBody* World::CreateEmptyBody(RigidBody::Type type)
 {
     void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* b = new (mem) RigidBody(type);
+    RigidBody* body = new (mem) RigidBody(type);
 
-    Add(b);
-    return b;
+    body->world = this;
+
+    if (bodyList == nullptr && bodyListTail == nullptr)
+    {
+        bodyList = body;
+        bodyListTail = body;
+    }
+    else
+    {
+        bodyListTail->next = body;
+        body->prev = bodyListTail;
+        bodyListTail = body;
+    }
+
+    ++bodyCount;
+
+    return body;
 }
 
 RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density)
@@ -412,7 +400,7 @@ RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density
     RigidBody* b = CreateEmptyBody(type);
 
     CircleShape circle{ radius };
-    b->AddCollider(&circle);
+    b->CreateCollider(&circle);
     return b;
 }
 
@@ -421,7 +409,7 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
     RigidBody* b = CreateEmptyBody(type);
 
     CapsuleShape capsule{ length, radius, horizontal };
-    b->AddCollider(&capsule);
+    b->CreateCollider(&capsule);
     return b;
 }
 
@@ -432,7 +420,7 @@ RigidBody* World::CreateCapsule(
 
     Vec2 center = (p1 + p2) * 0.5f;
     CapsuleShape capsule{ p1, p2, radius, true };
-    b->AddCollider(&capsule);
+    b->CreateCollider(&capsule);
     if (resetPosition == false)
     {
         b->Translate(center);
@@ -446,7 +434,7 @@ RigidBody* World::CreatePolygon(
     RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
-    b->AddCollider(&polygon);
+    b->CreateCollider(&polygon);
 
     Vec2 center{ 0.0f };
     for (size_t i = 0; i < vertices.size(); ++i)
@@ -465,12 +453,11 @@ RigidBody* World::CreatePolygon(
 
 RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
 {
-    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
-
     RigidBody* b = CreateEmptyBody(type);
 
+    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     PolygonShape box{ vertices, 4, true, radius };
-    b->AddCollider(&box);
+    b->CreateCollider(&box);
     return b;
 }
 
@@ -507,7 +494,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
     RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
-    b->AddCollider(&polygon);
+    b->CreateCollider(&polygon);
     return b;
 }
 
@@ -543,7 +530,7 @@ RigidBody* World::CreateRegularPolygon(
     RigidBody* b = CreateEmptyBody(type);
 
     PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
-    b->AddCollider(&polygon);
+    b->CreateCollider(&polygon);
     return b;
 }
 
@@ -739,16 +726,6 @@ void World::Add(Joint* joint)
 
 void World::FreeBody(RigidBody* body)
 {
-    Collider* c = body->colliderList;
-    while (c)
-    {
-        Collider* c0 = c;
-        c = c->next;
-        c0->Destroy(&blockAllocator);
-        c0->~Collider();
-        blockAllocator.Free(c0, sizeof(Collider));
-    }
-
     body->~RigidBody();
     blockAllocator.Free(body, sizeof(RigidBody));
 }

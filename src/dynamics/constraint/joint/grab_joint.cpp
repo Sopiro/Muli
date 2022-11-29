@@ -12,6 +12,7 @@ GrabJoint::GrabJoint(RigidBody* _body,
                      float _dampingRatio,
                      float _jointMass)
     : Joint(type = Joint::Type::grab_joint, _body, _body, _settings, _frequency, _dampingRatio, _jointMass)
+    , impulseSum{ 0.0f }
 {
     localAnchor = MulT(_body->GetTransform(), _anchor);
     target = _target;

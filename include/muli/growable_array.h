@@ -11,10 +11,10 @@ class GrowableArray
 {
 public:
     GrowableArray()
+        : array{ stack_array }
+        , count{ 0 }
+        , capacity{ N }
     {
-        array = stack_array;
-        count = 0;
-        capacity = N;
     }
 
     ~GrowableArray()
