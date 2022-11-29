@@ -60,9 +60,12 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     shaderHandle = shaderProgram;
 }
 
-Shader::~Shader()
+Shader::~Shader() noexcept
 {
-    if (shaderHandle) glDeleteProgram(shaderHandle);
+    if (shaderHandle)
+    {
+        glDeleteProgram(shaderHandle);
+    }
 }
 
 } // namespace muli

@@ -100,7 +100,7 @@ Window::Window(int width, int height, std::string title)
     refreshRate = glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
 }
 
-Window::~Window()
+Window::~Window() noexcept
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

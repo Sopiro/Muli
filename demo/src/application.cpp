@@ -13,7 +13,7 @@ Application::Application(int width, int height, std::string title)
     frameTime = 1.0f / window.GetRefreshRate();
 }
 
-Application::~Application()
+Application::~Application() noexcept
 {
     std::cout << "Terminate program" << '\n';
 }

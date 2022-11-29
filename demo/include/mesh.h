@@ -15,7 +15,7 @@ public:
     Mesh& operator=(const Mesh&) noexcept = delete;
 
     Mesh(Mesh&&) noexcept;
-    Mesh& operator=(Mesh&&) noexcept = delete;
+    Mesh& operator=(Mesh&&) noexcept;
 
     void Draw(GLenum drawMode = GL_TRIANGLES);
 

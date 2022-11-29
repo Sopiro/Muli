@@ -128,7 +128,7 @@ void Game::UpdateUI()
                 }
 
                 ImGui::Separator();
-                ImGui::Text(demos[demoIndex].name);
+                ImGui::Text("%s", demos[demoIndex].name);
                 ImGui::Text("Bodies: %d", demo->GetWorld().GetBodyCount());
                 ImGui::Text("Sleeping dynamic bodies: %d", demo->GetWorld().GetSleepingBodyCount());
                 ImGui::Text("Broad phase contacts: %d", demo->GetWorld().GetContactCount());

@@ -47,9 +47,12 @@ Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoor
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * indices_l.size(), indices_l.data(), GL_STATIC_DRAW);
 }
 
-Mesh::~Mesh()
+Mesh::~Mesh() noexcept
 {
-    if (moved) return;
+    if (moved)
+    {
+        return;
+    }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBOv);
@@ -58,19 +61,26 @@ Mesh::~Mesh()
     glDeleteBuffers(1, &EBOl);
 }
 
-Mesh::Mesh(Mesh&& _m) noexcept
+Mesh::Mesh(Mesh&& other) noexcept
 {
-    _m.moved = true;
+    operator=(std::move(other));
+}
 
-    vertices = std::move(_m.vertices);
-    texCoords = std::move(_m.texCoords);
-    indices = std::move(_m.indices);
+Mesh& Mesh::operator=(Mesh&& other) noexcept
+{
+    other.moved = true;
 
-    VAO = _m.VAO;
-    VBOv = _m.VBOv;
-    VBOt = _m.VBOt;
-    EBOt = _m.EBOt;
-    EBOl = _m.EBOl;
+    vertices = std::move(other.vertices);
+    texCoords = std::move(other.texCoords);
+    indices = std::move(other.indices);
+
+    VAO = other.VAO;
+    VBOv = other.VBOv;
+    VBOt = other.VBOt;
+    EBOt = other.EBOt;
+    EBOl = other.EBOl;
+
+    return *this;
 }
 
 void Mesh::Draw(GLenum drawMode)
