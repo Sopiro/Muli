@@ -16,6 +16,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
     case Shape::Type::circle:
     {
         const CircleShape* c = static_cast<const CircleShape*>(shape);
+        Vec2 localCenter = c->GetCenter();
         float radius = c->GetRadius();
 
         float angle = MULI_PI * 2.0f / circlePolygonCount;
@@ -30,6 +31,8 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= radius;
+            corner.x += localCenter.x;
+            corner.y += localCenter.y;
 
             vertices.push_back(corner);
             texCoords.emplace_back(corner.x, corner.y);
@@ -38,7 +41,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
         std::vector<uint32> indices = Triangulate(texCoords);
 
         vertices.push_back(Vec3(vertices[0]));
-        vertices.push_back(Vec3{ 0.0f });
+        vertices.push_back(Vec3{ localCenter });
 
         return std::make_unique<Mesh>(vertices, texCoords, indices);
     }

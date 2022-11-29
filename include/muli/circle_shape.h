@@ -58,8 +58,8 @@ inline void CircleShape::ComputeAABB(const Transform& transform, AABB* outAABB) 
 
 inline bool CircleShape::TestPoint(const Transform& transform, const Vec2& q) const
 {
-    Vec2 w = transform * center;
-    Vec2 d = w - q;
+    Vec2 localQ = MulT(transform, q);
+    Vec2 d = center - localQ;
 
     return Dot(d, d) <= radius * radius;
 }

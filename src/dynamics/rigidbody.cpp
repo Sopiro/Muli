@@ -1,6 +1,9 @@
 #include "muli/rigidbody.h"
 #include "muli/aabbtree.h"
+#include "muli/capsule_shape.h"
+#include "muli/circle_shape.h"
 #include "muli/collider.h"
+#include "muli/polygon_shape.h"
 #include "muli/world.h"
 
 namespace muli
@@ -109,6 +112,33 @@ void RigidBody::DestoryCollider(Collider* collider)
     --colliderCount;
 
     ResetMassData();
+}
+
+Collider* RigidBody::CreateCircleCollider(float radius, const Vec2& position, float density, const Material& material)
+{
+    CircleShape circle{ radius, position };
+    return CreateCollider(&circle, density, material);
+}
+
+Collider* RigidBody::CreateBoxCollider(
+    float width, float height, float radius, const Vec2& position, float angle, float density, const Material& material)
+{
+    PolygonShape box{ width, height, radius, position, angle };
+    return CreateCollider(&box, density, material);
+}
+
+Collider* RigidBody::CreateCapsuleCollider(
+    float length, float radius, bool horizontal, const Vec2& position, float density, const Material& material)
+{
+    CapsuleShape capsule{ length, radius, horizontal, position };
+    return CreateCollider(&capsule, density, material);
+}
+
+Collider* RigidBody::CreateCapsuleCollider(
+    const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, float density, const Material& material)
+{
+    CapsuleShape capsule{ p1, p2, radius, resetPosition };
+    return CreateCollider(&capsule, density, material);
 }
 
 bool RigidBody::TestPoint(const Vec2& p) const

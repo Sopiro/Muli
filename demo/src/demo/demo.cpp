@@ -219,8 +219,6 @@ void Demo::EnableBodyRemove()
         {
             auto qr = (aabb.max == aabb.min) ? world->Query(aabb.min) : world->Query(aabb);
 
-            std::cout << qr.size() << std::endl;
-
             for (int32 i = 0; i < qr.size(); ++i)
             {
                 Collider* c = qr[i];
@@ -240,9 +238,9 @@ void Demo::EnableBodyRemove()
 
 bool Demo::EnableBodyGrab()
 {
-    if (targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (targetBody && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        if (targetCollider->GetType() == RigidBody::Type::dynamic_body)
+        if (targetBody->GetType() == RigidBody::Type::dynamic_body)
         {
             targetBody->Awake();
             gj = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());

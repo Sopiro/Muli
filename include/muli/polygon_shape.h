@@ -11,6 +11,9 @@ class PolygonShape : public Shape
 {
 public:
     PolygonShape(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
+    PolygonShape(
+        float width, float height, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
+    PolygonShape(float size, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
     ~PolygonShape();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;

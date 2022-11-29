@@ -17,9 +17,9 @@ Joint::Joint(Joint::Type _type,
     SetProperties(_frequency, _dampingRatio, _jointMass);
 }
 
-Joint::~Joint()
+Joint::~Joint() noexcept
 {
-    if (OnDestroy != nullptr)
+    if (OnDestroy)
     {
         OnDestroy(this);
     }

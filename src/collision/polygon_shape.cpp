@@ -56,6 +56,37 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _rese
     }
 }
 
+PolygonShape::PolygonShape(float width, float height, float _radius, const Vec2& position, float angle)
+    : Shape(polygon, _radius)
+{
+    vertices = localVertices;
+    normals = localNormals;
+    vertexCount = 4;
+
+    float hx = width / 2.0f;
+    float hy = height / 2.0f;
+
+    Transform t{ position, angle };
+
+    vertices[0] = t * Vec2{ -hx, -hy };
+    vertices[1] = t * Vec2{ hx, -hy };
+    vertices[2] = t * Vec2{ hx, hy };
+    vertices[3] = t * Vec2{ -hx, hy };
+
+    normals[0] = t.rotation * Vec2{ 0.0f, -1.0f };
+    normals[1] = t.rotation * Vec2{ 1.0f, 0.0f };
+    normals[2] = t.rotation * Vec2{ 0.0f, 1.0f };
+    normals[3] = t.rotation * Vec2{ -1.0f, 0.0f };
+
+    center = position;
+    area = width * height;
+}
+
+PolygonShape::PolygonShape(float size, float _radius, const Vec2& position, float angle)
+    : PolygonShape(size, size, _radius, position, angle)
+{
+}
+
 PolygonShape::~PolygonShape()
 {
     if (vertices != localVertices)

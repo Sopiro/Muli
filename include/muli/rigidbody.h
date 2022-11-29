@@ -93,6 +93,33 @@ public:
     Collider* GetColliderList() const;
     int32 GetColliderCount() const;
 
+    Collider* CreateCircleCollider(float radius,
+                                   const Vec2& position = Vec2{ 0.0f },
+                                   float density = DEFAULT_DENSITY,
+                                   const Material& material = default_material);
+
+    Collider* CreateBoxCollider(float width,
+                                float height,
+                                float radius = DEFAULT_RADIUS,
+                                const Vec2& position = Vec2{ 0.0f },
+                                float angle = 0.0f,
+                                float density = DEFAULT_DENSITY,
+                                const Material& material = default_material);
+
+    Collider* CreateCapsuleCollider(float length,
+                                    float radius,
+                                    bool horizontal = false,
+                                    const Vec2& position = Vec2{ 0.0f },
+                                    float density = DEFAULT_DENSITY,
+                                    const Material& material = default_material);
+
+    Collider* CreateCapsuleCollider(const Vec2& p1,
+                                    const Vec2& p2,
+                                    float radius,
+                                    bool resetPosition = false,
+                                    float density = DEFAULT_DENSITY,
+                                    const Material& material = default_material);
+
     void SetCollisionFilter(const CollisionFilter& filter) const;
     void SetFriction(float friction) const;
     void SetRestitution(float restitution) const;
