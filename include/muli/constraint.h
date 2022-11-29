@@ -17,8 +17,8 @@ public:
     Constraint(const Constraint&) noexcept = delete;
     Constraint& operator=(const Constraint&) noexcept = delete;
 
-    Constraint(Constraint&&) noexcept = default;
-    Constraint& operator=(Constraint&&) noexcept = default;
+    Constraint(Constraint&&) noexcept = delete;
+    Constraint& operator=(Constraint&&) noexcept = delete;
 
     /*
      * C: Constraint equation

@@ -38,7 +38,7 @@ inline BroadPhase::BroadPhase(World& _world, float _aabbMargin, float _velocityM
 {
 }
 
-inline BroadPhase::~BroadPhase()
+inline BroadPhase::~BroadPhase() noexcept
 {
     Reset();
 }

@@ -23,7 +23,7 @@ AABBTree::AABBTree()
     freeList = 0;
 }
 
-AABBTree::~AABBTree()
+AABBTree::~AABBTree() noexcept
 {
     free(nodes);
     root = nullNode;

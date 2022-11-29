@@ -35,7 +35,7 @@ RigidBody::RigidBody(RigidBody::Type _type)
 {
 }
 
-RigidBody::~RigidBody()
+RigidBody::~RigidBody() noexcept
 {
     if (OnDestroy)
     {
