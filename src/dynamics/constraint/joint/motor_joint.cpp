@@ -13,7 +13,7 @@ MotorJoint::MotorJoint(RigidBody* _bodyA,
                        float _frequency,
                        float _dampingRatio,
                        float _jointMass)
-    : Joint(Joint::Type::motor_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(motor_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
     , linearImpulseSum{ 0.0f }
     , angularImpulseSum{ 0.0f }
 {
