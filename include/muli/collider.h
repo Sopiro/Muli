@@ -47,7 +47,7 @@ public:
     Collider* GetNext() const;
 
     ColliderDestoryCallback* OnDestroy;
-    ContactListener* ContactListener;
+    muli::ContactListener* ContactListener;
 
 private:
     friend class RigidBody;
