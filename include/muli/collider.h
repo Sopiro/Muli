@@ -57,8 +57,8 @@ private:
     Collider();
     ~Collider();
 
-    void Create(PredefinedBlockAllocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
-    void Destroy(PredefinedBlockAllocator* allocator);
+    void Create(Allocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
+    void Destroy(Allocator* allocator);
 
     float density;
 

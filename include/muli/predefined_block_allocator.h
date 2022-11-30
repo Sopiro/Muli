@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "allocator.h"
 
 namespace muli
 {
@@ -10,7 +10,7 @@ struct Block;
 
 constexpr int32 predefinedBlockSizeCount = 16;
 
-class PredefinedBlockAllocator
+class PredefinedBlockAllocator : public Allocator
 {
 public:
     PredefinedBlockAllocator();

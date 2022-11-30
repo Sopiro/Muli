@@ -24,10 +24,15 @@ void* BlockAllocator::Allocate(int32 size)
     {
         return nullptr;
     }
+
+#if 0
+    muliAssert(size <= maxBlockSize);
+#else
     if (size > maxBlockSize)
     {
         return malloc(size);
     }
+#endif
 
     assert(0 < size && size <= maxBlockSize);
 

@@ -96,7 +96,7 @@ PolygonShape::~PolygonShape()
     }
 }
 
-Shape* PolygonShape::Clone(PredefinedBlockAllocator* allocator) const
+Shape* PolygonShape::Clone(Allocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(PolygonShape));
     PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, false, radius);

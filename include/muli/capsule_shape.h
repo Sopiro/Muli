@@ -24,7 +24,7 @@ public:
     const Vec2& GetVertexB() const;
 
 protected:
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator) const override;
 
 private:
     float length;
@@ -33,7 +33,7 @@ private:
     Vec2 vb;
 };
 
-inline Shape* CapsuleShape::Clone(PredefinedBlockAllocator* allocator) const
+inline Shape* CapsuleShape::Clone(Allocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(CapsuleShape));
     CapsuleShape* shape = new (mem) CapsuleShape(*this);

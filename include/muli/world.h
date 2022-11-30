@@ -1,5 +1,6 @@
 #pragma once
 
+#include "block_allocator.h"
 #include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
@@ -217,7 +218,7 @@ private:
     void FreeJoint(Joint* joint);
 
     StackAllocator stackAllocator;
-    PredefinedBlockAllocator blockAllocator;
+    BlockAllocator blockAllocator;
 };
 
 inline void World::Awake()

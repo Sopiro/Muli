@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "allocator.h"
 
 namespace muli
 {
@@ -21,7 +21,7 @@ constexpr int32 maxBlockSize = 1024;
 constexpr int32 blockUnit = 8;
 constexpr int32 blockSizeCount = maxBlockSize / blockUnit;
 
-class BlockAllocator
+class BlockAllocator : public Allocator
 {
 public:
     BlockAllocator();

@@ -43,12 +43,13 @@ void* StackAllocator::Allocate(int32 size)
     return entry->data;
 }
 
-void StackAllocator::Free(void* p)
+void StackAllocator::Free(void* p, int32 size)
 {
     muliAssert(entryCount > 0);
 
     StackEntry* entry = entries + entryCount - 1;
     muliAssert(entry->data == p);
+    muliAssert(entry->size == size * 8);
 
     if (entry->mallocUsed)
     {

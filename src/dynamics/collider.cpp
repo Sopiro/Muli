@@ -24,8 +24,7 @@ Collider::~Collider()
     next = nullptr;
 }
 
-void Collider::Create(
-    PredefinedBlockAllocator* allocator, RigidBody* _body, Shape* _shape, float _density, const Material& _material)
+void Collider::Create(Allocator* allocator, RigidBody* _body, Shape* _shape, float _density, const Material& _material)
 {
     body = _body;
     shape = _shape->Clone(allocator);
@@ -33,7 +32,7 @@ void Collider::Create(
     material = _material;
 }
 
-void Collider::Destroy(PredefinedBlockAllocator* allocator)
+void Collider::Destroy(Allocator* allocator)
 {
     shape->~Shape();
 

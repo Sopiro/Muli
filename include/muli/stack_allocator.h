@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "allocator.h"
 
 namespace muli
 {
@@ -17,14 +17,14 @@ struct StackEntry
 
 // Stack allocator used for transient, predictable allocations.
 // You muse nest allocate/free pairs
-class StackAllocator
+class StackAllocator : public Allocator
 {
 public:
     StackAllocator();
     ~StackAllocator();
 
     void* Allocate(int32 size);
-    void Free(void* p);
+    void Free(void* p, int32 size);
     void Clear();
 
     int32 GetAllocation() const;

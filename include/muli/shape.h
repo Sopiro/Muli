@@ -49,7 +49,7 @@ protected:
     friend class Collider;
     friend class RigidBody;
 
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const = 0;
+    virtual Shape* Clone(Allocator* allocator) const = 0;
 
     Type type;
 

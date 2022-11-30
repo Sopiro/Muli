@@ -8,16 +8,19 @@ namespace muli
 // Circle: 32
 // Capsule: 56
 // Polygon: 184
-// Collider: 64
-// RigidBody: 208
-// Contact: 696
+// Collider: 128
+// RigidBody: 224
+// Contact: 632
+// Manifold: 64
 
 // Angle joint      : 216
-// Grab joint       : 256
 // Distance joint   : 256
-// Revolute joint   : 264
+// Grab joint       : 256
+// Line joint       : 256
+// Motor joint      : 304
 // Prismatic joint  : 280
 // Pulley joint     : 288
+// Revolute joint   : 264
 // Weld joint       : 296
 
 // Predefined block sizes

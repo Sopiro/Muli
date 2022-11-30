@@ -127,7 +127,7 @@ void World::Step(float dt)
         restingBodies = 0;
     }
 
-    stackAllocator.Free(stack);
+    stackAllocator.Free(stack, bodyCount);
 
     numIslands = islandID;
 

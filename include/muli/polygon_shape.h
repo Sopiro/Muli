@@ -30,7 +30,7 @@ public:
     float GetArea() const;
 
 protected:
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator) const override;
 
     Vec2* vertices;
     Vec2* normals;

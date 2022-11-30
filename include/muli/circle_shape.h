@@ -21,10 +21,10 @@ public:
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
 
 protected:
-    virtual Shape* Clone(PredefinedBlockAllocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator) const override;
 };
 
-inline Shape* CircleShape::Clone(PredefinedBlockAllocator* allocator) const
+inline Shape* CircleShape::Clone(Allocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(CircleShape));
     CircleShape* shape = new (mem) CircleShape(*this);

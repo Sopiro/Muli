@@ -60,7 +60,7 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
 {
     muliAssert(world != nullptr);
 
-    PredefinedBlockAllocator* allocator = &world->blockAllocator;
+    Allocator* allocator = &world->blockAllocator;
     void* mem = allocator->Allocate(sizeof(Collider));
 
     Collider* collider = new (mem) Collider;
@@ -103,7 +103,7 @@ void RigidBody::DestoryCollider(Collider* collider)
     // Remove collider from contact manager(broad phase)
     world->contactManager.Remove(collider);
 
-    PredefinedBlockAllocator* allocator = &world->blockAllocator;
+    Allocator* allocator = &world->blockAllocator;
 
     collider->~Collider();
     collider->Destroy(allocator);
