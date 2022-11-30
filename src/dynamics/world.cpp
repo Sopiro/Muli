@@ -1,8 +1,8 @@
 #include "muli/world.h"
-#include "muli/capsule_shape.h"
-#include "muli/circle_shape.h"
+#include "muli/capsule.h"
+#include "muli/circle.h"
 #include "muli/island.h"
-#include "muli/polygon_shape.h"
+#include "muli/polygon.h"
 
 namespace muli
 {
@@ -298,7 +298,7 @@ std::vector<Collider*> World::Query(const AABB& aabb) const
     std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(aabb);
 
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    PolygonShape box{ vertices, 4, false, 0.0f };
+    Polygon box{ vertices, 4, false, 0.0f };
 
     Transform t{ identity };
 
@@ -399,7 +399,7 @@ RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density
 {
     RigidBody* b = CreateEmptyBody(type);
 
-    CircleShape circle{ radius };
+    Circle circle{ radius };
     b->CreateCollider(&circle);
     return b;
 }
@@ -408,7 +408,7 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
 {
     RigidBody* b = CreateEmptyBody(type);
 
-    CapsuleShape capsule{ length, radius, horizontal };
+    Capsule capsule{ length, radius, horizontal };
     b->CreateCollider(&capsule);
     return b;
 }
@@ -419,7 +419,7 @@ RigidBody* World::CreateCapsule(
     RigidBody* b = CreateEmptyBody(type);
 
     Vec2 center = (p1 + p2) * 0.5f;
-    CapsuleShape capsule{ p1, p2, radius, true };
+    Capsule capsule{ p1, p2, radius, true };
     b->CreateCollider(&capsule);
     if (resetPosition == false)
     {
@@ -433,7 +433,7 @@ RigidBody* World::CreatePolygon(
 {
     RigidBody* b = CreateEmptyBody(type);
 
-    PolygonShape polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
+    Polygon polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
     b->CreateCollider(&polygon);
 
     Vec2 center{ 0.0f };
@@ -456,7 +456,7 @@ RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, flo
     RigidBody* b = CreateEmptyBody(type);
 
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
-    PolygonShape box{ vertices, 4, true, radius };
+    Polygon box{ vertices, 4, true, radius };
     b->CreateCollider(&box);
     return b;
 }
@@ -493,7 +493,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 
     RigidBody* b = CreateEmptyBody(type);
 
-    PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
+    Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon);
     return b;
 }
@@ -529,7 +529,7 @@ RigidBody* World::CreateRegularPolygon(
 
     RigidBody* b = CreateEmptyBody(type);
 
-    PolygonShape polygon{ vertices.data(), vertexCount, true, radius };
+    Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon);
     return b;
 }

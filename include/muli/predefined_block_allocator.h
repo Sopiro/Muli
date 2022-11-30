@@ -16,9 +16,9 @@ public:
     PredefinedBlockAllocator();
     ~PredefinedBlockAllocator();
 
-    void* Allocate(int32 size);
-    void Free(void* p, int32 size);
-    void Clear();
+    virtual void* Allocate(int32 size) override;
+    virtual void Free(void* p, int32 size) override;
+    virtual void Clear() override;
 
     int32 GetBlockCount() const;
     int32 GetChunkCount() const;

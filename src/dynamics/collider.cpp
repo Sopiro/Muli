@@ -1,7 +1,7 @@
 #include "muli/collider.h"
-#include "muli/capsule_shape.h"
-#include "muli/circle_shape.h"
-#include "muli/polygon_shape.h"
+#include "muli/capsule.h"
+#include "muli/circle.h"
+#include "muli/polygon.h"
 
 namespace muli
 {
@@ -39,13 +39,13 @@ void Collider::Destroy(Allocator* allocator)
     switch (shape->GetType())
     {
     case Shape::Type::circle:
-        allocator->Free(shape, sizeof(CircleShape));
+        allocator->Free(shape, sizeof(Circle));
         break;
     case Shape::Type::capsule:
-        allocator->Free(shape, sizeof(CapsuleShape));
+        allocator->Free(shape, sizeof(Capsule));
         break;
     case Shape::Type::polygon:
-        allocator->Free(shape, sizeof(PolygonShape));
+        allocator->Free(shape, sizeof(Polygon));
         break;
     default:
         muliAssert(false);

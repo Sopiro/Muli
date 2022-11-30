@@ -1,11 +1,11 @@
-#include "muli/polygon_shape.h"
+#include "muli/polygon.h"
 #include "muli/util.h"
 
 namespace muli
 {
 
-PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition, float _radius)
-    : Shape(Shape::Type::polygon, _radius)
+Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition, float _radius)
+    : Shape(polygon, _radius)
 {
     if (_vertexCount > MAX_LOCAL_POLYGON_VERTICES)
     {
@@ -56,7 +56,7 @@ PolygonShape::PolygonShape(const Vec2* _vertices, int32 _vertexCount, bool _rese
     }
 }
 
-PolygonShape::PolygonShape(float width, float height, float _radius, const Vec2& position, float angle)
+Polygon::Polygon(float width, float height, float _radius, const Vec2& position, float angle)
     : Shape(polygon, _radius)
 {
     vertices = localVertices;
@@ -82,12 +82,12 @@ PolygonShape::PolygonShape(float width, float height, float _radius, const Vec2&
     area = width * height;
 }
 
-PolygonShape::PolygonShape(float size, float _radius, const Vec2& position, float angle)
-    : PolygonShape(size, size, _radius, position, angle)
+Polygon::Polygon(float size, float _radius, const Vec2& position, float angle)
+    : Polygon(size, size, _radius, position, angle)
 {
 }
 
-PolygonShape::~PolygonShape()
+Polygon::~Polygon()
 {
     if (vertices != localVertices)
     {
@@ -96,14 +96,14 @@ PolygonShape::~PolygonShape()
     }
 }
 
-Shape* PolygonShape::Clone(Allocator* allocator) const
+Shape* Polygon::Clone(Allocator* allocator) const
 {
-    void* mem = allocator->Allocate(sizeof(PolygonShape));
-    PolygonShape* shape = new (mem) PolygonShape(vertices, vertexCount, false, radius);
+    void* mem = allocator->Allocate(sizeof(Polygon));
+    Polygon* shape = new (mem) Polygon(vertices, vertexCount, false, radius);
     return shape;
 }
 
-Vec2 PolygonShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
 
@@ -184,7 +184,7 @@ Vec2 PolygonShape::GetClosestPoint(const Transform& transform, const Vec2& q) co
     return q;
 }
 
-Edge PolygonShape::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
+Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     Vec2 localDir = MulT(transform.rotation, dir);
     ContactPoint farthest = Support(localDir);
@@ -211,7 +211,7 @@ Edge PolygonShape::GetFeaturedEdge(const Transform& transform, const Vec2& dir) 
     }
 }
 
-ContactPoint PolygonShape::Support(const Vec2& localDir) const
+ContactPoint Polygon::Support(const Vec2& localDir) const
 {
     int32 index = 0;
     float maxValue = Dot(localDir, vertices[index]);
@@ -229,7 +229,7 @@ ContactPoint PolygonShape::Support(const Vec2& localDir) const
     return ContactPoint{ vertices[index], index };
 }
 
-void PolygonShape::ComputeMass(float density, MassData* outMassData) const
+void Polygon::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;
 
@@ -307,7 +307,7 @@ void PolygonShape::ComputeMass(float density, MassData* outMassData) const
     outMassData->centerOfMass = center;
 }
 
-void PolygonShape::ComputeAABB(const Transform& transform, AABB* outAABB) const
+void Polygon::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
     Vec2 min = transform * vertices[0];
     Vec2 max = min;
@@ -324,7 +324,7 @@ void PolygonShape::ComputeAABB(const Transform& transform, AABB* outAABB) const
     outAABB->max = max + radius;
 }
 
-bool PolygonShape::TestPoint(const Transform& transform, const Vec2& q) const
+bool Polygon::TestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
 
@@ -381,7 +381,7 @@ bool PolygonShape::TestPoint(const Transform& transform, const Vec2& q) const
     }
 }
 
-bool PolygonShape::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
+bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
     Vec2 p2 = MulT(transform, input.to);

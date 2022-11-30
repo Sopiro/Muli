@@ -10,9 +10,9 @@
 
 #include "rigidbody.h"
 #include "collider.h"
-#include "circle_shape.h"
-#include "capsule_shape.h"
-#include "polygon_shape.h"
+#include "circle.h"
+#include "capsule.h"
+#include "polygon.h"
 
 #include "joint.h"
 #include "grab_joint.h"

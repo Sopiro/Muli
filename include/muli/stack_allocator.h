@@ -23,9 +23,9 @@ public:
     StackAllocator();
     ~StackAllocator();
 
-    void* Allocate(int32 size);
-    void Free(void* p, int32 size);
-    void Clear();
+    virtual void* Allocate(int32 size) override;
+    virtual void Free(void* p, int32 size) override;
+    virtual void Clear() override;
 
     int32 GetAllocation() const;
     int32 GetMaxAllocation() const;

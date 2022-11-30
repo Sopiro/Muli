@@ -1,16 +1,16 @@
-#include "muli/circle_shape.h"
+#include "muli/circle.h"
 
 namespace muli
 {
 
-CircleShape::CircleShape(float _radius, const Vec2& _center)
-    : Shape(Shape::Type::circle, _radius)
+Circle::Circle(float _radius, const Vec2& _center)
+    : Shape(circle, _radius)
 {
     area = radius * radius * MULI_PI;
     center = _center;
 }
 
-Vec2 CircleShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+Vec2 Circle::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 position = transform * center;
     Vec2 dir = (q - position);
@@ -26,7 +26,7 @@ Vec2 CircleShape::GetClosestPoint(const Transform& transform, const Vec2& q) con
     }
 }
 
-bool CircleShape::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
+bool Circle::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 position = transform * center;
 

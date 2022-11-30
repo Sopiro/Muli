@@ -1,9 +1,9 @@
 #include "muli/collision.h"
-#include "muli/capsule_shape.h"
-#include "muli/circle_shape.h"
+#include "muli/capsule.h"
+#include "muli/circle.h"
 #include "muli/contact_point.h"
 #include "muli/edge.h"
-#include "muli/polygon_shape.h"
+#include "muli/polygon.h"
 #include "muli/polytope.h"
 #include "muli/rigidbody.h"
 #include "muli/shape.h"
@@ -264,7 +264,7 @@ static bool CircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Trans
 
 static bool CapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    CapsuleShape* c = static_cast<CapsuleShape*>(a);
+    Capsule* c = static_cast<Capsule*>(a);
 
     Vec2 pb = tfB * b->GetCenter();
     Vec2 localP = MulT(tfA, pb);
@@ -330,7 +330,7 @@ static bool CapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Tran
 
 static bool PolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    PolygonShape* p = static_cast<PolygonShape*>(a);
+    Polygon* p = static_cast<Polygon*>(a);
     Vec2 pb = tfB * b->GetCenter();
 
     const Vec2* vertices = p->GetVertices();
@@ -609,7 +609,7 @@ static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& tfA, Shap
     Vec2 pb = tfB * b->GetCenter();
     Vec2 localC = MulT(tfA, pb);
 
-    CapsuleShape* c = static_cast<CapsuleShape*>(a);
+    Capsule* c = static_cast<Capsule*>(a);
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
 
@@ -653,7 +653,7 @@ static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& tfA, Shap
 
 static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
 {
-    PolygonShape* p = static_cast<PolygonShape*>(a);
+    Polygon* p = static_cast<Polygon*>(a);
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();

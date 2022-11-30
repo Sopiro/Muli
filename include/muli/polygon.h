@@ -7,14 +7,13 @@
 namespace muli
 {
 
-class PolygonShape : public Shape
+class Polygon : public Shape
 {
 public:
-    PolygonShape(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
-    PolygonShape(
-        float width, float height, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
-    PolygonShape(float size, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
-    ~PolygonShape();
+    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
+    Polygon(float width, float height, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
+    Polygon(float size, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
+    ~Polygon();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
@@ -41,22 +40,22 @@ private:
     Vec2 localNormals[MAX_LOCAL_POLYGON_VERTICES];
 };
 
-inline const Vec2* PolygonShape::GetVertices() const
+inline const Vec2* Polygon::GetVertices() const
 {
     return vertices;
 }
 
-inline const Vec2* PolygonShape::GetNormals() const
+inline const Vec2* Polygon::GetNormals() const
 {
     return normals;
 }
 
-inline int32 PolygonShape::GetVertexCount() const
+inline int32 Polygon::GetVertexCount() const
 {
     return vertexCount;
 }
 
-inline float PolygonShape::GetArea() const
+inline float Polygon::GetArea() const
 {
     return area;
 }

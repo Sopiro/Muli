@@ -24,7 +24,7 @@ public:
             float x1 = x0 + d;
             float y1 = f(x1);
 
-            CapsuleShape capsule{ Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f };
+            Capsule capsule{ Vec2{ x0, y0 }, Vec2{ x1, y1 }, 0.05f };
 
             b->CreateCollider(&capsule);
         }

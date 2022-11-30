@@ -1,10 +1,10 @@
-#include "muli/capsule_shape.h"
+#include "muli/capsule.h"
 
 namespace muli
 {
 
-CapsuleShape::CapsuleShape(float _length, float _radius, bool _horizontal, const Vec2& _center)
-    : Shape(Shape::Type::capsule, _radius)
+Capsule::Capsule(float _length, float _radius, bool _horizontal, const Vec2& _center)
+    : Shape(capsule, _radius)
     , length{ _length }
 {
     area = length * radius * 2.0f + MULI_PI * radius * radius;
@@ -26,7 +26,7 @@ CapsuleShape::CapsuleShape(float _length, float _radius, bool _horizontal, const
     vb += center;
 }
 
-CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition)
+Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition)
     : Shape(capsule, _radius)
 {
     Vec2 a2b = p2 - p1;
@@ -45,7 +45,7 @@ CapsuleShape::CapsuleShape(const Vec2& p1, const Vec2& p2, float _radius, bool _
     }
 }
 
-Vec2 CapsuleShape::GetClosestPoint(const Transform& transform, const Vec2& q) const
+Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
     UV w = ComputeWeights(va, vb, localQ);
@@ -90,7 +90,7 @@ Vec2 CapsuleShape::GetClosestPoint(const Transform& transform, const Vec2& q) co
     }
 }
 
-bool CapsuleShape::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
+bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
     Vec2 p1 = MulT(transform, input.from);
     Vec2 p2 = MulT(transform, input.to);

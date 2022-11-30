@@ -16,9 +16,9 @@ set(HEADER_FILES
     ../include/muli/rigidbody.h
 
     ../include/muli/shape.h
-    ../include/muli/circle_shape.h
-    ../include/muli/capsule_shape.h
-    ../include/muli/polygon_shape.h
+    ../include/muli/circle.h
+    ../include/muli/capsule.h
+    ../include/muli/polygon.h
 
     ../include/muli/collider.h
     ../include/muli/material.h
@@ -71,9 +71,9 @@ set(SOURCE_FILES
     collision/broad_phase.cpp
     collision/contact_manager.cpp
 
-    collision/circle_shape.cpp
-    collision/capsule_shape.cpp
-    collision/polygon_shape.cpp
+    collision/circle.cpp
+    collision/capsule.cpp
+    collision/polygon.cpp
 
     dynamics/collider.cpp
     dynamics/rigidbody.cpp

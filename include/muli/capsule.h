@@ -5,12 +5,12 @@
 namespace muli
 {
 
-class CapsuleShape : public Shape
+class Capsule : public Shape
 {
 public:
-    CapsuleShape(float length, float radius, bool horizontal = false, const Vec2& center = Vec2{ 0.0f });
-    CapsuleShape(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
-    ~CapsuleShape() = default;
+    Capsule(float length, float radius, bool horizontal = false, const Vec2& center = Vec2{ 0.0f });
+    Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
+    ~Capsule() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
@@ -33,25 +33,25 @@ private:
     Vec2 vb;
 };
 
-inline Shape* CapsuleShape::Clone(Allocator* allocator) const
+inline Shape* Capsule::Clone(Allocator* allocator) const
 {
-    void* mem = allocator->Allocate(sizeof(CapsuleShape));
-    CapsuleShape* shape = new (mem) CapsuleShape(*this);
+    void* mem = allocator->Allocate(sizeof(Capsule));
+    Capsule* shape = new (mem) Capsule(*this);
     return shape;
 }
 
-inline Edge CapsuleShape::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
+inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     return Edge{ transform * va, transform * vb, 0, 1 };
 }
 
-inline ContactPoint CapsuleShape::Support(const Vec2& localDir) const
+inline ContactPoint Capsule::Support(const Vec2& localDir) const
 {
     Vec2 dir = vb - va;
     return Dot(dir, localDir) > 0.0f ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
 }
 
-inline void CapsuleShape::ComputeMass(float density, MassData* outMassData) const
+inline void Capsule::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;
 
@@ -76,7 +76,7 @@ inline void CapsuleShape::ComputeMass(float density, MassData* outMassData) cons
     outMassData->centerOfMass = center;
 }
 
-inline void CapsuleShape::ComputeAABB(const Transform& transform, AABB* outAABB) const
+inline void Capsule::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
     Vec2 v1 = transform * va;
     Vec2 v2 = transform * vb;
@@ -85,19 +85,19 @@ inline void CapsuleShape::ComputeAABB(const Transform& transform, AABB* outAABB)
     outAABB->max = Max(v1, v2) + Vec2{ radius, radius };
 }
 
-inline bool CapsuleShape::TestPoint(const Transform& transform, const Vec2& q) const
+inline bool Capsule::TestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
 
     return SignedDistanceToLineSegment(localQ, va, vb, radius) < 0.0f;
 }
 
-inline const Vec2& CapsuleShape::GetVertexA() const
+inline const Vec2& Capsule::GetVertexA() const
 {
     return va;
 }
 
-inline const Vec2& CapsuleShape::GetVertexB() const
+inline const Vec2& Capsule::GetVertexB() const
 {
     return vb;
 }

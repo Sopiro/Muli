@@ -15,7 +15,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
     {
     case Shape::Type::circle:
     {
-        const CircleShape* c = static_cast<const CircleShape*>(shape);
+        const Circle* c = static_cast<const Circle*>(shape);
         Vec2 localCenter = c->GetCenter();
         float radius = c->GetRadius();
 
@@ -47,7 +47,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
     }
     case Shape::Type::polygon:
     {
-        const PolygonShape* p = static_cast<const PolygonShape*>(shape);
+        const Polygon* p = static_cast<const Polygon*>(shape);
         float radius = p->GetRadius();
 
         const Vec2* vertices = p->GetVertices();
@@ -103,7 +103,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
     }
     case Shape::Type::capsule:
     {
-        const CapsuleShape* c = static_cast<const CapsuleShape*>(shape);
+        const Capsule* c = static_cast<const Capsule*>(shape);
 
         Vec2 v1 = c->GetVertexA();
         Vec2 v2 = c->GetVertexB();
