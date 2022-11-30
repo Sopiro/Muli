@@ -19,4 +19,6 @@
 #include "revolute_joint.h"
 #include "distance_joint.h"
 
+#include "callbacks.h"
+
 // clang-format on

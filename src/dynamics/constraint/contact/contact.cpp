@@ -1,5 +1,6 @@
 #include "muli/contact.h"
 #include "muli/block_solver.h"
+#include "muli/callbacks.h"
 #include "muli/contact_solver.h"
 #include "muli/world.h"
 
@@ -12,11 +13,9 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     : Constraint(_colliderA->body, _colliderB->body, _settings)
     , colliderA{ _colliderA }
     , colliderB{ _colliderB }
+    , touching{ false }
 {
     muliAssert(colliderA->GetType() >= colliderB->GetType());
-
-    touching = false;
-    persistent = false;
 
     manifold.numContacts = 0;
 
@@ -48,6 +47,24 @@ void Contact::Update()
         normalSolvers[i].impulseSum = 0.0f;
         oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
         tangentSolvers[i].impulseSum = 0.0f;
+    }
+
+    if (wasTouching == false && touching == true)
+    {
+        colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
+        colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
+    }
+
+    if (wasTouching == true && touching == true)
+    {
+        colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
+        colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
+    }
+
+    if (wasTouching == true && touching == false)
+    {
+        colliderA->ContactListener->OnContactEnd(colliderA, colliderB, this);
+        colliderB->ContactListener->OnContactEnd(colliderB, colliderA, this);
     }
 
     if (touching == false)
@@ -82,8 +99,6 @@ void Contact::Update()
         {
             normalSolvers[n].impulseSum = oldNormalImpulse[o];
             tangentSolvers[n].impulseSum = oldTangentImpulse[o];
-
-            persistent = true;
         }
     }
 }

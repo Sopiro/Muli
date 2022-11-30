@@ -17,8 +17,9 @@ class Shape;
 struct Node;
 struct ContactEdge;
 struct JointEdge;
-struct RayCastAnyCallback;
-struct RayCastClosestCallback;
+class RayCastAnyCallback;
+class RayCastClosestCallback;
+class BodyDestoryCallback;
 
 class RigidBody final
 {
@@ -141,7 +142,7 @@ public:
     bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const;
 
     // Callbacks
-    std::function<void(RigidBody*)> OnDestroy;
+    BodyDestoryCallback* OnDestroy;
     uint32 UserFlag;
 
 protected:

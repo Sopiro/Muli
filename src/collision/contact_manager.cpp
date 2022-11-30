@@ -30,7 +30,7 @@ void ContactManager::Step(float dt)
 
         if (!activeA && !activeB)
         {
-            c = c->GetNext();
+            c = c->next;
             continue;
         }
 
@@ -39,13 +39,13 @@ void ContactManager::Step(float dt)
         if (overlap == false)
         {
             Contact* t = c;
-            c = c->GetNext();
+            c = c->next;
             Destroy(t);
             continue;
         }
 
         c->Update();
-        c = c->GetNext();
+        c = c->next;
     }
 }
 
@@ -160,7 +160,7 @@ void ContactManager::Reset()
     while (c)
     {
         Contact* c0 = c;
-        c = c->GetNext();
+        c = c->next;
         c0->~Contact();
         world->blockAllocator.Free(c0, sizeof(Contact));
     }

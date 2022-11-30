@@ -36,16 +36,11 @@ public:
     Contact(Collider* colliderA, Collider* colliderB, const WorldSettings& settings);
     ~Contact() noexcept = default;
 
-    void Update();
-    void Prepare();
-    void SolveVelocityConstraint();
-    bool SolvePositionConstraint();
-
     Collider* GetColliderA() const;
     Collider* GetColliderB() const;
 
-    Contact* GetNext() const;
-    Contact* GetPrev() const;
+    const Contact* GetNext() const;
+    const Contact* GetPrev() const;
 
     const ContactManifold& GetContactManifold() const;
     float GetRestitution() const;
@@ -54,11 +49,17 @@ public:
 
 private:
     friend class World;
+    friend class Island;
     friend class ContactManager;
     friend class BroadPhase;
     friend class ContactSolver;
     friend class BlockSolver;
     friend class PositionSolver;
+
+    void Update();
+    virtual void Prepare() override;
+    virtual void SolveVelocityConstraint() override;
+    virtual bool SolvePositionConstraint() override;
 
     DetectionFunction* collisionDetectionFunction;
 
@@ -78,7 +79,6 @@ private:
     float friction;
 
     bool touching;
-    bool persistent;
 
     ContactManifold manifold;
 
@@ -104,12 +104,12 @@ inline Collider* Contact::GetColliderB() const
     return colliderB;
 }
 
-inline Contact* Contact::GetPrev() const
+inline const Contact* Contact::GetPrev() const
 {
     return prev;
 }
 
-inline Contact* Contact::GetNext() const
+inline const Contact* Contact::GetNext() const
 {
     return next;
 }

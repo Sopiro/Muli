@@ -179,12 +179,14 @@ public:
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;
     uint32 GetBodyCount() const;
-    uint32 GetSleepingBodyCount() const;
-    uint32 GetSleepingIslandCount() const;
-    Contact* GetContacts() const;
-    uint32 GetContactCount() const;
     Joint* GetJoints() const;
     uint32 GetJointCount() const;
+
+    const Contact* GetContacts() const;
+    uint32 GetContactCount() const;
+
+    uint32 GetSleepingBodyCount() const;
+    uint32 GetSleepingIslandCount() const;
 
     const AABBTree& GetBVH() const;
     void RebuildBVH();
@@ -261,7 +263,7 @@ inline uint32 World::GetSleepingIslandCount() const
     return sleepingIslands;
 }
 
-inline Contact* World::GetContacts() const
+inline const Contact* World::GetContacts() const
 {
     return contactManager.contactList;
 }

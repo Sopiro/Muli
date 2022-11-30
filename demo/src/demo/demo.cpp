@@ -244,7 +244,7 @@ bool Demo::EnableBodyGrab()
         {
             targetBody->Awake();
             gj = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
-            gj->OnDestroy = [&](Joint* me) -> void { gj = nullptr; };
+            gj->OnDestroy = this;
         }
     }
 
@@ -417,6 +417,7 @@ extern DemoFrame ragdoll;
 extern DemoFrame ragdoll_100;
 extern DemoFrame car;
 extern DemoFrame compound_shape;
+extern DemoFrame contact_callbacks;
 
 static int32 init_demos()
 {
@@ -460,6 +461,7 @@ static int32 init_demos()
     demos[demo_count++] = ragdoll_100;
     demos[demo_count++] = car;
     demos[demo_count++] = compound_shape;
+    demos[demo_count++] = contact_callbacks;
 
     return demo_count;
 }

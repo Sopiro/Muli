@@ -11,7 +11,7 @@ namespace muli
 class Game;
 struct DebugOptions;
 
-class Demo
+class Demo : public JointDestoryCallback
 {
 public:
     Demo(Game& _game);
@@ -25,6 +25,11 @@ public:
     virtual void Step();
     virtual void UpdateUI() {}
     virtual void Render() {}
+
+    virtual void OnDestroy(Joint* me)
+    {
+        gj = nullptr;
+    }
 
     World& GetWorld()
     {

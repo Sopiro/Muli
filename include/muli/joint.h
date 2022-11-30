@@ -8,6 +8,7 @@ namespace muli
 
 struct WorldSettings;
 class Joint;
+class JointDestoryCallback;
 
 struct JointEdge
 {
@@ -75,7 +76,7 @@ public:
           float frequency = DEFAULT_FREQUENCY,
           float dampingRatio = DEFAULT_DAMPING_RATIO,
           float jointMass = DEFAULT_JOINT_MASS);
-    ~Joint() noexcept;
+    virtual ~Joint() noexcept;
 
     float GetFrequency() const;
     void SetFrequency(float frequency);
@@ -90,7 +91,7 @@ public:
     Joint* GetPrev() const;
     Joint* GetNext() const;
 
-    std::function<void(Joint*)> OnDestroy;
+    JointDestoryCallback* OnDestroy;
 
 protected:
     Joint::Type type;

@@ -42,7 +42,7 @@ RigidBody::~RigidBody() noexcept
 {
     if (OnDestroy)
     {
-        OnDestroy(this);
+        OnDestroy->OnDestroy(this);
     }
 
     world = nullptr;

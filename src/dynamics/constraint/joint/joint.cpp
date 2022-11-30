@@ -1,4 +1,5 @@
 #include "muli/joint.h"
+#include "muli/callbacks.h"
 
 namespace muli
 {
@@ -21,7 +22,7 @@ Joint::~Joint() noexcept
 {
     if (OnDestroy)
     {
-        OnDestroy(this);
+        OnDestroy->OnDestroy(this);
     }
 }
 

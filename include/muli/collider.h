@@ -10,6 +10,9 @@
 namespace muli
 {
 
+class ColliderDestoryCallback;
+class ContactListener;
+
 class Collider
 {
 public:
@@ -43,7 +46,8 @@ public:
 
     Collider* GetNext() const;
 
-    std::function<void(Collider*)> OnDestroy;
+    ColliderDestoryCallback* OnDestroy;
+    ContactListener* ContactListener;
 
 private:
     friend class RigidBody;

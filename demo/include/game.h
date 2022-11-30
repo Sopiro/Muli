@@ -13,7 +13,7 @@ namespace muli
 
 class Application;
 
-class Game final
+class Game final : public ColliderDestoryCallback
 {
 public:
     Game(Application& app);
@@ -54,6 +54,7 @@ private:
     void UpdateUI();
     void UpdateInput();
     void InitDemo(uint32 demo);
+    virtual void OnDestroy(Collider* me) override;
 };
 
 inline DebugOptions& Game::GetDebugOptions()
@@ -76,7 +77,7 @@ inline void Game::RegisterRenderBody(RigidBody* b)
     for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
     {
         rRenderer.Register(c);
-        c->OnDestroy = [&](Collider* me) -> void { rRenderer.Unregister(me); };
+        c->OnDestroy = this;
     }
 }
 
@@ -93,6 +94,11 @@ inline float Game::GetTime() const
 inline void Game::RestartDemo()
 {
     InitDemo(demoIndex);
+}
+
+inline void Game::OnDestroy(Collider* me)
+{
+    rRenderer.Unregister(me);
 }
 
 } // namespace muli

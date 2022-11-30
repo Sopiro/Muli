@@ -5,23 +5,23 @@ namespace muli
 {
 
 //                   Sizes
-// Circle: 32
-// Capsule: 56
-// Polygon: 184
-// Collider: 128
-// RigidBody: 224
-// Contact: 632
-// Manifold: 64
+// Circle           : 32
+// Capsule          : 56
+// Polygon          : 184
+// Collider         : 80
+// RigidBody        : 168
+// Contact          : 632
+// Manifold         : 64
 
-// Angle joint      : 216
-// Distance joint   : 256
-// Grab joint       : 256
-// Line joint       : 256
-// Motor joint      : 304
-// Prismatic joint  : 280
-// Pulley joint     : 288
-// Revolute joint   : 264
-// Weld joint       : 296
+// Angle joint      : 160
+// Distance joint   : 200
+// Grab joint       : 200
+// Line joint       : 200
+// Motor joint      : 248
+// Prismatic joint  : 224
+// Pulley joint     : 232
+// Revolute joint   : 208
+// Weld joint       : 240
 
 // Predefined block sizes
 static constexpr int32 blockSizes[predefinedBlockSizeCount] = {

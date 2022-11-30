@@ -1,4 +1,5 @@
 #include "muli/collider.h"
+#include "muli/callbacks.h"
 #include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/polygon.h"
@@ -6,10 +7,13 @@
 namespace muli
 {
 
+ContactListener defaultListener;
+
 Collider::Collider()
     : next{ nullptr }
     , node{ 0 }
     , OnDestroy{ nullptr }
+    , ContactListener{ &defaultListener }
 {
 }
 
@@ -17,7 +21,7 @@ Collider::~Collider()
 {
     if (OnDestroy)
     {
-        OnDestroy(this);
+        OnDestroy->OnDestroy(this);
     }
 
     body = nullptr;
