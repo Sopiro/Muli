@@ -3,9 +3,38 @@
 
 2D Rigidbody physics engine
 
+## Feature  
+
+### Collision  
+  - Shapes: Circle, Capsule, Convex polygon
+  - Support rounded polygon
+  - Multiple shapes attached to single body
+  - Dynamic, static and kinematic bodies
+  - Collision filtering
+  - Dynamic AABB tree broadphase
+  - Dynamic tree accelerated ray casting, area querying
+  - Easy-to-use collision detection and distance funtions
+  
+### Physics Simulation
+  - Constrained dynamics
+  - Efficient temporal coherent contact management from box2d
+  - Constraint islanding and sleeping
+  - Stable stacking with 2-contact LCP solver (Block solver)
+  - Decoupled position correction iteration
+  - Contact callbacks: begin, touching, end, destory
+  - Physics material: friction, restitution and surface speed
+  - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, weld
+  - Tunable joint parameter  
+  
+### ETC
+  - 40+ Demos
+  - OpenGL based demo framework
+  - Cross platform C++17 library
+  - Intuitive and straightforward API
+  - Utilize efficient custom memory allocators
+  
 ## Example
 ```c++
-#include <iostream>
 #include "muli/muli.h"
 
 using namespace muli;
@@ -37,3 +66,16 @@ int main()
   - Visual Studio: Run `build.bat`
   - Otherwise: Run `build.sh`
 - You can find the executable demo in the `build/bin`
+
+## Todo
+- Implement position solve step for joints
+- Continuous simulation  
+
+## References
+
+Here are great learning resources to learn building a physics engine!
+
+- https://box2d.org/publications/
+- https://allenchou.net/game-physics-series/
+- https://dyn4j.org/blog/
+- https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
