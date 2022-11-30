@@ -21,7 +21,6 @@
 #define DEFAULT_JOINT_MASS 1.0f
 
 // Collision detection settings
-// MULI_EPSILON == 1.192092896e-07f
 #define GJK_MAX_ITERATION 20
 #define GJK_TOLERANCE 1.43e-14f // ≈ MULI_EPSILON * MULI_EPSILON
 #define EPA_MAX_ITERATION 20

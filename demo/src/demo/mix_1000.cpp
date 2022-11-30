@@ -22,7 +22,7 @@ public:
         float r = 0.24f;
 
         RigidBody* b;
-        for (int i = 0; i < 1000; ++i)
+        for (int32 i = 0; i < 1000; ++i)
         {
             float random = LinearRand(0.0f, 3.0f);
             if (random < 1.0f)
