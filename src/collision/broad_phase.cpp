@@ -1,9 +1,23 @@
 #include "muli/broad_phase.h"
+#include "muli/contact_manager.h"
 #include "muli/util.h"
 #include "muli/world.h"
 
 namespace muli
 {
+
+BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager, float _aabbMargin, float _velocityMultiplier)
+    : world{ _world }
+    , contactManager{ _contactManager }
+    , aabbMargin{ _aabbMargin }
+    , velocityMultiplier{ _velocityMultiplier }
+{
+}
+
+BroadPhase::~BroadPhase() noexcept
+{
+    Reset();
+}
 
 void BroadPhase::UpdateDynamicTree(float dt)
 {

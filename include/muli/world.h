@@ -1,6 +1,7 @@
 #pragma once
 
 #include "block_allocator.h"
+#include "callbacks.h"
 #include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
@@ -161,6 +162,8 @@ public:
 
     std::vector<Collider*> Query(const Vec2& point) const;
     std::vector<Collider*> Query(const AABB& aabb) const;
+    void Query(const Vec2& point, WorldQueryCallback* callback);
+    void Query(const AABB& aabb, WorldQueryCallback* callback);
 
     void RayCastAny(
         const Vec2& from,
@@ -170,9 +173,11 @@ public:
         const Vec2& from,
         const Vec2& to,
         const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback);
+    void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback);
+    bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback);
 
-    RigidBody* GetBodyList();
-    RigidBody* GetBodyListTail();
+    RigidBody* GetBodyList() const;
+    RigidBody* GetBodyListTail() const;
     uint32 GetBodyCount() const;
     uint32 GetSleepingBodyCount() const;
     uint32 GetSleepingIslandCount() const;
@@ -213,7 +218,8 @@ private:
 
     bool integrateForce;
 
-    void Add(Joint* joint);
+    void AddJoint(Joint* joint);
+
     void FreeBody(RigidBody* body);
     void FreeJoint(Joint* joint);
 
@@ -230,12 +236,12 @@ inline void World::Awake()
     integrateForce = true;
 }
 
-inline RigidBody* World::GetBodyList()
+inline RigidBody* World::GetBodyList() const
 {
     return bodyList;
 }
 
-inline RigidBody* World::GetBodyListTail()
+inline RigidBody* World::GetBodyListTail() const
 {
     return bodyListTail;
 }

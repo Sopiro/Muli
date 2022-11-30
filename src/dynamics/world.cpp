@@ -277,17 +277,16 @@ void World::BufferDestroy(const std::vector<Joint*>& joints)
 std::vector<Collider*> World::Query(const Vec2& point) const
 {
     std::vector<Collider*> res;
-    std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(point);
+    res.reserve(8);
 
-    for (uint32 i = 0; i < colliders.size(); ++i)
-    {
-        Collider* collider = colliders[i];
-
+    contactManager.broadPhase.tree.Query(point, [&](Collider* collider) -> bool {
         if (collider->TestPoint(point))
         {
             res.push_back(collider);
         }
-    }
+
+        return true;
+    });
 
     return res;
 }
@@ -295,24 +294,78 @@ std::vector<Collider*> World::Query(const Vec2& point) const
 std::vector<Collider*> World::Query(const AABB& aabb) const
 {
     std::vector<Collider*> res;
-    std::vector<Collider*> colliders = contactManager.broadPhase.tree.Query(aabb);
+    res.reserve(8);
 
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
     Polygon box{ vertices, 4, false, 0.0f };
-
     Transform t{ identity };
 
-    for (uint32 i = 0; i < colliders.size(); ++i)
-    {
-        Collider* collider = colliders[i];
-
+    contactManager.broadPhase.tree.Query(aabb, [&](Collider* collider) -> bool {
         if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
             res.push_back(collider);
         }
-    }
+
+        return true;
+    });
 
     return res;
+}
+
+void World::Query(const Vec2& point, WorldQueryCallback* callback)
+{
+    struct TempCallback
+    {
+        Vec2 point;
+        WorldQueryCallback* callback;
+
+        bool QueryCallback(Collider* collider)
+        {
+            if (collider->TestPoint(point))
+            {
+                return callback->OnQuery(collider);
+            }
+
+            return true;
+        }
+    } tempCallback;
+
+    tempCallback.point = point;
+    tempCallback.callback = callback;
+
+    contactManager.broadPhase.tree.Query(point, &tempCallback);
+}
+
+void World::Query(const AABB& aabb, WorldQueryCallback* callback)
+{
+    Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
+    Polygon box{ vertices, 4, false, 0.0f };
+
+    struct TempCallback
+    {
+        Polygon region;
+        WorldQueryCallback* callback;
+        Transform t{ identity };
+
+        TempCallback(const Polygon& box)
+            : region{ box }
+        {
+        }
+
+        bool QueryCallback(Collider* collider)
+        {
+            if (DetectCollision(collider->shape, collider->body->transform, &region, t))
+            {
+                return callback->OnQuery(collider);
+            }
+
+            return true;
+        }
+    } tempCallback(box);
+
+    tempCallback.callback = callback;
+
+    contactManager.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
 void World::RayCastAny(
@@ -365,6 +418,73 @@ bool World::RayCastClosest(
     if (hit)
     {
         callback(closestCollider, closestPoint, closestNormal, closestFraction);
+        return true;
+    }
+
+    return false;
+}
+
+void World::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback)
+{
+    RayCastInput input;
+    input.from = from;
+    input.to = to;
+    input.maxFraction = 1.0f;
+
+    struct TempCallback
+    {
+        RayCastAnyCallback* callback;
+
+        float RayCastCallback(const RayCastInput& input, Collider* collider)
+        {
+            RayCastOutput output;
+
+            bool hit = collider->RayCast(input, &output);
+            if (hit)
+            {
+                float fraction = output.fraction;
+                Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+                return callback->OnHit(collider, point, output.normal, fraction);
+            }
+
+            return input.maxFraction;
+        }
+    } anyCallback;
+
+    anyCallback.callback = callback;
+
+    contactManager.broadPhase.tree.RayCast(input, &anyCallback);
+}
+
+bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback)
+{
+    struct TempCallback : public RayCastAnyCallback
+    {
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestFraction;
+
+        float OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestFraction = fraction;
+
+            return fraction;
+        }
+    } tempCallback;
+
+    RayCastAny(from, to, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback->OnHit(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                        tempCallback.closestFraction);
         return true;
     }
 
@@ -545,7 +665,7 @@ GrabJoint* World::CreateGrabJoint(
     void* mem = blockAllocator.Allocate(sizeof(GrabJoint));
     GrabJoint* gj = new (mem) GrabJoint(body, anchor, target, settings, frequency, dampingRatio, jointMass);
 
-    Add(gj);
+    AddJoint(gj);
     return gj;
 }
 
@@ -560,7 +680,7 @@ RevoluteJoint* World::CreateRevoluteJoint(
     void* mem = blockAllocator.Allocate(sizeof(RevoluteJoint));
     RevoluteJoint* rj = new (mem) RevoluteJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
 
-    Add(rj);
+    AddJoint(rj);
     return rj;
 }
 
@@ -582,7 +702,7 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
     DistanceJoint* dj =
         new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, settings, frequency, dampingRatio, jointMass);
 
-    Add(dj);
+    AddJoint(dj);
     return dj;
 }
 
@@ -598,7 +718,7 @@ AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float fr
     void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
     AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, settings, frequency, dampingRatio, jointMass);
 
-    Add(aj);
+    AddJoint(aj);
     return aj;
 }
 
@@ -608,7 +728,7 @@ WeldJoint* World::CreateWeldJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
     WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, (bodyA->GetPosition() + bodyB->GetPosition()) * 0.5f, settings, frequency,
                                         dampingRatio, jointMass);
 
-    Add(wj);
+    AddJoint(wj);
     return wj;
 }
 
@@ -618,7 +738,7 @@ LineJoint* World::CreateLineJoint(
     void* mem = blockAllocator.Allocate(sizeof(LineJoint));
     LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
-    Add(lj);
+    AddJoint(lj);
     return lj;
 }
 
@@ -634,7 +754,7 @@ PrismaticJoint* World::CreatePrismaticJoint(
     void* mem = blockAllocator.Allocate(sizeof(PrismaticJoint));
     PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
-    Add(pj);
+    AddJoint(pj);
     return pj;
 }
 
@@ -660,7 +780,7 @@ PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
     PulleyJoint* pj = new (mem) PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, settings, ratio,
                                             frequency, dampingRatio, jointMass);
 
-    Add(pj);
+    AddJoint(pj);
     return pj;
 }
 
@@ -677,11 +797,11 @@ MotorJoint* World::CreateMotorJoint(RigidBody* bodyA,
     MotorJoint* mj =
         new (mem) MotorJoint(bodyA, bodyB, anchor, settings, maxForce, maxTorque, frequency, dampingRatio, jointMass);
 
-    Add(mj);
+    AddJoint(mj);
     return mj;
 }
 
-void World::Add(Joint* joint)
+void World::AddJoint(Joint* joint)
 {
     // Insert into the world
     joint->prev = nullptr;

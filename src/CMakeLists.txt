@@ -45,10 +45,12 @@ set(HEADER_FILES
 
     ../include/muli/settings.h
     ../include/muli/growable_array.h
+    ../include/muli/allocator.h
     ../include/muli/stack_allocator.h
     ../include/muli/block_allocator.h
     ../include/muli/predefined_block_allocator.h
     ../include/muli/fixed_block_allocator.h
+    ../include/muli/callbacks.h
     ../include/muli/common.h
     ../include/muli/util.h
     ../include/muli/muli.h

@@ -386,110 +386,11 @@ void AABBTree::Swap(int32 node1, int32 node2)
     nodes[node1].parent = parent2;
 }
 
-void AABBTree::Traverse(std::function<void(const Node*)> callback) const
+void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const
 {
     if (root == nullNode)
     {
         return;
-    }
-
-    GrowableArray<int32, 256> stack;
-    stack.Emplace(root);
-
-    while (stack.Count() != 0)
-    {
-        int32 current = stack.Pop();
-
-        if (!nodes[current].isLeaf)
-        {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
-        }
-
-        const Node* node = nodes + current;
-        callback(node);
-    }
-}
-
-void AABBTree::GetCollisionPairs(std::vector<std::pair<Collider*, Collider*>>& outPairs) const
-{
-    if (root == nullNode)
-    {
-        return;
-    }
-
-    std::unordered_set<uint64> checked;
-
-    if (!nodes[root].isLeaf)
-    {
-        CheckCollision(nodes[root].child1, nodes[root].child2, outPairs, checked);
-    }
-}
-
-void AABBTree::CheckCollision(int32 nodeA,
-                              int32 nodeB,
-                              std::vector<std::pair<Collider*, Collider*>>& pairs,
-                              std::unordered_set<uint64>& checked) const
-{
-    const uint64 key = CombineID(nodes[nodeA].id, nodes[nodeB].id).key;
-
-    if (checked.find(key) != checked.end())
-    {
-        return;
-    }
-
-    checked.insert(key);
-
-    if (nodes[nodeA].isLeaf && nodes[nodeB].isLeaf)
-    {
-        if (TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb))
-        {
-            pairs.emplace_back(nodes[nodeA].collider, nodes[nodeB].collider);
-        }
-    }
-    else if (!nodes[nodeA].isLeaf && !nodes[nodeB].isLeaf)
-    {
-        CheckCollision(nodes[nodeA].child1, nodes[nodeA].child2, pairs, checked);
-        CheckCollision(nodes[nodeB].child1, nodes[nodeB].child2, pairs, checked);
-
-        if (TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb))
-        {
-            CheckCollision(nodes[nodeA].child1, nodes[nodeB].child1, pairs, checked);
-            CheckCollision(nodes[nodeA].child1, nodes[nodeB].child2, pairs, checked);
-            CheckCollision(nodes[nodeA].child2, nodes[nodeB].child1, pairs, checked);
-            CheckCollision(nodes[nodeA].child2, nodes[nodeB].child2, pairs, checked);
-        }
-    }
-    else if (nodes[nodeA].isLeaf && !nodes[nodeB].isLeaf)
-    {
-        CheckCollision(nodes[nodeB].child1, nodes[nodeB].child2, pairs, checked);
-
-        if (TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb))
-        {
-            CheckCollision(nodeA, nodes[nodeB].child1, pairs, checked);
-            CheckCollision(nodeA, nodes[nodeB].child2, pairs, checked);
-        }
-    }
-    else if (!nodes[nodeA].isLeaf && nodes[nodeB].isLeaf)
-    {
-        CheckCollision(nodes[nodeA].child1, nodes[nodeA].child2, pairs, checked);
-
-        if (TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb))
-        {
-            CheckCollision(nodeB, nodes[nodeA].child1, pairs, checked);
-            CheckCollision(nodeB, nodes[nodeA].child2, pairs, checked);
-        }
-    }
-}
-
-std::vector<Collider*> AABBTree::Query(const Vec2& point) const
-{
-    std::vector<Collider*> res;
-    res.reserve(8);
-
-    if (root == nullNode)
-    {
-        return res;
     }
 
     GrowableArray<int32, 256> stack;
@@ -506,7 +407,11 @@ std::vector<Collider*> AABBTree::Query(const Vec2& point) const
 
         if (nodes[current].isLeaf)
         {
-            res.push_back(nodes[current].collider);
+            bool proceed = callback(nodes[current].collider);
+            if (proceed == false)
+            {
+                return;
+            }
         }
         else
         {
@@ -514,44 +419,6 @@ std::vector<Collider*> AABBTree::Query(const Vec2& point) const
             stack.Emplace(nodes[current].child2);
         }
     }
-
-    return res;
-}
-
-std::vector<Collider*> AABBTree::Query(const AABB& aabb) const
-{
-    std::vector<Collider*> res;
-    res.reserve(8);
-
-    if (root == nullNode)
-    {
-        return res;
-    }
-
-    GrowableArray<int32, 256> stack;
-    stack.Emplace(root);
-
-    while (stack.Count() != 0)
-    {
-        int32 current = stack.Pop();
-
-        if (!TestOverlapAABB(nodes[current].aabb, aabb))
-        {
-            continue;
-        }
-
-        if (nodes[current].isLeaf)
-        {
-            res.push_back(nodes[current].collider);
-        }
-        else
-        {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
-        }
-    }
-
-    return res;
 }
 
 void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const
@@ -589,7 +456,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
     }
 }
 
-void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const
+void AABBTree::Traverse(std::function<void(const Node*)> callback) const
 {
     if (root == nullNode)
     {
@@ -603,24 +470,14 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& ca
     {
         int32 current = stack.Pop();
 
-        if (!TestPointInsideAABB(nodes[current].aabb, point))
-        {
-            continue;
-        }
-
-        if (nodes[current].isLeaf)
-        {
-            bool proceed = callback(nodes[current].collider);
-            if (proceed == false)
-            {
-                return;
-            }
-        }
-        else
+        if (!nodes[current].isLeaf)
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);
         }
+
+        const Node* node = nodes + current;
+        callback(node);
     }
 }
 
@@ -761,7 +618,7 @@ void AABBTree::FreeNode(int32 node)
 
 void AABBTree::Rebuild()
 {
-    // Rebuild the optimal tree. bottom up approach.
+    // Rebuild the tree with bottom up approach.
 
     int32* leaves = (int32*)malloc(nodeCount * sizeof(Node));
     int32 count = 0;

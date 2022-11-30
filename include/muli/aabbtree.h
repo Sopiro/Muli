@@ -54,19 +54,21 @@ public:
     void Remove(Collider* collider);
     void Reset();
 
-    void Traverse(std::function<void(const Node*)> callback) const;
-    void GetCollisionPairs(std::vector<std::pair<Collider*, Collider*>>& outPairs) const;
-
-    void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
     void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
-    std::vector<Collider*> Query(const AABB& aabb) const;
-    std::vector<Collider*> Query(const Vec2& point) const;
-    template <typename T>
-    void Query(const AABB& aabb, T* callback) const;
+    void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
     template <typename T>
     void Query(const Vec2& point, T* callback) const;
+    template <typename T>
+    void Query(const AABB& aabb, T* callback) const;
 
-    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Collider*)>& callback) const;
+    void RayCast(const RayCastInput& input,
+                 const std::function<float(const RayCastInput& input, Collider* collider)>& callback) const;
+    template <typename T>
+    void RayCast(const RayCastInput& input, T* callback) const;
+
+    void Traverse(std::function<void(const Node*)> callback) const;
+    template <typename T>
+    void Traverse(T* callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();
@@ -89,10 +91,6 @@ private:
 
     void Rotate(int32 node);
     void Swap(int32 node1, int32 node2);
-    void CheckCollision(int32 nodeA,
-                        int32 nodeB,
-                        std::vector<std::pair<Collider*, Collider*>>& pairs,
-                        std::unordered_set<uint64>& checked) const;
 };
 
 inline float AABBTree::ComputeTreeCost() const
@@ -102,6 +100,42 @@ inline float AABBTree::ComputeTreeCost() const
     Traverse([&cost](const Node* node) -> void { cost += SAH(node->aabb); });
 
     return cost;
+}
+
+template <typename T>
+void AABBTree::Query(const Vec2& point, T* callback) const
+{
+    if (root == nullNode)
+    {
+        return;
+    }
+
+    GrowableArray<int32, 256> stack;
+    stack.Emplace(root);
+
+    while (stack.Count() != 0)
+    {
+        int32 current = stack.Pop();
+
+        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        {
+            continue;
+        }
+
+        if (nodes[current].isLeaf)
+        {
+            bool proceed = callback->QueryCallback(nodes[current].collider);
+            if (proceed == false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
+        }
+    }
 }
 
 template <typename T>
@@ -141,7 +175,82 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
 }
 
 template <typename T>
-void AABBTree::Query(const Vec2& point, T* callback) const
+void AABBTree::RayCast(const RayCastInput& input, T* callback) const
+{
+    Vec2 p1 = input.from;
+    Vec2 p2 = input.to;
+    float maxFraction = input.maxFraction;
+
+    Vec2 d = p2 - p1;
+    muliAssert(d.Length2() > 0.0f);
+    d.Normalize();
+
+    Vec2 perp = Cross(d, 1.0f); // separating axis
+    Vec2 absPerp = Abs(perp);
+
+    Vec2 end = p1 + maxFraction * (p2 - p1);
+    AABB rayAABB;
+    rayAABB.min = Min(p1, end);
+    rayAABB.max = Max(p1, end);
+
+    GrowableArray<int32, 256> stack;
+    stack.Emplace(root);
+
+    while (stack.Count() > 0)
+    {
+        int32 nodeID = stack.Pop();
+        if (nodeID == nullNode)
+        {
+            continue;
+        }
+
+        const Node* node = nodes + nodeID;
+        if (TestOverlapAABB(node->aabb, rayAABB) == false)
+        {
+            continue;
+        }
+
+        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
+        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
+
+        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
+        if (separation > 0.0f) // Separating axis test
+        {
+            continue;
+        }
+
+        if (node->isLeaf)
+        {
+            RayCastInput subInput;
+            subInput.from = p1;
+            subInput.to = p2;
+            subInput.maxFraction = maxFraction;
+
+            float value = callback->RayCastCallback(subInput, node->collider);
+            if (value == 0.0f)
+            {
+                return;
+            }
+
+            if (value > 0.0f)
+            {
+                // Update ray AABB
+                maxFraction = value;
+                Vec2 newEnd = p1 + maxFraction * (p2 - p1);
+                rayAABB.min = Min(p1, newEnd);
+                rayAABB.max = Max(p1, newEnd);
+            }
+        }
+        else
+        {
+            stack.Emplace(node->child1);
+            stack.Emplace(node->child2);
+        }
+    }
+}
+
+template <typename T>
+void AABBTree::Traverse(T* callback) const
 {
     if (root == nullNode)
     {
@@ -155,24 +264,14 @@ void AABBTree::Query(const Vec2& point, T* callback) const
     {
         int32 current = stack.Pop();
 
-        if (!TestPointInsideAABB(nodes[current].aabb, point))
-        {
-            continue;
-        }
-
-        if (nodes[current].isLeaf)
-        {
-            bool proceed = callback->QueryCallback(nodes[current].collider);
-            if (proceed == false)
-            {
-                return;
-            }
-        }
-        else
+        if (!nodes[current].isLeaf)
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);
         }
+
+        const Node* node = nodes + current;
+        callback->TraverseCallback(node);
     }
 }
 

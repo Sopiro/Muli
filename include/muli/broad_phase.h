@@ -6,9 +6,11 @@
 
 namespace muli
 {
+class ContactManager;
 
 class BroadPhase
 {
+
 public:
     BroadPhase(World* world,
                ContactManager* contactManager,
@@ -40,19 +42,6 @@ private:
     Collider* colliderA;
     Shape::Type typeA;
 };
-
-inline BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager, float _aabbMargin, float _velocityMultiplier)
-    : world{ _world }
-    , contactManager{ _contactManager }
-    , aabbMargin{ _aabbMargin }
-    , velocityMultiplier{ _velocityMultiplier }
-{
-}
-
-inline BroadPhase::~BroadPhase() noexcept
-{
-    Reset();
-}
 
 inline void BroadPhase::Reset()
 {

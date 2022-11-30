@@ -190,7 +190,12 @@ void RigidBody::RayCastAny(
             float fraction = output.fraction;
             Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-            callback(collider, point, output.normal, fraction);
+            input.maxFraction = callback(collider, point, output.normal, fraction);
+        }
+
+        if (input.maxFraction <= 0)
+        {
+            return;
         }
     }
 }
@@ -198,7 +203,7 @@ void RigidBody::RayCastAny(
 bool RigidBody::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
-    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const
+    const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const
 {
     bool hit = false;
     Collider* closestCollider;
@@ -219,6 +224,67 @@ bool RigidBody::RayCastClosest(
     if (hit)
     {
         callback(closestCollider, closestPoint, closestNormal, closestFraction);
+        return true;
+    }
+
+    return false;
+}
+
+void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback) const
+{
+    RayCastInput input;
+    input.from = from;
+    input.to = to;
+    input.maxFraction = 1.0f;
+
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        RayCastOutput output;
+
+        bool hit = collider->RayCast(input, &output);
+        if (hit)
+        {
+            float fraction = output.fraction;
+            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+            input.maxFraction = callback->OnHit(collider, point, output.normal, fraction);
+        }
+
+        if (input.maxFraction <= 0)
+        {
+            return;
+        }
+    }
+}
+
+bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const
+{
+    struct TempCallback : public RayCastAnyCallback
+    {
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestFraction;
+
+        float OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestFraction = fraction;
+
+            return fraction;
+        }
+    } tempCallback;
+
+    RayCastAny(from, to, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback->OnHit(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                        tempCallback.closestFraction);
         return true;
     }
 
