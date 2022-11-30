@@ -6,7 +6,7 @@
 namespace muli
 {
 
-Island::Island(World& _world, uint32 _bodyCapacity, uint32 _contactCapacity, uint32 _jointCapacity)
+Island::Island(World* _world, uint32 _bodyCapacity, uint32 _contactCapacity, uint32 _jointCapacity)
     : world{ _world }
     , bodyCapacity{ _bodyCapacity }
     , contactCapacity{ _contactCapacity }
@@ -16,16 +16,16 @@ Island::Island(World& _world, uint32 _bodyCapacity, uint32 _contactCapacity, uin
     , jointCount{ 0 }
     , sleeping{ false }
 {
-    bodies = (RigidBody**)world.stackAllocator.Allocate(bodyCapacity * sizeof(RigidBody*));
-    contacts = (Contact**)world.stackAllocator.Allocate(contactCapacity * sizeof(Contact*));
-    joints = (Joint**)world.stackAllocator.Allocate(jointCapacity * sizeof(Joint*));
+    bodies = (RigidBody**)world->stackAllocator.Allocate(bodyCapacity * sizeof(RigidBody*));
+    contacts = (Contact**)world->stackAllocator.Allocate(contactCapacity * sizeof(Contact*));
+    joints = (Joint**)world->stackAllocator.Allocate(jointCapacity * sizeof(Joint*));
 }
 
 Island::~Island()
 {
-    world.stackAllocator.Free(joints, jointCapacity);
-    world.stackAllocator.Free(contacts, contactCapacity);
-    world.stackAllocator.Free(bodies, bodyCapacity);
+    world->stackAllocator.Free(joints, jointCapacity);
+    world->stackAllocator.Free(contacts, contactCapacity);
+    world->stackAllocator.Free(bodies, bodyCapacity);
 }
 
 void Island::Solve()
@@ -52,18 +52,18 @@ void Island::Solve()
             b->angularVelocity = 0.0f;
         }
 
-        if (world.integrateForce)
+        if (world->integrateForce)
         {
             // Force / mass * dt
-            Vec2 linear_a = b->force * b->invMass * world.settings.DT;
+            Vec2 linear_a = b->force * b->invMass * world->settings.DT;
             b->linearVelocity += linear_a;
 
             // Torque / inertia * dt
-            float angular_a = b->torque * b->invInertia * world.settings.DT;
+            float angular_a = b->torque * b->invInertia * world->settings.DT;
             b->angularVelocity += angular_a;
 
-            bool linearAwake = Length2(linear_a) >= world.settings.REST_LINEAR_TOLERANCE;
-            bool angularAwake = angular_a * angular_a >= world.settings.REST_ANGULAR_TOLERANCE;
+            bool linearAwake = Length2(linear_a) >= world->settings.REST_LINEAR_TOLERANCE;
+            bool angularAwake = angular_a * angular_a >= world->settings.REST_ANGULAR_TOLERANCE;
 
             if (sleeping && (linearAwake || angularAwake))
             {
@@ -72,12 +72,12 @@ void Island::Solve()
             }
         }
 
-        bool linearSleep = Length2(b->linearVelocity) < world.settings.REST_LINEAR_TOLERANCE;
-        bool angularSleep = b->angularVelocity * b->angularVelocity < world.settings.REST_ANGULAR_TOLERANCE;
+        bool linearSleep = Length2(b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE;
+        bool angularSleep = b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE;
 
-        if ((sleeping && !world.integrateForce) || (linearSleep && angularSleep))
+        if ((sleeping && !world->integrateForce) || (linearSleep && angularSleep))
         {
-            b->resting += world.settings.DT;
+            b->resting += world->settings.DT;
         }
         else
         {
@@ -86,9 +86,9 @@ void Island::Solve()
         }
 
         // Apply gravity
-        if (world.settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::dynamic_body)
+        if (world->settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::dynamic_body)
         {
-            b->linearVelocity += world.settings.GRAVITY * world.settings.DT;
+            b->linearVelocity += world->settings.GRAVITY * world->settings.DT;
         }
     }
 
@@ -110,7 +110,7 @@ void Island::Solve()
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
-    for (uint32 i = 0; i < world.settings.VELOCITY_SOLVE_ITERATIONS; ++i)
+    for (uint32 i = 0; i < world->settings.VELOCITY_SOLVE_ITERATIONS; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -150,16 +150,16 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->position += b->linearVelocity * world.settings.DT;
-        b->angle += b->angularVelocity * world.settings.DT;
+        b->position += b->linearVelocity * world->settings.DT;
+        b->angle += b->angularVelocity * world->settings.DT;
 
-        if (!TestPointInsideAABB(world.settings.VALID_REGION, b->GetPosition()))
+        if (!TestPointInsideAABB(world->settings.VALID_REGION, b->GetPosition()))
         {
-            world.BufferDestroy(b);
+            world->BufferDestroy(b);
         }
     }
 
-    for (uint32 i = 0; i < world.settings.POSITION_SOLVE_ITERATIONS; ++i)
+    for (uint32 i = 0; i < world->settings.POSITION_SOLVE_ITERATIONS; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;

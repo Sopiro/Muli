@@ -36,7 +36,7 @@ int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
 
     nodes[newNode].aabb = aabb;
     nodes[newNode].isLeaf = true;
-    nodes[newNode].body = collider;
+    nodes[newNode].collider = collider;
     nodes[newNode].parent = nullNode;
     collider->node = newNode;
 
@@ -144,7 +144,7 @@ int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
     int32 newParent = AllocateNode();
     nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
     nodes[newParent].isLeaf = false;
-    nodes[newParent].body = nullptr;
+    nodes[newParent].collider = nullptr;
     nodes[newParent].parent = oldParent;
 
     if (oldParent != nullNode)
@@ -444,7 +444,7 @@ void AABBTree::CheckCollision(int32 nodeA,
     {
         if (TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb))
         {
-            pairs.emplace_back(nodes[nodeA].body, nodes[nodeB].body);
+            pairs.emplace_back(nodes[nodeA].collider, nodes[nodeB].collider);
         }
     }
     else if (!nodes[nodeA].isLeaf && !nodes[nodeB].isLeaf)
@@ -506,7 +506,7 @@ std::vector<Collider*> AABBTree::Query(const Vec2& point) const
 
         if (nodes[current].isLeaf)
         {
-            res.push_back(nodes[current].body);
+            res.push_back(nodes[current].collider);
         }
         else
         {
@@ -542,7 +542,7 @@ std::vector<Collider*> AABBTree::Query(const AABB& aabb) const
 
         if (nodes[current].isLeaf)
         {
-            res.push_back(nodes[current].body);
+            res.push_back(nodes[current].collider);
         }
         else
         {
@@ -575,7 +575,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
 
         if (nodes[current].isLeaf)
         {
-            bool proceed = callback(nodes[current].body);
+            bool proceed = callback(nodes[current].collider);
             if (proceed == false)
             {
                 return;
@@ -610,7 +610,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& ca
 
         if (nodes[current].isLeaf)
         {
-            bool proceed = callback(nodes[current].body);
+            bool proceed = callback(nodes[current].collider);
             if (proceed == false)
             {
                 return;
@@ -675,7 +675,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
 
-            float value = callback(subInput, node->body);
+            float value = callback(subInput, node->collider);
             if (value == 0.0f)
             {
                 return;

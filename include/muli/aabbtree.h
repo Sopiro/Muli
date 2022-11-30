@@ -4,6 +4,7 @@
 #include "collider.h"
 #include "collision.h"
 #include "common.h"
+#include "growable_array.h"
 #include "settings.h"
 
 #define nullNode (-1)
@@ -33,7 +34,7 @@ struct Node
     int32 child1;
     int32 child2;
 
-    Collider* body;
+    Collider* collider;
     int32 next;
 };
 
@@ -60,6 +61,10 @@ public:
     void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
     std::vector<Collider*> Query(const AABB& aabb) const;
     std::vector<Collider*> Query(const Vec2& point) const;
+    template <typename T>
+    void Query(const AABB& aabb, T* callback) const;
+    template <typename T>
+    void Query(const Vec2& point, T* callback) const;
 
     void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Collider*)>& callback) const;
 
@@ -97,6 +102,78 @@ inline float AABBTree::ComputeTreeCost() const
     Traverse([&cost](const Node* node) -> void { cost += SAH(node->aabb); });
 
     return cost;
+}
+
+template <typename T>
+void AABBTree::Query(const AABB& aabb, T* callback) const
+{
+    if (root == nullNode)
+    {
+        return;
+    }
+
+    GrowableArray<int32, 256> stack;
+    stack.Emplace(root);
+
+    while (stack.Count() != 0)
+    {
+        int32 current = stack.Pop();
+
+        if (!TestOverlapAABB(nodes[current].aabb, aabb))
+        {
+            continue;
+        }
+
+        if (nodes[current].isLeaf)
+        {
+            bool proceed = callback->QueryCallback(nodes[current].collider);
+            if (proceed == false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
+        }
+    }
+}
+
+template <typename T>
+void AABBTree::Query(const Vec2& point, T* callback) const
+{
+    if (root == nullNode)
+    {
+        return;
+    }
+
+    GrowableArray<int32, 256> stack;
+    stack.Emplace(root);
+
+    while (stack.Count() != 0)
+    {
+        int32 current = stack.Pop();
+
+        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        {
+            continue;
+        }
+
+        if (nodes[current].isLeaf)
+        {
+            bool proceed = callback->QueryCallback(nodes[current].collider);
+            if (proceed == false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            stack.Emplace(nodes[current].child1);
+            stack.Emplace(nodes[current].child2);
+        }
+    }
 }
 
 } // namespace muli

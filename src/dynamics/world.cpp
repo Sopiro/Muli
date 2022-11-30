@@ -9,7 +9,7 @@ namespace muli
 
 World::World(const WorldSettings& simulationSettings)
     : settings{ simulationSettings }
-    , contactManager{ *this }
+    , contactManager{ this }
     , bodyList{ nullptr }
     , bodyListTail{ nullptr }
     , jointList{ nullptr }
@@ -35,7 +35,7 @@ void World::Step(float dt)
     contactManager.Step(dt);
 
     // Build the constraint island
-    Island island{ *this, bodyCount, contactManager.contactCount, jointCount };
+    Island island{ this, bodyCount, contactManager.contactCount, jointCount };
 
     uint32 restingBodies = 0;
     uint32 islandID = 0;

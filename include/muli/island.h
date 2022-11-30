@@ -10,7 +10,7 @@ class Island
 private:
     friend class World;
 
-    Island(World& world, uint32 bodyCapacity, uint32 contactCapacity, uint32 jointCapacity);
+    Island(World* world, uint32 bodyCapacity, uint32 contactCapacity, uint32 jointCapacity);
     ~Island();
 
     void Add(RigidBody* body);
@@ -20,7 +20,7 @@ private:
     void Solve();
     void Clear();
 
-    World& world;
+    World* world;
 
     // Static body is not included
     RigidBody** bodies;

@@ -11,7 +11,7 @@ extern void InitializeDetectionFunctionMap();
 class ContactManager
 {
 public:
-    ContactManager(World& world);
+    ContactManager(World* world);
     ~ContactManager();
 
     void Step(float dt);
@@ -23,18 +23,23 @@ public:
 private:
     friend class World;
     friend class RigidBody;
+    friend class BroadPhase;
 
-    World& world;
+    World* world;
+
     BroadPhase broadPhase;
-    Contact* contactList = nullptr;
-    uint32 contactCount = 0;
+    Contact* contactList;
+    uint32 contactCount;
 
     void Destroy(Contact* c);
+    void OnNewContact(Collider*, Collider*);
 };
 
-inline ContactManager::ContactManager(World& _world)
+inline ContactManager::ContactManager(World* _world)
     : world{ _world }
-    , broadPhase{ _world }
+    , broadPhase{ _world, this }
+    , contactList{ nullptr }
+    , contactCount{ 0 }
 {
     InitializeDetectionFunctionMap();
 }

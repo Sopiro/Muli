@@ -11,82 +11,8 @@ void ContactManager::Step(float dt)
     broadPhase.UpdateDynamicTree(dt);
 
     // Find contacts, insert into the contact graph
-    broadPhase.FindContacts([&](Collider* colliderA, Collider* colliderB) -> void {
-        RigidBody* bodyA = colliderA->body;
-        RigidBody* bodyB = colliderB->body;
-
-        muliAssert(bodyA != bodyB);
-
-        if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
-        {
-            return;
-        }
-
-        if (EvaluateFilter(colliderA->GetFilter(), colliderB->GetFilter()) == false)
-        {
-            return;
-        }
-
-        // TODO: Use hash set to remove potential bottleneck
-        ContactEdge* e = bodyB->contactList;
-        while (e)
-        {
-            if (e->other == bodyA)
-            {
-                Collider* ceA = e->contact->colliderA;
-                Collider* ceB = e->contact->colliderB;
-
-                // This contact already exists
-                if ((colliderA == ceA && colliderB == ceB) || (colliderA == ceB && colliderB == ceA))
-                {
-                    return;
-                }
-            }
-
-            e = e->next;
-        }
-
-        // Create new contact
-        void* mem = world.blockAllocator.Allocate(sizeof(Contact));
-        Contact* c = new (mem) Contact(colliderA, colliderB, world.settings);
-
-        // Insert into the world
-        c->prev = nullptr;
-        c->next = contactList;
-        if (contactList != nullptr)
-        {
-            contactList->prev = c;
-        }
-        contactList = c;
-
-        // Connect to island graph
-
-        // Connect contact edge to body A
-        c->nodeA.contact = c;
-        c->nodeA.other = bodyB;
-
-        c->nodeA.prev = nullptr;
-        c->nodeA.next = bodyA->contactList;
-        if (bodyA->contactList != nullptr)
-        {
-            bodyA->contactList->prev = &c->nodeA;
-        }
-        bodyA->contactList = &c->nodeA;
-
-        // Connect contact edge to body B
-        c->nodeB.contact = c;
-        c->nodeB.other = bodyA;
-
-        c->nodeB.prev = nullptr;
-        c->nodeB.next = bodyB->contactList;
-        if (bodyB->contactList != nullptr)
-        {
-            bodyB->contactList->prev = &c->nodeB;
-        }
-        bodyB->contactList = &c->nodeB;
-
-        ++contactCount;
-    });
+    // broadphase class will call OnNewContact()
+    broadPhase.FindContacts();
 
     // Narrow phase
     // Evaluate contacts, prepare for solving step
@@ -123,6 +49,84 @@ void ContactManager::Step(float dt)
     }
 }
 
+void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
+{
+    RigidBody* bodyA = colliderA->body;
+    RigidBody* bodyB = colliderB->body;
+
+    muliAssert(bodyA != bodyB);
+
+    if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (EvaluateFilter(colliderA->GetFilter(), colliderB->GetFilter()) == false)
+    {
+        return;
+    }
+
+    // TODO: Use hash set to remove potential bottleneck
+    ContactEdge* e = bodyB->contactList;
+    while (e)
+    {
+        if (e->other == bodyA)
+        {
+            Collider* ceA = e->contact->colliderA;
+            Collider* ceB = e->contact->colliderB;
+
+            // This contact already exists
+            if ((colliderA == ceA && colliderB == ceB) || (colliderA == ceB && colliderB == ceA))
+            {
+                return;
+            }
+        }
+
+        e = e->next;
+    }
+
+    // Create new contact
+    void* mem = world->blockAllocator.Allocate(sizeof(Contact));
+    Contact* c = new (mem) Contact(colliderA, colliderB, world->settings);
+
+    // Insert into the world
+    c->prev = nullptr;
+    c->next = contactList;
+    if (contactList != nullptr)
+    {
+        contactList->prev = c;
+    }
+    contactList = c;
+
+    // Connect to island graph
+
+    // Connect contact edge to body A
+    c->nodeA.contact = c;
+    c->nodeA.other = bodyB;
+
+    c->nodeA.prev = nullptr;
+    c->nodeA.next = bodyA->contactList;
+    if (bodyA->contactList != nullptr)
+    {
+        bodyA->contactList->prev = &c->nodeA;
+    }
+    bodyA->contactList = &c->nodeA;
+
+    // Connect contact edge to body B
+    c->nodeB.contact = c;
+    c->nodeB.other = bodyA;
+
+    c->nodeB.prev = nullptr;
+    c->nodeB.next = bodyB->contactList;
+    if (bodyB->contactList != nullptr)
+    {
+        bodyB->contactList->prev = &c->nodeB;
+    }
+    bodyB->contactList = &c->nodeB;
+
+    ++contactCount;
+}
+
 void ContactManager::Destroy(Contact* c)
 {
     RigidBody* bodyA = c->bodyA;
@@ -144,7 +148,7 @@ void ContactManager::Destroy(Contact* c)
     if (&c->nodeB == bodyB->contactList) bodyB->contactList = c->nodeB.next;
 
     c->~Contact();
-    world.blockAllocator.Free(c, sizeof(Contact));
+    world->blockAllocator.Free(c, sizeof(Contact));
     --contactCount;
 }
 
@@ -158,7 +162,7 @@ void ContactManager::Reset()
         Contact* c0 = c;
         c = c->GetNext();
         c0->~Contact();
-        world.blockAllocator.Free(c0, sizeof(Contact));
+        world->blockAllocator.Free(c0, sizeof(Contact));
     }
     contactList = nullptr;
 

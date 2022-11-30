@@ -7,7 +7,7 @@ namespace muli
 
 void BroadPhase::UpdateDynamicTree(float dt)
 {
-    for (RigidBody* body = world.bodyList; body; body = body->next)
+    for (RigidBody* body = world->bodyList; body; body = body->next)
     {
         // Clear island flag
         body->flag &= ~RigidBody::Flag::flag_island;
@@ -27,7 +27,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
             AABB treeAABB = tree.nodes[node].aabb;
             AABB aabb = collider->GetAABB();
 
-            if (ContainsAABB(treeAABB, aabb) && body->resting < world.settings.SLEEPING_TRESHOLD)
+            if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.SLEEPING_TRESHOLD)
             {
                 continue;
             }
@@ -61,41 +61,47 @@ void BroadPhase::UpdateDynamicTree(float dt)
     }
 }
 
-void BroadPhase::FindContacts(const std::function<void(Collider*, Collider*)>& callback) const
+void BroadPhase::FindContacts()
 {
-    for (RigidBody* bodyA = world.bodyList; bodyA; bodyA = bodyA->next)
+    for (RigidBody* body = world->bodyList; body; body = body->next)
     {
-        for (Collider* colliderA = bodyA->colliderList; colliderA; colliderA = colliderA->next)
+        for (Collider* collider = body->colliderList; collider; collider = collider->next)
         {
-            Shape::Type typeA = colliderA->GetType();
+            bodyA = body;
+            colliderA = collider;
+            typeA = collider->GetType();
 
-            tree.Query(tree.nodes[colliderA->node].aabb, [&](Collider* colliderB) -> bool {
-                RigidBody* bodyB = colliderB->body;
-
-                if (bodyA == bodyB)
-                {
-                    return true;
-                }
-
-                Shape::Type typeB = colliderB->GetType();
-                if (typeA < typeB)
-                {
-                    return true;
-                }
-                else if (typeA == typeB)
-                {
-                    if (colliderA > colliderB)
-                    {
-                        return true;
-                    }
-                }
-
-                callback(colliderA, colliderB);
-
-                return true;
-            });
+            // This will callback our BroadPhase::QueryCallback(Collider*)
+            tree.Query(tree.nodes[colliderA->node].aabb, this);
         }
     }
+}
+
+bool BroadPhase::QueryCallback(Collider* colliderB)
+{
+    RigidBody* bodyB = colliderB->body;
+
+    if (bodyA == bodyB)
+    {
+        return true;
+    }
+
+    Shape::Type typeB = colliderB->GetType();
+    if (typeA < typeB)
+    {
+        return true;
+    }
+    else if (typeA == typeB)
+    {
+        if (colliderA > colliderB)
+        {
+            return true;
+        }
+    }
+
+    contactManager->OnNewContact(colliderA, colliderB);
+
+    return true;
 }
 
 } // namespace muli
