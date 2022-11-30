@@ -9,7 +9,7 @@
 ## Feature  
 
 ### Collision  
-  - Shapes: Circle, Capsule, Convex polygon
+  - Shapes: circle, capsule and convex polygon
   - Support rounded polygon
   - Multiple shapes attached to single body
   - Dynamic, static and kinematic bodies
@@ -76,7 +76,7 @@ int main()
 
 ## References
 
-Here are great learning resources to learn building a physics engine!
+Here are great resources to learn building a physics engine!
 
 - https://box2d.org/publications/
 - https://allenchou.net/game-physics-series/
