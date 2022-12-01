@@ -16,7 +16,6 @@ World::World(const WorldSettings& simulationSettings)
     , bodyCount{ 0 }
     , jointCount{ 0 }
     , numIslands{ 0 }
-    , sleepingIslands{ 0 }
     , sleepingBodies{ 0 }
 {
 }
@@ -38,7 +37,6 @@ void World::Step(float dt)
 
     uint32 restingBodies = 0;
     uint32 islandID = 0;
-    sleepingIslands = 0;
     sleepingBodies = 0;
 
     // Use stack allocator to avoid per-frame allocation
@@ -56,6 +54,7 @@ void World::Step(float dt)
 
         if (b->flag & RigidBody::Flag::flag_sleeping || b->flag & RigidBody::Flag::flag_island)
         {
+            sleepingBodies += (b->flag & RigidBody::Flag::flag_sleeping) > 0;
             continue;
         }
 
@@ -114,13 +113,6 @@ void World::Step(float dt)
         }
 
         island.sleeping = settings.SLEEPING && (restingBodies == island.bodyCount);
-
-        if (island.sleeping)
-        {
-            sleepingBodies += island.bodyCount;
-            sleepingIslands++;
-        }
-
         island.Solve();
         island.Clear();
         restingBodies = 0;

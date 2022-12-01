@@ -48,6 +48,13 @@ void Game::UpdateUI()
     ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
     ImGui::SetNextWindowSize({ 240, 505 }, ImGuiCond_Once);
 
+    static bool opened = false;
+    if (Input::IsKeyPressed(GLFW_KEY_O))
+    {
+        opened = !opened;
+    }
+
+    ImGui::SetNextWindowCollapsed(opened);
     if (ImGui::Begin("Control Panel"))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;
@@ -127,11 +134,14 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Sleeping", &settings.SLEEPING);
                 }
 
+                World& world = demo->GetWorld();
+
                 ImGui::Separator();
                 ImGui::Text("%s", demos[demoIndex].name);
-                ImGui::Text("Bodies: %d", demo->GetWorld().GetBodyCount());
-                ImGui::Text("Sleeping dynamic bodies: %d", demo->GetWorld().GetSleepingBodyCount());
-                ImGui::Text("Broad phase contacts: %d", demo->GetWorld().GetContactCount());
+                ImGui::Text("Bodies: %d", world.GetBodyCount());
+                ImGui::Text("Sleeping dynamic bodies: %d", world.GetSleepingBodyCount());
+                // ImGui::Text("Awake island count: %d", world.GetIslandCount());
+                ImGui::Text("Broad phase contacts: %d", world.GetContactCount());
 
                 ImGui::Separator();
 

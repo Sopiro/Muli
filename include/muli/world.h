@@ -186,7 +186,7 @@ public:
     uint32 GetContactCount() const;
 
     uint32 GetSleepingBodyCount() const;
-    uint32 GetSleepingIslandCount() const;
+    uint32 GetAwakeIslandCount() const;
 
     const AABBTree& GetBVH() const;
     void RebuildBVH();
@@ -212,7 +212,6 @@ private:
     uint32 jointCount;
 
     uint32 numIslands;
-    uint32 sleepingIslands;
     uint32 sleepingBodies;
 
     std::vector<RigidBody*> destroyBufferBody;
@@ -255,9 +254,9 @@ inline uint32 World::GetSleepingBodyCount() const
     return sleepingBodies;
 }
 
-inline uint32 World::GetSleepingIslandCount() const
+inline uint32 World::GetAwakeIslandCount() const
 {
-    return sleepingIslands;
+    return numIslands;
 }
 
 inline const Contact* World::GetContacts() const

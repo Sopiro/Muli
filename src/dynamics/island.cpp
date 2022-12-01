@@ -38,15 +38,12 @@ void Island::Solve()
     {
         RigidBody* b = bodies[i];
 
+        // All bodies on this island are resting more than sleep time, but flags are not set
         if (sleeping)
         {
             b->linearVelocity.SetZero();
             b->angularVelocity = 0.0f;
             b->flag |= RigidBody::Flag::flag_sleeping;
-        }
-        else
-        {
-            b->flag &= ~RigidBody::Flag::flag_sleeping;
         }
 
         if (sleeping || ((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
@@ -79,12 +76,6 @@ void Island::Solve()
             b->linearVelocity *= 1.0f / (1.0f + b->linearDamping * dt);
             b->angularVelocity *= 1.0f / (1.0f + b->angularDamping * dt);
         }
-    }
-
-    // If island is sleeping, skip the extra computation
-    if (sleeping == true)
-    {
-        return;
     }
 
     // Prepare constraints for solving step
