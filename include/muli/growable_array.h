@@ -78,46 +78,6 @@ public:
         return *this;
     }
 
-    void Push(const T& data)
-    {
-        if (count == capacity)
-        {
-            T* old = array;
-            capacity *= 2;
-
-            array = (T*)malloc(capacity * sizeof(T));
-            memcpy(array, old, count * sizeof(T));
-
-            if (old != stack_array)
-            {
-                free(old);
-            }
-        }
-
-        array[count] = data;
-        ++count;
-    }
-
-    void Push(T&& data)
-    {
-        if (count == capacity)
-        {
-            T* old = array;
-            capacity *= 2;
-
-            array = (T*)malloc(capacity * sizeof(T));
-            memcpy(array, old, count * sizeof(T));
-
-            if (old != stack_array)
-            {
-                free(old);
-            }
-        }
-
-        array[count] = data;
-        ++count;
-    }
-
     template <typename... Args>
     T& Emplace(Args&&... args)
     {
@@ -135,9 +95,18 @@ public:
             }
         }
 
-        return *(array + count++) = T(std::forward<Args>(args)...);
+        return *new (array + count++) T(std::forward<Args>(args)...);
     }
 
+    void Push(const T& data)
+    {
+        Emplace(data);
+    }
+
+    void Push(T&& data)
+    {
+        Emplace(std::move(data));
+    }
     T Pop()
     {
         assert(count > 0);

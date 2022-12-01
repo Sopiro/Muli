@@ -218,8 +218,6 @@ private:
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
 
-    bool integrateForce;
-
     void AddJoint(Joint* joint);
 
     void FreeBody(RigidBody* body);
@@ -235,7 +233,6 @@ inline void World::Awake()
     {
         b->Awake();
     }
-    integrateForce = true;
 }
 
 inline RigidBody* World::GetBodyList() const

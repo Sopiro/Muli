@@ -20,6 +20,7 @@ public:
         b->SetPosition(-25.0, 0.0f);
         b->SetLinearVelocity(12.0f, 0.0f);
         b->SetAngularVelocity(1.0f);
+        b->SetLinearDamping(0.1f);
 
         for (int i = 0; i < 500; ++i)
         {

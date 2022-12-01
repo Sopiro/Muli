@@ -31,14 +31,17 @@ Island::~Island()
 void Island::Solve()
 {
     bool awakeIsland = false;
+    float dt = world->settings.DT;
 
-    // Integrate forces, yield tentative velocities that possibly violate the constraint
+    // Integrate velocities, yield tentative velocities that possibly violate the constraint
     for (uint32 i = 0; i < bodyCount; ++i)
     {
         RigidBody* b = bodies[i];
 
         if (sleeping)
         {
+            b->linearVelocity.SetZero();
+            b->angularVelocity = 0.0f;
             b->flag |= RigidBody::Flag::flag_sleeping;
         }
         else
@@ -46,54 +49,40 @@ void Island::Solve()
             b->flag &= ~RigidBody::Flag::flag_sleeping;
         }
 
-        if (sleeping)
+        if (sleeping || ((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
+                         (Dot(b->linearVelocity, b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE)) &&
+                            (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
         {
-            b->linearVelocity.SetZero();
-            b->angularVelocity = 0.0f;
-        }
-
-        if (world->integrateForce)
-        {
-            // Force / mass * dt
-            Vec2 linear_a = b->force * b->invMass * world->settings.DT;
-            b->linearVelocity += linear_a;
-
-            // Torque / inertia * dt
-            float angular_a = b->torque * b->invInertia * world->settings.DT;
-            b->angularVelocity += angular_a;
-
-            bool linearAwake = Length2(linear_a) >= world->settings.REST_LINEAR_TOLERANCE;
-            bool angularAwake = angular_a * angular_a >= world->settings.REST_ANGULAR_TOLERANCE;
-
-            if (sleeping && (linearAwake || angularAwake))
-            {
-                sleeping = false;
-                awakeIsland = true;
-            }
-        }
-
-        bool linearSleep = Length2(b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE;
-        bool angularSleep = b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE;
-
-        if ((sleeping && !world->integrateForce) || (linearSleep && angularSleep))
-        {
-            b->resting += world->settings.DT;
+            b->resting += dt;
         }
         else
         {
-            sleeping = false;
+            muliAssert(sleeping == false);
             awakeIsland = true;
         }
 
-        // Apply gravity
-        if (world->settings.APPLY_GRAVITY && !sleeping && b->GetType() == RigidBody::Type::dynamic_body)
+        if (!sleeping && b->type == RigidBody::Type::dynamic_body)
         {
-            b->linearVelocity += world->settings.GRAVITY * world->settings.DT;
+            // Integrate velocites
+            b->linearVelocity += b->invMass * dt * (b->force + world->settings.APPLY_GRAVITY * world->settings.GRAVITY * b->mass);
+            b->angularVelocity += b->invInertia * dt * b->torque;
+
+            // Apply damping (found in box2d)
+            // ODE: dv/dt + c * v = 0
+            // Solution: v(t) = v0 * exp(-c * t)
+            // Time step: v(t + dt) = v0 * exp(-c * (t + dt))
+            //                      = v0 * exp(-c * t) * exp(-c * dt)
+            //                      = v * exp(-c * dt)
+            // v2 = exp(-c * dt) * v1
+            // Pade approximation:
+            // v2 = v1 * 1 / (1 + c * dt)
+            b->linearVelocity *= 1.0f / (1.0f + b->linearDamping * dt);
+            b->angularVelocity *= 1.0f / (1.0f + b->angularDamping * dt);
         }
     }
 
     // If island is sleeping, skip the extra computation
-    if (sleeping)
+    if (sleeping == true)
     {
         return;
     }

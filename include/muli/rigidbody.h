@@ -81,6 +81,11 @@ public:
     float GetTorque() const;
     void SetTorque(float torque);
 
+    float GetLinearDamping() const;
+    void SetLinearDamping(float linearDamping);
+    float GetAngularDamping() const;
+    void SetAngularDamping(float angularDamping);
+
     Type GetType() const;
     bool IsSleeping() const;
     void SetFixedRotation(bool fixed);
@@ -188,6 +193,9 @@ protected:
     float inertia; // kg⋅m²
     float invInertia;
 
+    float linearDamping;
+    float angularDamping;
+
     Type type;
 
     uint16 flag;
@@ -209,8 +217,6 @@ private:
 
     RigidBody* prev;
     RigidBody* next;
-
-    void NotifyForceUpdate() const;
 };
 
 inline const Vec2& RigidBody::GetLocalCenter() const
@@ -320,7 +326,7 @@ inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& _force)
 
     force += _force;
     torque += Cross(localPosition - localCenter, _force);
-    NotifyForceUpdate();
+    Awake();
 }
 
 inline const Vec2& RigidBody::GetLinearVelocity() const
@@ -376,7 +382,6 @@ inline void RigidBody::SetForce(const Vec2& _force)
     }
 
     force = _force;
-    NotifyForceUpdate();
 }
 
 inline float RigidBody::GetTorque() const
@@ -392,7 +397,26 @@ inline void RigidBody::SetTorque(float _torque)
     }
 
     torque = _torque;
-    NotifyForceUpdate();
+}
+
+inline float RigidBody::GetLinearDamping() const
+{
+    return angularDamping;
+}
+
+inline void RigidBody::SetLinearDamping(float _linearDamping)
+{
+    linearDamping = _linearDamping;
+}
+
+inline float RigidBody::GetAngularDamping() const
+{
+    return angularDamping;
+}
+
+inline void RigidBody::SetAngularDamping(float _angularDamping)
+{
+    angularDamping = _angularDamping;
 }
 
 inline RigidBody::Type RigidBody::GetType() const

@@ -25,6 +25,8 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , invMass{ 0.0f }
     , inertia{ 0.0f }
     , invInertia{ 0.0f }
+    , linearDamping{ 0.0f }
+    , angularDamping{ 0.0f }
     , localCenter{ 0.0f }
     , transform{ identity }
     , position{ 0.0f }
@@ -46,14 +48,6 @@ RigidBody::~RigidBody() noexcept
     }
 
     world = nullptr;
-}
-
-void RigidBody::NotifyForceUpdate() const
-{
-    if (world)
-    {
-        world->integrateForce = true;
-    }
 }
 
 Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Material& _material)

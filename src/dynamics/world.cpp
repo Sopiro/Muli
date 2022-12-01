@@ -18,7 +18,6 @@ World::World(const WorldSettings& simulationSettings)
     , numIslands{ 0 }
     , sleepingIslands{ 0 }
     , sleepingBodies{ 0 }
-    , integrateForce{ false }
 {
 }
 
@@ -142,8 +141,6 @@ void World::Step(float dt)
 
     destroyBufferBody.clear();
     destroyBufferJoint.clear();
-
-    integrateForce = false;
 }
 
 void World::Reset()
