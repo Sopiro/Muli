@@ -79,6 +79,7 @@ set(DEMO_SOURCE_FILES
     src/demo/compound_shape.cpp
     src/demo/contact_callbacks.cpp
     src/demo/logo.cpp
+    src/demo/breakable.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

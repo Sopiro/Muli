@@ -49,6 +49,7 @@ public:
 
     const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
+    void SetTransform(const Transform& transform);
     void SetTransform(const Vec2& pos, float angle);
     const Vec2& GetPosition() const;
     void SetPosition(const Vec2& pos);
@@ -227,6 +228,14 @@ inline const Vec2& RigidBody::GetLocalCenter() const
 inline const Transform& RigidBody::GetTransform() const
 {
     return transform;
+}
+
+inline void RigidBody::SetTransform(const Transform& _transform)
+{
+    transform = _transform;
+
+    position = transform * localCenter;
+    angle = transform.rotation.GetAngle();
 }
 
 inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)

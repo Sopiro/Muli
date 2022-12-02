@@ -49,19 +49,19 @@ void Contact::Update()
         tangentSolvers[i].impulseSum = 0.0f;
     }
 
-    if (wasTouching == false && touching == true)
+    if (wasTouching == false && touching == true && colliderA->ContactListener && colliderB->ContactListener)
     {
         colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
         colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
     }
 
-    if (wasTouching == true && touching == true)
+    if (wasTouching == true && touching == true && colliderA->ContactListener && colliderB->ContactListener)
     {
         colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
         colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
     }
 
-    if (wasTouching == true && touching == false)
+    if (wasTouching == true && touching == false && colliderA->ContactListener && colliderB->ContactListener)
     {
         colliderA->ContactListener->OnContactEnd(colliderA, colliderB, this);
         colliderB->ContactListener->OnContactEnd(colliderB, colliderA, this);

@@ -161,6 +161,9 @@ void World::Reset()
     jointCount = 0;
 
     muliAssert(blockAllocator.GetBlockCount() == 0);
+
+    destroyBufferBody.clear();
+    destroyBufferJoint.clear();
 }
 
 void World::Destroy(RigidBody* body)
@@ -209,9 +212,17 @@ void World::BufferDestroy(RigidBody* body)
 
 void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
 {
+    std::unordered_set<RigidBody*> destroyed;
+
     for (size_t i = 0; i < bodies.size(); ++i)
     {
-        BufferDestroy(bodies[i]);
+        RigidBody* b = bodies[i];
+
+        if (destroyed.find(b) != destroyed.end())
+        {
+            destroyed.insert(b);
+            BufferDestroy(b);
+        }
     }
 }
 
@@ -244,9 +255,17 @@ void World::Destroy(Joint* joint)
 
 void World::Destroy(const std::vector<Joint*>& joints)
 {
-    for (uint32 i = 0; i < joints.size(); ++i)
+    std::unordered_set<Joint*> destroyed;
+
+    for (size_t i = 0; i < joints.size(); ++i)
     {
-        Destroy(joints[i]);
+        Joint* j = joints[i];
+
+        if (destroyed.find(j) != destroyed.end())
+        {
+            destroyed.insert(j);
+            Destroy(j);
+        }
     }
 }
 

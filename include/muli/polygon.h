@@ -10,7 +10,8 @@ namespace muli
 class Polygon : public Shape
 {
 public:
-    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = true, float radius = DEFAULT_RADIUS);
+    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = false, float radius = DEFAULT_RADIUS);
+    Polygon(std::initializer_list<Vec2> vertices, bool resetPosition = false, float radius = DEFAULT_RADIUS);
     Polygon(float width, float height, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
     Polygon(float size, float radius = DEFAULT_RADIUS, const Vec2& position = Vec2{ 0.0f }, float angle = 0.0f);
     ~Polygon();
