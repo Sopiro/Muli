@@ -46,9 +46,9 @@ void Island::Solve()
             b->flag |= RigidBody::Flag::flag_sleeping;
         }
 
-        if (sleeping || ((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
-                         (Dot(b->linearVelocity, b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE)) &&
-                            (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
+        if (((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
+             (Dot(b->linearVelocity, b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE)) &&
+            (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
         {
             b->resting += dt;
         }
@@ -58,7 +58,7 @@ void Island::Solve()
             awakeIsland = true;
         }
 
-        if (!sleeping && b->type == RigidBody::Type::dynamic_body)
+        if (b->type == RigidBody::Type::dynamic_body)
         {
             // Integrate velocites
             b->linearVelocity += b->invMass * dt * (b->force + world->settings.APPLY_GRAVITY * world->settings.GRAVITY * b->mass);
@@ -66,6 +66,11 @@ void Island::Solve()
 
             // Apply damping (found in box2d)
             // ODE: dv/dt + c * v = 0
+            // dv/dt = -c * v
+            // (1/v) dv = -c dt // integrate both sides
+            // ln|v| = -c * t + C //  exponentiate both sides (C is integration constant)
+            // v = C * exp(-c * t)
+            // v(0) = C
             // Solution: v(t) = v0 * exp(-c * t)
             // Time step: v(t + dt) = v0 * exp(-c * (t + dt))
             //                      = v0 * exp(-c * t) * exp(-c * dt)
