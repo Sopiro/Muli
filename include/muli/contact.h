@@ -43,8 +43,9 @@ public:
     const Contact* GetPrev() const;
 
     const ContactManifold& GetContactManifold() const;
-    float GetRestitution() const;
     float GetFriction() const;
+    float GetRestitution() const;
+    float GetSurfaceSpeed() const;
     bool IsTouching() const;
 
 private:
@@ -77,6 +78,7 @@ private:
 
     float restitution;
     float friction;
+    float surfaceSpeed;
 
     bool touching;
 
@@ -119,14 +121,19 @@ inline const ContactManifold& Contact::GetContactManifold() const
     return manifold;
 }
 
+inline float Contact::GetFriction() const
+{
+    return friction;
+}
+
 inline float Contact::GetRestitution() const
 {
     return restitution;
 }
 
-inline float Contact::GetFriction() const
+inline float Contact::GetSurfaceSpeed() const
 {
-    return friction;
+    return surfaceSpeed;
 }
 
 inline bool Contact::IsTouching() const

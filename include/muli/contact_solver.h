@@ -26,8 +26,8 @@ class ContactSolver
 public:
     enum Type
     {
-        Normal = 0,
-        Tangent
+        normal = 0,
+        tangent
     };
 
     void Prepare(Contact* contact, uint32 index, const Vec2& dir, Type contactType);

@@ -53,10 +53,10 @@ public:
         j = world->CreateRevoluteJoint(br, b0, b0->GetPosition() + Vec2{ 0.2f, 0.0f });
     }
 
+    float lastTime = 0.0f;
+
     void Step() override
     {
-        static float lastTime = game.GetTime();
-
         float currentTime = game.GetTime();
         if (currentTime - lastTime > 0.5f)
         {

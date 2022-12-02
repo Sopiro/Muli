@@ -24,7 +24,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     j.wb = Cross(rb, dir);
 
     bias = 0.0f;
-    if (type == Normal)
+    if (type == normal)
     {
         // Relative velocity at contact point
         Vec2 relativeVelocity = (c->b2->linearVelocity + Cross(c->b2->angularVelocity, rb)) -
@@ -51,7 +51,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     }
     else
     {
-        bias = -(c->colliderB->GetSurfaceSpeed() - c->colliderA->GetSurfaceSpeed());
+        bias = -c->surfaceSpeed;
     }
 
     // clang-format off
@@ -90,10 +90,10 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
 
     switch (type)
     {
-    case Normal:
+    case normal:
         impulseSum = Max(0.0f, impulseSum + lambda);
         break;
-    case Tangent:
+    case tangent:
         float maxFriction = c->friction * normalContact->impulseSum;
         impulseSum = Clamp(impulseSum + lambda, -maxFriction, maxFriction);
         break;

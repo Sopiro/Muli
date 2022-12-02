@@ -22,6 +22,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     beta = settings.POSITION_CORRECTION_BETA;
     restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
+    surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
 
     collisionDetectionFunction = DetectionFunctionMap[colliderA->GetType()][colliderB->GetType()];
     muliAssert(collisionDetectionFunction != nullptr);
@@ -44,32 +45,32 @@ void Contact::Update()
     for (uint32 i = 0; i < MAX_CONTACT_POINT; ++i)
     {
         oldNormalImpulse[i] = normalSolvers[i].impulseSum;
-        normalSolvers[i].impulseSum = 0.0f;
         oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
+        normalSolvers[i].impulseSum = 0.0f;
         tangentSolvers[i].impulseSum = 0.0f;
-    }
-
-    if (wasTouching == false && touching == true && colliderA->ContactListener && colliderB->ContactListener)
-    {
-        colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
-        colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
-    }
-
-    if (wasTouching == true && touching == true && colliderA->ContactListener && colliderB->ContactListener)
-    {
-        colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
-        colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
-    }
-
-    if (wasTouching == true && touching == false && colliderA->ContactListener && colliderB->ContactListener)
-    {
-        colliderA->ContactListener->OnContactEnd(colliderA, colliderB, this);
-        colliderB->ContactListener->OnContactEnd(colliderB, colliderA, this);
     }
 
     if (touching == false)
     {
+        if (wasTouching == true)
+        {
+            if (colliderA->ContactListener) colliderA->ContactListener->OnContactEnd(colliderA, colliderB, this);
+            if (colliderB->ContactListener) colliderB->ContactListener->OnContactEnd(colliderB, colliderA, this);
+        }
+
         return;
+    }
+
+    if (wasTouching == false && touching == true)
+    {
+        if (colliderA->ContactListener) colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
+    }
+
+    if (wasTouching == true && touching == true)
+    {
+        if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
     }
 
     if (manifold.featureFlipped)
@@ -107,8 +108,8 @@ void Contact::Prepare()
 {
     for (uint32 i = 0; i < manifold.numContacts; ++i)
     {
-        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::Normal);
-        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::Tangent);
+        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal);
+        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent);
         positionSolvers[i].Prepare(this, i);
     }
 
@@ -143,9 +144,9 @@ bool Contact::SolvePositionConstraint()
 {
     bool solved = true;
 
-    cLinearImpulseA = { 0.0f, 0.0f };
+    cLinearImpulseA.SetZero();
+    cLinearImpulseB.SetZero();
     cAngularImpulseA = 0.0f;
-    cLinearImpulseB = { 0.0f, 0.0f };
     cAngularImpulseB = 0.0f;
 
     // Solve position constraint

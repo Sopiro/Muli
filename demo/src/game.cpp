@@ -48,13 +48,6 @@ void Game::UpdateUI()
     ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
     ImGui::SetNextWindowSize({ 240, 505 }, ImGuiCond_Once);
 
-    static bool opened = false;
-    if (Input::IsKeyPressed(GLFW_KEY_O))
-    {
-        opened = !opened;
-    }
-
-    ImGui::SetNextWindowCollapsed(opened);
     if (ImGui::Begin("Control Panel"))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;

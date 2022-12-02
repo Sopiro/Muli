@@ -71,7 +71,7 @@ public:
 
                 game.RestartDemo();
             }
-            if (ImGui::Button("Rebuild optimal tree"))
+            if (ImGui::Button("Rebuild bottom up"))
             {
                 world->RebuildBVH();
             }
