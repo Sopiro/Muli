@@ -73,10 +73,10 @@ struct SizeMap
 static const SizeMap sizeMap;
 
 PredefinedBlockAllocator::PredefinedBlockAllocator()
+    : blockCount{ 0 }
+    , chunkCount{ 0 }
+    , chunks{ nullptr }
 {
-    blockCount = 0;
-    chunkCount = 0;
-    chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
 }
 

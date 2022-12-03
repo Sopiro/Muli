@@ -6,11 +6,11 @@ namespace muli
 {
 
 AABBTree::AABBTree()
+    : nodeID{ 0 }
+    , root{ nullNode }
+    , nodeCapacity{ 32 }
+    , nodeCount{ 0 }
 {
-    nodeID = 0;
-    root = nullNode;
-    nodeCapacity = 32;
-    nodeCount = 0;
     nodes = (Node*)malloc(nodeCapacity * sizeof(Node));
     memset(nodes, 0, nodeCapacity * sizeof(Node));
 
@@ -456,7 +456,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
     }
 }
 
-void AABBTree::Traverse(std::function<void(const Node*)> callback) const
+void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
 {
     if (root == nullNode)
     {

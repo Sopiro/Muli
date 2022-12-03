@@ -37,6 +37,8 @@ private:
     friend class Contact;
     friend class BlockSolver;
 
+    ContactSolver() = default;
+
     Contact* c;
     Type type;
 

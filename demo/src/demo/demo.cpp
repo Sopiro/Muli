@@ -20,6 +20,12 @@ Demo::Demo(Game& _game)
     camera.position.Set(0.0f, 3.6f);
 }
 
+Demo::~Demo()
+{
+    delete world;
+    world = nullptr;
+}
+
 void Demo::UpdateInput()
 {
     ComputeProperty();

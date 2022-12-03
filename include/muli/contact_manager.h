@@ -6,7 +6,6 @@
 namespace muli
 {
 class World;
-extern void InitializeDetectionFunctionMap();
 
 class ContactManager
 {
@@ -34,20 +33,6 @@ private:
     void Destroy(Contact* c);
     void OnNewContact(Collider*, Collider*);
 };
-
-inline ContactManager::ContactManager(World* _world)
-    : world{ _world }
-    , broadPhase{ _world, this }
-    , contactList{ nullptr }
-    , contactCount{ 0 }
-{
-    InitializeDetectionFunctionMap();
-}
-
-inline ContactManager::~ContactManager()
-{
-    Reset();
-}
 
 inline void ContactManager::Add(Collider* collider)
 {

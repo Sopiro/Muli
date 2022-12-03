@@ -18,6 +18,8 @@ public:
 private:
     friend class Contact;
 
+    BlockSolver() = default;
+
     Contact* c;
 
     ContactSolver* nc1;

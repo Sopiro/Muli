@@ -5,6 +5,22 @@
 namespace muli
 {
 
+extern void InitializeDetectionFunctionMap();
+
+ContactManager::ContactManager(World* _world)
+    : world{ _world }
+    , broadPhase{ _world, this }
+    , contactList{ nullptr }
+    , contactCount{ 0 }
+{
+    InitializeDetectionFunctionMap();
+}
+
+ContactManager::~ContactManager()
+{
+    Reset();
+}
+
 void ContactManager::Step(float dt)
 {
     // Update the dynamic AABB tree node

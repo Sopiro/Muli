@@ -4,11 +4,11 @@ namespace muli
 {
 
 StackAllocator::StackAllocator()
+    : index{ 0 }
+    , allocation{ 0 }
+    , maxAllocation{ 0 }
+    , entryCount{ 0 }
 {
-    index = 0;
-    allocation = 0;
-    maxAllocation = 0;
-    entryCount = 0;
 }
 
 StackAllocator::~StackAllocator()

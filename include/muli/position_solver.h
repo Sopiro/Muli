@@ -17,6 +17,8 @@ private:
     friend class Contact;
     friend class BlockSolver;
 
+    PositionSolver() = default;
+
     Contact* contact;
 
     Vec2 localPlainPoint;

@@ -15,11 +15,7 @@ class Demo : public JointDestoryCallback
 {
 public:
     Demo(Game& _game);
-    virtual ~Demo()
-    {
-        delete world;
-        world = nullptr;
-    }
+    virtual ~Demo();
 
     virtual void UpdateInput();
     virtual void Step();

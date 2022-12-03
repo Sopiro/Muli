@@ -6,10 +6,10 @@ namespace muli
 static constexpr int32 chunkSize = 16 * 1024;
 
 BlockAllocator::BlockAllocator()
+    : blockCount{ 0 }
+    , chunkCount{ 0 }
+    , chunks{ nullptr }
 {
-    blockCount = 0;
-    chunkCount = 0;
-    chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
 }
 

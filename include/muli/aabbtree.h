@@ -66,7 +66,7 @@ public:
     template <typename T>
     void RayCast(const RayCastInput& input, T* callback) const;
 
-    void Traverse(std::function<void(const Node*)> callback) const;
+    void Traverse(const std::function<void(const Node*)>& callback) const;
     template <typename T>
     void Traverse(T* callback) const;
 
@@ -76,7 +76,7 @@ public:
 private:
     friend class BroadPhase;
 
-    uint32 nodeID = 0;
+    uint32 nodeID;
 
     Node* nodes;
     int32 root;
