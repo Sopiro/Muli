@@ -45,6 +45,10 @@ void Island::Solve()
             b->angularVelocity = 0.0f;
             b->flag |= RigidBody::Flag::flag_sleeping;
         }
+        else
+        {
+            b->flag &= ~RigidBody::Flag::flag_sleeping;
+        }
 
         if (((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
              (Dot(b->linearVelocity, b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE)) &&

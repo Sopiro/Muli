@@ -57,7 +57,7 @@ bool PositionSolver::Solve()
 
     // We can't expect separation >= -PENETRATION_SLOP
     // because we don't push the separation above -PENETRATION_SLOP
-    return -separation <= contact->settings.PENETRATION_SLOP * 3.0f;
+    return -separation <= contact->settings.PENETRATION_SLOP * 4.0f;
 }
 
 } // namespace muli
