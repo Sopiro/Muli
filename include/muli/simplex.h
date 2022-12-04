@@ -8,11 +8,11 @@
 namespace muli
 {
 
-struct ClosestPoint
+struct ClosestResult
 {
-    Vec2 position;
-    uint32 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
-    uint32 count;
+    Vec2 point;
+    int32 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
+    int32 count;
 };
 
 struct SupportPoint
@@ -29,19 +29,19 @@ public:
 
     void AddVertex(const SupportPoint& vertex);
     bool ContainsVertex(const Vec2& vertex) const;
-    uint32 VertexCount() const;
+    int32 VertexCount() const;
     void Clear();
 
-    ClosestPoint GetClosestPoint(const Vec2& q) const;
-    void Shrink(const uint32* indices, uint32 count);
+    ClosestResult GetClosestPoint(const Vec2& q) const;
+    void Shrink(const int32* indices, int32 count);
 
     SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
 private:
-    uint32 count = 0;
+    int32 count = 0;
 };
 
-inline uint32 Simplex::VertexCount() const
+inline int32 Simplex::VertexCount() const
 {
     return count;
 }
@@ -60,7 +60,7 @@ inline void Simplex::AddVertex(const SupportPoint& vertex)
 
 inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 {
-    for (uint32 i = 0; i < count; ++i)
+    for (int32 i = 0; i < count; ++i)
     {
         if (vertex == vertices[i].point)
         {
@@ -71,11 +71,11 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
     return false;
 }
 
-inline void Simplex::Shrink(const uint32* _indices, uint32 _count)
+inline void Simplex::Shrink(const int32* _indices, int32 _count)
 {
     SupportPoint tmp[MAX_SIMPLEX_VERTEX_COUNT];
 
-    for (uint32 i = 0; i < _count; ++i)
+    for (int32 i = 0; i < _count; ++i)
     {
         tmp[i] = vertices[_indices[i]];
     }

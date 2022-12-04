@@ -6,7 +6,7 @@ namespace muli
 {
 
 // Inspired by b2GrowableStack in box2d code
-template <typename T, uint32 N>
+template <typename T, int32 N>
 class GrowableArray
 {
 public:
@@ -120,7 +120,7 @@ public:
     }
 
     // O(n)
-    void Insert(uint32 index, const T& data)
+    void Insert(int32 index, const T& data)
     {
         assert(index <= count);
 
@@ -138,7 +138,7 @@ public:
             }
         }
 
-        uint32 ptr = count;
+        int32 ptr = count;
         while (index != ptr)
         {
             array[ptr] = array[ptr - 1];
@@ -150,9 +150,9 @@ public:
     }
 
     // O(n)
-    void Remove(uint32 index)
+    void Remove(int32 index)
     {
-        uint32 ptr = index;
+        int32 ptr = index;
         while (ptr != count)
         {
             array[ptr] = array[ptr + 1];
@@ -162,7 +162,7 @@ public:
         --count;
     }
 
-    uint32 Count() const
+    int32 Count() const
     {
         return count;
     }
@@ -182,17 +182,17 @@ public:
         count = 0;
     }
 
-    uint32 Capacity() const
+    int32 Capacity() const
     {
         return capacity;
     }
 
-    T& At(uint32 index) const
+    T& At(int32 index) const
     {
         return array[index];
     }
 
-    T& operator[](uint32 index) const
+    T& operator[](int32 index) const
     {
         return array[index];
     }
@@ -200,8 +200,8 @@ public:
 private:
     T* array;
     T stack_array[N];
-    uint32 count;
-    uint32 capacity;
+    int32 count;
+    int32 capacity;
 };
 
 } // namespace muli

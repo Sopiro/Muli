@@ -18,10 +18,6 @@ static bool dectectionFunctionInitialized = false;
 DetectionFunction* DetectionFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
 void InitializeDetectionFunctionMap();
 
-static bool distanceFunctionInitialized = false;
-DistanceFunction* DistanceFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
-void InitializeDistanceFunctionMap();
-
 /*
  * Returns support point in 'Minkowski Difference' set
  * Minkowski Sum: A ⊕ B = {Pa + Pb| Pa ∈ A, Pb ∈ B}
@@ -30,7 +26,7 @@ void InitializeDistanceFunctionMap();
  *
  * 'dir' should be normalized
  */
-static SupportPoint CSOSupport(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Vec2& dir)
+static SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir)
 {
     Vec2 localDirA = MulT(tfA.rotation, dir);
     Vec2 localDirB = MulT(tfB.rotation, -dir);
@@ -52,7 +48,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, bool earlyReturn)
+static GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, bool earlyReturn)
 {
     Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
@@ -60,14 +56,14 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
     float distance = 0.0f;
     bool collide = false;
 
-    SupportPoint supportPoint = CSOSupport(a, tfA, b, tfB, dir);
-    simplex.AddVertex(supportPoint);
+    SupportPoint support = CSOSupport(a, tfA, b, tfB, dir);
+    simplex.AddVertex(support);
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
     {
-        ClosestPoint closestPoint = simplex.GetClosestPoint(origin);
+        ClosestResult closest = simplex.GetClosestPoint(origin);
 
-        if (Dist2(closestPoint.position, origin) < GJK_TOLERANCE)
+        if (Dist2(closest.point, origin) < GJK_TOLERANCE)
         {
             collide = true;
             break;
@@ -75,7 +71,7 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
         else if (simplex.VertexCount() != 1)
         {
             // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
-            simplex.Shrink(closestPoint.contributors, closestPoint.count);
+            simplex.Shrink(closest.contributors, closest.count);
         }
 
         if (simplex.VertexCount() == 2)
@@ -91,28 +87,28 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
         }
         else
         {
-            dir = origin - closestPoint.position;
+            dir = origin - closest.point;
             distance = dir.Normalize();
         }
 
-        supportPoint = CSOSupport(a, tfA, b, tfB, dir);
+        support = CSOSupport(a, tfA, b, tfB, dir);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && distance > Dot(dir, supportPoint.point - closestPoint.position))
+        if (earlyReturn && distance > Dot(dir, support.point - closest.point))
         {
             collide = false;
             break;
         }
 
-        if (simplex.ContainsVertex(supportPoint.point))
+        if (simplex.ContainsVertex(support.point))
         {
             collide = false;
             break;
         }
         else
         {
-            simplex.AddVertex(supportPoint);
+            simplex.AddVertex(support);
         }
     }
 
@@ -124,7 +120,7 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Simplex& simplex)
+static EPAResult EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex)
 {
     Polytope polytope{ simplex };
 
@@ -188,7 +184,7 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
 }
 
 static void FindContactPoints(
-    const Vec2& n, Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+    const Vec2& n, const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     Edge edgeA = a->GetFeaturedEdge(tfA, n);
     Edge edgeB = b->GetFeaturedEdge(tfB, -n);
@@ -232,7 +228,7 @@ static void FindContactPoints(
     manifold->referencePoint = ref->p1;
 }
 
-static bool CircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     Vec2 pa = tfA * a->GetCenter();
     Vec2 pb = tfB * b->GetCenter();
@@ -265,9 +261,9 @@ static bool CircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Trans
     }
 }
 
-static bool CapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    Capsule* c = static_cast<Capsule*>(a);
+    const Capsule* c = static_cast<const Capsule*>(a);
 
     Vec2 pb = tfB * b->GetCenter();
     Vec2 localP = MulT(tfA, pb);
@@ -331,9 +327,9 @@ static bool CapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Tran
     return true;
 }
 
-static bool PolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    Polygon* p = static_cast<Polygon*>(a);
+    const Polygon* p = static_cast<const Polygon*>(a);
     Vec2 pb = tfB * b->GetCenter();
 
     const Vec2* vertices = p->GetVertices();
@@ -437,7 +433,7 @@ static bool PolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Tran
     return true;
 }
 
-static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     GJKResult gjkResult = GJK(a, tfA, b, tfB, false);
     Simplex& simplex = gjkResult.simplex;
@@ -559,7 +555,7 @@ static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Trans
     return true;
 }
 
-bool DetectCollision(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool DetectCollision(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     if (dectectionFunctionInitialized == false)
     {
@@ -588,211 +584,6 @@ bool DetectCollision(Shape* a, const Transform& tfA, Shape* b, const Transform& 
     }
 }
 
-static float ComputeDistanceCircleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
-{
-    Vec2 pa = tfA * a->GetCenter();
-    Vec2 pb = tfB * b->GetCenter();
-
-    float d2 = Dist2(pa, pb);
-    float r2 = a->GetRadius() + b->GetRadius();
-
-    if (d2 > r2 * r2)
-    {
-        return Sqrt(d2) - r2;
-    }
-    else
-    {
-        return 0.0f;
-    }
-}
-
-static float ComputeDistanceCapsuleVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
-{
-    Vec2 pb = tfB * b->GetCenter();
-    Vec2 localC = MulT(tfA, pb);
-
-    Capsule* c = static_cast<Capsule*>(a);
-    Vec2 va = c->GetVertexA();
-    Vec2 vb = c->GetVertexB();
-
-    float r2 = a->GetRadius() + b->GetRadius();
-
-    UV w = ComputeWeights(va, vb, localC);
-
-    float d2;
-    if (w.v <= 0.0f)
-    {
-        d2 = Dist2(va, localC);
-    }
-    else if (w.v >= 1.0f)
-    {
-        d2 = Dist2(vb, localC);
-    }
-    else
-    {
-        Vec2 normal{ 0.0f, 1.0f };
-        float d = Abs(Dot(normal, localC - va));
-
-        if (d > r2)
-        {
-            return d - r2;
-        }
-        else
-        {
-            return 0.0f;
-        }
-    }
-
-    if (d2 > r2 * r2)
-    {
-        return Sqrt(d2) - r2;
-    }
-    else
-    {
-        return 0.0f;
-    }
-}
-
-static float ComputeDistancePolygonVsCircle(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
-{
-    Polygon* p = static_cast<Polygon*>(a);
-    const Vec2* vertices = p->GetVertices();
-    const Vec2* normals = p->GetNormals();
-    int32 vertexCount = p->GetVertexCount();
-
-    Vec2 pb = tfB * b->GetCenter();
-    Vec2 localC = MulT(tfA, pb);
-
-    float r2 = a->GetRadius() + b->GetRadius();
-
-    UV w;
-    int32 dir = 0;
-    int32 i0 = 0;
-    int32 insideCheck = 0;
-    while (insideCheck < vertexCount)
-    {
-        int32 i1 = (i0 + 1) % vertexCount;
-
-        const Vec2& v0 = vertices[i0];
-        const Vec2& v1 = vertices[i1];
-
-        w = ComputeWeights(v0, v1, localC);
-        if (w.v <= 0) // Region v0
-        {
-            if (dir > 0)
-            {
-                float d2 = Dist2(v0, localC);
-                if (d2 > r2 * r2)
-                {
-                    return Sqrt(d2) - r2;
-                }
-                else
-                {
-                    return 0.0f;
-                }
-            }
-
-            dir = -1;
-            i0 = (i0 - 1 + vertexCount) % vertexCount;
-        }
-        else if (w.v >= 1) // Region v1
-        {
-            if (dir < 0)
-            {
-                float d2 = Dist2(v1, localC);
-                if (d2 > r2 * r2)
-                {
-                    return Sqrt(d2) - r2;
-                }
-                else
-                {
-                    return 0.0f;
-                }
-            }
-
-            dir = 1;
-            i0 = (i0 + 1) % vertexCount;
-        }
-        else // Inside the region
-        {
-            Vec2 normal = normals[i0];
-            float d = Dot(localC - v0, normal);
-            if (d >= 0)
-            {
-                if (d > r2)
-                {
-                    return d - r2;
-                }
-                else
-                {
-                    return 0.0f;
-                }
-            }
-
-            if (dir != 0)
-            {
-                return 0.0f;
-            }
-
-            ++insideCheck;
-            dir = 0;
-            i0 = (i0 + 1) % vertexCount;
-        }
-    }
-
-    return 0.0f;
-}
-
-static float ComputeDistanceConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
-{
-    GJKResult gr = GJK(a, tfA, b, tfB, false);
-
-    if (gr.collide == true)
-    {
-        return 0.0f;
-    }
-    else
-    {
-        ClosestPoint cp = gr.simplex.GetClosestPoint(origin);
-
-        float d2 = cp.position.Length2();
-        float r2 = a->GetRadius() + b->GetRadius();
-
-        if (d2 > r2 * r2)
-        {
-            return Sqrt(d2) - r2;
-        }
-        else
-        {
-            return 0.0f;
-        }
-    }
-}
-
-float ComputeDistance(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB)
-{
-    if (distanceFunctionInitialized == false)
-    {
-        InitializeDistanceFunctionMap();
-    }
-
-    Shape::Type shapeA = a->GetType();
-    Shape::Type shapeB = b->GetType();
-
-    if (shapeB > shapeA)
-    {
-        muliAssert(DistanceFunctionMap[shapeB][shapeA] != nullptr);
-
-        return DistanceFunctionMap[shapeB][shapeA](b, tfB, a, tfA);
-    }
-    else
-    {
-        muliAssert(DistanceFunctionMap[shapeA][shapeB] != nullptr);
-
-        return DistanceFunctionMap[shapeA][shapeB](a, tfA, b, tfB);
-    }
-}
-
 void InitializeDetectionFunctionMap()
 {
     if (dectectionFunctionInitialized)
@@ -810,25 +601,6 @@ void InitializeDetectionFunctionMap()
     DetectionFunctionMap[Shape::Type::polygon][Shape::Type::polygon] = &ConvexVsConvex;
 
     dectectionFunctionInitialized = true;
-}
-
-void InitializeDistanceFunctionMap()
-{
-    if (distanceFunctionInitialized)
-    {
-        return;
-    }
-
-    DistanceFunctionMap[Shape::Type::circle][Shape::Type::circle] = &ComputeDistanceCircleVsCircle;
-
-    DistanceFunctionMap[Shape::Type::capsule][Shape::Type::circle] = &ComputeDistanceCapsuleVsCircle;
-    DistanceFunctionMap[Shape::Type::capsule][Shape::Type::capsule] = &ComputeDistanceConvexVsConvex;
-
-    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::circle] = &ComputeDistancePolygonVsCircle;
-    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::capsule] = &ComputeDistanceConvexVsConvex;
-    DistanceFunctionMap[Shape::Type::polygon][Shape::Type::polygon] = &ComputeDistanceConvexVsConvex;
-
-    distanceFunctionInitialized = true;
 }
 
 } // namespace muli

@@ -4,15 +4,15 @@
 namespace muli
 {
 
-ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
+ClosestResult Simplex::GetClosestPoint(const Vec2& q) const
 {
-    ClosestPoint res;
+    ClosestResult res;
 
     switch (count)
     {
     case 1: // 0-Simplex: Point
     {
-        res.position = vertices[0].point;
+        res.point = vertices[0].point;
         res.count = 1;
         res.contributors[0] = 0;
 
@@ -20,25 +20,25 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     }
     case 2: // 1-Simplex: Line segment
     {
-        const Vec2 a = vertices[0].point;
-        const Vec2 b = vertices[1].point;
-        const UV w = ComputeWeights(a, b, q);
+        Vec2 a = vertices[0].point;
+        Vec2 b = vertices[1].point;
+        UV w = ComputeWeights(a, b, q);
 
         if (w.v <= 0)
         {
-            res.position = a;
+            res.point = a;
             res.count = 1;
             res.contributors[0] = 0;
         }
         else if (w.v >= 1)
         {
-            res.position = b;
+            res.point = b;
             res.count = 1;
             res.contributors[0] = 1;
         }
         else
         {
-            res.position = LerpVector(a, b, w);
+            res.point = LerpVector(a, b, w);
             res.count = 2;
             res.contributors[0] = 0;
             res.contributors[1] = 1;
@@ -48,43 +48,43 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     }
     case 3: // 2-Simplex: Triangle
     {
-        const Vec2 a = vertices[0].point;
-        const Vec2 b = vertices[1].point;
-        const Vec2 c = vertices[2].point;
+        Vec2 a = vertices[0].point;
+        Vec2 b = vertices[1].point;
+        Vec2 c = vertices[2].point;
 
-        const UV wab = ComputeWeights(a, b, q);
-        const UV wbc = ComputeWeights(b, c, q);
-        const UV wca = ComputeWeights(c, a, q);
+        UV wab = ComputeWeights(a, b, q);
+        UV wbc = ComputeWeights(b, c, q);
+        UV wca = ComputeWeights(c, a, q);
 
         if (wca.u <= 0 && wab.v <= 0) // A area
         {
-            res.position = a;
+            res.point = a;
             res.count = 1;
             res.contributors[0] = 0;
             break;
         }
         else if (wab.u <= 0 && wbc.v <= 0) // B area
         {
-            res.position = b;
+            res.point = b;
             res.count = 1;
             res.contributors[0] = 1;
             break;
         }
         else if (wbc.u <= 0 && wca.v <= 0) // C area
         {
-            res.position = c;
+            res.point = c;
             res.count = 1;
             res.contributors[0] = 2;
             break;
         }
 
-        const float area = Cross(b - a, c - a);
+        float area = Cross(b - a, c - a);
 
         // If area == 0, 3 vertices are in the collinear position
 
-        const float u = Cross(b - q, c - q);
-        const float v = Cross(c - q, a - q);
-        const float w = Cross(a - q, b - q);
+        float u = Cross(b - q, c - q);
+        float v = Cross(c - q, a - q);
+        float w = Cross(a - q, b - q);
 
         if (wab.u > 0 && wab.v > 0 && w * area <= 0) // On the AB edge
         {
@@ -102,7 +102,7 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
                 res.contributors[2] = 2;
             }
 
-            res.position = LerpVector(a, b, wab);
+            res.point = LerpVector(a, b, wab);
         }
         else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
         {
@@ -120,7 +120,7 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
                 res.contributors[2] = 0;
             }
 
-            res.position = LerpVector(b, c, wbc);
+            res.point = LerpVector(b, c, wbc);
         }
         else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
         {
@@ -138,11 +138,11 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
                 res.contributors[2] = 1;
             }
 
-            res.position = LerpVector(c, a, wca);
+            res.point = LerpVector(c, a, wca);
         }
         else // Inside the triangle
         {
-            res.position = q;
+            res.point = q;
             res.count = 0;
         }
 

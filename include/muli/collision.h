@@ -48,17 +48,13 @@ struct RayCastOutput
 };
 
 // clang-format off
-typedef bool DetectionFunction(Shape*, const Transform&,
-                               Shape*, const Transform&,
+typedef bool DetectionFunction(const Shape*, const Transform&,
+                               const Shape*, const Transform&,
                                ContactManifold*);
-typedef float DistanceFunction(Shape*, const Transform&,
-                               Shape*, const Transform&);
-
-bool DetectCollision(Shape* a, const Transform& tfA,
-                     Shape* b, const Transform& tfB,
+                               
+bool DetectCollision(const Shape* a, const Transform& tfA,
+                     const Shape* b, const Transform& tfB,
                      ContactManifold* manifold = nullptr);
-float ComputeDistance(Shape* a, const Transform& tfA,
-                      Shape* b, const Transform& tfB);
 // clang-format on
 
 } // namespace muli

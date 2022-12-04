@@ -9,7 +9,7 @@ namespace muli
 
 struct ClosestEdgeInfo
 {
-    uint32 index;
+    int32 index;
     float distance;
     Vec2 normal;
 };
