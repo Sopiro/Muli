@@ -5,6 +5,7 @@ set(HEADER_FILES
     ../include/muli/contact_manager.h
 
     ../include/muli/collision.h
+    ../include/muli/distance.h
     ../include/muli/simplex.h
     ../include/muli/polytope.h
     ../include/muli/contact_point.h
@@ -68,6 +69,7 @@ set(SOURCE_FILES
     collision/collision.cpp
     collision/simplex.cpp
     collision/polytope.cpp
+    collision/distance.cpp
 
     collision/aabbtree.cpp
     collision/broad_phase.cpp

@@ -48,7 +48,7 @@ struct GJKResult
     bool collide;
 };
 
-static GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, bool earlyReturn)
+GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, bool earlyReturn)
 {
     Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
 
@@ -114,6 +114,7 @@ static GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const
 
     return GJKResult{ simplex, distance, collide };
 }
+
 struct EPAResult
 {
     Vec2 contactNormal;

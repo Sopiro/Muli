@@ -6,6 +6,7 @@
 
 #include "world.h"
 #include "collision.h"
+#include "distance.h"
 #include "aabbtree.h"
 
 #include "rigidbody.h"
