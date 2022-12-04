@@ -55,7 +55,10 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 {
     for (uint32 i = 0; i < count; ++i)
     {
-        if (vertex == vertices[i]) return true;
+        if (vertex == vertices[i])
+        {
+            return true;
+        }
     }
 
     return false;

@@ -22,18 +22,10 @@ private:
 
     Contact* c;
 
-    ContactSolver* nc1;
-    ContactSolver* nc2;
-
-    Jacobian* j1;
-    Jacobian* j2;
-
     Mat2 k;
     Mat2 m;
 
     bool enabled;
-
-    void ApplyImpulse(const Vec2& lambda);
 };
 
 } // namespace muli

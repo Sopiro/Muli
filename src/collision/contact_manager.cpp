@@ -27,7 +27,7 @@ void ContactManager::Step(float dt)
     broadPhase.UpdateDynamicTree(dt);
 
     // Find contacts, insert into the contact graph
-    // broadphase class will call OnNewContact()
+    // broadphase will callback OnNewContact()
     broadPhase.FindContacts();
 
     // Narrow phase
@@ -44,7 +44,7 @@ void ContactManager::Step(float dt)
         bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::Type::static_body;
         bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::Type::static_body;
 
-        if (!activeA && !activeB)
+        if (activeA == false && activeB == false)
         {
             c = c->next;
             continue;
@@ -52,6 +52,7 @@ void ContactManager::Step(float dt)
 
         bool overlap = broadPhase.TestOverlap(colliderA, colliderB);
 
+        // This potential contact that is configured by aabb overlap is no longer valid so destroy it
         if (overlap == false)
         {
             Contact* t = c;
@@ -60,6 +61,7 @@ void ContactManager::Step(float dt)
             continue;
         }
 
+        // Evaluate the contact, prepare the solve step
         c->Update();
         c = c->next;
     }

@@ -134,8 +134,9 @@ void Contact::SolveVelocityConstraint()
             normalSolvers[i].Solve();
         }
     }
-    else // Solve two contact constraint in one shot using block solver
+    else
     {
+        // Solve two contact constraint simultaneously (2-Contact LCP solver)
         blockSolver.Solve();
     }
 }

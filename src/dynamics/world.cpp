@@ -145,21 +145,11 @@ void World::Reset()
         Destroy(b0);
     }
 
-    Joint* j = jointList;
-    while (j)
-    {
-        Joint* j0 = j;
-        j = j->next;
-        Destroy(j0);
-    }
-
-    bodyList = nullptr;
-    bodyListTail = nullptr;
-    bodyCount = 0;
-
-    jointList = nullptr;
-    jointCount = 0;
-
+    muliAssert(bodyList == nullptr);
+    muliAssert(bodyListTail == nullptr);
+    muliAssert(jointList == nullptr);
+    muliAssert(bodyCount == 0);
+    muliAssert(jointCount == 0);
     muliAssert(blockAllocator.GetBlockCount() == 0);
 
     destroyBufferBody.clear();
