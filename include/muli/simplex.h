@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "contact_point.h"
 
 #define MAX_SIMPLEX_VERTEX_COUNT 3
 
@@ -14,21 +15,27 @@ struct ClosestPoint
     uint32 count;
 };
 
+struct SupportPoint
+{
+    ContactPoint pointA;
+    ContactPoint pointB;
+    Vec2 point; // pointA - pointB
+};
+
 class Simplex
 {
 public:
     Simplex() = default;
 
-    Vec2 vertices[MAX_SIMPLEX_VERTEX_COUNT];
-
+    void AddVertex(const SupportPoint& vertex);
+    bool ContainsVertex(const Vec2& vertex) const;
     uint32 VertexCount() const;
     void Clear();
-    void AddVertex(const Vec2& vertex);
-    bool ContainsVertex(const Vec2& vertex) const;
+
+    ClosestPoint GetClosestPoint(const Vec2& q) const;
     void Shrink(const uint32* indices, uint32 count);
 
-    // Returns the point closest to the q
-    ClosestPoint GetClosestPoint(const Vec2& q) const;
+    SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
 private:
     uint32 count = 0;
@@ -44,7 +51,7 @@ inline void Simplex::Clear()
     count = 0;
 }
 
-inline void Simplex::AddVertex(const Vec2& vertex)
+inline void Simplex::AddVertex(const SupportPoint& vertex)
 {
     muliAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
 
@@ -55,7 +62,7 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 {
     for (uint32 i = 0; i < count; ++i)
     {
-        if (vertex == vertices[i])
+        if (vertex == vertices[i].point)
         {
             return true;
         }
@@ -66,14 +73,14 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
 
 inline void Simplex::Shrink(const uint32* _indices, uint32 _count)
 {
-    Vec2 tmp[MAX_SIMPLEX_VERTEX_COUNT];
+    SupportPoint tmp[MAX_SIMPLEX_VERTEX_COUNT];
 
     for (uint32 i = 0; i < _count; ++i)
     {
         tmp[i] = vertices[_indices[i]];
     }
 
-    memcpy(vertices, tmp, _count * sizeof(Vec2));
+    memcpy(vertices, tmp, _count * sizeof(SupportPoint));
     count = _count;
 }
 

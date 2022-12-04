@@ -34,9 +34,6 @@ namespace muli
 // Simulation settings
 struct WorldSettings
 {
-    mutable float DT = 1.0f / 60.0f;
-    mutable float INV_DT = 60.0f;
-
     bool APPLY_GRAVITY = true;
     Vec2 GRAVITY{ 0.0f, -10.0f };
 
@@ -56,6 +53,9 @@ struct WorldSettings
     float REST_ANGULAR_TOLERANCE = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
 
     AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
+
+    mutable float DT = 1.0f / 60.0f;
+    mutable float INV_DT = 60.0f;
 };
 
 } // namespace muli

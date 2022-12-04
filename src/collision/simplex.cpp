@@ -12,7 +12,7 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     {
     case 1: // 0-Simplex: Point
     {
-        res.position = vertices[0];
+        res.position = vertices[0].point;
         res.count = 1;
         res.contributors[0] = 0;
 
@@ -20,8 +20,8 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     }
     case 2: // 1-Simplex: Line segment
     {
-        const Vec2 a = vertices[0];
-        const Vec2 b = vertices[1];
+        const Vec2 a = vertices[0].point;
+        const Vec2 b = vertices[1].point;
         const UV w = ComputeWeights(a, b, q);
 
         if (w.v <= 0)
@@ -48,9 +48,9 @@ ClosestPoint Simplex::GetClosestPoint(const Vec2& q) const
     }
     case 3: // 2-Simplex: Triangle
     {
-        const Vec2 a = vertices[0];
-        const Vec2 b = vertices[1];
-        const Vec2 c = vertices[2];
+        const Vec2 a = vertices[0].point;
+        const Vec2 b = vertices[1].point;
+        const Vec2 c = vertices[2].point;
 
         const UV wab = ComputeWeights(a, b, q);
         const UV wbc = ComputeWeights(b, c, q);

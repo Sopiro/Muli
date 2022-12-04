@@ -30,15 +30,19 @@ void InitializeDistanceFunctionMap();
  *
  * 'dir' should be normalized
  */
-static Vec2 CSOSupport(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Vec2& dir)
+static SupportPoint CSOSupport(Shape* a, const Transform& tfA, Shape* b, const Transform& tfB, const Vec2& dir)
 {
     Vec2 localDirA = MulT(tfA.rotation, dir);
     Vec2 localDirB = MulT(tfB.rotation, -dir);
 
-    Vec2 supportA = tfA * a->Support(localDirA).position;
-    Vec2 supportB = tfB * b->Support(localDirB).position;
+    SupportPoint supportPoint;
+    supportPoint.pointA = a->Support(localDirA);
+    supportPoint.pointB = b->Support(localDirB);
+    supportPoint.pointA.position = tfA * supportPoint.pointA.position;
+    supportPoint.pointB.position = tfB * supportPoint.pointB.position;
+    supportPoint.point = supportPoint.pointA.position - supportPoint.pointB.position;
 
-    return supportA - supportB;
+    return supportPoint;
 }
 
 struct GJKResult
@@ -56,7 +60,7 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
     float distance = 0.0f;
     bool collide = false;
 
-    Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, dir);
+    SupportPoint supportPoint = CSOSupport(a, tfA, b, tfB, dir);
     simplex.AddVertex(supportPoint);
 
     for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
@@ -77,8 +81,8 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
         if (simplex.VertexCount() == 2)
         {
             // Avoid floating point error
-            dir = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
-            distance = Dot(dir, origin - simplex.vertices[0]);
+            dir = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+            distance = Dot(dir, origin - simplex.vertices[0].point);
             if (distance < 0)
             {
                 distance *= -1;
@@ -95,13 +99,13 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && distance > Dot(dir, supportPoint - closestPoint.position))
+        if (earlyReturn && distance > Dot(dir, supportPoint.point - closestPoint.position))
         {
             collide = false;
             break;
         }
 
-        if (simplex.ContainsVertex(supportPoint))
+        if (simplex.ContainsVertex(supportPoint.point))
         {
             collide = false;
             break;
@@ -114,7 +118,6 @@ static GJKResult GJK(Shape* a, const Transform& tfA, Shape* b, const Transform& 
 
     return GJKResult{ simplex, distance, collide };
 }
-
 struct EPAResult
 {
     Vec2 contactNormal;
@@ -130,8 +133,8 @@ static EPAResult EPA(Shape* a, const Transform& tfA, Shape* b, const Transform& 
     for (uint32 i = 0; i < EPA_MAX_ITERATION; ++i)
     {
         closestEdge = polytope.GetClosestEdge();
-        const Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, closestEdge.normal);
-        const float newDistance = Dot(closestEdge.normal, supportPoint);
+        Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, closestEdge.normal).point;
+        float newDistance = Dot(closestEdge.normal, supportPoint);
 
         if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
         {
@@ -148,7 +151,7 @@ static EPAResult EPA(Shape* a, const Transform& tfA, Shape* b, const Transform& 
     return EPAResult{ closestEdge.normal, closestEdge.distance };
 }
 
-static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint = false)
+static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint)
 {
     float d1 = Dot(e->p1.position - p, dir);
     float d2 = Dot(e->p2.position - p, dir);
@@ -209,8 +212,8 @@ static void FindContactPoints(
         manifold->featureFlipped = true;
     }
 
-    ClipEdge(inc, ref->p1.position, ref->dir);
-    ClipEdge(inc, ref->p2.position, -ref->dir);
+    ClipEdge(inc, ref->p1.position, ref->dir, false);
+    ClipEdge(inc, ref->p2.position, -ref->dir, false);
     ClipEdge(inc, ref->p1.position, -manifold->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
@@ -453,15 +456,14 @@ static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Trans
                     return true;
                 }
 
-                Vec2 normal = (origin - simplex.vertices[0]).Normalized();
+                SupportPoint supportPoint = simplex.vertices[0];
 
-                Vec2 localDirA = MulT(tfA.rotation, normal);
-                Vec2 localDirB = MulT(tfB.rotation, -normal);
+                Vec2 normal = (origin - supportPoint.point).Normalized();
 
-                ContactPoint supportA = a->Support(localDirA);
-                ContactPoint supportB = b->Support(localDirB);
-                supportA.position = tfA * (supportA.position + localDirA * a->GetRadius());
-                supportB.position = tfB * (supportB.position + localDirB * b->GetRadius());
+                ContactPoint supportA = supportPoint.pointA;
+                ContactPoint supportB = supportPoint.pointB;
+                supportA.position += normal * a->GetRadius();
+                supportB.position -= normal * b->GetRadius();
 
                 manifold->contactNormal = normal;
                 manifold->contactTangent = Cross(1.0f, normal);
@@ -489,8 +491,8 @@ static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Trans
                     return true;
                 }
 
-                Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
-                Vec2 k = origin - simplex.vertices[0];
+                Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+                Vec2 k = origin - simplex.vertices[0].point;
                 if (Dot(normal, k) < 0)
                 {
                     normal *= -1;
@@ -518,8 +520,8 @@ static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Trans
         {
         case 1:
         {
-            Vec2 randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ 1.0f, 0.0f });
-            if (randomSupport == simplex.vertices[0])
+            SupportPoint randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ 1.0f, 0.0f });
+            if (randomSupport.point == simplex.vertices[0].point)
             {
                 randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ -1.0f, 0.0f });
             }
@@ -531,10 +533,10 @@ static bool ConvexVsConvex(Shape* a, const Transform& tfA, Shape* b, const Trans
 
         case 2:
         {
-            Vec2 normal = Cross(1.0f, simplex.vertices[1] - simplex.vertices[0]).Normalized();
-            Vec2 normalSupport = CSOSupport(a, tfA, b, tfB, normal);
+            Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+            SupportPoint normalSupport = CSOSupport(a, tfA, b, tfB, normal);
 
-            if (simplex.ContainsVertex(normalSupport))
+            if (simplex.ContainsVertex(normalSupport.point))
             {
                 simplex.AddVertex(CSOSupport(a, tfA, b, tfB, -normal));
             }
