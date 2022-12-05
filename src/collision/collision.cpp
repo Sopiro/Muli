@@ -44,22 +44,23 @@ static SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape
 struct GJKResult
 {
     Simplex simplex;
+    Vec2 direction;
     float distance;
     bool collide;
 };
 
 GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, bool earlyReturn)
 {
-    Vec2 dir{ 1.0f, 0.0f }; // Random initial direction
+    Vec2 direction{ 1.0f, 0.0f }; // Random initial search direction
 
     Simplex simplex;
     float distance = 0.0f;
     bool collide = false;
 
-    SupportPoint support = CSOSupport(a, tfA, b, tfB, dir);
+    SupportPoint support = CSOSupport(a, tfA, b, tfB, direction);
     simplex.AddVertex(support);
 
-    for (uint32 k = 0; k < GJK_MAX_ITERATION; ++k)
+    for (int32 k = 0; k < GJK_MAX_ITERATION; ++k)
     {
         ClosestResult closest = simplex.GetClosestPoint(origin);
 
@@ -68,7 +69,8 @@ GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transf
             collide = true;
             break;
         }
-        else if (simplex.VertexCount() != 1)
+
+        if (closest.count < simplex.VertexCount())
         {
             // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
             simplex.Shrink(closest.contributors, closest.count);
@@ -77,25 +79,25 @@ GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transf
         if (simplex.VertexCount() == 2)
         {
             // Avoid floating point error
-            dir = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
-            distance = Dot(dir, origin - simplex.vertices[0].point);
+            direction = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+            distance = Dot(direction, origin - simplex.vertices[0].point);
             if (distance < 0)
             {
                 distance *= -1;
-                dir *= -1;
+                direction *= -1;
             }
         }
         else
         {
-            dir = origin - closest.point;
-            distance = dir.Normalize();
+            direction = origin - closest.point;
+            distance = direction.Normalize();
         }
 
-        support = CSOSupport(a, tfA, b, tfB, dir);
+        support = CSOSupport(a, tfA, b, tfB, direction);
 
         // If the new support point is not further along the search direction than the closest point,
         // two objects are not colliding so you can early return here.
-        if (earlyReturn && distance > Dot(dir, support.point - closest.point))
+        if (earlyReturn && distance > Dot(direction, support.point - closest.point))
         {
             collide = false;
             break;
@@ -112,7 +114,7 @@ GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transf
         }
     }
 
-    return GJKResult{ simplex, distance, collide };
+    return GJKResult{ simplex, direction, distance, collide };
 }
 
 struct EPAResult

@@ -11,8 +11,8 @@ namespace muli
 struct ClosestResult
 {
     Vec2 point;
-    int32 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
-    int32 count;
+    int16 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
+    int16 count;
 };
 
 struct SupportPoint
@@ -33,7 +33,7 @@ public:
     void Clear();
 
     ClosestResult GetClosestPoint(const Vec2& q) const;
-    void Shrink(const int32* indices, int32 count);
+    void Shrink(const int16* indices, int16 count);
 
     SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
@@ -71,7 +71,7 @@ inline bool Simplex::ContainsVertex(const Vec2& vertex) const
     return false;
 }
 
-inline void Simplex::Shrink(const int32* _indices, int32 _count)
+inline void Simplex::Shrink(const int16* _indices, int16 _count)
 {
     SupportPoint tmp[MAX_SIMPLEX_VERTEX_COUNT];
 

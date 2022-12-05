@@ -1,4 +1,5 @@
 #include "muli/distance.h"
+#include "muli/util.h"
 
 namespace muli
 {
@@ -6,6 +7,7 @@ namespace muli
 struct GJKResult
 {
     Simplex simplex;
+    Vec2 direction;
     float distance;
     bool collide;
 };
@@ -35,6 +37,8 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
     {
         features->fA[i] = simplex.vertices[i].pointA;
         features->fB[i] = simplex.vertices[i].pointB;
+        features->fA[i].position += gr.direction * a->GetRadius();
+        features->fB[i].position -= gr.direction * b->GetRadius();
     }
 
     return gr.distance - r2;
