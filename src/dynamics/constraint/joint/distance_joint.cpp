@@ -27,11 +27,11 @@ void DistanceJoint::Prepare()
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
+    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
+    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
 
-    Vec2 pa = bodyA->position + ra;
-    Vec2 pb = bodyB->position + rb;
+    Vec2 pa = bodyA->sweep.c + ra;
+    Vec2 pb = bodyB->sweep.c + rb;
 
     d = pb - pa;
     float currentLength = d.Normalize();

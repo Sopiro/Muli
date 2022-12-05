@@ -10,8 +10,8 @@ void PositionSolver::Prepare(Contact* _contact, uint32 index)
 {
     contact = _contact;
 
-    Transform tA{ contact->b1->position, contact->b1->angle };
-    Transform tB{ contact->b2->position, contact->b2->angle };
+    Transform tA{ contact->b1->sweep.c, contact->b1->sweep.a };
+    Transform tB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
     localPlainPoint = MulT(tA, contact->manifold.referencePoint.position);
     localClipPoint = MulT(tB, contact->manifold.contactPoints[index].position);
@@ -20,8 +20,8 @@ void PositionSolver::Prepare(Contact* _contact, uint32 index)
 
 bool PositionSolver::Solve()
 {
-    Transform tA{ contact->b1->position, contact->b1->angle };
-    Transform tB{ contact->b2->position, contact->b2->angle };
+    Transform tA{ contact->b1->sweep.c, contact->b1->sweep.a };
+    Transform tB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
     Vec2 planePoint = tA * localPlainPoint;
     Vec2 clipPoint = tB * localClipPoint; // penetration point

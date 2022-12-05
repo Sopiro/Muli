@@ -35,8 +35,8 @@ void MotorJoint::Prepare()
     //     [ 0,        -1, 0,        1] // Angle
     // M = (J · M^-1 · J^t)^-1
 
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
+    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
+    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
 
     Mat2 k0;
 
@@ -53,11 +53,11 @@ void MotorJoint::Prepare()
     m0 = k0.GetInverse();
     m1 = 1.0f / k1;
 
-    Vec2 pa = bodyA->position + ra;
-    Vec2 pb = bodyB->position + rb;
+    Vec2 pa = bodyA->sweep.c + ra;
+    Vec2 pb = bodyB->sweep.c + rb;
 
     bias0 = pb - pa + linearOffset;
-    bias1 = bodyB->angle - bodyA->angle - angleOffset - angularOffset;
+    bias1 = bodyB->sweep.a - bodyA->sweep.a - angleOffset - angularOffset;
 
     bias0 *= beta * settings.INV_DT;
     bias1 *= beta * settings.INV_DT;

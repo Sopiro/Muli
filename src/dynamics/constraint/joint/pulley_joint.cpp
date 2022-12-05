@@ -35,11 +35,11 @@ void PulleyJoint::Prepare()
     //   = iMa + iIa * (ra×ua)^2 + ratio*(iMb + iIb * (rb×ub)^2)
     // M = K^-1
 
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
+    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
+    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
 
-    ua = (bodyA->position + ra) - groundAnchorA;
-    ub = (bodyB->position + rb) - groundAnchorB;
+    ua = (bodyA->sweep.c + ra) - groundAnchorA;
+    ub = (bodyB->sweep.c + rb) - groundAnchorB;
 
     float lengthA = ua.Length();
     float lengthB = ub.Length();

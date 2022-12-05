@@ -27,10 +27,8 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , invInertia{ 0.0f }
     , linearDamping{ 0.0f }
     , angularDamping{ 0.0f }
-    , localCenter{ 0.0f }
     , transform{ identity }
-    , position{ 0.0f }
-    , angle{ 0.0f }
+    , sweep{ identity }
     , force{ 0.0f }
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
@@ -323,7 +321,6 @@ void RigidBody::ResetMassData()
     invMass = 0.0f;
     inertia = 0.0f;
     invInertia = 0.0f;
-    localCenter.SetZero();
 
     if (type == static_body || type == kinematic_body)
     {
@@ -334,6 +331,8 @@ void RigidBody::ResetMassData()
     {
         return;
     }
+
+    Vec2 localCenter{ 0.0f };
 
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -352,7 +351,7 @@ void RigidBody::ResetMassData()
     if (inertia > 0.0f && (flag & flag_fixed_rotation) == 0)
     {
         // Center the inertia about the center of mass.
-        inertia -= mass * Length2(localCenter);
+        inertia -= mass * Length2(sweep.localCenter);
         invInertia = 1.0f / inertia;
     }
     else
@@ -361,9 +360,12 @@ void RigidBody::ResetMassData()
         invInertia = 0.0f;
     }
 
-    Vec2 oldPosition = position;
-    position = transform * localCenter;
-    linearVelocity += Cross(angularVelocity, position - oldPosition);
+    Vec2 oldPosition = sweep.c;
+    sweep.localCenter = localCenter;
+    sweep.c = transform * sweep.localCenter;
+    sweep.c0 = sweep.c;
+
+    linearVelocity += Cross(angularVelocity, sweep.c - oldPosition);
 }
 
 } // namespace muli

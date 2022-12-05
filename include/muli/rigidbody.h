@@ -97,6 +97,8 @@ public:
     RigidBody* GetNext() const;
     World* GetWorld() const;
 
+    // Collider factory functions
+
     Collider* CreateCollider(Shape* shape, float density = DEFAULT_DENSITY, const Material& material = default_material);
     void DestoryCollider(Collider* collider);
     Collider* GetColliderList() const;
@@ -177,11 +179,8 @@ protected:
 
     friend class Collider;
 
-    Transform transform;
-
-    Vec2 localCenter; // Center of mass
-    Vec2 position;    // Center of mass in world space
-    float angle;
+    Transform transform; // transform relative to the body origin
+    Sweep sweep;         // the swept motion of rigid body used for CCD
 
     Vec2 force;   // N
     float torque; // N⋅m
@@ -222,7 +221,7 @@ private:
 
 inline const Vec2& RigidBody::GetLocalCenter() const
 {
-    return localCenter;
+    return sweep.localCenter;
 }
 
 inline const Transform& RigidBody::GetTransform() const
@@ -232,10 +231,7 @@ inline const Transform& RigidBody::GetTransform() const
 
 inline void RigidBody::SetTransform(const Transform& _transform)
 {
-    transform = _transform;
-
-    position = transform * localCenter;
-    angle = transform.rotation.GetAngle();
+    SetTransform(_transform.position, _transform.rotation.GetAngle());
 }
 
 inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
@@ -243,8 +239,11 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
     transform.position = _pos;
     transform.rotation = _angle;
 
-    position = transform * localCenter;
-    angle = _angle;
+    sweep.c = transform * sweep.localCenter;
+    sweep.a = _angle;
+
+    sweep.c0 = sweep.c;
+    sweep.a0 = sweep.a;
 }
 
 inline const Vec2& RigidBody::GetPosition() const
@@ -254,14 +253,14 @@ inline const Vec2& RigidBody::GetPosition() const
 
 inline void RigidBody::SetPosition(const Vec2& _pos)
 {
-    transform.position = _pos;
-    position = transform * localCenter;
+    SetPosition(_pos.x, _pos.y);
 }
 
 inline void RigidBody::SetPosition(float x, float y)
 {
     transform.position.Set(x, y);
-    position = transform * localCenter;
+    sweep.c = transform * sweep.localCenter;
+    sweep.c0 = sweep.c;
 }
 
 inline const Rotation& RigidBody::GetRotation() const
@@ -272,37 +271,42 @@ inline const Rotation& RigidBody::GetRotation() const
 inline void RigidBody::SetRotation(const Rotation& _rotation)
 {
     transform.rotation = _rotation;
-    angle = transform.rotation.GetAngle();
+    sweep.a = transform.rotation.GetAngle();
+    sweep.a0 = sweep.a;
 }
 
 inline void RigidBody::SetRotation(float _angle)
 {
     transform.rotation = _angle;
-    angle = _angle;
+    sweep.a = _angle;
+    sweep.a0 = sweep.a;
 }
 
 inline float RigidBody::GetAngle() const
 {
-    return angle;
+    return sweep.a;
 }
 
 inline void RigidBody::Translate(const Vec2& d)
 {
     transform.position += d;
-    position = transform * localCenter;
+    sweep.c = transform * sweep.localCenter;
+    sweep.c0 = sweep.c;
 }
 
 inline void RigidBody::Translate(float dx, float dy)
 {
     transform.position.x += dx;
     transform.position.y += dy;
-    position = transform * localCenter;
+    sweep.c = transform * sweep.localCenter;
+    sweep.c0 = sweep.c;
 }
 
 inline void RigidBody::Rotate(float a)
 {
-    transform.rotation += a;
-    angle += a;
+    sweep.a += a;
+    sweep.a0 = sweep.a;
+    transform.rotation = sweep.a;
 }
 
 inline float RigidBody::GetMass() const
@@ -317,7 +321,7 @@ inline float RigidBody::GetInertia() const
 
 inline float RigidBody::GetInertiaLocalOrigin() const
 {
-    return inertia + mass * Length2(localCenter);
+    return inertia + mass * Length2(sweep.localCenter);
 }
 
 inline void RigidBody::Awake()
@@ -326,7 +330,7 @@ inline void RigidBody::Awake()
     flag &= ~Flag::flag_sleeping;
 }
 
-inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& _force)
+inline void RigidBody::AddForce(const Vec2& localPoint, const Vec2& _force)
 {
     if (type != dynamic_body)
     {
@@ -334,7 +338,7 @@ inline void RigidBody::AddForce(const Vec2& localPosition, const Vec2& _force)
     }
 
     force += _force;
-    torque += Cross(localPosition - localCenter, _force);
+    torque += Cross(localPoint - sweep.localCenter, _force);
     Awake();
 }
 
@@ -489,8 +493,8 @@ inline int32 RigidBody::GetColliderCount() const
 
 inline void RigidBody::SynchronizeTransform()
 {
-    transform.rotation = angle;
-    transform.position = position - (transform.rotation * localCenter);
+    transform.rotation = sweep.a;
+    transform.position = sweep.c - (transform.rotation * sweep.localCenter);
 }
 
 } // namespace muli

@@ -5,14 +5,12 @@ set(HEADER_FILES
     ../include/muli/contact_manager.h
 
     ../include/muli/collision.h
-    ../include/muli/distance.h
     ../include/muli/simplex.h
     ../include/muli/polytope.h
     ../include/muli/contact_point.h
     ../include/muli/edge.h
     ../include/muli/collision_filter.h
-
-    ../include/muli/block_solver.h
+    ../include/muli/distance.h
 
     ../include/muli/rigidbody.h
 
@@ -40,6 +38,7 @@ set(HEADER_FILES
     ../include/muli/contact.h
     ../include/muli/position_solver.h
     ../include/muli/contact_solver.h
+    ../include/muli/block_solver.h
 
     ../include/muli/island.h
     ../include/muli/world.h

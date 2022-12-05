@@ -15,8 +15,8 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
     p = contact->manifold.contactPoints[index].position;
     type = contactType;
 
-    Vec2 ra = p - c->b1->position;
-    Vec2 rb = p - c->b2->position;
+    Vec2 ra = p - c->b1->sweep.c;
+    Vec2 rb = p - c->b2->sweep.c;
 
     j.va = -dir;
     j.wa = -Cross(ra, dir);

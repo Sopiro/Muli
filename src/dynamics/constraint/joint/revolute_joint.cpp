@@ -24,8 +24,8 @@ void RevoluteJoint::Prepare()
     // J = [-I, -skew(ra), I, skew(rb)]
     // M = (J · M^-1 · J^t)^-1
 
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
+    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
+    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
 
     Mat2 k;
 
@@ -41,8 +41,8 @@ void RevoluteJoint::Prepare()
 
     m = k.GetInverse();
 
-    Vec2 pa = bodyA->position + ra;
-    Vec2 pb = bodyB->position + rb;
+    Vec2 pa = bodyA->sweep.c + ra;
+    Vec2 pb = bodyB->sweep.c + rb;
 
     Vec2 error = pb - pa;
 

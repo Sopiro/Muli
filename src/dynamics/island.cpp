@@ -139,8 +139,8 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->position += b->linearVelocity * world->settings.DT;
-        b->angle += b->angularVelocity * world->settings.DT;
+        b->sweep.c += b->linearVelocity * world->settings.DT;
+        b->sweep.a += b->angularVelocity * world->settings.DT;
 
         if (!TestPointInsideAABB(world->settings.VALID_REGION, b->GetPosition()))
         {

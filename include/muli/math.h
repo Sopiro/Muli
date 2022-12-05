@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include <float.h>
 #include <limits>
 #include <math.h>
@@ -547,18 +548,6 @@ struct Rotation
         c = cosf(_angle);
     }
 
-    void operator+=(float _angle)
-    {
-        s = sinf(_angle);
-        c = cosf(_angle);
-    }
-
-    void operator-=(float _angle)
-    {
-        s = sinf(_angle);
-        c = cosf(_angle);
-    }
-
     void operator=(float _angle)
     {
         s = sinf(_angle);
@@ -613,6 +602,34 @@ struct Transform
         position.SetZero();
         rotation.SetIdentity();
     }
+};
+
+// Describes the swept motion of rigid body
+struct Sweep
+{
+    Sweep() = default;
+
+    Sweep(Identity)
+        : localCenter{ 0.0f }
+        , c0{ 0.0f }
+        , c{ 0.0f }
+        , a0{ 0.0f }
+        , a{ 0.0f }
+        , alpha0{ 0.0f }
+    {
+    }
+
+    void GetTransform(float beta, Transform* transform) const;
+
+    void Advance(float alpha);
+
+    void Normalize();
+
+    Vec2 localCenter;
+    Vec2 c0, c;
+    float a0, a;
+
+    float alpha0;
 };
 
 // Vec2 functions begin
@@ -1177,6 +1194,33 @@ inline Vec3 PolarToCart(float phi, float theta, float r)
     float z = Cos(phi);
 
     return Vec3{ x, y, z } * r;
+}
+
+inline void Sweep::GetTransform(float beta, Transform* transform) const
+{
+    transform->position = (1.0f - beta) * c0 + beta * c;
+    float angle = (1.0f - beta) * a0 + beta * a;
+    transform->rotation = angle;
+
+    // Shift to origin
+    transform->position -= transform->rotation * localCenter;
+}
+
+inline void Sweep::Advance(float alpha)
+{
+    assert(alpha0 < 1.0f);
+    float beta = (alpha - alpha0) / (1.0f - alpha0);
+    c0 += beta * (c - c0);
+    a0 += beta * (a - a0);
+    alpha0 = alpha;
+}
+
+inline void Sweep::Normalize()
+{
+    float pi2 = 2.0f * MULI_PI;
+    float d = pi2 * Floor(a0 / pi2);
+    a0 -= d;
+    a -= d;
 }
 
 } // namespace muli

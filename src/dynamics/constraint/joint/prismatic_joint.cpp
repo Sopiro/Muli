@@ -40,10 +40,10 @@ void PrismaticJoint::Prepare()
     //     [   0,          -1,   0,    1] // Angle
     // M = (J · M^-1 · J^t)^-1
 
-    Vec2 ra = bodyA->GetRotation() * (localAnchorA - bodyA->localCenter);
-    Vec2 rb = bodyB->GetRotation() * (localAnchorB - bodyB->localCenter);
-    Vec2 pa = bodyA->position + ra;
-    Vec2 pb = bodyB->position + rb;
+    Vec2 ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
+    Vec2 rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
+    Vec2 pa = bodyA->sweep.c + ra;
+    Vec2 pb = bodyB->sweep.c + rb;
     Vec2 d = pb - pa;
 
     // tangent/perpendicular vector

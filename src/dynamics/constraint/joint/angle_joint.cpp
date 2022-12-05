@@ -9,7 +9,7 @@ AngleJoint::AngleJoint(
     : Joint(angle_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
-    angleOffset = bodyB->angle - bodyA->angle;
+    angleOffset = bodyB->sweep.a - bodyA->sweep.a;
 }
 
 void AngleJoint::Prepare()
@@ -25,7 +25,7 @@ void AngleJoint::Prepare()
         m = 1.0f / k;
     }
 
-    float error = bodyB->angle - bodyA->angle - angleOffset;
+    float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
 
     bias = error * beta * settings.INV_DT;
 

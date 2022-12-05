@@ -19,5 +19,6 @@
 #include <vector>
 
 #include "math.h"
+#include "types.h"
 
 #define muliAssert(A) assert(A)
