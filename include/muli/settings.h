@@ -34,28 +34,28 @@ namespace muli
 // Simulation settings
 struct WorldSettings
 {
-    bool APPLY_GRAVITY = true;
-    Vec2 GRAVITY{ 0.0f, -10.0f };
+    bool apply_gravity = true;
+    Vec2 gravity{ 0.0f, -10.0f };
 
-    bool WARM_STARTING = true;
-    float POSITION_CORRECTION_BETA = 0.2f; // 0.0 ~ 1.0
+    bool warm_starting = true;
+    float position_correction = 0.2f; // 0.0 ~ 1.0
 
-    float PENETRATION_SLOP = 0.005f; // meter
-    float RESTITUTION_SLOP = 0.2f;   // m/s
+    float penetration_slop = 0.005f; // meter
+    float restitution_slop = 0.2f;   // m/s
 
-    bool BLOCK_SOLVE = true;
-    uint32 VELOCITY_SOLVE_ITERATIONS = 8;
-    uint32 POSITION_SOLVE_ITERATIONS = 3;
+    bool block_solve = true;
+    uint32 velocity_iterations = 8;
+    uint32 position_iterations = 3;
 
-    bool SLEEPING = true;
-    float SLEEPING_TRESHOLD = 0.5f;                                                       // second
-    float REST_LINEAR_TOLERANCE = 0.01f * 0.01f;                                          // (m/s)^2
-    float REST_ANGULAR_TOLERANCE = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
+    bool sleeping = true;
+    float sleeping_treshold = 0.5f;                                                        // second
+    float rest_linear_tolerance = 0.01f * 0.01f;                                           // (m/s)^2
+    float reset_angular_tolerance = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
 
-    AABB VALID_REGION{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
+    AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 
-    mutable float DT = 1.0f / 60.0f;
-    mutable float INV_DT = 60.0f;
+    mutable float dt = 1.0f / 60.0f;
+    mutable float inv_dt = 60.0f;
 };
 
 } // namespace muli

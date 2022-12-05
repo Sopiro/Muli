@@ -53,7 +53,7 @@ void Joint::ComputeBetaAndGamma()
     float omega = 2.0f * MULI_PI * frequency;
     float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
     float k = jointMass * omega * omega;               // Spring constant
-    float h = settings.DT;
+    float h = settings.dt;
 
     beta = h * k / (d + h * k);
     gamma = 1.0f / ((d + h * k) * h);

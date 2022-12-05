@@ -86,7 +86,7 @@ void RigidBodyRenderer::Render()
             mesh->Draw(GL_TRIANGLES);
         }
 
-        if (!(body->UserFlag & UserFlag::REMOVE_OUTLINE))
+        if (!(body->UserFlag & UserFlag::remove_outline))
         {
             glLineWidth(1.0f);
             shader->SetColor({ 0, 0, 0 });

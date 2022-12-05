@@ -44,7 +44,7 @@ bool PositionSolver::Solve()
     // clang-format on
 
     // Constraint (bias)
-    float c = Min(contact->settings.POSITION_CORRECTION_BETA * (separation + contact->settings.PENETRATION_SLOP), 0.0f);
+    float c = Min(contact->settings.position_correction * (separation + contact->settings.penetration_slop), 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
@@ -57,7 +57,7 @@ bool PositionSolver::Solve()
 
     // We can't expect separation >= -PENETRATION_SLOP
     // because we don't push the separation above -PENETRATION_SLOP
-    return -separation <= contact->settings.PENETRATION_SLOP * 4.0f;
+    return -separation <= contact->settings.penetration_slop * 4.0f;
 }
 
 } // namespace muli

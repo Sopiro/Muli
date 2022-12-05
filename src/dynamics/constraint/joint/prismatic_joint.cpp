@@ -64,9 +64,9 @@ void PrismaticJoint::Prepare()
 
     bias.x = Dot(d, t);
     bias.y = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
-    bias *= beta * settings.INV_DT;
+    bias *= beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

@@ -27,8 +27,8 @@ World::~World() noexcept
 
 void World::Step(float dt)
 {
-    settings.DT = dt;
-    settings.INV_DT = 1.0f / dt;
+    settings.dt = dt;
+    settings.inv_dt = 1.0f / dt;
 
     contactManager.Step(dt);
 
@@ -106,13 +106,13 @@ void World::Step(float dt)
                 stack[stackPointer++] = je->other;
             }
 
-            if (t->resting > settings.SLEEPING_TRESHOLD)
+            if (t->resting > settings.sleeping_treshold)
             {
                 restingBodies++;
             }
         }
 
-        island.sleeping = settings.SLEEPING && (restingBodies == island.bodyCount);
+        island.sleeping = settings.sleeping && (restingBodies == island.bodyCount);
         island.Solve();
         island.Clear();
         restingBodies = 0;

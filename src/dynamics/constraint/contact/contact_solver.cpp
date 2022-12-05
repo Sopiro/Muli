@@ -43,7 +43,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
             bias += c->restitution * normalVelocity;
         }
 #else
-        bias += c->restitution * Min(normalVelocity + c->settings.RESTITUTION_SLOP, 0.0f);
+        bias += c->restitution * Min(normalVelocity + c->settings.restitution_slop, 0.0f);
 #endif
     }
     else
@@ -61,7 +61,7 @@ void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Typ
 
     m = k > 0.0f ? 1.0f / k : 0.0f;
 
-    if (c->settings.WARM_STARTING)
+    if (c->settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

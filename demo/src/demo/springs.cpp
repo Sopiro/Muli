@@ -9,7 +9,7 @@ public:
     Springs(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = false;
+        settings.apply_gravity = false;
 
         RigidBody* g = world->CreateBox(0.3f, 6, RigidBody::Type::static_body);
         g->SetPosition(0.0f, 3.6f);

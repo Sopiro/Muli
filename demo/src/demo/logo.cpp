@@ -52,7 +52,7 @@ public:
             b = world->CreateRandomConvexPolygon(size, 6, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);
             b->SetRotation(angle);
-            b->UserFlag |= UserFlag::RENDER_POLYGON_RADIUS;
+            b->UserFlag |= UserFlag::render_polygon_radius;
         }
     }
 

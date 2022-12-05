@@ -41,7 +41,7 @@ void BroadPhase::UpdateDynamicTree(float dt)
             AABB treeAABB = tree.nodes[node].aabb;
             AABB aabb = collider->GetAABB();
 
-            if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.SLEEPING_TRESHOLD)
+            if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.sleeping_treshold)
             {
                 continue;
             }

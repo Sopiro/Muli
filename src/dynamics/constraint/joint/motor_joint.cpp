@@ -59,10 +59,10 @@ void MotorJoint::Prepare()
     bias0 = pb - pa + linearOffset;
     bias1 = bodyB->sweep.a - bodyA->sweep.a - angleOffset - angularOffset;
 
-    bias0 *= beta * settings.INV_DT;
-    bias1 *= beta * settings.INV_DT;
+    bias0 *= beta * settings.inv_dt;
+    bias1 *= beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(linearImpulseSum, angularImpulseSum);
     }
@@ -83,7 +83,7 @@ void MotorJoint::SolveVelocityConstraint()
 
     // Clamp linear impulse
     {
-        float maxLinearImpulse = maxForce * settings.DT;
+        float maxLinearImpulse = maxForce * settings.dt;
         Vec2 oldLinearImpulse = linearImpulseSum;
         linearImpulseSum += lambda0;
 
@@ -98,7 +98,7 @@ void MotorJoint::SolveVelocityConstraint()
 
     // Clamp angular impulse
     {
-        float maxAngularImpulse = maxTorque * settings.DT;
+        float maxAngularImpulse = maxTorque * settings.dt;
         float oldAngularImpulse = angularImpulseSum;
         angularImpulseSum += lambda1;
 

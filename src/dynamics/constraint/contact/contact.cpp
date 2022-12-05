@@ -19,7 +19,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 
     manifold.numContacts = 0;
 
-    beta = settings.POSITION_CORRECTION_BETA;
+    beta = settings.position_correction;
     restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
@@ -113,7 +113,7 @@ void Contact::Prepare()
         positionSolvers[i].Prepare(this, i);
     }
 
-    if (manifold.numContacts == 2 && settings.BLOCK_SOLVE)
+    if (manifold.numContacts == 2 && settings.block_solve)
     {
         blockSolver.Prepare(this);
     }
@@ -127,7 +127,7 @@ void Contact::SolveVelocityConstraint()
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
-    if (manifold.numContacts == 1 || !settings.BLOCK_SOLVE || (blockSolver.enabled == false))
+    if (manifold.numContacts == 1 || !settings.block_solve || (blockSolver.enabled == false))
     {
         for (uint32 i = 0; i < manifold.numContacts; ++i)
         {

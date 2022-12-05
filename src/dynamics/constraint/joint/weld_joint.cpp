@@ -62,9 +62,9 @@ void WeldJoint::Prepare()
     float error2 = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
 
     bias.Set(error01.x, error01.y, error2);
-    bias *= beta * settings.INV_DT;
+    bias *= beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

@@ -41,9 +41,9 @@ void GrabJoint::Prepare()
 
     Vec2 error = p - target;
 
-    bias = error * beta * settings.INV_DT;
+    bias = error * beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

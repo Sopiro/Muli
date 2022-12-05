@@ -10,7 +10,7 @@ public:
     Cloth(Game& game)
         : Demo(game)
     {
-        options.drawOutlineOnly = true;
+        options.draw_outline_only = true;
 
         const uint32 rows = 24;
         const uint32 cols = (uint32)(rows * 1.4f);
@@ -81,7 +81,7 @@ public:
 
     ~Cloth()
     {
-        options.drawOutlineOnly = false;
+        options.draw_outline_only = false;
     }
 
     static Demo* Create(Game& game)

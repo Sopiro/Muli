@@ -27,9 +27,9 @@ void AngleJoint::Prepare()
 
     float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
 
-    bias = error * beta * settings.INV_DT;
+    bias = error * beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

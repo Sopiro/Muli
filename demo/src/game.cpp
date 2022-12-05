@@ -97,34 +97,34 @@ void Game::UpdateUI()
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
-                    ImGui::Checkbox("Camera reset", &options.resetCamera);
-                    ImGui::Checkbox("Draw outline only", &options.drawOutlineOnly);
-                    ImGui::Checkbox("Show BVH", &options.showBVH);
-                    ImGui::Checkbox("Show AABB", &options.showAABB);
-                    ImGui::Checkbox("Show contact point", &options.showContactPoint);
-                    ImGui::Checkbox("Show contact normal", &options.showContactNormal);
+                    ImGui::Checkbox("Camera reset", &options.reset_camera);
+                    ImGui::Checkbox("Draw outline only", &options.draw_outline_only);
+                    ImGui::Checkbox("Show BVH", &options.show_bvh);
+                    ImGui::Checkbox("Show AABB", &options.show_aabb);
+                    ImGui::Checkbox("Show contact point", &options.show_contact_point);
+                    ImGui::Checkbox("Show contact normal", &options.show_contact_normal);
                 }
 
                 if (ImGui::CollapsingHeader("Simulation settings"))
                 {
                     WorldSettings& settings = demo->GetWorldSettings();
 
-                    if (ImGui::Checkbox("Apply gravity", &settings.APPLY_GRAVITY)) demo->GetWorld().Awake();
+                    if (ImGui::Checkbox("Apply gravity", &settings.apply_gravity)) demo->GetWorld().Awake();
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
-                        int velIterations = settings.VELOCITY_SOLVE_ITERATIONS;
+                        int velIterations = settings.velocity_iterations;
                         ImGui::SliderInt("Velocity", &velIterations, 0, 50);
-                        settings.VELOCITY_SOLVE_ITERATIONS = static_cast<uint32>(velIterations);
+                        settings.velocity_iterations = static_cast<uint32>(velIterations);
 
                         ImGui::SetNextItemWidth(120);
-                        int posIterations = settings.POSITION_SOLVE_ITERATIONS;
+                        int posIterations = settings.position_iterations;
                         ImGui::SliderInt("Position", &posIterations, 0, 50);
-                        settings.POSITION_SOLVE_ITERATIONS = static_cast<uint32>(posIterations);
+                        settings.position_iterations = static_cast<uint32>(posIterations);
                     }
-                    ImGui::Checkbox("Contact block solve", &settings.BLOCK_SOLVE);
-                    ImGui::Checkbox("Warm starting", &settings.WARM_STARTING);
-                    ImGui::Checkbox("Sleeping", &settings.SLEEPING);
+                    ImGui::Checkbox("Contact block solve", &settings.block_solve);
+                    ImGui::Checkbox("Warm starting", &settings.warm_starting);
+                    ImGui::Checkbox("Sleeping", &settings.sleeping);
                 }
 
                 World& world = demo->GetWorld();
@@ -185,7 +185,7 @@ void Game::Render()
 {
     Camera& camera = demo->GetCamera();
     rRenderer.SetViewMatrix(camera.GetCameraMatrix());
-    rRenderer.SetDrawOutlined(options.drawOutlineOnly);
+    rRenderer.SetDrawOutlined(options.draw_outline_only);
     rRenderer.Render();
 
     for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())
@@ -315,11 +315,11 @@ void Game::Render()
         }
     }
 
-    if (options.showBVH || options.showAABB)
+    if (options.show_bvh || options.show_aabb)
     {
         const AABBTree& tree = demo->GetWorld().GetBVH();
         tree.Traverse([&](const Node* n) -> void {
-            if (!options.showBVH && !n->isLeaf) return;
+            if (!options.show_bvh && !n->isLeaf) return;
             lines.push_back(n->aabb.min);
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
@@ -331,7 +331,7 @@ void Game::Render()
         });
     }
 
-    if (options.showContactPoint || options.showContactNormal)
+    if (options.show_contact_point || options.show_contact_normal)
     {
         const Contact* c = demo->GetWorld().GetContacts();
 
@@ -349,11 +349,11 @@ void Game::Render()
             {
                 const Vec2& cp = m.contactPoints[j].position;
 
-                if (options.showContactPoint)
+                if (options.show_contact_point)
                 {
                     points.push_back(cp);
                 }
-                if (options.showContactNormal)
+                if (options.show_contact_normal)
                 {
                     lines.push_back(cp);
                     lines.push_back(cp + m.contactNormal * 0.15f);
@@ -412,7 +412,7 @@ void Game::InitDemo(uint32 index)
 
     if (demo)
     {
-        restoreCameraPosition = !options.resetCamera;
+        restoreCameraPosition = !options.reset_camera;
         prevCamera = demo->GetCamera();
         delete demo;
     }

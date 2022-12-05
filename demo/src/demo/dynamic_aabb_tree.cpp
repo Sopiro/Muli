@@ -13,9 +13,9 @@ public:
     DynamicAABBTree(Game& game)
         : Demo(game)
     {
-        settings.APPLY_GRAVITY = false;
-        settings.SLEEPING = false;
-        options.showBVH = true;
+        settings.apply_gravity = false;
+        settings.sleeping = false;
+        options.show_bvh = true;
 
         float size = 0.2f;
         float range = 3.0f;
@@ -86,7 +86,7 @@ public:
 
     ~DynamicAABBTree()
     {
-        options.showBVH = false;
+        options.show_bvh = false;
     }
 
     static Demo* Create(Game& game)

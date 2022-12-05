@@ -9,18 +9,18 @@ struct DebugOptions
 {
     bool pause = false;
     bool step = false;
-    bool drawOutlineOnly = false;
-    bool showBVH = false;
-    bool showAABB = false;
-    bool showContactPoint = false;
-    bool showContactNormal = false;
-    bool resetCamera = true;
+    bool draw_outline_only = false;
+    bool show_bvh = false;
+    bool show_aabb = false;
+    bool show_contact_point = false;
+    bool show_contact_normal = false;
+    bool reset_camera = true;
 };
 
 enum UserFlag : uint32
 {
-    REMOVE_OUTLINE = 1 << 1,
-    RENDER_POLYGON_RADIUS = 1 << 2,
+    remove_outline = 1 << 1,
+    render_polygon_radius = 1 << 2,
 };
 
 } // namespace muli

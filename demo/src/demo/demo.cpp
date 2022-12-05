@@ -11,7 +11,7 @@ Demo::Demo(Game& _game)
 {
     dt = 1.0f / Window::Get().GetRefreshRate();
     // dt = 1.0f / 60.0f;
-    settings.VALID_REGION.min.y = -20.0f;
+    settings.world_bounds.min.y = -20.0f;
 
     world = new World(settings);
 
@@ -109,7 +109,7 @@ void Demo::EnableBodyCreate()
             b->SetPosition(mStart);
 
             Vec2 f = mStart - cursorPos;
-            f *= settings.INV_DT * b->GetMass() * 3.0f;
+            f *= settings.inv_dt * b->GetMass() * 3.0f;
             b->SetForce(f);
             create = false;
             game.RegisterRenderBody(b);
@@ -301,7 +301,7 @@ bool Demo::EnableAddForce()
             {
                 Vec2 mStartGlobal = ft->GetTransform() * mStartLocal;
                 Vec2 f = mStartGlobal - cursorPos;
-                f *= settings.INV_DT * ft->GetMass() * 3.0f;
+                f *= settings.inv_dt * ft->GetMass() * 3.0f;
 
                 ft->AddForce(mStartLocal, f);
             }
@@ -315,16 +315,16 @@ bool Demo::EnableAddForce()
 
 void Demo::EnableKeyboardShortcut()
 {
-    if (Input::IsKeyPressed(GLFW_KEY_V)) options.showBVH = !options.showBVH;
-    if (Input::IsKeyPressed(GLFW_KEY_B)) options.showAABB = !options.showAABB;
-    if (Input::IsKeyPressed(GLFW_KEY_P)) options.showContactPoint = !options.showContactPoint;
-    if (Input::IsKeyPressed(GLFW_KEY_N)) options.showContactNormal = !options.showContactNormal;
-    if (Input::IsKeyPressed(GLFW_KEY_C)) options.resetCamera = !options.resetCamera;
+    if (Input::IsKeyPressed(GLFW_KEY_V)) options.show_bvh = !options.show_bvh;
+    if (Input::IsKeyPressed(GLFW_KEY_B)) options.show_aabb = !options.show_aabb;
+    if (Input::IsKeyPressed(GLFW_KEY_P)) options.show_contact_point = !options.show_contact_point;
+    if (Input::IsKeyPressed(GLFW_KEY_N)) options.show_contact_normal = !options.show_contact_normal;
+    if (Input::IsKeyPressed(GLFW_KEY_C)) options.reset_camera = !options.reset_camera;
     if (Input::IsKeyPressed(GLFW_KEY_SPACE)) options.pause = !options.pause;
     if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) options.step = true;
     if (Input::IsKeyPressed(GLFW_KEY_G))
     {
-        settings.APPLY_GRAVITY = !settings.APPLY_GRAVITY;
+        settings.apply_gravity = !settings.apply_gravity;
         world->Awake();
     }
 }

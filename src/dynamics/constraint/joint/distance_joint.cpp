@@ -49,9 +49,9 @@ void DistanceJoint::Prepare()
     }
 
     bias = currentLength - length;
-    bias *= beta * settings.INV_DT;
+    bias *= beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

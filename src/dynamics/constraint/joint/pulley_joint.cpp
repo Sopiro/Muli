@@ -44,7 +44,7 @@ void PulleyJoint::Prepare()
     float lengthA = ua.Length();
     float lengthB = ub.Length();
 
-    if (lengthA > settings.PENETRATION_SLOP)
+    if (lengthA > settings.penetration_slop)
     {
         ua *= 1.0f / lengthA;
     }
@@ -53,7 +53,7 @@ void PulleyJoint::Prepare()
         ua.SetZero();
     }
 
-    if (lengthB > settings.PENETRATION_SLOP)
+    if (lengthB > settings.penetration_slop)
     {
         ub *= 1.0f / lengthB;
     }
@@ -77,9 +77,9 @@ void PulleyJoint::Prepare()
     }
 
     bias = length - (lengthA + lengthB);
-    bias *= beta * settings.INV_DT;
+    bias *= beta * settings.inv_dt;
 
-    if (settings.WARM_STARTING)
+    if (settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

@@ -31,7 +31,7 @@ Island::~Island()
 void Island::Solve()
 {
     bool awakeIsland = false;
-    float dt = world->settings.DT;
+    float dt = world->settings.dt;
 
     // Integrate velocities, yield tentative velocities that possibly violate the constraint
     for (uint32 i = 0; i < bodyCount; ++i)
@@ -50,8 +50,8 @@ void Island::Solve()
             b->flag &= ~RigidBody::Flag::flag_sleeping;
         }
 
-        if (((b->angularVelocity * b->angularVelocity < world->settings.REST_ANGULAR_TOLERANCE) &&
-             (Dot(b->linearVelocity, b->linearVelocity) < world->settings.REST_LINEAR_TOLERANCE)) &&
+        if (((b->angularVelocity * b->angularVelocity < world->settings.reset_angular_tolerance) &&
+             (Dot(b->linearVelocity, b->linearVelocity) < world->settings.rest_linear_tolerance)) &&
             (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
         {
             b->resting += dt;
@@ -65,7 +65,7 @@ void Island::Solve()
         if (b->type == RigidBody::Type::dynamic_body)
         {
             // Integrate velocites
-            b->linearVelocity += b->invMass * dt * (b->force + world->settings.APPLY_GRAVITY * world->settings.GRAVITY * b->mass);
+            b->linearVelocity += b->invMass * dt * (b->force + world->settings.apply_gravity * world->settings.gravity * b->mass);
             b->angularVelocity += b->invInertia * dt * b->torque;
 
             // Apply damping (found in box2d)
@@ -99,7 +99,7 @@ void Island::Solve()
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
-    for (uint32 i = 0; i < world->settings.VELOCITY_SOLVE_ITERATIONS; ++i)
+    for (uint32 i = 0; i < world->settings.velocity_iterations; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -139,16 +139,16 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->sweep.c += b->linearVelocity * world->settings.DT;
-        b->sweep.a += b->angularVelocity * world->settings.DT;
+        b->sweep.c += b->linearVelocity * world->settings.dt;
+        b->sweep.a += b->angularVelocity * world->settings.dt;
 
-        if (!TestPointInsideAABB(world->settings.VALID_REGION, b->GetPosition()))
+        if (!TestPointInsideAABB(world->settings.world_bounds, b->GetPosition()))
         {
             world->BufferDestroy(b);
         }
     }
 
-    for (uint32 i = 0; i < world->settings.POSITION_SOLVE_ITERATIONS; ++i)
+    for (uint32 i = 0; i < world->settings.position_iterations; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;

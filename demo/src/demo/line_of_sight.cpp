@@ -42,7 +42,7 @@ public:
                 else
                 {
                     b = world->CreateRandomConvexPolygon(0.15f, 0, RigidBody::Type::dynamic_body, 0.05f);
-                    b->UserFlag = UserFlag::RENDER_POLYGON_RADIUS;
+                    b->UserFlag = UserFlag::render_polygon_radius;
                 }
 
                 float y = (i - count / 2.0f) / count * size + size / 2.0f + 0.5f;
@@ -52,7 +52,7 @@ public:
             }
         }
 
-        settings.APPLY_GRAVITY = false;
+        settings.apply_gravity = false;
     }
 
     void Step() override

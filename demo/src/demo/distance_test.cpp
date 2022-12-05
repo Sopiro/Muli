@@ -11,12 +11,12 @@ public:
     DistanceTest(Game& game)
         : Demo(game)
     {
-        options.drawOutlineOnly = true;
-        options.showContactNormal = true;
-        options.showContactPoint = true;
-        settings.APPLY_GRAVITY = false;
-        settings.VELOCITY_SOLVE_ITERATIONS = 0;
-        settings.POSITION_SOLVE_ITERATIONS = 0;
+        options.draw_outline_only = true;
+        options.show_contact_normal = true;
+        options.show_contact_point = true;
+        settings.apply_gravity = false;
+        settings.velocity_iterations = 0;
+        settings.position_iterations = 0;
 
         float size = 1.0f;
         float range = size * 0.7f;
@@ -85,9 +85,9 @@ public:
 
     ~DistanceTest()
     {
-        options.drawOutlineOnly = false;
-        options.showContactNormal = false;
-        options.showContactPoint = false;
+        options.draw_outline_only = false;
+        options.show_contact_normal = false;
+        options.show_contact_point = false;
     }
 
     static Demo* Create(Game& game)
