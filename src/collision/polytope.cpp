@@ -3,7 +3,7 @@
 namespace muli
 {
 
-ClosestEdgeInfo Polytope::GetClosestEdge() const
+PolytopeEdge Polytope::GetClosestEdge() const
 {
     int32 minIndex = 0;
     float minDistance = FLT_MAX;
@@ -35,7 +35,7 @@ ClosestEdgeInfo Polytope::GetClosestEdge() const
         }
     }
 
-    return ClosestEdgeInfo{ minIndex, minDistance, minNormal };
+    return PolytopeEdge{ minIndex, minDistance, minNormal };
 }
 
 } // namespace muli

@@ -126,28 +126,27 @@ struct EPAResult
 static EPAResult EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex)
 {
     Polytope polytope{ simplex };
+    PolytopeEdge edge{ 0, FLT_MAX, Vec2{ 0.0f } };
 
-    ClosestEdgeInfo closestEdge{ 0, FLT_MAX, Vec2{ 0.0f } };
-
-    for (uint32 i = 0; i < EPA_MAX_ITERATION; ++i)
+    for (int32 k = 0; k < EPA_MAX_ITERATION; ++k)
     {
-        closestEdge = polytope.GetClosestEdge();
-        Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, closestEdge.normal).point;
-        float newDistance = Dot(closestEdge.normal, supportPoint);
+        edge = polytope.GetClosestEdge();
+        Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, edge.normal).point;
+        float newDistance = Dot(edge.normal, supportPoint);
 
-        if (Abs(closestEdge.distance - newDistance) > EPA_TOLERANCE)
+        if (Abs(edge.distance - newDistance) > EPA_TOLERANCE)
         {
             // Insert the support vertex so that it expands our polytope
-            polytope.vertices.Insert(closestEdge.index + 1, supportPoint);
+            polytope.vertices.Insert(edge.index + 1, supportPoint);
         }
         else
         {
-            // If you didn't expand edge, it means you reached the closest outer edge
+            // We finally reached the closest outer edge!
             break;
         }
     }
 
-    return EPAResult{ closestEdge.normal, closestEdge.distance };
+    return EPAResult{ edge.normal, edge.distance };
 }
 
 static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint)

@@ -38,7 +38,7 @@ inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir)
 
 inline ContactPoint Circle::Support(const Vec2& localDir) const
 {
-    return ContactPoint{ Vec2{ 0.0f, 0.0f }, -1 };
+    return ContactPoint{ Vec2{ 0.0f, 0.0f }, 0 };
 }
 
 inline void Circle::ComputeMass(float density, MassData* outMassData) const

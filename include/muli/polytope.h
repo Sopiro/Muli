@@ -7,7 +7,7 @@
 namespace muli
 {
 
-struct ClosestEdgeInfo
+struct PolytopeEdge
 {
     int32 index;
     float distance;
@@ -17,12 +17,12 @@ struct ClosestEdgeInfo
 class Polytope
 {
 public:
-    GrowableArray<Vec2, 8> vertices;
-
     Polytope(const Simplex& simplex);
 
     // Returns the edge closest to the Origin (0, 0)
-    ClosestEdgeInfo GetClosestEdge() const;
+    PolytopeEdge GetClosestEdge() const;
+
+    GrowableArray<Vec2, 8> vertices;
 };
 
 inline Polytope::Polytope(const Simplex& simplex)
