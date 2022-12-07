@@ -20,36 +20,24 @@ struct SupportPoint
     ContactPoint pointA;
     ContactPoint pointB;
     Vec2 point; // pointA - pointB
+    float weight;
 };
 
-class Simplex
+struct Simplex
 {
-public:
     Simplex() = default;
 
     void AddVertex(const SupportPoint& vertex);
-    bool ContainsVertex(const Vec2& vertex) const;
-    int32 VertexCount() const;
-    void Clear();
+    void Save(Vec2* saveVertices, int32* saveCount);
+    void Advance(const Vec2& q);
+    Vec2 GetSearchDirection() const;
+    Vec2 GetClosestPoint() const;
 
-    ClosestResult GetClosestPoint(const Vec2& q) const;
-    void Shrink(const int16* indices, int16 count);
-
+    int32 count = 0;
     SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
 
-private:
-    int32 count = 0;
+    float divisor;
 };
-
-inline int32 Simplex::VertexCount() const
-{
-    return count;
-}
-
-inline void Simplex::Clear()
-{
-    count = 0;
-}
 
 inline void Simplex::AddVertex(const SupportPoint& vertex)
 {
@@ -58,30 +46,60 @@ inline void Simplex::AddVertex(const SupportPoint& vertex)
     vertices[count++] = vertex;
 }
 
-inline bool Simplex::ContainsVertex(const Vec2& vertex) const
+inline void Simplex::Save(Vec2* saveVertices, int32* saveCount)
 {
+    *saveCount = count;
     for (int32 i = 0; i < count; ++i)
     {
-        if (vertex == vertices[i].point)
-        {
-            return true;
-        }
+        saveVertices[i] = vertices[i].point;
     }
-
-    return false;
 }
 
-inline void Simplex::Shrink(const int16* _indices, int16 _count)
+inline Vec2 Simplex::GetSearchDirection() const
 {
-    SupportPoint tmp[MAX_SIMPLEX_VERTEX_COUNT];
-
-    for (int32 i = 0; i < _count; ++i)
+    switch (count)
     {
-        tmp[i] = vertices[_indices[i]];
-    }
+    case 1:
+        return -vertices[0].point;
 
-    memcpy(vertices, tmp, _count * sizeof(SupportPoint));
-    count = _count;
+    case 2:
+    {
+        // Triple product: a⨯b⨯c = b(a⋅c) - c(a⋅b)
+        // In this case, ab⨯ao⨯ab = ao(ab⋅ab) - ab(ab⋅ao)
+        Vec2 ab = vertices[1].point - vertices[0].point;
+        Vec2 ao = -vertices[0].point;
+
+        float d1 = Dot(ab, ab);
+        float d2 = Dot(ab, ao);
+
+        return ao * d1 - ab * d2;
+    }
+    default:
+        muliAssert(false);
+        return Vec2{ 0.0f };
+    }
+}
+
+inline Vec2 Simplex::GetClosestPoint() const
+{
+    switch (count)
+    {
+    case 1:
+        return vertices[0].point;
+
+    case 2:
+    {
+        float d = 1.0f / divisor;
+        return (d * vertices[0].weight) * vertices[0].point + (d * vertices[1].weight) * vertices[1].point;
+    }
+    case 3:
+        return Vec2{ 0.0f };
+
+    default:
+        muliAssert(false);
+        return Vec2{ 0.0f };
+        break;
+    }
 }
 
 } // namespace muli

@@ -46,75 +46,61 @@ struct GJKResult
     Simplex simplex;
     Vec2 direction;
     float distance;
-    bool collide;
 };
 
-GJKResult GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, bool earlyReturn)
+bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, GJKResult* result)
 {
-    Vec2 direction{ 1.0f, 0.0f }; // Random initial search direction
-
     Simplex simplex;
-    float distance = 0.0f;
-    bool collide = false;
 
+    // Random initial search direction (prefer direction along gravity)
+    Vec2 direction{ 0.0f, 1.0f };
     SupportPoint support = CSOSupport(a, tfA, b, tfB, direction);
     simplex.AddVertex(support);
 
+    Vec2 save[MAX_SIMPLEX_VERTEX_COUNT];
+    int32 saveCount;
+
     for (int32 k = 0; k < GJK_MAX_ITERATION; ++k)
     {
-        ClosestResult closest = simplex.GetClosestPoint(origin);
+        simplex.Save(save, &saveCount);
+        simplex.Advance(origin);
 
-        if (Dist2(closest.point, origin) < GJK_TOLERANCE)
+        if (simplex.count == 3)
         {
-            collide = true;
             break;
         }
 
-        if (closest.count < simplex.VertexCount())
-        {
-            // Rebuild the simplex with vertices that are used(involved) to calculate closest distance
-            simplex.Shrink(closest.contributors, closest.count);
-        }
+        direction = simplex.GetSearchDirection();
 
-        if (simplex.VertexCount() == 2)
+        // Simplex contains origin
+        if (Dot(direction, direction) == 0.0f)
         {
-            // Avoid floating point error
-            direction = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
-            distance = Dot(direction, origin - simplex.vertices[0].point);
-            if (distance < 0)
-            {
-                distance *= -1;
-                direction *= -1;
-            }
-        }
-        else
-        {
-            direction = origin - closest.point;
-            distance = direction.Normalize();
+            break;
         }
 
         support = CSOSupport(a, tfA, b, tfB, direction);
 
-        // If the new support point is not further along the search direction than the closest point,
-        // two objects are not colliding so you can early return here.
-        if (earlyReturn && distance > Dot(direction, support.point - closest.point))
+        // Check duplicate vertices
+        for (int32 i = 0; i < saveCount; ++i)
         {
-            collide = false;
-            break;
+            if (save[i] == support.point)
+            {
+                goto end;
+            }
         }
 
-        if (simplex.ContainsVertex(support.point))
-        {
-            collide = false;
-            break;
-        }
-        else
-        {
-            simplex.AddVertex(support);
-        }
+        simplex.AddVertex(support);
     }
 
-    return GJKResult{ simplex, direction, distance, collide };
+end:
+    Vec2 closest = simplex.GetClosestPoint();
+    float distance = Length(closest);
+
+    result->simplex = simplex;
+    result->direction = direction;
+    result->distance = distance;
+
+    return distance < GJK_TOLERANCE;
 }
 
 struct EPAResult
@@ -123,7 +109,8 @@ struct EPAResult
     float penetrationDepth;
 };
 
-static EPAResult EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex)
+static void EPA(
+    const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
 {
     Polytope polytope{ simplex };
     PolytopeEdge edge{ 0, FLT_MAX, Vec2{ 0.0f } };
@@ -146,7 +133,8 @@ static EPAResult EPA(const Shape* a, const Transform& tfA, const Shape* b, const
         }
     }
 
-    return EPAResult{ edge.normal, edge.distance };
+    result->contactNormal = edge.normal;
+    result->penetrationDepth = edge.distance;
 }
 
 static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint)
@@ -437,14 +425,15 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
 static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    GJKResult gjkResult = GJK(a, tfA, b, tfB, false);
-    Simplex& simplex = gjkResult.simplex;
+    GJKResult gjkResult;
+    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
 
+    Simplex& simplex = gjkResult.simplex;
     float r2 = a->GetRadius() + b->GetRadius();
 
-    if (gjkResult.collide == false)
+    if (collide == false)
     {
-        switch (simplex.VertexCount())
+        switch (simplex.count)
         {
         case 1: // vertex vs. vertex collision
             if (gjkResult.distance < r2)
@@ -478,10 +467,6 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
                 return false;
             }
         case 2: // vertex vs. edge collision
-
-            [[fallthrough]];
-
-        case 3: // Simplex vertices are in the collinear position
             if (gjkResult.distance < r2)
             {
                 if (manifold == nullptr)
@@ -503,6 +488,9 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
             {
                 return false;
             }
+
+        default:
+            muliAssert(false);
         }
     }
     else
@@ -513,18 +501,18 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
         }
 
         // If the gjk termination simplex has vertices less than 3, expand to full simplex
-        // Because EPA needs a full n-simplex to get started (actually it's pretty rare case)
-        switch (simplex.VertexCount())
+        // We need a full n-simplex to start EPA (actually it's pretty rare case)
+        switch (simplex.count)
         {
         case 1:
         {
-            SupportPoint randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ 1.0f, 0.0f });
-            if (randomSupport.point == simplex.vertices[0].point)
+            SupportPoint support = CSOSupport(a, tfA, b, tfB, Vec2{ 1.0f, 0.0f });
+            if (support.point == simplex.vertices[0].point)
             {
-                randomSupport = CSOSupport(a, tfA, b, tfB, Vec2{ -1.0f, 0.0f });
+                support = CSOSupport(a, tfA, b, tfB, Vec2{ -1.0f, 0.0f });
             }
 
-            simplex.AddVertex(randomSupport);
+            simplex.AddVertex(support);
         }
 
             [[fallthrough]];
@@ -532,20 +520,21 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
         case 2:
         {
             Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
-            SupportPoint normalSupport = CSOSupport(a, tfA, b, tfB, normal);
+            SupportPoint support = CSOSupport(a, tfA, b, tfB, normal);
 
-            if (simplex.ContainsVertex(normalSupport.point))
+            if (simplex.vertices[0].point == support.point || simplex.vertices[1].point == support.point)
             {
                 simplex.AddVertex(CSOSupport(a, tfA, b, tfB, -normal));
             }
             else
             {
-                simplex.AddVertex(normalSupport);
+                simplex.AddVertex(support);
             }
         }
         }
 
-        EPAResult epaResult = EPA(a, tfA, b, tfB, simplex);
+        EPAResult epaResult;
+        EPA(a, tfA, b, tfB, simplex, &epaResult);
 
         manifold->contactNormal = epaResult.contactNormal;
         manifold->penetrationDepth = epaResult.penetrationDepth;

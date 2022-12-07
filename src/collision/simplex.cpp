@@ -4,47 +4,48 @@
 namespace muli
 {
 
-ClosestResult Simplex::GetClosestPoint(const Vec2& q) const
+void Simplex::Advance(const Vec2& q)
 {
-    ClosestResult res;
-
     switch (count)
     {
     case 1: // 0-Simplex: Point
     {
-        res.point = vertices[0].point;
-        res.count = 1;
-        res.contributors[0] = 0;
-
-        break;
+        vertices[0].weight = 1.0f;
+        return;
     }
     case 2: // 1-Simplex: Line segment
     {
         Vec2 a = vertices[0].point;
         Vec2 b = vertices[1].point;
-        UV w = ComputeWeights(a, b, q);
+        UV w{ Dot(q - b, a - b), Dot(q - a, b - a) };
 
-        if (w.v <= 0)
+        // Region A
+        if (w.v <= 0.0f)
         {
-            res.point = a;
-            res.count = 1;
-            res.contributors[0] = 0;
-        }
-        else if (w.v >= 1)
-        {
-            res.point = b;
-            res.count = 1;
-            res.contributors[0] = 1;
-        }
-        else
-        {
-            res.point = LerpVector(a, b, w);
-            res.count = 2;
-            res.contributors[0] = 0;
-            res.contributors[1] = 1;
+            count = 1;
+            vertices[0].weight = 1.0f;
+            divisor = 1.0f;
+            return;
         }
 
-        break;
+        // Region B
+        if (w.u <= 0.0f)
+        {
+            count = 1;
+            vertices[0] = vertices[1];
+            vertices[0].weight = 1.0f;
+            divisor = 1.0f;
+            return;
+        }
+
+        // Region AB
+
+        count = 2;
+        vertices[0].weight = w.u;
+        vertices[1].weight = w.v;
+        Vec2 e = b - a;
+        divisor = Dot(e, e);
+        return;
     }
     case 3: // 2-Simplex: Triangle
     {
@@ -52,105 +53,92 @@ ClosestResult Simplex::GetClosestPoint(const Vec2& q) const
         Vec2 b = vertices[1].point;
         Vec2 c = vertices[2].point;
 
-        UV wab = ComputeWeights(a, b, q);
-        UV wbc = ComputeWeights(b, c, q);
-        UV wca = ComputeWeights(c, a, q);
+        // UV wab = ComputeWeights(a, b, q);
+        UV wab{ Dot(q - b, a - b), Dot(q - a, b - a) };
+        UV wbc{ Dot(q - c, b - c), Dot(q - b, c - b) };
+        UV wca{ Dot(q - a, c - a), Dot(q - c, a - c) };
 
-        if (wca.u <= 0 && wab.v <= 0) // A area
+        // Region A
+        if (wca.u <= 0.0f && wab.v <= 0.0f)
         {
-            res.point = a;
-            res.count = 1;
-            res.contributors[0] = 0;
-            break;
-        }
-        else if (wab.u <= 0 && wbc.v <= 0) // B area
-        {
-            res.point = b;
-            res.count = 1;
-            res.contributors[0] = 1;
-            break;
-        }
-        else if (wbc.u <= 0 && wca.v <= 0) // C area
-        {
-            res.point = c;
-            res.count = 1;
-            res.contributors[0] = 2;
-            break;
+            count = 1;
+            vertices[0].weight = 1.0f;
+            divisor = 1.0f;
+            return;
         }
 
-        float area = Cross(b - a, c - a);
+        // Region B
+        if (wab.u <= 0.0f && wbc.v <= 0.0f)
+        {
+            count = 1;
+            vertices[0] = vertices[1];
+            vertices[0].weight = 1.0f;
+            divisor = 1.0f;
+            return;
+        }
+
+        // Region C
+        if (wbc.u <= 0.0f && wca.v <= 0.0f)
+        {
+            count = 1;
+            vertices[0] = vertices[2];
+            vertices[0].weight = 1.0f;
+            divisor = 1.0f;
+            return;
+        }
 
         // If area == 0, 3 vertices are in the collinear position
+        float area = Cross(b - a, c - a);
 
         float u = Cross(b - q, c - q);
         float v = Cross(c - q, a - q);
         float w = Cross(a - q, b - q);
 
-        if (wab.u > 0 && wab.v > 0 && w * area <= 0) // On the AB edge
+        // Region AB
+        if (wab.u > 0.0f && wab.v > 0.0f && w * area <= 0.0f)
         {
-            if (area != 0.0f)
-            {
-                res.count = 2;
-                res.contributors[0] = 0;
-                res.contributors[1] = 1;
-            }
-            else
-            {
-                res.count = 3;
-                res.contributors[0] = 0;
-                res.contributors[1] = 1;
-                res.contributors[2] = 2;
-            }
-
-            res.point = LerpVector(a, b, wab);
-        }
-        else if (wbc.u > 0 && wbc.v > 0 && u * area <= 0) // On the BC edge
-        {
-            if (area != 0.0f)
-            {
-                res.count = 2;
-                res.contributors[0] = 1;
-                res.contributors[1] = 2;
-            }
-            else
-            {
-                res.count = 3;
-                res.contributors[0] = 1;
-                res.contributors[1] = 2;
-                res.contributors[2] = 0;
-            }
-
-            res.point = LerpVector(b, c, wbc);
-        }
-        else if (wca.u > 0 && wca.v > 0 && v * area <= 0) // On the CA edge
-        {
-            if (area != 0.0f)
-            {
-                res.count = 2;
-                res.contributors[0] = 2;
-                res.contributors[1] = 0;
-            }
-            else
-            {
-                res.count = 3;
-                res.contributors[0] = 2;
-                res.contributors[1] = 0;
-                res.contributors[2] = 1;
-            }
-
-            res.point = LerpVector(c, a, wca);
-        }
-        else // Inside the triangle
-        {
-            res.point = q;
-            res.count = 0;
+            count = 2;
+            vertices[0].weight = wab.u;
+            vertices[1].weight = wab.v;
+            Vec2 e = b - a;
+            divisor = Dot(e, e);
+            return;
         }
 
-        break;
+        // Region BC
+        if (wbc.u > 0.0f && wbc.v > 0.0f && u * area <= 0.0f)
+        {
+            count = 2;
+            vertices[0] = vertices[1];
+            vertices[1] = vertices[2];
+            vertices[0].weight = wbc.u;
+            vertices[1].weight = wbc.v;
+            Vec2 e = c - b;
+            divisor = Dot(e, e);
+            return;
+        }
+
+        // Region CA
+        if (wca.u > 0.0f && wca.v > 0.0f && v * area <= 0.0f)
+        {
+            count = 2;
+            vertices[1] = vertices[0];
+            vertices[0] = vertices[2];
+            vertices[0].weight = wca.u;
+            vertices[1].weight = wca.v;
+            Vec2 e = a - c;
+            divisor = Dot(e, e);
+            return;
+        }
+
+        // Region ABC
+        count = 3;
+        vertices[0].weight = u;
+        vertices[1].weight = v;
+        vertices[2].weight = w;
+        divisor = 1.0f;
     }
     };
-
-    return res;
 }
 
 } // namespace muli
