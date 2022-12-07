@@ -7,7 +7,6 @@
 #include "muli/polytope.h"
 #include "muli/rigidbody.h"
 #include "muli/shape.h"
-#include "muli/simplex.h"
 
 namespace muli
 {
@@ -40,13 +39,6 @@ static SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape
 
     return supportPoint;
 }
-
-struct GJKResult
-{
-    Simplex simplex;
-    Vec2 direction;
-    float distance;
-};
 
 bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, GJKResult* result)
 {
@@ -97,20 +89,13 @@ end:
     float distance = Length(closest);
 
     result->simplex = simplex;
-    result->direction = direction;
+    result->direction = direction.Normalized();
     result->distance = distance;
 
     return distance < GJK_TOLERANCE;
 }
 
-struct EPAResult
-{
-    Vec2 contactNormal;
-    float penetrationDepth;
-};
-
-static void EPA(
-    const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
+void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
 {
     Polytope polytope{ simplex };
     PolytopeEdge edge{ 0, FLT_MAX, Vec2{ 0.0f } };

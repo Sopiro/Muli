@@ -4,6 +4,7 @@
 #include "contact_point.h"
 #include "edge.h"
 #include "settings.h"
+#include "simplex.h"
 
 /*
  *           \        /         ↑
@@ -55,6 +56,24 @@ typedef bool DetectionFunction(const Shape*, const Transform&,
 bool DetectCollision(const Shape* a, const Transform& tfA,
                      const Shape* b, const Transform& tfB,
                      ContactManifold* manifold = nullptr);
+
+struct GJKResult
+{
+    Simplex simplex;
+    Vec2 direction;
+    float distance;
+};
+
+bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, GJKResult* result);
+
+struct EPAResult
+{
+    Vec2 contactNormal;
+    float penetrationDepth;
+};
+
+void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result);
+
 // clang-format on
 
 } // namespace muli

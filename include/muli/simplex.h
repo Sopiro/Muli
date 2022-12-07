@@ -32,6 +32,7 @@ struct Simplex
     void Advance(const Vec2& q);
     Vec2 GetSearchDirection() const;
     Vec2 GetClosestPoint() const;
+    void GetWitnessPoint(Vec2* pointA, Vec2* pointB);
 
     int32 count = 0;
     SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
@@ -98,7 +99,42 @@ inline Vec2 Simplex::GetClosestPoint() const
     default:
         muliAssert(false);
         return Vec2{ 0.0f };
-        break;
+    }
+}
+
+inline void Simplex::GetWitnessPoint(Vec2* pointA, Vec2* pointB)
+{
+    switch (count)
+    {
+    case 1:
+    {
+        *pointA = vertices[0].pointA.position;
+        *pointB = vertices[0].pointB.position;
+        return;
+    }
+
+    case 2:
+    {
+        float d = 1.0f / divisor;
+        *pointA = (d * vertices[0].weight) * vertices[0].pointA.position + (d * vertices[1].weight) * vertices[1].pointA.position;
+        *pointB = (d * vertices[0].weight) * vertices[0].pointB.position + (d * vertices[1].weight) * vertices[1].pointB.position;
+        return;
+    }
+
+    case 3:
+    {
+        // clang-format off
+        float d = 1.0f / divisor;
+        *pointA = (d * vertices[0].weight) * vertices[0].pointA.position +
+                  (d * vertices[1].weight) * vertices[1].pointA.position +
+                  (d * vertices[2].weight) * vertices[2].pointA.position;
+        *pointB = *pointA;
+        return;
+        // clang-format on
+    }
+
+    default:
+        assert(false);
     }
 }
 
