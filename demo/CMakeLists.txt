@@ -80,7 +80,7 @@ set(DEMO_SOURCE_FILES
     src/demo/contact_callbacks.cpp
     src/demo/logo.cpp
     src/demo/breakable.cpp
-    src/demo/distance_test.cpp
+    src/demo/compute_distance_shape.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

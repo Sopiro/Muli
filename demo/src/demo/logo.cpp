@@ -62,6 +62,6 @@ public:
     }
 };
 
-DemoFrame logo{ "Box stacking", Logo::Create };
+DemoFrame logo{ "Logo", Logo::Create };
 
 } // namespace muli
