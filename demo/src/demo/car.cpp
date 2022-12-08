@@ -50,7 +50,7 @@ public:
 
         float motorMaxForce = 300.0f;
         float motorMaxTorque = 0.0f;
-        float motorFrequency = 20.0f;
+        float motorFrequency = 30.0f;
         float motorDampingRatio = 1.0f;
         float motorMass = wheel1->GetMass();
 

@@ -65,7 +65,7 @@ public:
 
             {
                 float armMotorTorque = rightUpperArm->GetMass() * 2.0f * Sqrt(scale);
-                float armMotorFrequency = 15.0f;
+                float armMotorFrequency = 30.0f;
                 float armMotorDampingRatio = 1.0f;
 
                 world->CreateMotorJoint(body, rightUpperArm, Vec2{ headX + armStartX, headY - armStartY }, motorForce,
@@ -112,7 +112,7 @@ public:
 
             {
                 float legMotorTorque = rightUpperLeg->GetMass() * 3.0f * Sqrt(scale);
-                float legMotorFrequency = 15.0f;
+                float legMotorFrequency = 30.0f;
                 float legMotorDampingRatio = 1.0f;
 
                 world->CreateMotorJoint(body, rightUpperLeg, Vec2{ headX + legStartX, headY - legStartY }, motorForce,

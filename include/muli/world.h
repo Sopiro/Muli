@@ -102,7 +102,7 @@ public:
     RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA,
                                        RigidBody* bodyB,
                                        const Vec2& anchor,
-                                       float frequency = 10.0f,
+                                       float frequency = 15.0f,
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
@@ -110,28 +110,28 @@ public:
                                        const Vec2& anchorA,
                                        const Vec2& anchorB,
                                        float length = -1.0f,
-                                       float frequency = 10.0f,
+                                       float frequency = 15.0f,
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
     DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
                                        RigidBody* bodyB,
                                        float length = -1.0f,
-                                       float frequency = 10.0f,
+                                       float frequency = 15.0f,
                                        float dampingRatio = 1.0f,
                                        float jointMass = 1.0f);
     AngleJoint* CreateAngleJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = 15.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     WeldJoint* CreateWeldJoint(
         RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     LineJoint* CreateLineJoint(RigidBody* bodyA,
                                RigidBody* bodyB,
                                Vec2 anchorA,
                                Vec2 dir,
-                               float frequency = 10.0f,
+                               float frequency = 15.0f,
                                float dampingRatio = 1.0f,
                                float jointMass = 1.0f);
     LineJoint* CreateLineJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+        RigidBody* bodyA, RigidBody* bodyB, float frequency = 15.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
     PrismaticJoint* CreatePrismaticJoint(RigidBody* bodyA,
                                          RigidBody* bodyB,
                                          const Vec2& anchor,

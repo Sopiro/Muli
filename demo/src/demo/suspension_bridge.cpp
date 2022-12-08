@@ -25,7 +25,6 @@ public:
         pillar->SetPosition(xStart, yStart / 2 + 0.2f);
 
         RigidBody* b1 = world->CreateBox(sizeX, sizeY);
-        b1->GetColliderList()->SetMass(10.0f);
         b1->SetPosition(xStart + sizeX / 2 + pillarWidth / 2 + gap, yStart + groundStart);
 
         Joint* j;
@@ -49,7 +48,6 @@ public:
         for (int i = 1; i + 1 < xStart * -2 / (sizeX + gap); ++i)
         {
             RigidBody* b2 = world->CreateBox(sizeX, sizeY);
-            b2->GetColliderList()->SetMass(10.0f);
             b2->SetPosition(xStart + sizeX / 2.0f + pillarWidth / 2.0f + gap + (gap + sizeX) * i, yStart + groundStart);
 
             if (revoluteBridge)

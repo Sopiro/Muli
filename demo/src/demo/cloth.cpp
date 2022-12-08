@@ -49,12 +49,12 @@ public:
                 if (j + 1 < rows)
                 {
                     RigidBody* c10 = circles[j + 1][i];
-                    world->CreateDistanceJoint(c00, c10, -1.0f, 1.0f, 0.7f, 1.0f);
+                    world->CreateDistanceJoint(c00, c10, -1.0f, 2.0f, 0.7f, 1.0f);
                 }
                 if (i + 1 < cols)
                 {
                     RigidBody* c01 = circles[j][i + 1];
-                    world->CreateDistanceJoint(c00, c01, -1.0f, 1.0f, 0.7f, 1.0f);
+                    world->CreateDistanceJoint(c00, c01, -1.0f, 2.0f, 0.7f, 1.0f);
                 }
             }
         }
@@ -73,10 +73,10 @@ public:
         w3->SetPosition(mr->GetPosition() + Vec2{ 0.0f, gap });
         w4->SetPosition(tr->GetPosition() + Vec2{ gap, gap });
 
-        world->CreateDistanceJoint(w1, tl, -1.0f, 10.0f, 1.0f, tl->GetMass());
-        world->CreateDistanceJoint(w2, ml, -1.0f, 10.0f, 1.0f, ml->GetMass());
-        world->CreateDistanceJoint(w3, mr, -1.0f, 10.0f, 1.0f, mr->GetMass());
-        world->CreateDistanceJoint(w4, tr, -1.0f, 10.0f, 1.0f, tr->GetMass());
+        world->CreateDistanceJoint(w1, tl, -1.0f, 15.0f, 1.0f, tl->GetMass());
+        world->CreateDistanceJoint(w2, ml, -1.0f, 15.0f, 1.0f, ml->GetMass());
+        world->CreateDistanceJoint(w3, mr, -1.0f, 15.0f, 1.0f, mr->GetMass());
+        world->CreateDistanceJoint(w4, tr, -1.0f, 15.0f, 1.0f, tr->GetMass());
     }
 
     ~Cloth()
