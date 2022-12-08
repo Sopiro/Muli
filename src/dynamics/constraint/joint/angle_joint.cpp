@@ -14,7 +14,9 @@ AngleJoint::AngleJoint(
 
 void AngleJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [0 -1 0 1]
     // M = (J · M^-1 · J^t)^-1
 

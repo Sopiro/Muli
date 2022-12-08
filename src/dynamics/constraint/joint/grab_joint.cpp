@@ -20,7 +20,9 @@ GrabJoint::GrabJoint(RigidBody* _body,
 
 void GrabJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [I, skew(r)]
     // M = (J · M^-1 · J^t)^-1
 

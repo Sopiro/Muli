@@ -30,7 +30,9 @@ MotorJoint::MotorJoint(RigidBody* _bodyA,
 
 void MotorJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
     //     [ 0,        -1, 0,        1] // Angle
     // M = (J · M^-1 · J^t)^-1

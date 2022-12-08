@@ -31,7 +31,9 @@ LineJoint::LineJoint(RigidBody* _bodyA,
 
 void LineJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [-t^t, -(ra + d)×t, t^t, rb×t]
     // M = (J · M^-1 · J^t)^-1
 

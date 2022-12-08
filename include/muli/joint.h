@@ -85,6 +85,11 @@ public:
     float GetJointMass() const;
     void SetJointMass(float jointMass);
 
+    // 0.0 < Frequency
+    // 0.0 <= Damping ratio <= 1.0
+    // 0.0 < Joint mass
+    void SetParameters(float frequency, float dampingRatio, float jointMass);
+
     bool IsSolid() const;
     Joint::Type GetType() const;
 
@@ -95,6 +100,8 @@ public:
 
 protected:
     Joint::Type type;
+
+    void ComputeBetaAndGamma();
 
 private:
     // Following parameters are used to soften the joint
@@ -107,12 +114,6 @@ private:
 
     JointEdge nodeA;
     JointEdge nodeB;
-
-    // 0 < Frequency
-    // 0 <= Damping ratio <= 1
-    // 0 < Joint mass
-    void SetProperties(float _frequency, float _dampingRatio, float _jointMass);
-    void ComputeBetaAndGamma();
 };
 
 inline float Joint::GetFrequency() const
@@ -122,7 +123,7 @@ inline float Joint::GetFrequency() const
 
 inline void Joint::SetFrequency(float _frequency)
 {
-    SetProperties(_frequency, dampingRatio, jointMass);
+    SetParameters(_frequency, dampingRatio, jointMass);
 }
 
 inline float Joint::GetDampingRatio() const
@@ -132,7 +133,7 @@ inline float Joint::GetDampingRatio() const
 
 inline void Joint::SetDampingRatio(float _dampingRatio)
 {
-    SetProperties(frequency, _dampingRatio, jointMass);
+    SetParameters(frequency, _dampingRatio, jointMass);
 }
 
 inline float Joint::GetJointMass() const
@@ -142,7 +143,7 @@ inline float Joint::GetJointMass() const
 
 inline void Joint::SetJointMass(float _jointMass)
 {
-    SetProperties(frequency, dampingRatio, _jointMass);
+    SetParameters(frequency, dampingRatio, _jointMass);
 }
 
 inline bool Joint::IsSolid() const

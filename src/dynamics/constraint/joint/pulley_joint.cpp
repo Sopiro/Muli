@@ -29,7 +29,9 @@ PulleyJoint::PulleyJoint(RigidBody* _bodyA,
 
 void PulleyJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = -[ua, ra×ua, r*ub, r*rb×ub]
     // K = (J · M^-1 · J^t)
     //   = iMa + iIa * (ra×ua)^2 + ratio*(iMb + iIb * (rb×ub)^2)

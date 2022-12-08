@@ -23,7 +23,9 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
 
 void DistanceJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 

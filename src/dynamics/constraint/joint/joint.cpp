@@ -15,7 +15,7 @@ Joint::Joint(Joint::Type _type,
     , type{ _type }
     , OnDestroy{ nullptr }
 {
-    SetProperties(_frequency, _dampingRatio, _jointMass);
+    SetParameters(_frequency, _dampingRatio, _jointMass);
 }
 
 Joint::~Joint() noexcept
@@ -26,37 +26,40 @@ Joint::~Joint() noexcept
     }
 }
 
-void Joint::SetProperties(float _frequency, float _dampingRatio, float _jointMass)
+void Joint::SetParameters(float _frequency, float _dampingRatio, float _jointMass)
 {
-    // If the frequency is less than or equal to zero, make this joint solid
     if (_frequency > 0.0f)
     {
         frequency = _frequency;
         dampingRatio = Clamp<float>(_dampingRatio, 0.0f, 1.0f);
         jointMass = Clamp<float>(_jointMass, 0.0f, FLT_MAX);
-
-        ComputeBetaAndGamma();
     }
     else
     {
         frequency = -1.0f;
         dampingRatio = 0.0f;
         jointMass = 0.0f;
-
-        beta = 1.0f;
-        gamma = 0.0f;
     }
 }
 
 void Joint::ComputeBetaAndGamma()
 {
-    float omega = 2.0f * MULI_PI * frequency;
-    float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
-    float k = jointMass * omega * omega;               // Spring constant
-    float h = settings.dt;
+    // If the frequency is less than or equal to zero, make this joint solid
+    if (frequency < 0.0f)
+    {
+        beta = 1.0f;
+        gamma = 0.0f;
+    }
+    else
+    {
+        float omega = 2.0f * MULI_PI * frequency;
+        float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
+        float k = jointMass * omega * omega;               // Spring constant
+        float h = settings.dt;
 
-    beta = h * k / (d + h * k);
-    gamma = 1.0f / ((d + h * k) * h);
+        beta = h * k / (d + h * k);
+        gamma = 1.0f / ((d + h * k) * h);
+    }
 }
 
 } // namespace muli

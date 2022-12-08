@@ -20,7 +20,9 @@ RevoluteJoint::RevoluteJoint(RigidBody* _bodyA,
 
 void RevoluteJoint::Prepare()
 {
-    // Calculate Jacobian J and effective mass M
+    ComputeBetaAndGamma();
+
+    // Compute Jacobian J and effective mass M
     // J = [-I, -skew(ra), I, skew(rb)]
     // M = (J · M^-1 · J^t)^-1
 
