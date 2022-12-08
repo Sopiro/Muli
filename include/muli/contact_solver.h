@@ -30,7 +30,7 @@ public:
         tangent
     };
 
-    void Prepare(Contact* contact, uint32 index, const Vec2& dir, Type contactType);
+    void Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:

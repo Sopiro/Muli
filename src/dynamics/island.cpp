@@ -6,7 +6,7 @@
 namespace muli
 {
 
-Island::Island(World* _world, uint32 _bodyCapacity, uint32 _contactCapacity, uint32 _jointCapacity)
+Island::Island(World* _world, int32 _bodyCapacity, int32 _contactCapacity, int32 _jointCapacity)
     : world{ _world }
     , bodyCapacity{ _bodyCapacity }
     , contactCapacity{ _contactCapacity }
@@ -34,7 +34,7 @@ void Island::Solve()
     float dt = world->settings.dt;
 
     // Integrate velocities, yield tentative velocities that possibly violate the constraint
-    for (uint32 i = 0; i < bodyCount; ++i)
+    for (int32 i = 0; i < bodyCount; ++i)
     {
         RigidBody* b = bodies[i];
 
@@ -88,38 +88,38 @@ void Island::Solve()
     }
 
     // Prepare constraints for solving step
-    for (uint32 i = 0; i < contactCount; ++i)
+    for (int32 i = 0; i < contactCount; ++i)
     {
         contacts[i]->Prepare();
     }
-    for (uint32 i = 0; i < jointCount; ++i)
+    for (int32 i = 0; i < jointCount; ++i)
     {
         joints[i]->Prepare();
     }
 
     // Iteratively solve the violated velocity constraint
     // Solving contacts backward converge fast
-    for (uint32 i = 0; i < world->settings.velocity_iterations; ++i)
+    for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = contactCount; j > 0; j--)
+        for (int32 j = contactCount; j > 0; j--)
         {
             contacts[j - 1]->SolveVelocityConstraint();
         }
 #endif
-        for (uint32 j = jointCount; j > 0; j--)
+        for (int32 j = jointCount; j > 0; j--)
         {
             joints[j - 1]->SolveVelocityConstraint();
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = 0; j < contactCount; ++j)
+        for (int32 j = 0; j < contactCount; ++j)
         {
             contacts[j]->SolveVelocityConstraint();
         }
 #endif
-        for (uint32 j = 0; j < jointCount; ++j)
+        for (int32 j = 0; j < jointCount; ++j)
         {
             joints[j]->SolveVelocityConstraint();
         }
@@ -127,7 +127,7 @@ void Island::Solve()
     }
 
     // Update positions using corrected velocities (Semi-implicit euler integration)
-    for (uint32 i = 0; i < bodyCount; ++i)
+    for (int32 i = 0; i < bodyCount; ++i)
     {
         RigidBody* b = bodies[i];
 
@@ -148,30 +148,30 @@ void Island::Solve()
         }
     }
 
-    for (uint32 i = 0; i < world->settings.position_iterations; ++i)
+    for (int32 i = 0; i < world->settings.position_iterations; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;
 
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = contactCount; j > 0; j--)
+        for (int32 j = contactCount; j > 0; j--)
         {
             contactSolved &= contacts[j - 1]->SolvePositionConstraint();
         }
 #endif
-        for (uint32 j = jointCount; j > 0; j--)
+        for (int32 j = jointCount; j > 0; j--)
         {
             jointSolved &= joints[j - 1]->SolvePositionConstraint();
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
-        for (uint32 j = 0; j < contactCount; ++j)
+        for (int32 j = 0; j < contactCount; ++j)
         {
             contactSolved &= contacts[j]->SolvePositionConstraint();
         }
 #endif
-        for (uint32 j = 0; j < jointCount; ++j)
+        for (int32 j = 0; j < jointCount; ++j)
         {
             jointSolved &= joints[j]->SolvePositionConstraint();
         }

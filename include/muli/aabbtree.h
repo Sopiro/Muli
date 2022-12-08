@@ -26,7 +26,7 @@ inline float SAH(const AABB& aabb)
 
 struct Node
 {
-    uint32 id;
+    int32 id;
     AABB aabb;
     bool isLeaf;
 
@@ -76,7 +76,7 @@ public:
 private:
     friend class BroadPhase;
 
-    uint32 nodeID;
+    int32 nodeID;
 
     Node* nodes;
     int32 root;

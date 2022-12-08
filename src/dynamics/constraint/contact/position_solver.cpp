@@ -6,7 +6,7 @@
 namespace muli
 {
 
-void PositionSolver::Prepare(Contact* _contact, uint32 index)
+void PositionSolver::Prepare(Contact* _contact, int32 index)
 {
     contact = _contact;
 

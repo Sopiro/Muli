@@ -10,7 +10,7 @@ class Island
 private:
     friend class World;
 
-    Island(World* world, uint32 bodyCapacity, uint32 contactCapacity, uint32 jointCapacity);
+    Island(World* world, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity);
     ~Island();
 
     void Add(RigidBody* body);
@@ -27,12 +27,12 @@ private:
     Contact** contacts;
     Joint** joints;
 
-    uint32 bodyCapacity;
-    uint32 contactCapacity;
-    uint32 jointCapacity;
-    uint32 bodyCount;
-    uint32 contactCount;
-    uint32 jointCount;
+    int32 bodyCapacity;
+    int32 contactCapacity;
+    int32 jointCapacity;
+    int32 bodyCount;
+    int32 contactCount;
+    int32 jointCount;
 
     bool sleeping;
 };

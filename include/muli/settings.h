@@ -44,8 +44,8 @@ struct WorldSettings
     float restitution_slop = 0.2f;   // m/s
 
     bool block_solve = true;
-    uint32 velocity_iterations = 8;
-    uint32 position_iterations = 3;
+    int32 velocity_iterations = 8;
+    int32 position_iterations = 3;
 
     bool sleeping = true;
     float sleeping_treshold = 0.5f;                                                        // second

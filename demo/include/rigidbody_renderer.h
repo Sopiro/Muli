@@ -76,7 +76,7 @@ inline void RigidBodyRenderer::Unregister(Collider* collider)
 
 inline void RigidBodyRenderer::Unregister(const std::vector<Collider*>& colliders)
 {
-    for (uint32 i = 0; i < colliders.size(); ++i)
+    for (size_t i = 0; i < colliders.size(); ++i)
     {
         Unregister(colliders[i]);
     }

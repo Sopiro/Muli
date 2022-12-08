@@ -108,8 +108,8 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
         return vertices;
     }
 
-    uint32 index = 0;
-    for (uint32 i = 1; i < vertices.size(); ++i)
+    size_t index = 0;
+    for (size_t i = 1; i < vertices.size(); ++i)
     {
         if (vertices[i].y < vertices[index].y)
         {
@@ -140,7 +140,7 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     muliAssert(sorted[0] == bottom);
 
     // Discard overlapped bottom vertices
-    uint32 i = 0;
+    size_t i = 0;
     while (i < sorted.size())
     {
         Vec2& v0 = sorted[i];

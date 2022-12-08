@@ -52,12 +52,12 @@ struct Vec2
         y = _y;
     }
 
-    float operator[](uint32 i) const
+    float operator[](int32 i) const
     {
         return (&x)[i];
     }
 
-    float& operator[](uint32 i)
+    float& operator[](int32 i)
     {
         return (&x)[i];
     }
@@ -180,12 +180,12 @@ struct Vec3
         z = _z;
     }
 
-    float operator[](uint32 i) const
+    float operator[](int32 i) const
     {
         return (&x)[i];
     }
 
-    float& operator[](uint32 i)
+    float& operator[](int32 i)
     {
         return (&x)[i];
     }
@@ -295,7 +295,7 @@ struct Vec4
     {
     }
 
-    float& operator[](uint32 i)
+    float& operator[](int32 i)
     {
         return (&x)[i];
     }
@@ -328,7 +328,7 @@ struct Mat2
     {
     }
 
-    Vec2& operator[](uint32 i)
+    Vec2& operator[](int32 i)
     {
         return (&ex)[i];
     }
@@ -412,7 +412,7 @@ struct Mat3
     {
     }
 
-    Vec3& operator[](uint32 i)
+    Vec3& operator[](int32 i)
     {
         return (&ex)[i];
     }
@@ -484,7 +484,7 @@ struct Mat4
     {
     }
 
-    Vec4& operator[](uint32 i)
+    Vec4& operator[](int32 i)
     {
         return (&ex)[i];
     }

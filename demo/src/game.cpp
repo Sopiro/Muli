@@ -345,7 +345,7 @@ void Game::Render()
 
             const ContactManifold& m = c->GetContactManifold();
 
-            for (uint32 j = 0; j < m.numContacts; ++j)
+            for (int32 j = 0; j < m.numContacts; ++j)
             {
                 const Vec2& cp = m.contactPoints[j].position;
 

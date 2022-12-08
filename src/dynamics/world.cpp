@@ -30,13 +30,13 @@ void World::Solve()
     // Build the constraint island
     Island island{ this, bodyCount, contactManager.contactCount, jointCount };
 
-    uint32 restingBodies = 0;
-    uint32 islandID = 0;
+    int32 restingBodies = 0;
+    int32 islandID = 0;
     sleepingBodies = 0;
 
     // Use stack allocator to avoid per-frame allocation
     RigidBody** stack = (RigidBody**)stackAllocator.Allocate(bodyCount * sizeof(RigidBody*));
-    uint32 stackPointer;
+    int32 stackPointer;
 
     // Perform a DFS(Depth First Search) on the constraint graph
     // After building island, each island can be solved in parallel because they are independent of each other
@@ -296,7 +296,7 @@ void World::BufferDestroy(Joint* joint)
 
 void World::BufferDestroy(const std::vector<Joint*>& joints)
 {
-    for (uint32 i = 0; i < joints.size(); ++i)
+    for (size_t i = 0; i < joints.size(); ++i)
     {
         BufferDestroy(joints[i]);
     }

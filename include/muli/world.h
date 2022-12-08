@@ -178,15 +178,15 @@ public:
 
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;
-    uint32 GetBodyCount() const;
+    int32 GetBodyCount() const;
     Joint* GetJoints() const;
-    uint32 GetJointCount() const;
+    int32 GetJointCount() const;
 
     const Contact* GetContacts() const;
-    uint32 GetContactCount() const;
+    int32 GetContactCount() const;
 
-    uint32 GetSleepingBodyCount() const;
-    uint32 GetAwakeIslandCount() const;
+    int32 GetSleepingBodyCount() const;
+    int32 GetAwakeIslandCount() const;
 
     const AABBTree& GetBVH() const;
     void RebuildBVH();
@@ -206,13 +206,13 @@ private:
     // Doubly linked list of all registered rigid bodies
     RigidBody* bodyList;
     RigidBody* bodyListTail;
-    uint32 bodyCount;
+    int32 bodyCount;
 
     Joint* jointList;
-    uint32 jointCount;
+    int32 jointCount;
 
-    uint32 numIslands;
-    uint32 sleepingBodies;
+    int32 numIslands;
+    int32 sleepingBodies;
 
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
@@ -245,17 +245,17 @@ inline RigidBody* World::GetBodyListTail() const
     return bodyListTail;
 }
 
-inline uint32 World::GetBodyCount() const
+inline int32 World::GetBodyCount() const
 {
     return bodyCount;
 }
 
-inline uint32 World::GetSleepingBodyCount() const
+inline int32 World::GetSleepingBodyCount() const
 {
     return sleepingBodies;
 }
 
-inline uint32 World::GetAwakeIslandCount() const
+inline int32 World::GetAwakeIslandCount() const
 {
     return numIslands;
 }
@@ -265,7 +265,7 @@ inline const Contact* World::GetContacts() const
     return contactManager.contactList;
 }
 
-inline uint32 World::GetContactCount() const
+inline int32 World::GetContactCount() const
 {
     return contactManager.contactCount;
 }
@@ -275,7 +275,7 @@ inline Joint* World::GetJoints() const
     return jointList;
 }
 
-inline uint32 World::GetJointCount() const
+inline int32 World::GetJointCount() const
 {
     return jointCount;
 }

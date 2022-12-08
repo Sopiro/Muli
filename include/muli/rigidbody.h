@@ -92,7 +92,7 @@ public:
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
 
-    uint32 GetIslandID() const;
+    int32 GetIslandID() const;
     RigidBody* GetPrev() const;
     RigidBody* GetNext() const;
     World* GetWorld() const;
@@ -209,7 +209,7 @@ protected:
 
 private:
     World* world;
-    uint32 islandID;
+    int32 islandID;
 
     ContactEdge* contactList;
     JointEdge* jointList;
@@ -472,7 +472,7 @@ inline bool RigidBody::IsRotationFixed() const
     return (flag & flag_fixed_rotation) == flag_fixed_rotation;
 }
 
-inline uint32 RigidBody::GetIslandID() const
+inline int32 RigidBody::GetIslandID() const
 {
     return islandID;
 }

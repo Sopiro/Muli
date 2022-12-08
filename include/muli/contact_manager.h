@@ -16,7 +16,7 @@ public:
     void UpdateContactGraph();
     void Reset();
 
-    uint32 GetContactCount() const;
+    int32 GetContactCount() const;
 
 protected:
     friend class RigidBody;
@@ -34,7 +34,7 @@ private:
     BroadPhase broadPhase;
 
     Contact* contactList;
-    uint32 contactCount;
+    int32 contactCount;
 
     void Destroy(Contact* c);
     void OnNewContact(Collider*, Collider*);
@@ -71,7 +71,7 @@ inline void ContactManager::RemoveCollider(Collider* collider)
     }
 }
 
-inline uint32 ContactManager::GetContactCount() const
+inline int32 ContactManager::GetContactCount() const
 {
     return contactCount;
 }

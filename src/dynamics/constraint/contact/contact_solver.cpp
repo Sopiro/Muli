@@ -5,7 +5,7 @@
 namespace muli
 {
 
-void ContactSolver::Prepare(Contact* contact, uint32 index, const Vec2& dir, Type contactType)
+void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType)
 {
     // Calculate Jacobian J and effective mass M
     // J = [-dir, -ra × dir, dir, rb × dir] (dir: Contact vector, normal or tangent)

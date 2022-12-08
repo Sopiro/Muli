@@ -42,7 +42,7 @@ void Contact::Update()
                                           &manifold);
     // clang-format on
 
-    for (uint32 i = 0; i < MAX_CONTACT_POINT; ++i)
+    for (int32 i = 0; i < MAX_CONTACT_POINT; ++i)
     {
         oldNormalImpulse[i] = normalSolvers[i].impulseSum;
         oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
@@ -85,9 +85,9 @@ void Contact::Update()
     }
 
     // Warm start the contact solver
-    for (uint32 n = 0; n < manifold.numContacts; ++n)
+    for (int32 n = 0; n < manifold.numContacts; ++n)
     {
-        uint32 o = 0;
+        int32 o = 0;
         for (; o < oldManifold.numContacts; ++o)
         {
             if (manifold.contactPoints[n].id == oldManifold.contactPoints[o].id)
@@ -106,7 +106,7 @@ void Contact::Update()
 
 void Contact::Prepare()
 {
-    for (uint32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.numContacts; ++i)
     {
         normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal);
         tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent);
@@ -122,14 +122,14 @@ void Contact::Prepare()
 void Contact::SolveVelocityConstraint()
 {
     // Solve tangential constraint first
-    for (uint32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.numContacts; ++i)
     {
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
     if (manifold.numContacts == 1 || !settings.block_solve || (blockSolver.enabled == false))
     {
-        for (uint32 i = 0; i < manifold.numContacts; ++i)
+        for (int32 i = 0; i < manifold.numContacts; ++i)
         {
             normalSolvers[i].Solve();
         }
@@ -151,7 +151,7 @@ bool Contact::SolvePositionConstraint()
     cAngularImpulseB = 0.0f;
 
     // Solve position constraint
-    for (uint32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.numContacts; ++i)
     {
         solved &= positionSolvers[i].Solve();
     }

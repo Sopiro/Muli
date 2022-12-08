@@ -10,7 +10,7 @@ class Contact;
 class PositionSolver
 {
 public:
-    void Prepare(Contact* contact, uint32 index);
+    void Prepare(Contact* contact, int32 index);
     bool Solve();
 
 private:
