@@ -408,6 +408,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     return true;
 }
 
+// This works for all possible shape pairs
 static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     GJKResult gjkResult;
@@ -473,9 +474,6 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
             {
                 return false;
             }
-
-        default:
-            muliAssert(false);
         }
     }
     else

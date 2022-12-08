@@ -62,7 +62,7 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
     colliderList = collider;
     ++colliderCount;
 
-    collider->body->world->contactManager.Add(collider);
+    world->contactManager.AddCollider(collider);
 
     ResetMassData();
 
@@ -93,7 +93,7 @@ void RigidBody::DestoryCollider(Collider* collider)
     }
 
     // Remove collider from contact manager(broad phase)
-    world->contactManager.Remove(collider);
+    world->contactManager.RemoveCollider(collider);
 
     Allocator* allocator = &world->blockAllocator;
 
@@ -366,6 +366,14 @@ void RigidBody::ResetMassData()
     sweep.c0 = sweep.c;
 
     linearVelocity += Cross(angularVelocity, sweep.c - oldPosition);
+}
+
+void RigidBody::SynchronizeColliders()
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        world->contactManager.UpdateCollider(collider);
+    }
 }
 
 } // namespace muli

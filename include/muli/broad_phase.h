@@ -10,7 +10,6 @@ class ContactManager;
 
 class BroadPhase
 {
-
 public:
     BroadPhase(World* world,
                ContactManager* contactManager,
@@ -18,17 +17,17 @@ public:
                float velocityMultiplier = DEFAULT_VELOCITY_MULTIPLIER);
     ~BroadPhase() noexcept;
 
-    void UpdateDynamicTree(float dt);
     void FindContacts();
     bool TestOverlap(Collider* colliderA, Collider* colliderB) const;
 
     void Add(Collider* collider);
     void Remove(Collider* collider);
+    void Update(Collider* collider);
     void Reset();
 
     bool QueryCallback(Collider* collider);
 
-private:
+protected:
     friend class World;
 
     World* world;
@@ -38,6 +37,7 @@ private:
     float aabbMargin;
     float velocityMultiplier;
 
+private:
     RigidBody* bodyA;
     Collider* colliderA;
     Shape::Type typeA;

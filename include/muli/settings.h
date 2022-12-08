@@ -54,8 +54,8 @@ struct WorldSettings
 
     AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 
-    mutable float dt;
-    mutable float inv_dt;
+    mutable float dt = 1.0f / 60.0f;
+    mutable float inv_dt = 60.0f;
 };
 
 } // namespace muli

@@ -19,60 +19,44 @@ BroadPhase::~BroadPhase() noexcept
     Reset();
 }
 
-void BroadPhase::UpdateDynamicTree(float dt)
+void BroadPhase::Update(Collider* collider)
 {
-    for (RigidBody* body = world->bodyList; body; body = body->next)
+    int32 node = collider->node;
+    AABB treeAABB = tree.nodes[node].aabb;
+    AABB aabb = collider->GetAABB();
+
+    RigidBody* body = collider->body;
+
+    if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.sleeping_treshold)
     {
-        // Clear island flag
-        body->flag &= ~RigidBody::Flag::flag_island;
-
-        if (body->IsSleeping())
-        {
-            continue;
-        }
-        if (body->type == RigidBody::Type::static_body)
-        {
-            body->flag |= RigidBody::Flag::flag_sleeping;
-        }
-
-        for (Collider* collider = body->colliderList; collider; collider = collider->next)
-        {
-            int32 node = collider->node;
-            AABB treeAABB = tree.nodes[node].aabb;
-            AABB aabb = collider->GetAABB();
-
-            if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.sleeping_treshold)
-            {
-                continue;
-            }
-
-            Vec2 d = body->linearVelocity * dt * velocityMultiplier;
-
-            if (d.x > 0.0f)
-            {
-                aabb.max.x += d.x;
-            }
-            else
-            {
-                aabb.min.x += d.x;
-            }
-
-            if (d.y > 0.0f)
-            {
-                aabb.max.y += d.y;
-            }
-            else
-            {
-                aabb.min.y += d.y;
-            }
-
-            aabb.max += aabbMargin;
-            aabb.min -= aabbMargin;
-
-            tree.Remove(collider);
-            tree.Insert(collider, aabb);
-        }
+        return;
     }
+
+    Vec2 d = body->linearVelocity * world->settings.dt * velocityMultiplier;
+
+    if (d.x > 0.0f)
+    {
+        aabb.max.x += d.x;
+    }
+    else
+    {
+        aabb.min.x += d.x;
+    }
+
+    if (d.y > 0.0f)
+    {
+        aabb.max.y += d.y;
+    }
+    else
+    {
+        aabb.min.y += d.y;
+    }
+
+    aabb.max += aabbMargin;
+    aabb.min -= aabbMargin;
+
+    tree.Remove(collider);
+    tree.Insert(collider, aabb);
 }
 
 void BroadPhase::FindContacts()

@@ -181,12 +181,6 @@ void Island::Solve()
             break;
         }
     }
-
-    for (uint32 i = 0; i < bodyCount; ++i)
-    {
-        RigidBody* b = bodies[i];
-        b->SynchronizeTransform();
-    }
 }
 
 } // namespace muli

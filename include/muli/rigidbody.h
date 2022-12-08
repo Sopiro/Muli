@@ -180,7 +180,7 @@ protected:
     friend class Collider;
 
     Transform transform; // transform relative to the body origin
-    Sweep sweep;         // the swept motion of rigid body used for CCD
+    Sweep sweep;         // swept motion of rigid body used for CCD
 
     Vec2 force;   // N
     float torque; // N⋅m
@@ -205,6 +205,7 @@ protected:
 
     void ResetMassData();
     void SynchronizeTransform();
+    void SynchronizeColliders();
 
 private:
     World* world;
@@ -244,6 +245,8 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
 
     sweep.c0 = sweep.c;
     sweep.a0 = sweep.a;
+
+    SynchronizeColliders();
 }
 
 inline const Vec2& RigidBody::GetPosition() const
@@ -261,6 +264,8 @@ inline void RigidBody::SetPosition(float x, float y)
     transform.position.Set(x, y);
     sweep.c = transform * sweep.localCenter;
     sweep.c0 = sweep.c;
+
+    SynchronizeColliders();
 }
 
 inline const Rotation& RigidBody::GetRotation() const
@@ -273,6 +278,8 @@ inline void RigidBody::SetRotation(const Rotation& _rotation)
     transform.rotation = _rotation;
     sweep.a = transform.rotation.GetAngle();
     sweep.a0 = sweep.a;
+
+    SynchronizeColliders();
 }
 
 inline void RigidBody::SetRotation(float _angle)
@@ -280,6 +287,8 @@ inline void RigidBody::SetRotation(float _angle)
     transform.rotation = _angle;
     sweep.a = _angle;
     sweep.a0 = sweep.a;
+
+    SynchronizeColliders();
 }
 
 inline float RigidBody::GetAngle() const
@@ -289,9 +298,7 @@ inline float RigidBody::GetAngle() const
 
 inline void RigidBody::Translate(const Vec2& d)
 {
-    transform.position += d;
-    sweep.c = transform * sweep.localCenter;
-    sweep.c0 = sweep.c;
+    Translate(d.x, d.y);
 }
 
 inline void RigidBody::Translate(float dx, float dy)
@@ -300,6 +307,8 @@ inline void RigidBody::Translate(float dx, float dy)
     transform.position.y += dy;
     sweep.c = transform * sweep.localCenter;
     sweep.c0 = sweep.c;
+
+    SynchronizeColliders();
 }
 
 inline void RigidBody::Rotate(float a)
@@ -307,6 +316,8 @@ inline void RigidBody::Rotate(float a)
     sweep.a += a;
     sweep.a0 = sweep.a;
     transform.rotation = sweep.a;
+
+    SynchronizeColliders();
 }
 
 inline float RigidBody::GetMass() const

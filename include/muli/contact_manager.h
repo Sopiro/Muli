@@ -13,20 +13,26 @@ public:
     ContactManager(World* world);
     ~ContactManager();
 
-    void Step(float dt);
-    void Add(Collider* collider);
-    void Remove(Collider* collider);
+    void UpdateContactGraph();
     void Reset();
+
     uint32 GetContactCount() const;
+
+protected:
+    friend class RigidBody;
+
+    void AddCollider(Collider* collider);
+    void RemoveCollider(Collider* collider);
+    void UpdateCollider(Collider* collider);
 
 private:
     friend class World;
-    friend class RigidBody;
     friend class BroadPhase;
 
     World* world;
 
     BroadPhase broadPhase;
+
     Contact* contactList;
     uint32 contactCount;
 
@@ -34,12 +40,12 @@ private:
     void OnNewContact(Collider*, Collider*);
 };
 
-inline void ContactManager::Add(Collider* collider)
+inline void ContactManager::AddCollider(Collider* collider)
 {
     broadPhase.Add(collider);
 }
 
-inline void ContactManager::Remove(Collider* collider)
+inline void ContactManager::RemoveCollider(Collider* collider)
 {
     broadPhase.Remove(collider);
 
@@ -68,6 +74,11 @@ inline void ContactManager::Remove(Collider* collider)
 inline uint32 ContactManager::GetContactCount() const
 {
     return contactCount;
+}
+
+inline void ContactManager::UpdateCollider(Collider* collider)
+{
+    broadPhase.Update(collider);
 }
 
 } // namespace muli

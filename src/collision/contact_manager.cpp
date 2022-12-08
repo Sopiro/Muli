@@ -21,11 +21,8 @@ ContactManager::~ContactManager()
     Reset();
 }
 
-void ContactManager::Step(float dt)
+void ContactManager::UpdateContactGraph()
 {
-    // Update the dynamic AABB tree node
-    broadPhase.UpdateDynamicTree(dt);
-
     // Find contacts, insert into the contact graph
     // broadphase will callback OnNewContact()
     broadPhase.FindContacts();

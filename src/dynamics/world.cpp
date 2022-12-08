@@ -25,13 +25,8 @@ World::~World() noexcept
     Reset();
 }
 
-void World::Step(float dt)
+void World::Solve()
 {
-    settings.dt = dt;
-    settings.inv_dt = 1.0f / dt;
-
-    contactManager.Step(dt);
-
     // Build the constraint island
     Island island{ this, bodyCount, contactManager.contactCount, jointCount };
 
@@ -121,6 +116,41 @@ void World::Step(float dt)
     stackAllocator.Free(stack, bodyCount);
 
     numIslands = islandID;
+
+    for (RigidBody* body = bodyList; body; body = body->next)
+    {
+        // Clear island flag
+        body->flag &= ~RigidBody::Flag::flag_island;
+
+        if (body->IsSleeping())
+        {
+            continue;
+        }
+
+        if (body->type == RigidBody::Type::static_body)
+        {
+            body->flag |= RigidBody::Flag::flag_sleeping;
+        }
+
+        // Synchronize transform and collider tree node
+        body->SynchronizeTransform();
+        body->SynchronizeColliders();
+    }
+}
+
+void World::Step(float dt)
+{
+    if (dt <= 0.0f)
+    {
+        return;
+    }
+
+    settings.dt = dt;
+    settings.inv_dt = 1.0f / dt;
+
+    contactManager.UpdateContactGraph();
+
+    Solve();
 
     for (RigidBody* b : destroyBufferBody)
     {

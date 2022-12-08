@@ -206,9 +206,9 @@ private:
     // Doubly linked list of all registered rigid bodies
     RigidBody* bodyList;
     RigidBody* bodyListTail;
-    Joint* jointList;
-
     uint32 bodyCount;
+
+    Joint* jointList;
     uint32 jointCount;
 
     uint32 numIslands;
@@ -217,9 +217,10 @@ private:
     std::vector<RigidBody*> destroyBufferBody;
     std::vector<Joint*> destroyBufferJoint;
 
-    void AddJoint(Joint* joint);
+    void Solve();
 
     void FreeBody(RigidBody* body);
+    void AddJoint(Joint* joint);
     void FreeJoint(Joint* joint);
 
     StackAllocator stackAllocator;
