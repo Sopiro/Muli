@@ -27,7 +27,7 @@ public:
         b->SetPosition(1, 3);
         b->UserFlag = UserFlag::render_polygon_radius;
 
-        b = world->CreateRegularPolygon(0.5f, 3, MULI_PI / 6.0f);
+        b = world->CreateRegularPolygon(0.5f, 3);
         b->SetPosition(-1, 3);
     }
 

@@ -25,6 +25,27 @@ World::~World() noexcept
     Reset();
 }
 
+void World::Reset()
+{
+    RigidBody* b = bodyList;
+    while (b)
+    {
+        RigidBody* b0 = b;
+        b = b->next;
+        Destroy(b0);
+    }
+
+    muliAssert(bodyList == nullptr);
+    muliAssert(bodyListTail == nullptr);
+    muliAssert(jointList == nullptr);
+    muliAssert(bodyCount == 0);
+    muliAssert(jointCount == 0);
+    muliAssert(blockAllocator.GetBlockCount() == 0);
+
+    destroyBufferBody.clear();
+    destroyBufferJoint.clear();
+}
+
 void World::Solve()
 {
     // Build the constraint island
@@ -47,9 +68,14 @@ void World::Solve()
             continue;
         }
 
-        if (b->flag & RigidBody::Flag::flag_sleeping || b->flag & RigidBody::Flag::flag_island)
+        if (b->flag & RigidBody::Flag::flag_island)
         {
-            sleepingBodies += (b->flag & RigidBody::Flag::flag_sleeping) > 0;
+            continue;
+        }
+
+        if (b->flag & RigidBody::Flag::flag_sleeping)
+        {
+            ++sleepingBodies;
             continue;
         }
 
@@ -119,13 +145,13 @@ void World::Solve()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
-        // Clear island flag
-        body->flag &= ~RigidBody::Flag::flag_island;
-
-        if (body->IsSleeping() || body->type == RigidBody::Type::static_body)
+        if ((body->flag & RigidBody::Flag::flag_island) == 0)
         {
             continue;
         }
+
+        // Clear island flag
+        body->flag &= ~RigidBody::Flag::flag_island;
 
         // Synchronize transform and collider tree node
         body->SynchronizeTransform();
@@ -138,7 +164,7 @@ void World::Step(float dt)
     settings.dt = dt;
     settings.inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
 
-    if (settings.dt == 0.0f)
+    if (settings.inv_dt == 0.0f)
     {
         return;
     }
@@ -155,27 +181,6 @@ void World::Step(float dt)
     {
         Destroy(j);
     }
-
-    destroyBufferBody.clear();
-    destroyBufferJoint.clear();
-}
-
-void World::Reset()
-{
-    RigidBody* b = bodyList;
-    while (b)
-    {
-        RigidBody* b0 = b;
-        b = b->next;
-        Destroy(b0);
-    }
-
-    muliAssert(bodyList == nullptr);
-    muliAssert(bodyListTail == nullptr);
-    muliAssert(jointList == nullptr);
-    muliAssert(bodyCount == 0);
-    muliAssert(jointCount == 0);
-    muliAssert(blockAllocator.GetBlockCount() == 0);
 
     destroyBufferBody.clear();
     destroyBufferJoint.clear();
@@ -214,9 +219,17 @@ void World::Destroy(RigidBody* body)
 
 void World::Destroy(const std::vector<RigidBody*>& bodies)
 {
+    std::unordered_set<RigidBody*> destroyed;
+
     for (size_t i = 0; i < bodies.size(); ++i)
     {
-        Destroy(bodies[i]);
+        RigidBody* b = bodies[i];
+
+        if (destroyed.find(b) != destroyed.end())
+        {
+            destroyed.insert(b);
+            Destroy(b);
+        }
     }
 }
 
@@ -227,17 +240,9 @@ void World::BufferDestroy(RigidBody* body)
 
 void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
 {
-    std::unordered_set<RigidBody*> destroyed;
-
     for (size_t i = 0; i < bodies.size(); ++i)
     {
-        RigidBody* b = bodies[i];
-
-        if (destroyed.find(b) != destroyed.end())
-        {
-            destroyed.insert(b);
-            BufferDestroy(b);
-        }
+        BufferDestroy(bodies[i]);
     }
 }
 

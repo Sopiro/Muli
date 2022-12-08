@@ -161,6 +161,8 @@ protected:
     friend class BroadPhase;
     friend class ContactManager;
 
+    friend class Collider;
+
     friend class Contact;
     friend class ContactSolver;
     friend class BlockSolver;
@@ -177,7 +179,7 @@ protected:
     friend class PulleyJoint;
     friend class MotorJoint;
 
-    friend class Collider;
+    Type type;
 
     Transform transform; // transform relative to the body origin
     Sweep sweep;         // swept motion of rigid body used for CCD
@@ -196,12 +198,10 @@ protected:
     float linearDamping;
     float angularDamping;
 
-    Type type;
-
-    uint16 flag;
-
     Collider* colliderList;
     int32 colliderCount;
+
+    uint16 flag;
 
     void ResetMassData();
     void SynchronizeTransform();
