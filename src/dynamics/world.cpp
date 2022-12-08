@@ -122,14 +122,9 @@ void World::Solve()
         // Clear island flag
         body->flag &= ~RigidBody::Flag::flag_island;
 
-        if (body->IsSleeping())
+        if (body->IsSleeping() || body->type == RigidBody::Type::static_body)
         {
             continue;
-        }
-
-        if (body->type == RigidBody::Type::static_body)
-        {
-            body->flag |= RigidBody::Flag::flag_sleeping;
         }
 
         // Synchronize transform and collider tree node

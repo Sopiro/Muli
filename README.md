@@ -6,7 +6,7 @@
 
 2D Rigidbody physics engine
 
-## Feature  
+## Features  
 
 ### Collision  
   - Shapes: circle, capsule and convex polygon
@@ -27,7 +27,7 @@
   - Contact callbacks: begin, touching, end, destory
   - Physics material: friction, restitution and surface speed
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, weld
-  - Tunable joint parameter  
+  - Tunable joint parameters  
   
 ### ETC
   - 40+ Demos
@@ -47,7 +47,7 @@ int main()
     WorldSettings settings; // Define simulation settings
     World world(settings); // Create physics world
   
-    RigidBody* box = world.CreateBox(1.0f); // Create box
+    RigidBody* box = world.CreateBox(1.0f); // Create a box
     box->SetPosition(0.0f, 5.0f);
   
     // Run simulation for one second

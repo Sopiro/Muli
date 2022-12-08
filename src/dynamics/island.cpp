@@ -71,8 +71,8 @@ void Island::Solve()
             // Apply damping (found in box2d)
             // ODE: dv/dt + c * v = 0
             // dv/dt = -c * v
-            // (1/v) dv = -c dt // integrate both sides
-            // ln|v| = -c * t + C //  exponentiate both sides (C is integration constant)
+            // (1/v) dv = -c dt ; integrate both sides
+            // ln|v| = -c * t + C ; exponentiate both sides (C is integration constant)
             // v = C * exp(-c * t)
             // v(0) = C
             // Solution: v(t) = v0 * exp(-c * t)
