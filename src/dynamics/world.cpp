@@ -140,13 +140,13 @@ void World::Solve()
 
 void World::Step(float dt)
 {
-    if (dt <= 0.0f)
+    settings.dt = dt;
+    settings.inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
+
+    if (settings.dt == 0.0f)
     {
         return;
     }
-
-    settings.dt = dt;
-    settings.inv_dt = 1.0f / dt;
 
     contactManager.UpdateContactGraph();
 
@@ -654,13 +654,8 @@ RigidBody* World::CreateRegularPolygon(
         vertexCount = LinearRand(3, 12);
     }
 
-    float angleStart = initial_angle;
+    float angleStart = initial_angle - MULI_PI / 2.0f;
     float angle = MULI_PI * 2.0f / vertexCount;
-
-    if (vertexCount % 2 == 0)
-    {
-        angleStart += angle / 2.0f;
-    }
 
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);

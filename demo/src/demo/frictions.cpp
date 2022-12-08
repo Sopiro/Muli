@@ -39,14 +39,14 @@ public:
         float gap = 0.30f;
         float size = 0.30f;
 
-        std::array<float, 5> frictions = { 0.4f, 0.3f, 0.2f, 0.1f, 0.0f };
+        std::array<float, 5> frictions = { 0.4f, 0.2f, 0.12f, 0.04f, 0.0f };
 
         for (uint32 i = 0; i < frictions.size(); ++i)
         {
             b = world->CreateBox(size, size);
             b->SetPosition(xStart + (size + gap) * i, yStart);
             b->SetFriction(frictions[i]);
-            b->SetLinearVelocity(2.3f, 0.0f);
+            b->SetLinearVelocity(2.0f, 0.0f);
         }
     }
 

@@ -394,6 +394,7 @@ extern DemoFrame restitutions;
 extern DemoFrame multi_pendulum;
 extern DemoFrame suspension_bridge;
 extern DemoFrame circle_stacking;
+extern DemoFrame capsule_stacking;
 extern DemoFrame circles_1000;
 extern DemoFrame boxes_1000;
 extern DemoFrame capsules_1000;
@@ -441,6 +442,7 @@ static int32 init_demos()
     demos[demo_count++] = multi_pendulum;
     demos[demo_count++] = suspension_bridge;
     demos[demo_count++] = circle_stacking;
+    demos[demo_count++] = capsule_stacking;
     demos[demo_count++] = circles_1000;
     demos[demo_count++] = boxes_1000;
     demos[demo_count++] = capsules_1000;
