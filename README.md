@@ -20,7 +20,7 @@
   
 ### Physics Simulation
   - Constrained dynamics
-  - Efficient temporal coherent contact management from box2d
+  - Efficient and persistent contact management from box2d
   - Constraint islanding and sleeping
   - Stable stacking with 2-contact LCP solver (Block solver)
   - Decoupled position correction iteration
@@ -45,10 +45,10 @@ using namespace muli;
 int main()
 {
     WorldSettings settings; // Define simulation settings
-    World world(settings); // Create physics world
+    World world(settings); // Create a physics world
   
     RigidBody* box = world.CreateBox(1.0f); // Create a box
-    box->SetPosition(0.0f, 5.0f);
+    box->SetPosition(0.0f, 5.0f); // Set the position of the box
   
     // Run simulation for one second
     float dt = 1.0f / 60.0f;
