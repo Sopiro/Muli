@@ -15,6 +15,7 @@ struct DebugOptions
     bool show_contact_point = false;
     bool show_contact_normal = false;
     bool reset_camera = true;
+    bool colorize_island = true;
 };
 
 enum UserFlag : uint32

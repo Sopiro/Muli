@@ -80,8 +80,11 @@ public:
             if (distance > 0.0f)
             {
                 std::vector<Vec2>& pl = game.GetPointList();
+                std::vector<Vec2>& ll = game.GetLineList();
                 pl.push_back(f.pointA);
                 pl.push_back(f.pointB);
+                ll.push_back(f.pointA);
+                ll.push_back(f.pointB);
 
                 ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
                 ImGui::Begin("Overlay", NULL,

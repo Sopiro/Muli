@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "mesh.h"
+#include "options.h"
 #include "renderer.h"
 #include "rigidbody_shader.h"
 #include "util.h"
@@ -9,10 +10,12 @@
 namespace muli
 {
 
+class Game;
+
 class RigidBodyRenderer final : public Renderer
 {
 public:
-    RigidBodyRenderer();
+    RigidBodyRenderer(Game& game);
 
     virtual void Render() override;
 
@@ -26,11 +29,13 @@ public:
 
     Vec2 Pick(const Vec2& screenPos) const;
 
-    void SetDrawOutlined(bool drawOutlineOnly);
     void Reset();
 
 private:
     friend class RigidBodyShader;
+
+    Game& game;
+    DebugOptions& options;
 
     // All registered colliders
     std::unique_ptr<RigidBodyShader> shader{};
@@ -38,8 +43,6 @@ private:
 
     Mat4 viewMatrix;
     Mat4 projMatrix;
-
-    bool drawOutlineOnly;
 };
 
 inline void RigidBodyRenderer::Register(Collider* collider)
@@ -92,11 +95,6 @@ inline void RigidBodyRenderer::SetViewMatrix(const Mat4& _viewMatrix)
 {
     shader->Use();
     shader->SetViewMatrix(_viewMatrix);
-}
-
-inline void RigidBodyRenderer::SetDrawOutlined(bool _drawOutlineOnly)
-{
-    drawOutlineOnly = _drawOutlineOnly;
 }
 
 inline void RigidBodyRenderer::Reset()

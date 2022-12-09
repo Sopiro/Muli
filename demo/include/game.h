@@ -39,10 +39,10 @@ public:
 private:
     Application& app;
 
-    std::vector<Vec2> points{};
-    std::vector<Vec2> lines{};
-    RigidBodyRenderer rRenderer{};
-    DynamicRenderer dRenderer{};
+    std::vector<Vec2> points;
+    std::vector<Vec2> lines;
+    RigidBodyRenderer rRenderer;
+    DynamicRenderer dRenderer;
 
     float time = 0.0f;
 

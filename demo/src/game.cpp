@@ -6,6 +6,7 @@ namespace muli
 
 Game::Game(Application& _app)
     : app{ _app }
+    , rRenderer{ *this }
 {
     UpdateProjectionMatrix();
     Window::Get().SetFramebufferSizeChangeCallback([&](int width, int height) -> void {
@@ -98,6 +99,7 @@ void Game::UpdateUI()
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
                     ImGui::Checkbox("Camera reset", &options.reset_camera);
+                    ImGui::Checkbox("Colorize island", &options.colorize_island);
                     ImGui::Checkbox("Draw outline only", &options.draw_outline_only);
                     ImGui::Checkbox("Show BVH", &options.show_bvh);
                     ImGui::Checkbox("Show AABB", &options.show_aabb);
@@ -185,7 +187,6 @@ void Game::Render()
 {
     Camera& camera = demo->GetCamera();
     rRenderer.SetViewMatrix(camera.GetCameraMatrix());
-    rRenderer.SetDrawOutlined(options.draw_outline_only);
     rRenderer.Render();
 
     for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())

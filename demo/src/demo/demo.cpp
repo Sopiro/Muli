@@ -67,6 +67,7 @@ void Demo::ComputeProperty()
 void Demo::EnableBodyCreate()
 {
     static bool create;
+    static bool create_circle;
     static Vec2 mStart;
 
     if (!targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -75,6 +76,7 @@ void Demo::EnableBodyCreate()
         {
             mStart = cursorPos;
             create = true;
+            create_circle = Input::IsKeyDown(GLFW_KEY_Z);
         }
         else
         {
@@ -105,7 +107,7 @@ void Demo::EnableBodyCreate()
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = world->CreateBox(0.3f);
+            RigidBody* b = create_circle ? world->CreateCircle(0.15f * 1.414f) : world->CreateBox(0.3f);
             b->SetPosition(mStart);
 
             Vec2 f = mStart - cursorPos;
@@ -165,7 +167,7 @@ bool Demo::EnablePolygonCreate()
             switch (hull.size())
             {
             case 1:
-                b = world->CreateCircle(0.1f, type);
+                b = world->CreateCircle(0.2f, type);
                 b->SetPosition(hull[0]);
                 break;
             case 2:

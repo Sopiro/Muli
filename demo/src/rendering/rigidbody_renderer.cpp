@@ -1,12 +1,14 @@
 #include "rigidbody_renderer.h"
+#include "game.h"
 #include "muli/util.h"
-#include "options.h"
 #include "window.h"
 
 namespace muli
 {
 
-RigidBodyRenderer::RigidBodyRenderer()
+RigidBodyRenderer::RigidBodyRenderer(Game& _game)
+    : game{ _game }
+    , options{ _game.GetDebugOptions() }
 {
     shader = RigidBodyShader::Create();
     shader->Use();
@@ -32,7 +34,7 @@ void RigidBodyRenderer::Render()
 
         shader->SetModelMatrix(t * r);
 
-        if ((!drawOutlineOnly && !body->IsSleeping()) || type == RigidBody::Type::static_body)
+        if ((options.draw_outline_only == false && body->IsSleeping() == false))
         {
             Vec3 color{ 1.0f };
             const CollisionFilter& cf = collider->GetFilter();
@@ -42,7 +44,7 @@ void RigidBodyRenderer::Render()
             case RigidBody::Type::dynamic_body:
                 float h, s, l;
 
-                if (cf.group == 1 && cf.mask != 0xffffffff)
+                if (cf.group == default_collision_filter.group && cf.mask != default_collision_filter.mask)
                 {
                     h = (((cf.filter - 2) * 17) % 360) / 360.0f;
                     s = 100.0f / 100.0f;
@@ -50,17 +52,26 @@ void RigidBodyRenderer::Render()
                 }
                 else
                 {
-                    int32 id = body->GetIslandID();
+                    if (options.colorize_island)
+                    {
+                        int32 id = body->GetIslandID();
 
-                    int32 hStride = 17;
-                    int32 sStride = 5;
-                    int32 lStride = 3;
-                    int32 period = static_cast<int32>(Trunc(360.0f / hStride));
-                    int32 cycle = static_cast<int32>(Trunc((float)id / period));
+                        int32 hStride = 17;
+                        int32 sStride = 5;
+                        int32 lStride = 3;
+                        int32 period = static_cast<int32>(Trunc(360.0f / hStride));
+                        int32 cycle = static_cast<int32>(Trunc((float)id / period));
 
-                    h = (((id - 1) * hStride) % 360) / 360.0f;
-                    s = (100 - (cycle * sStride) % 21) / 100.0f;
-                    l = (75 - (cycle * lStride) % 17) / 100.0f;
+                        h = (((id - 1) * hStride) % 360) / 360.0f;
+                        s = (100 - (cycle * sStride) % 21) / 100.0f;
+                        l = (75 - (cycle * lStride) % 17) / 100.0f;
+                    }
+                    else
+                    {
+                        h = 1.0f;
+                        s = 1.0f;
+                        l = 0.75f;
+                    }
                 }
 
                 color = hsl2rgb(h, s, l);
@@ -71,7 +82,7 @@ void RigidBodyRenderer::Render()
                 break;
 
             case RigidBody::Type::static_body:
-                if (cf.group == 1 && cf.mask != 0xffffffff)
+                if (cf.group == default_collision_filter.group && cf.mask != default_collision_filter.mask)
                 {
                     float h = (((cf.filter - 2) * 17) % 360) / 360.0f;
                     float s = 100.0f / 100.0f;
@@ -82,14 +93,14 @@ void RigidBodyRenderer::Render()
                 break;
             }
 
-            shader->SetColor({ color.x, color.y, color.z });
+            shader->SetColor(color);
             mesh->Draw(GL_TRIANGLES);
         }
 
         if (!(body->UserFlag & UserFlag::remove_outline))
         {
             glLineWidth(1.0f);
-            shader->SetColor({ 0, 0, 0 });
+            shader->SetColor(Vec3{ 0.0f });
             mesh->Draw(GL_LINE_LOOP);
         }
     }
