@@ -5,7 +5,7 @@
 namespace muli
 {
 
-float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ClosestFeatures* features)
+float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ClosestFeatures* features)
 {
     GJKResult gjkResult;
     bool collide = GJK(a, tfA, b, tfB, &gjkResult);
@@ -38,9 +38,34 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
         features->featuresB[i].position += displacementB;
     }
 
-    simplex.GetWitnessPoint(&features->pointA, &features->pointB);
-    features->pointA += displacementA;
-    features->pointB += displacementB;
+    return gjkResult.distance - r2;
+}
+
+float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, Vec2* pointA, Vec2* pointB)
+{
+    GJKResult gjkResult;
+    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
+
+    if (collide == true)
+    {
+        return 0.0f;
+    }
+
+    float r2 = a->GetRadius() + b->GetRadius();
+    if (gjkResult.distance < r2)
+    {
+        return 0.0f;
+    }
+
+    Simplex& simplex = gjkResult.simplex;
+
+    muliAssert(simplex.count < MAX_SIMPLEX_VERTEX_COUNT);
+
+    simplex.GetWitnessPoint(pointA, pointB);
+
+    // displace simplex vertices along normal
+    *pointA += gjkResult.direction * a->GetRadius();
+    *pointB -= gjkResult.direction * b->GetRadius();
 
     return gjkResult.distance - r2;
 }

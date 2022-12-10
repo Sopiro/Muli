@@ -41,7 +41,7 @@ struct SeparationFunction
             type = points;
 
             // separating axis in world space
-            axis = closestFeatures.pointB - closestFeatures.pointA;
+            axis = featuresB[0].position - featuresA[0].position;
             axis.Normalize();
         }
         else if (featuresA[0].id == featuresB[1].id)
@@ -52,7 +52,7 @@ struct SeparationFunction
             Vec2 localPointB0 = shapeB->GetVertex(featuresB[0].id);
             Vec2 localPointB1 = shapeB->GetVertex(featuresB[1].id);
 
-            // separating axis in frame of body B
+            // separating axis in the frame of body B
             axis = Cross(localPointB1 - localPointB0, 1.0f);
             axis.Normalize();
 
@@ -76,7 +76,7 @@ struct SeparationFunction
             Vec2 localPointA0 = shapeA->GetVertex(featuresA[0].id);
             Vec2 localPointA1 = shapeA->GetVertex(featuresA[1].id);
 
-            // separating axis in frame of body A
+            // separating axis in the frame of body A
             axis = Cross(localPointA1 - localPointA0, 1.0f);
             axis.Normalize();
 
@@ -105,11 +105,11 @@ struct SeparationFunction
         case points:
         {
             // Separation axis is in world space and pointing from a to b
-            Vec2 axisA = MulT(tfA.rotation, axis);
-            Vec2 axisB = MulT(tfB.rotation, -axis);
+            Vec2 localAxisA = MulT(tfA.rotation, axis);
+            Vec2 localAxisB = MulT(tfB.rotation, -axis);
 
-            *idA = shapeA->Support(axisA).id;
-            *idB = shapeB->Support(axisB).id;
+            *idA = shapeA->Support(localAxisA).id;
+            *idB = shapeB->Support(localAxisB).id;
 
             Vec2 localPointA = shapeA->GetVertex(*idA);
             Vec2 localPointB = shapeB->GetVertex(*idB);

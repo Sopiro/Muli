@@ -73,24 +73,18 @@ public:
             const Transform& tf1 = b1->GetTransform();
             const Transform& tf2 = b2->GetTransform();
 
-            ClosestFeatures f;
+            Vec2 pointA, pointB;
 
-            float distance = ComputeDistance(s1, tf1, s2, tf2, &f);
+            float distance = ComputeDistance(s1, tf1, s2, tf2, &pointA, &pointB);
 
             if (distance > 0.0f)
             {
                 std::vector<Vec2>& pl = game.GetPointList();
                 std::vector<Vec2>& ll = game.GetLineList();
-                pl.push_back(f.pointA);
-                pl.push_back(f.pointB);
-                ll.push_back(f.pointA);
-                ll.push_back(f.pointB);
-
-                // for (int32 i = 0; i < f.count; ++i)
-                // {
-                //     pl.push_back(f.featuresA[i].position);
-                //     pl.push_back(f.featuresB[i].position);
-                // }
+                pl.push_back(pointA);
+                pl.push_back(pointB);
+                ll.push_back(pointA);
+                ll.push_back(pointB);
 
                 ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
                 ImGui::Begin("Overlay", NULL,
