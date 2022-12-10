@@ -61,8 +61,8 @@ public:
                              bool horizontal = false,
                              RigidBody::Type type = RigidBody::Type::dynamic_body,
                              float density = DEFAULT_DENSITY);
-    RigidBody* CreateCapsule(const Vec2& p1,
-                             const Vec2& p2,
+    RigidBody* CreateCapsule(const Vec2& point1,
+                             const Vec2& point2,
                              float radius,
                              RigidBody::Type type = RigidBody::Type::dynamic_body,
                              bool resetPosition = false,
@@ -88,7 +88,7 @@ public:
                                          float density = DEFAULT_DENSITY);
     RigidBody* CreateRegularPolygon(float length,
                                     int32 vertexCount = 0,
-                                    float initial_angle = 0,
+                                    float initialAngle = 0,
                                     RigidBody::Type type = RigidBody::Type::dynamic_body,
                                     float radius = DEFAULT_RADIUS,
                                     float density = DEFAULT_DENSITY);

@@ -7,7 +7,10 @@ namespace muli
 
 Demo::Demo(Game& _game)
     : game{ _game }
-    , options{ game.GetDebugOptions() }
+    , options{ _game.GetDebugOptions() }
+    , targetBody{ nullptr }
+    , targetCollider{ nullptr }
+    , gj{ nullptr }
 {
     dt = 1.0f / Window::Get().GetRefreshRate();
     // dt = 1.0f / 60.0f;

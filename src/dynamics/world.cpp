@@ -562,17 +562,19 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
 }
 
 RigidBody* World::CreateCapsule(
-    const Vec2& p1, const Vec2& p2, float radius, RigidBody::Type type, bool resetPosition, float density)
+    const Vec2& point1, const Vec2& point2, float radius, RigidBody::Type type, bool resetPosition, float density)
 {
     RigidBody* b = CreateEmptyBody(type);
 
-    Vec2 center = (p1 + p2) * 0.5f;
-    Capsule capsule{ p1, p2, radius, true };
+    Vec2 center = (point1 + point2) * 0.5f;
+    Capsule capsule{ point1, point2, radius, true };
     b->CreateCollider(&capsule);
+
     if (resetPosition == false)
     {
         b->Translate(center);
     }
+
     return b;
 }
 
@@ -647,14 +649,14 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 }
 
 RigidBody* World::CreateRegularPolygon(
-    float length, int32 vertexCount, float initial_angle, RigidBody::Type type, float radius, float density)
+    float length, int32 vertexCount, float initialAngle, RigidBody::Type type, float radius, float density)
 {
     if (vertexCount < 3)
     {
         vertexCount = LinearRand(3, 12);
     }
 
-    float angleStart = initial_angle - MULI_PI / 2.0f;
+    float angleStart = initialAngle - MULI_PI / 2.0f;
     float angle = MULI_PI * 2.0f / vertexCount;
 
     std::vector<Vec2> vertices;
@@ -664,7 +666,7 @@ RigidBody* World::CreateRegularPolygon(
     {
         float currentAngle = angleStart + angle * i;
 
-        Vec2 corner = Vec2{ Cos(currentAngle), Sin(currentAngle) };
+        Vec2 corner{ Cos(currentAngle), Sin(currentAngle) };
         corner *= length * Sqrt(2.0f);
 
         vertices.push_back(corner);

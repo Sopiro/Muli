@@ -295,9 +295,80 @@ struct Vec4
     {
     }
 
+    void SetZero()
+    {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        w = 0.0f;
+    }
+
+    void Set(float _x, float _y, float _z, float _w)
+    {
+        x = _x;
+        y = _y;
+        z = _z;
+        w = _w;
+    }
+
+    float operator[](int32 i) const
+    {
+        return (&x)[i];
+    }
+
     float& operator[](int32 i)
     {
         return (&x)[i];
+    }
+
+    Vec4 operator-() const
+    {
+        return Vec4{ -x, -y, -z, -w };
+    }
+
+    void operator+=(const Vec4& v)
+    {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        w += v.w;
+    }
+
+    void operator-=(const Vec4& v)
+    {
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        w -= v.w;
+    }
+
+    void operator+=(float s)
+    {
+        x += s;
+        y += s;
+        z += s;
+        w += s;
+    }
+
+    void operator-=(float s)
+    {
+        x -= s;
+        y -= s;
+        z -= s;
+        w -= s;
+    }
+
+    void operator*=(float s)
+    {
+        x *= s;
+        y *= s;
+        z *= s;
+        w *= s;
+    }
+
+    void operator/=(float s)
+    {
+        operator*=(1.0f / s);
     }
 };
 
@@ -800,6 +871,21 @@ inline bool operator==(const Vec4& a, const Vec4& b)
 inline bool operator!=(const Vec4& a, const Vec4& b)
 {
     return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
+}
+
+inline Vec4 operator*(const Vec4& v, float s)
+{
+    return Vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
+}
+
+inline Vec4 operator*(float s, const Vec4& v)
+{
+    return Vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
+}
+
+inline Vec4 operator/(const Vec4& v, float s)
+{
+    return v * (1.0f / s);
 }
 
 // Vec4 functions end

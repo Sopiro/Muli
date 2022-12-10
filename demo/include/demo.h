@@ -14,7 +14,7 @@ struct DebugOptions;
 class Demo : public JointDestoryCallback
 {
 public:
-    Demo(Game& _game);
+    Demo(Game& game);
     virtual ~Demo();
 
     virtual void UpdateInput();
@@ -22,7 +22,8 @@ public:
     virtual void UpdateUI() {}
     virtual void Render() {}
 
-    virtual void OnDestroy(Joint* me)
+    // from JointDestoryCallback
+    virtual void OnDestroy(Joint* me) override
     {
         gj = nullptr;
     }
@@ -63,9 +64,10 @@ protected:
     float dt;
     Vec2 cursorPos;
     std::vector<Collider*> qr;
-    RigidBody* targetBody = nullptr;
-    Collider* targetCollider = nullptr;
-    GrabJoint* gj = nullptr;
+
+    RigidBody* targetBody;
+    Collider* targetCollider;
+    GrabJoint* gj;
 
     void ComputeProperty();
     void EnableKeyboardShortcut();

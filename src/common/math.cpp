@@ -3,6 +3,61 @@
 namespace muli
 {
 
+Mat3 Mat3::Scale(float x, float y)
+{
+    Mat3 t;
+
+    t.ex = ex * x;
+    t.ey = ey * y;
+    t.ez = ez;
+
+    return t;
+}
+
+Mat3 Mat3::Rotate(float z)
+{
+    float sin = sinf(z);
+    float cos = cosf(z);
+
+    Mat3 t;
+
+    // clang-format off
+    t.ex.x = cos; t.ey.x = -sin; t.ez.x = 0;
+    t.ex.y = sin; t.ey.y = cos;  t.ez.y = 0;
+    t.ex.z = 0;   t.ey.z = 0;    t.ez.z = 1;
+    // clang-format on
+
+    return Mul(*this, t);
+}
+
+Mat3 Mat3::Translate(float x, float y)
+{
+    Mat3 t;
+
+    t.ex = ex;
+    t.ey = ey;
+
+    t.ez.x = ex.x * x + ey.x * y + ez.x;
+    t.ez.y = ex.y * x + ey.y * y + ez.y;
+    t.ez.z = ez.z;
+
+    return t;
+}
+
+Mat3 Mat3::Translate(const Vec2& v)
+{
+    Mat3 t;
+
+    t.ex = ex;
+    t.ey = ey;
+
+    t.ez.x = ex.x * v.x + ey.x * v.y + ez.x;
+    t.ez.y = ex.y * v.x + ey.y * v.y + ez.y;
+    t.ez.z = ez.z;
+
+    return t;
+}
+
 Mat3 Mat3::GetInverse() const
 {
     Mat3 t;
@@ -27,61 +82,16 @@ Mat3 Mat3::GetInverse() const
     return t;
 }
 
-Mat3 Mat3::Scale(float x, float y)
-{
-    Mat3 t{ 1.0f };
-
-    t.ex.x = x;
-    t.ey.y = y;
-
-    return Mul(*this, t);
-}
-
-Mat3 Mat3::Rotate(float z)
-{
-    float sin = sinf(z);
-    float cos = cosf(z);
-
-    Mat3 t;
-
-    // clang-format off
-    t.ex.x = cos; t.ey.x = -sin; t.ez.x = 0;
-    t.ex.y = sin; t.ey.y = cos;  t.ez.y = 0;
-    t.ex.z = 0;   t.ey.z = 0;    t.ez.z = 1;
-    // clang-format on
-
-    return Mul(*this, t);
-}
-
-Mat3 Mat3::Translate(float x, float y)
-{
-    Mat3 t{ 1.0f };
-
-    t.ez.x = x;
-    t.ez.y = y;
-
-    return Mul(*this, t);
-}
-
-Mat3 Mat3::Translate(const Vec2& v)
-{
-    Mat3 t{ 1.0f };
-
-    t.ez.x = v.x;
-    t.ez.y = v.y;
-
-    return Mul(*this, t);
-}
-
 Mat4 Mat4::Scale(float x, float y, float z)
 {
-    Mat4 t{ 1.0f };
+    Mat4 t;
 
-    t.ex.x = x;
-    t.ey.y = y;
-    t.ez.z = z;
+    t.ex = ex * x;
+    t.ey = ey * y;
+    t.ez = ez * z;
+    t.ew = ew;
 
-    return Mul(*this, t);
+    return t;
 }
 
 Mat4 Mat4::Rotate(float x, float y, float z)
@@ -120,24 +130,34 @@ Mat4 Mat4::Rotate(float x, float y, float z)
 
 Mat4 Mat4::Translate(float x, float y, float z)
 {
-    Mat4 t{ 1.0f };
+    Mat4 t;
 
-    t.ew.x = x;
-    t.ew.y = y;
-    t.ew.z = z;
+    t.ex = ex;
+    t.ey = ey;
+    t.ez = ez;
 
-    return Mul(*this, t);
+    t.ew.x = ex.x * x + ey.x * y + ez.x * z + ew.x;
+    t.ew.y = ex.y * x + ey.y * y + ez.y * z + ew.y;
+    t.ew.z = ex.z * x + ey.z * y + ez.z * z + ew.z;
+    t.ew.w = ew.w;
+
+    return t;
 }
 
 Mat4 Mat4::Translate(const Vec3& v)
 {
-    Mat4 t{ 1.0f };
+    Mat4 t;
 
-    t.ew.x = v.x;
-    t.ew.y = v.y;
-    t.ew.z = v.z;
+    t.ex = ex;
+    t.ey = ey;
+    t.ez = ez;
 
-    return Mul(*this, t);
+    t.ew.x = ex.x * v.x + ey.x * v.y + ez.x * v.z + ew.x;
+    t.ew.y = ex.y * v.x + ey.y * v.y + ez.y * v.z + ew.y;
+    t.ew.z = ex.z * v.x + ey.z * v.y + ez.z * v.z + ew.z;
+    t.ew.w = ew.w;
+
+    return t;
 }
 
 Mat4 Mat4::GetInverse()
