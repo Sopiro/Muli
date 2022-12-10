@@ -42,7 +42,7 @@ private:
 
 inline void ContactManager::AddCollider(Collider* collider)
 {
-    broadPhase.Add(collider);
+    broadPhase.Add(collider, collider->GetAABB());
 }
 
 inline void ContactManager::RemoveCollider(Collider* collider)
@@ -74,11 +74,6 @@ inline void ContactManager::RemoveCollider(Collider* collider)
 inline int32 ContactManager::GetContactCount() const
 {
     return contactCount;
-}
-
-inline void ContactManager::UpdateCollider(Collider* collider)
-{
-    broadPhase.Update(collider);
 }
 
 } // namespace muli

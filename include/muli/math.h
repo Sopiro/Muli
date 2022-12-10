@@ -690,14 +690,17 @@ struct Sweep
     {
     }
 
+    // Get the interpolated transform at time beta, where alpha0 <= beta <= alpha
     void GetTransform(float beta, Transform* transform) const;
 
+    // Advance the sweep forward, yielding a new initial state.
     void Advance(float alpha);
 
+    // Normalize an angle in radians to be between -pi and pi
     void Normalize();
 
-    Vec2 localCenter;
-    Vec2 c0, c;
+    Vec2 localCenter; // Center of mass relative to the local origin
+    Vec2 c0, c;       // World space position relative to the center of mass
     float a0, a;
 
     float alpha0;

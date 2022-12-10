@@ -38,6 +38,10 @@ void Island::Solve()
     {
         RigidBody* b = bodies[i];
 
+        // Save positions for continuous collision
+        b->sweep.c0 = b->sweep.c;
+        b->sweep.a0 = b->sweep.a;
+
         // All bodies on this island are resting more than sleep time, but flags are not set
         if (sleeping)
         {

@@ -6,7 +6,7 @@
 
 // Default broad phase settings
 #define DEFAULT_AABB_MARGIN 0.05f
-#define DEFAULT_VELOCITY_MULTIPLIER 4.0f
+#define DEFAULT_AABB_MULTIPLIER 4.0f
 
 // Default body settings
 #define DEFAULT_RADIUS 0.005f // stable if greater than 0.5 * PENETRATION_SLOP
@@ -51,6 +51,8 @@ struct WorldSettings
     float sleeping_treshold = 0.5f;                                                        // second
     float rest_linear_tolerance = 0.01f * 0.01f;                                           // (m/s)^2
     float reset_angular_tolerance = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
+
+    bool continuous = true;
 
     AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 

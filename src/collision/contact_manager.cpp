@@ -184,4 +184,34 @@ void ContactManager::Reset()
     contactCount = 0;
 }
 
+void ContactManager::UpdateCollider(Collider* collider)
+{
+    RigidBody* body = collider->body;
+
+    if (body->IsContinuous())
+    {
+        Sweep* sweep = &body->sweep;
+
+        Transform tf0;
+        sweep->GetTransform(0.0f, &tf0);
+
+        const Shape* shape = collider->GetShape();
+
+        AABB aabb0, aabb1;
+        shape->ComputeAABB(tf0, &aabb0);
+        shape->ComputeAABB(body->transform, &aabb1);
+
+        Vec2 prediction = aabb1.GetCenter() - aabb0.GetCenter();
+
+        aabb1.min += prediction;
+        aabb1.max += prediction;
+
+        broadPhase.Update(collider, Union(aabb0, aabb1), collider->body->linearVelocity * world->settings.dt);
+    }
+    else
+    {
+        broadPhase.Update(collider, collider->GetAABB(), collider->body->linearVelocity * world->settings.dt);
+    }
+}
+
 } // namespace muli

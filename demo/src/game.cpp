@@ -47,7 +47,7 @@ void Game::UpdateUI()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 505 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 240, 510 }, ImGuiCond_Once);
 
     if (ImGui::Begin("Control Panel"))
     {
@@ -127,6 +127,7 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Contact block solve", &settings.block_solve);
                     ImGui::Checkbox("Warm starting", &settings.warm_starting);
                     ImGui::Checkbox("Sleeping", &settings.sleeping);
+                    ImGui::Checkbox("Continuous", &settings.continuous);
                 }
 
                 World& world = demo->GetWorld();
@@ -144,6 +145,7 @@ void Game::UpdateUI()
 
                 if (t)
                 {
+                    ImGui::Text("Continuous: %s", t->IsContinuous() ? "true" : "false");
                     ImGui::Text("Mass: %.4f", t->GetMass());
                     ImGui::Text("Inertia: %.4f", t->GetInertia());
                     ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);

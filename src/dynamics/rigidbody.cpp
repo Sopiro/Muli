@@ -350,7 +350,7 @@ void RigidBody::ResetMassData()
 
     if (inertia > 0.0f && (flag & flag_fixed_rotation) == 0)
     {
-        // Center the inertia about the center of mass.
+        // Center the inertia about the center of mass
         inertia -= mass * Length2(sweep.localCenter);
         invInertia = 1.0f / inertia;
     }

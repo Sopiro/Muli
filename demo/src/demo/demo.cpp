@@ -432,6 +432,7 @@ extern DemoFrame contact_callbacks;
 extern DemoFrame logo;
 extern DemoFrame breakable;
 extern DemoFrame distance_test;
+extern DemoFrame toi_test;
 
 static int32 init_demos()
 {
@@ -480,6 +481,7 @@ static int32 init_demos()
     demos[demo_count++] = logo;
     demos[demo_count++] = breakable;
     demos[demo_count++] = distance_test;
+    demos[demo_count++] = toi_test;
 
     return demo_count;
 }

@@ -6,11 +6,11 @@
 namespace muli
 {
 
-BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager, float _aabbMargin, float _velocityMultiplier)
+BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager, float _aabbMargin, float _aabbMultiplier)
     : world{ _world }
     , contactManager{ _contactManager }
     , aabbMargin{ _aabbMargin }
-    , velocityMultiplier{ _velocityMultiplier }
+    , aabbMultiplier{ _aabbMultiplier }
 {
 }
 
@@ -19,20 +19,21 @@ BroadPhase::~BroadPhase() noexcept
     Reset();
 }
 
-void BroadPhase::Update(Collider* collider)
+void BroadPhase::Update(Collider* collider, AABB aabb, const Vec2& displacement)
 {
     int32 node = collider->node;
     AABB treeAABB = tree.nodes[node].aabb;
-    AABB aabb = collider->GetAABB();
 
     RigidBody* body = collider->body;
 
-    if (ContainsAABB(treeAABB, aabb) && body->resting < world->settings.sleeping_treshold)
+    bool awake = body->resting < world->settings.sleeping_treshold;
+
+    if (ContainsAABB(treeAABB, aabb) && awake)
     {
         return;
     }
 
-    Vec2 d = body->linearVelocity * world->settings.dt * velocityMultiplier;
+    Vec2 d = displacement * aabbMultiplier;
 
     if (d.x > 0.0f)
     {

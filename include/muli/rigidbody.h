@@ -36,6 +36,7 @@ public:
         flag_island = 1 << 0,
         flag_sleeping = 1 << 1,
         flag_fixed_rotation = 1 << 2,
+        flag_continuous = 1 << 3,
     };
 
     RigidBody(RigidBody::Type type);
@@ -46,6 +47,8 @@ public:
 
     RigidBody(RigidBody&&) noexcept = delete;
     RigidBody& operator=(RigidBody&&) = delete;
+
+    const Sweep& GetSweep() const;
 
     const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
@@ -89,8 +92,12 @@ public:
 
     Type GetType() const;
     bool IsSleeping() const;
+
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
+
+    void SetContinuous(bool continuous);
+    bool IsContinuous() const;
 
     int32 GetIslandID() const;
     RigidBody* GetPrev() const;
@@ -219,6 +226,11 @@ private:
     RigidBody* prev;
     RigidBody* next;
 };
+
+inline const Sweep& RigidBody::GetSweep() const
+{
+    return sweep;
+}
 
 inline const Vec2& RigidBody::GetLocalCenter() const
 {
@@ -469,7 +481,24 @@ inline void RigidBody::SetFixedRotation(bool fixed)
 
 inline bool RigidBody::IsRotationFixed() const
 {
-    return (flag & flag_fixed_rotation) == flag_fixed_rotation;
+    return (flag & flag_fixed_rotation) != 0;
+}
+
+inline void RigidBody::SetContinuous(bool continuous)
+{
+    if (continuous)
+    {
+        flag |= flag_continuous;
+    }
+    else
+    {
+        flag &= ~flag_continuous;
+    }
+}
+
+inline bool RigidBody::IsContinuous() const
+{
+    return (flag & flag_continuous) != 0;
 }
 
 inline int32 RigidBody::GetIslandID() const
@@ -505,6 +534,7 @@ inline int32 RigidBody::GetColliderCount() const
 inline void RigidBody::SynchronizeTransform()
 {
     transform.rotation = sweep.a;
+    // Shift to origin
     transform.position = sweep.c - (transform.rotation * sweep.localCenter);
 }
 

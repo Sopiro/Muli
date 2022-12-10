@@ -82,6 +82,7 @@ set(DEMO_SOURCE_FILES
     src/demo/breakable.cpp
     src/demo/compute_distance_shape.cpp
     src/demo/capsule_stacking.cpp
+    src/demo/toi_test.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

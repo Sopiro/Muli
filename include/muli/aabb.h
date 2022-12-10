@@ -9,6 +9,11 @@ struct AABB
 {
     Vec2 min;
     Vec2 max;
+
+    Vec2 GetCenter() const
+    {
+        return (min + max) * 0.5f;
+    }
 };
 
 inline float Area(const AABB& aabb)
