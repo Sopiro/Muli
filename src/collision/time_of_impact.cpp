@@ -1,4 +1,5 @@
 #include "muli/time_of_impact.h"
+#include "muli/settings.h"
 
 namespace muli
 {
@@ -14,8 +15,8 @@ struct SeparationFunction
 
     void Initialize(const ClosestFeatures& closestFeatures,
                     const Shape* _shapeA,
-                    const Shape* _shapeB,
                     const Sweep& _sweepA,
+                    const Shape* _shapeB,
                     const Sweep& _sweepB,
                     float t1)
     {
@@ -154,6 +155,9 @@ struct SeparationFunction
             float separation = Dot(normal, pointA - pointB);
             return separation;
         }
+        default:
+            muliAssert(false);
+            return 0.0f;
         }
     }
 
@@ -200,6 +204,9 @@ struct SeparationFunction
             float separation = Dot(normal, pointA - pointB);
             return separation;
         }
+        default:
+            muliAssert(false);
+            return 0.0f;
         }
     }
 
@@ -211,5 +218,181 @@ struct SeparationFunction
     Vec2 localPoint;
     Vec2 axis;
 };
+
+constexpr int32 max_iteration = 20;
+
+void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
+{
+    output->state = TOIOutput::unknown;
+    output->t = input.tMax;
+
+    const Shape* shapeA = input.shapeA;
+    const Shape* shapeB = input.shapeB;
+
+    Sweep sweepA = input.sweepA;
+    Sweep sweepB = input.sweepB;
+
+    sweepA.Normalize();
+    sweepB.Normalize();
+
+    float tMax = input.tMax;
+
+    float r2 = shapeA->GetRadius() + shapeB->GetRadius();
+    float target = Max(LINEAR_SLOP, r2 - 2.0f * LINEAR_SLOP);
+    float tolerance = 0.25f * LINEAR_SLOP;
+    muliAssert(target > tolerance);
+
+    float t1 = 0.0f;
+    int32 iteration = 0;
+
+    ClosestFeatures cf;
+
+    while (true)
+    {
+        Transform tfA, tfB;
+        sweepA.GetTransform(t1, &tfA);
+        sweepB.GetTransform(t1, &tfB);
+
+        // Get the initial separation
+        float distance = GetClosestFeatures(shapeA, tfA, shapeB, tfB, &cf);
+
+        // Two shapes are overlapped at initial configuration
+        if (distance == 0.0f)
+        {
+            // Failure!
+            output->state = TOIOutput::overlapped;
+            output->t = 0.0f;
+            break;
+        }
+
+        if (distance < target + tolerance)
+        {
+            // Victory!
+            output->state = TOIOutput::touching;
+            output->t = t1;
+            break;
+        }
+
+        // Initialize the separating axis
+        SeparationFunction fcn;
+        fcn.Initialize(cf, shapeA, sweepA, shapeB, sweepB, t1);
+
+        // Compute the time of impact on the separating axis
+        // We do this by successively resolving the deepest point
+        bool done = false;
+        float t2 = tMax;
+        while (true)
+        {
+            // Find the deepest point at t2 and save them
+            int32 idA, idB;
+            float s2 = fcn.FindMinSeparation(t2, &idA, &idB);
+
+            // Is the final configuration separated?
+            if (s2 > target + tolerance)
+            {
+                // Victory!
+                output->state = TOIOutput::separated;
+                output->t = tMax;
+                done = true;
+                break;
+            }
+
+            // Has the separation reached tolerance?
+            if (s2 > target - tolerance)
+            {
+                // Advance the sweeps
+                t1 = t2;
+                break;
+            }
+
+            // Compute the initial separation
+            float s1 = fcn.ComputeSeparation(idA, idB, t1);
+
+            // Check for initial overlap
+            // This might happen if the root finder runs out of iterations
+            if (s1 < target - tolerance)
+            {
+                output->state = TOIOutput::failed;
+                output->t = t1;
+                done = true;
+                break;
+            }
+
+            // Check for touching
+            if (s1 <= target + tolerance)
+            {
+                // Victory! t1 should hold the TOI (could be 0.0)
+                output->state = TOIOutput::touching;
+                output->t = t1;
+                done = true;
+                break;
+            }
+
+            // Compute 1D root of: f(x) - target = 0
+            int32 i = 0;
+            float a1 = t1;
+            float a2 = t2;
+            while (true)
+            {
+                float t;
+
+                // Use a mix of secant method and bisection
+                if (i & 1)
+                {
+                    // Secant method
+                    t = a1 + (target - s1) * (a2 - a1) / (s2 - s1);
+                }
+                else
+                {
+                    // Bisection
+                    t = 0.5f * (a1 + a2);
+                }
+
+                ++i;
+
+                float s = fcn.ComputeSeparation(idA, idB, t);
+
+                if (Abs(s - target) < tolerance)
+                {
+                    // t2 holds a tentative value for t1
+                    t2 = t;
+                    break;
+                }
+
+                // Ensure we continue to bracket the root
+                if (s > target)
+                {
+                    a1 = t;
+                    s1 = s;
+                }
+                else
+                {
+                    a2 = t;
+                    s2 = s;
+                }
+
+                if (i == 50)
+                {
+                    break;
+                }
+            }
+        }
+
+        ++iteration;
+
+        if (done)
+        {
+            break;
+        }
+
+        if (iteration == max_iteration)
+        {
+            // Root finder got stuck
+            output->state = TOIOutput::failed;
+            output->t = t1;
+            break;
+        }
+    }
+}
 
 } // namespace muli

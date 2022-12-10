@@ -1144,6 +1144,11 @@ inline Vec3 Min(const Vec3& a, const Vec3& b)
     return Vec3(Min(a.x, b.x), Min(a.y, b.y), Min(a.z, b.z));
 }
 
+inline float Max(float a, float b)
+{
+    return fmaxf(a, b);
+}
+
 template <typename T>
 inline T Max(T a, T b)
 {

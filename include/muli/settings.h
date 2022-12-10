@@ -28,6 +28,8 @@
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
 
+#define LINEAR_SLOP 0.005f
+
 namespace muli
 {
 
@@ -40,8 +42,8 @@ struct WorldSettings
     bool warm_starting = true;
     float position_correction = 0.2f; // 0.0 ~ 1.0
 
-    float penetration_slop = 0.005f; // meter
-    float restitution_slop = 0.2f;   // m/s
+    float penetration_slop = LINEAR_SLOP; // meter
+    float restitution_slop = 0.2f;        // m/s
 
     bool block_solve = true;
     int32 velocity_iterations = 8;
