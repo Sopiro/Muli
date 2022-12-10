@@ -13,6 +13,7 @@ public:
     ~Capsule() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
+    virtual Vec2 GetVertex(int32 id) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -43,6 +44,12 @@ inline Shape* Capsule::Clone(Allocator* allocator) const
 inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     return Edge{ transform * va, transform * vb, 0, 1 };
+}
+
+inline Vec2 Capsule::GetVertex(int32 id) const
+{
+    muliAssert(id == 0 || id == 1);
+    return id == 0 ? va : vb;
 }
 
 inline ContactPoint Capsule::Support(const Vec2& localDir) const

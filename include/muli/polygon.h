@@ -17,6 +17,7 @@ public:
     ~Polygon();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
+    virtual Vec2 GetVertex(int32 id) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -40,6 +41,12 @@ private:
     Vec2 localVertices[MAX_LOCAL_POLYGON_VERTICES];
     Vec2 localNormals[MAX_LOCAL_POLYGON_VERTICES];
 };
+
+inline Vec2 Polygon::GetVertex(int32 id) const
+{
+    muliAssert(0 <= id && id < vertexCount);
+    return vertices[id];
+}
 
 inline const Vec2* Polygon::GetVertices() const
 {

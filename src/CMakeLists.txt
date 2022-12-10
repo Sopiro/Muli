@@ -11,6 +11,7 @@ set(HEADER_FILES
     ../include/muli/edge.h
     ../include/muli/collision_filter.h
     ../include/muli/distance.h
+    ../include/muli/time_of_impact.h
 
     ../include/muli/rigidbody.h
 
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     collision/simplex.cpp
     collision/polytope.cpp
     collision/distance.cpp
+    collision/time_of_impact.cpp
 
     collision/aabbtree.cpp
     collision/broad_phase.cpp

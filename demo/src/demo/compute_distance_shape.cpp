@@ -86,6 +86,12 @@ public:
                 ll.push_back(f.pointA);
                 ll.push_back(f.pointB);
 
+                // for (int32 i = 0; i < f.count; ++i)
+                // {
+                //     pl.push_back(f.featuresA[i].position);
+                //     pl.push_back(f.featuresB[i].position);
+                // }
+
                 ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
                 ImGui::Begin("Overlay", NULL,
                              ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |

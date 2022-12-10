@@ -72,8 +72,8 @@ Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
 
         if (Dot(normal, localQ - va) < 0.0f)
         {
-            normal *= -1;
-            distance *= -1;
+            normal = -normal;
+            distance = -distance;
         }
 
         closest = localQ + normal * -distance;

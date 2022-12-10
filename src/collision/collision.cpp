@@ -271,8 +271,8 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         distance = Dot(localP - va, normal);
         if (distance < 0.0f)
         {
-            normal *= -1;
-            distance *= -1;
+            normal = -normal;
+            distance = -distance;
         }
         index = 0;
     }
@@ -464,7 +464,7 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
                 Vec2 k = origin - simplex.vertices[0].point;
                 if (Dot(normal, k) < 0)
                 {
-                    normal *= -1;
+                    normal = -normal;
                 }
 
                 manifold->contactNormal = normal;

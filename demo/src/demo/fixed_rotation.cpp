@@ -25,7 +25,7 @@ public:
         {
             if (i % (count / 4) == 0)
             {
-                d *= -1;
+                d = -d;
             }
 
             RigidBody* b = world->CreateBox(size);

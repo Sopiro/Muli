@@ -13,6 +13,7 @@ public:
     ~Circle() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
+    virtual Vec2 GetVertex(int32 id) const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -36,15 +37,22 @@ inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir)
     return Edge{ transform * center, transform * center };
 }
 
+inline Vec2 Circle::GetVertex(int32 id) const
+{
+    muliAssert(id == 0);
+    return center;
+}
+
 inline ContactPoint Circle::Support(const Vec2& localDir) const
 {
-    return ContactPoint{ Vec2{ 0.0f, 0.0f }, 0 };
+    return ContactPoint{ center, 0 };
 }
 
 inline void Circle::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;
-    outMassData->inertia = outMassData->mass * (0.5f * radius * radius + Length2(center));
+    float inertia = 0.5f * radius * radius;
+    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
     outMassData->centerOfMass = center;
 }
 

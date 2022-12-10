@@ -23,8 +23,8 @@ PolytopeEdge Polytope::GetClosestEdge() const
 
         if (distance < 0)
         {
-            distance *= -1;
-            normal *= -1;
+            normal = -normal;
+            distance = -distance;
         }
 
         if (distance < minDistance)
