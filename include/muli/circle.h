@@ -14,6 +14,7 @@ public:
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual Vec2 GetVertex(int32 id) const override;
+    virtual int32 GetVertexCount() const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -41,6 +42,11 @@ inline Vec2 Circle::GetVertex(int32 id) const
 {
     muliAssert(id == 0);
     return center;
+}
+
+inline int32 Circle::GetVertexCount() const
+{
+    return 1;
 }
 
 inline ContactPoint Circle::Support(const Vec2& localDir) const

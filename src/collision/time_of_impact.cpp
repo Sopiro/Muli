@@ -246,6 +246,7 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
 
     float t1 = 0.0f;
     int32 iteration = 0;
+    const int32 maxVertexPushIterations = Max(shapeA->GetVertexCount(), shapeB->GetVertexCount());
 
     ClosestFeatures cf;
 
@@ -286,6 +287,7 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
         // We do this by successively resolving the deepest point
         bool done = false;
         float t2 = tMax;
+        int32 vertexPushInteration = 0;
         while (true)
         {
             // Find the deepest point at t2 and save them
@@ -386,6 +388,12 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
                 {
                     break;
                 }
+            }
+
+            ++vertexPushInteration;
+            if (vertexPushInteration == maxVertexPushIterations)
+            {
+                break;
             }
         }
 

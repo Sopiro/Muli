@@ -18,6 +18,7 @@ public:
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual Vec2 GetVertex(int32 id) const override;
+    virtual int32 GetVertexCount() const override;
     virtual ContactPoint Support(const Vec2& localDir) const override;
     virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -27,7 +28,6 @@ public:
 
     const Vec2* GetVertices() const;
     const Vec2* GetNormals() const;
-    int32 GetVertexCount() const;
     float GetArea() const;
 
 protected:
@@ -48,6 +48,11 @@ inline Vec2 Polygon::GetVertex(int32 id) const
     return vertices[id];
 }
 
+inline int32 Polygon::GetVertexCount() const
+{
+    return vertexCount;
+}
+
 inline const Vec2* Polygon::GetVertices() const
 {
     return vertices;
@@ -56,11 +61,6 @@ inline const Vec2* Polygon::GetVertices() const
 inline const Vec2* Polygon::GetNormals() const
 {
     return normals;
-}
-
-inline int32 Polygon::GetVertexCount() const
-{
-    return vertexCount;
 }
 
 inline float Polygon::GetArea() const
