@@ -18,7 +18,7 @@ float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, c
     float r2 = a->GetRadius() + b->GetRadius();
     if (gjkResult.distance < r2)
     {
-        return 0.0f;
+        return gjkResult.distance - r2;
     }
 
     Simplex& simplex = gjkResult.simplex;
@@ -26,19 +26,19 @@ float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, c
     muliAssert(simplex.count < MAX_SIMPLEX_VERTEX_COUNT);
 
     // displace simplex vertices along normal
-    Vec2 displacementA = gjkResult.direction * a->GetRadius();
-    Vec2 displacementB = gjkResult.direction * -b->GetRadius();
+    // Vec2 displacementA = gjkResult.direction * a->GetRadius();
+    // Vec2 displacementB = gjkResult.direction * -b->GetRadius();
 
     features->count = simplex.count;
     for (int32 i = 0; i < features->count; ++i)
     {
         features->featuresA[i] = simplex.vertices[i].pointA;
         features->featuresB[i] = simplex.vertices[i].pointB;
-        features->featuresA[i].position += displacementA;
-        features->featuresB[i].position += displacementB;
+        // features->featuresA[i].position += displacementA;
+        // features->featuresB[i].position += displacementB;
     }
 
-    return gjkResult.distance - r2;
+    return gjkResult.distance;
 }
 
 float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, Vec2* pointA, Vec2* pointB)

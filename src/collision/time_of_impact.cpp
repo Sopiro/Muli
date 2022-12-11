@@ -247,17 +247,18 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
 
     ClosestFeatures cf;
 
+    // The outer loop progressively attempts to compute new separating axes
     while (true)
     {
         Transform tfA, tfB;
         sweepA.GetTransform(t1, &tfA);
         sweepB.GetTransform(t1, &tfB);
 
-        // Get the initial separation
+        // Get the initial separation and closest features
         float distance = GetClosestFeatures(shapeA, tfA, shapeB, tfB, &cf);
 
         // Two shapes are overlapped at initial configuration
-        if (distance == 0.0f)
+        if (distance <= 0.0f)
         {
             // Failure!
             output->state = TOIOutput::overlapped;
@@ -265,6 +266,8 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
             break;
         }
 
+        // Found the time of impact
+        // 0.0 < distance - target < tolerance
         if (distance < target + tolerance)
         {
             // Victory!
@@ -298,20 +301,23 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
             }
 
             // Has the separation reached tolerance?
+            // -tolerance < s2 - target < tolerance
             if (s2 > target - tolerance)
             {
                 // Advance the sweeps
+                // Repeat the algorithm in domain [ new_t , t_max ]
                 t1 = t2;
                 break;
             }
 
-            // Compute the initial separation
+            // Compute initial the separation for the deepest points at t2
             float s1 = fcn.ComputeSeparation(idA, idB, t1);
 
             // Check for initial overlap
             // This might happen if the root finder runs out of iterations
             if (s1 < target - tolerance)
             {
+                // The worst case scenario
                 output->state = TOIOutput::failed;
                 output->t = t1;
                 done = true;
@@ -319,16 +325,18 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
             }
 
             // Check for touching
+            //  -tolerance < s1 - target <= tolerance
             if (s1 <= target + tolerance)
             {
-                // Victory! t1 should hold the TOI (could be 0.0)
+                // Victory!
+                // t1 should hold the TOI (could be 0.0)
                 output->state = TOIOutput::touching;
                 output->t = t1;
                 done = true;
                 break;
             }
 
-            // Compute 1D root of: f(x) - target = 0
+            // Find 1D root of: f(t) - target = 0
             int32 i = 0;
             float a1 = t1;
             float a2 = t2;
@@ -352,9 +360,10 @@ void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
 
                 float s = fcn.ComputeSeparation(idA, idB, t);
 
+                // Now f(t) is within the tolerance
                 if (Abs(s - target) < tolerance)
                 {
-                    // t2 holds a tentative value for t1
+                    // Let t2 hold a tentative value for t1
                     t2 = t;
                     break;
                 }

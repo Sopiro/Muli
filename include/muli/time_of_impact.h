@@ -21,7 +21,7 @@ struct TOIOutput
         failed,
         overlapped,
         touching,
-        separated
+        separated,
     };
 
     State state;
