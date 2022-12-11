@@ -218,6 +218,7 @@ private:
     std::vector<Joint*> destroyBufferJoint;
 
     void Solve();
+    void SolveTOI();
 
     void FreeBody(RigidBody* body);
     void AddJoint(Joint* joint);

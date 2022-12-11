@@ -214,6 +214,8 @@ protected:
     void SynchronizeTransform();
     void SynchronizeColliders();
 
+    void Advance(float alpha);
+
 private:
     World* world;
     int32 islandID;
@@ -372,12 +374,7 @@ inline const Vec2& RigidBody::GetLinearVelocity() const
 
 inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 {
-    if (type == static_body)
-    {
-        return;
-    }
-
-    linearVelocity = _linearVelocity;
+    SetLinearVelocity(_linearVelocity.x, _linearVelocity.y);
 }
 
 inline void RigidBody::SetLinearVelocity(float vx, float vy)
@@ -536,6 +533,17 @@ inline void RigidBody::SynchronizeTransform()
     transform.rotation = sweep.a;
     // Shift to origin
     transform.position = sweep.c - (transform.rotation * sweep.localCenter);
+}
+
+// Advance to the new safe time
+inline void RigidBody::Advance(float alpha)
+{
+    sweep.Advance(alpha);
+    sweep.c = sweep.c0;
+    sweep.a = sweep.a0;
+
+    transform.rotation = sweep.a;
+    transform.position = sweep.c - transform.rotation * sweep.localCenter;
 }
 
 } // namespace muli

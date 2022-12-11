@@ -57,6 +57,12 @@ private:
     friend class BlockSolver;
     friend class PositionSolver;
 
+    enum
+    {
+        flag_island = 1 << 0,
+        flag_toi = 1 << 1,
+    };
+
     void Update();
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;
@@ -94,6 +100,11 @@ private:
     float cAngularImpulseA;
     Vec2 cLinearImpulseB;
     float cAngularImpulseB;
+
+    uint16 flag;
+
+    int32 toiCount;
+    float toi;
 };
 
 inline Collider* Contact::GetColliderA() const

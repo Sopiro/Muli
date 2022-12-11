@@ -45,7 +45,7 @@ struct SeparationFunction
             axis = featuresB[0].position - featuresA[0].position;
             axis.Normalize();
         }
-        else if (featuresA[0].id == featuresB[1].id)
+        else if (featuresA[0].id == featuresA[1].id)
         {
             // Point A vs. Edge B
             type = edgeB;
@@ -53,16 +53,17 @@ struct SeparationFunction
             Vec2 localPointB0 = shapeB->GetVertex(featuresB[0].id);
             Vec2 localPointB1 = shapeB->GetVertex(featuresB[1].id);
 
+            localPoint = (localPointB0 + localPointB1) * 0.5f;
+
             // separating axis in the frame of body B
             axis = Cross(localPointB1 - localPointB0, 1.0f);
             axis.Normalize();
 
-            // world space face normal
-            Vec2 normal = tfB.rotation * axis;
-
-            Vec2 pointB = (featuresB[0].position + featuresB[1].position) * 0.5f;
+            Vec2 pointB = tfB * localPoint;
             Vec2 pointA = featuresA[0].position;
 
+            // world space face normal
+            Vec2 normal = tfB.rotation * axis;
             float separation = Dot(normal, pointA - pointB);
             if (separation < 0.0f)
             {
@@ -77,16 +78,17 @@ struct SeparationFunction
             Vec2 localPointA0 = shapeA->GetVertex(featuresA[0].id);
             Vec2 localPointA1 = shapeA->GetVertex(featuresA[1].id);
 
-            // separating axis in the frame of body A
+            localPoint = (localPointA0 + localPointA1) * 0.5f;
+
+            // separating axis in the frame of body B
             axis = Cross(localPointA1 - localPointA0, 1.0f);
             axis.Normalize();
 
-            // world space face normal
-            Vec2 normal = tfA.rotation * axis;
-
-            Vec2 pointA = (featuresA[0].position + featuresA[1].position) * 0.5f;
+            Vec2 pointA = tfA * localPoint;
             Vec2 pointB = featuresB[0].position;
 
+            // world space face normal
+            Vec2 normal = tfA.rotation * axis;
             float separation = Dot(normal, pointB - pointA);
             if (separation < 0.0f)
             {

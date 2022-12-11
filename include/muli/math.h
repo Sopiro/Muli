@@ -116,6 +116,8 @@ struct Vec2
     float Normalize()
     {
         float length = Length();
+        assert(length > 0.0f);
+
         float invLength = 1.0f / length;
         x *= invLength;
         y *= invLength;
