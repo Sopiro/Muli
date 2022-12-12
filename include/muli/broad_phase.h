@@ -15,7 +15,7 @@ public:
                ContactManager* contactManager,
                float aabbMargin = DEFAULT_AABB_MARGIN,
                float aabbMultiplier = DEFAULT_AABB_MULTIPLIER);
-    ~BroadPhase() noexcept;
+    ~BroadPhase();
 
     void FindContacts();
     bool TestOverlap(Collider* colliderA, Collider* colliderB) const;
@@ -23,7 +23,6 @@ public:
     void Add(Collider* collider, AABB aabb);
     void Remove(Collider* collider);
     void Update(Collider* collider, AABB aabb, const Vec2& displacement);
-    void Reset();
 
     bool QueryCallback(Collider* collider);
 
@@ -38,29 +37,17 @@ protected:
     float aabbMultiplier;
 
 private:
+    Collider** moveBuffer;
+    int32 moveCount;
+    int32 moveCapacity;
+
     RigidBody* bodyA;
     Collider* colliderA;
     Shape::Type typeA;
+
+    void BufferMove(Collider* collider);
+    void UnBufferMove(Collider* collider);
 };
-
-inline void BroadPhase::Reset()
-{
-    tree.Reset();
-}
-
-inline void BroadPhase::Add(Collider* collider, AABB aabb)
-{
-    // Fatten the aabb
-    aabb.min -= aabbMargin;
-    aabb.max += aabbMargin;
-
-    tree.Insert(collider, aabb);
-}
-
-inline void BroadPhase::Remove(Collider* collider)
-{
-    tree.Remove(collider);
-}
 
 inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) const
 {

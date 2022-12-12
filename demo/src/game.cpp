@@ -14,7 +14,8 @@ Game::Game(Application& _app)
         UpdateProjectionMatrix();
     });
 
-    InitDemo(demo_count - 1);
+    // InitDemo(demo_count - 1);
+    InitDemo(0);
 }
 
 Game::~Game() noexcept

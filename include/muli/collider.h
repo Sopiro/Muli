@@ -73,6 +73,8 @@ private:
 
     Collider* next;
     int32 node;
+
+    bool moved;
 };
 
 inline RigidBody* Collider::GetBody() const

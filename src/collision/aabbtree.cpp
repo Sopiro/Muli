@@ -191,12 +191,12 @@ int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
 
 void AABBTree::Remove(Collider* collider)
 {
-    if (collider->node == nullNode)
+    int32 node = collider->node;
+    if (node == nullNode)
     {
         return;
     }
 
-    int32 node = collider->node;
     int32 parent = nodes[node].parent;
     collider->node = nullNode;
 
@@ -241,11 +241,10 @@ void AABBTree::Remove(Collider* collider)
     }
     else // node is root
     {
-        if (root == node)
-        {
-            root = nullNode;
-            FreeNode(node);
-        }
+        muliAssert(root == node);
+
+        root = nullNode;
+        FreeNode(node);
     }
 }
 

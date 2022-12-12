@@ -18,7 +18,7 @@ ContactManager::ContactManager(World* _world)
 
 ContactManager::~ContactManager()
 {
-    Reset();
+    muliAssert(contactList == nullptr);
 }
 
 void ContactManager::EvaluateContacts()
@@ -161,23 +161,6 @@ void ContactManager::Destroy(Contact* c)
     c->~Contact();
     world->blockAllocator.Free(c, sizeof(Contact));
     --contactCount;
-}
-
-void ContactManager::Reset()
-{
-    broadPhase.Reset();
-
-    Contact* c = contactList;
-    while (c)
-    {
-        Contact* c0 = c;
-        c = c->next;
-        c0->~Contact();
-        world->blockAllocator.Free(c0, sizeof(Contact));
-    }
-    contactList = nullptr;
-
-    contactCount = 0;
 }
 
 void ContactManager::UpdateCollider(Collider* collider)

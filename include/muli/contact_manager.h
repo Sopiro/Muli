@@ -15,7 +15,6 @@ public:
 
     void UpdateContactGraph();
     void EvaluateContacts();
-    void Reset();
 
     int32 GetContactCount() const;
 
