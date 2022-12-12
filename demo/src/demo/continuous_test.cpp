@@ -5,13 +5,10 @@
 namespace muli
 {
 
-class TOITest : public Demo
+class ContinuousTest : public Demo
 {
 public:
-    RigidBody* b;
-    RigidBody* w;
-
-    TOITest(Game& game)
+    ContinuousTest(Game& game)
         : Demo(game)
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
@@ -20,16 +17,20 @@ public:
         float size = 0.3f;
         float gap = 0.25f;
 
-        // b = world->CreateCircle(0.1f);
-        b = world->CreateBox(0.2f);
-        b->SetPosition(0, 3);
+        world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, RigidBody::Type::static_body);
+
+        RigidBody* b;
+        // b = world->CreateBox(0.2f);
+        // b->SetPosition(-3, 1);
+        // b->SetContinuous(true);
+        // b->SetLinearVelocity(100.0f, 0.0f);
+
+        b = world->CreateCapsule(2.8f, 0.05f, true);
+        b->SetPosition(0.0f, 7.2f);
+        b->SetLinearVelocity(0.0f, -100.0f);
+        b->SetAngularVelocity(LinearRand(-20.0f, 20.0f));
         b->SetContinuous(true);
 
-        b->SetLinearVelocity(100.0f, 0.0f);
-
-        w = world->CreateCapsule(Vec2{ 3, 5 }, Vec2{ 3, 0 }, 0.05f, RigidBody::static_body);
-
-        options.show_aabb = true;
         settings.continuous = true;
     }
 
@@ -55,17 +56,14 @@ public:
         }
     }
 
-    ~TOITest()
-    {
-        options.show_aabb = false;
-    }
+    ~ContinuousTest() {}
 
     static Demo* Create(Game& game)
     {
-        return new TOITest(game);
+        return new ContinuousTest(game);
     }
 };
 
-DemoFrame toi_test{ "TOI test", TOITest::Create };
+DemoFrame continuous_test{ "Continuous test", ContinuousTest::Create };
 
 } // namespace muli

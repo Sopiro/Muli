@@ -74,16 +74,16 @@ set(SOURCE_FILES
 
     collision/aabbtree.cpp
     collision/broad_phase.cpp
-    collision/contact_manager.cpp
 
     collision/circle.cpp
     collision/capsule.cpp
     collision/polygon.cpp
 
+    dynamics/world.cpp
     dynamics/collider.cpp
     dynamics/rigidbody.cpp
     dynamics/island.cpp
-    dynamics/world.cpp
+    dynamics/contact_manager.cpp
 
     dynamics/constraint/contact/contact.cpp
     dynamics/constraint/contact/contact_solver.cpp
