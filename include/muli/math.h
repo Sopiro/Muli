@@ -1304,6 +1304,7 @@ inline void Sweep::GetTransform(float beta, Transform* transform) const
 
 inline void Sweep::Advance(float alpha)
 {
+    // alpha0 < alpha < 1.0f
     assert(alpha0 < 1.0f);
     float beta = (alpha - alpha0) / (1.0f - alpha0);
     c0 += beta * (c - c0);

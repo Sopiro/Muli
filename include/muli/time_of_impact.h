@@ -28,6 +28,6 @@ struct TOIOutput
     float t;
 };
 
-void FindTimeOfImpact(const TOIInput& input, TOIOutput* output);
+void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output);
 
 } // namespace muli

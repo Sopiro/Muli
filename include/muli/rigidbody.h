@@ -210,6 +210,8 @@ protected:
 
     uint16 flag;
 
+    int32 islandIndex;
+
     void ResetMassData();
     void SynchronizeTransform();
     void SynchronizeColliders();
@@ -351,6 +353,11 @@ inline float RigidBody::GetInertiaLocalOrigin() const
 
 inline void RigidBody::Awake()
 {
+    if (type == Type::static_body)
+    {
+        return;
+    }
+
     resting = 0.0f;
     flag &= ~Flag::flag_sleeping;
 }
@@ -459,7 +466,7 @@ inline RigidBody::Type RigidBody::GetType() const
 
 inline bool RigidBody::IsSleeping() const
 {
-    return flag & Flag::flag_sleeping;
+    return (flag & Flag::flag_sleeping) == Flag::flag_sleeping;
 }
 
 inline void RigidBody::SetFixedRotation(bool fixed)
@@ -478,7 +485,7 @@ inline void RigidBody::SetFixedRotation(bool fixed)
 
 inline bool RigidBody::IsRotationFixed() const
 {
-    return (flag & flag_fixed_rotation) != 0;
+    return (flag & Flag::flag_fixed_rotation) == Flag::flag_fixed_rotation;
 }
 
 inline void RigidBody::SetContinuous(bool continuous)
@@ -495,7 +502,7 @@ inline void RigidBody::SetContinuous(bool continuous)
 
 inline bool RigidBody::IsContinuous() const
 {
-    return (flag & flag_continuous) != 0;
+    return (flag & flag_continuous) == flag_continuous;
 }
 
 inline int32 RigidBody::GetIslandID() const
@@ -536,6 +543,8 @@ inline void RigidBody::SynchronizeTransform()
 }
 
 // Advance to the new safe time
+// c0 = c = sweep(alpha)
+// a0 = a = sweep(alpha)
 inline void RigidBody::Advance(float alpha)
 {
     sweep.Advance(alpha);

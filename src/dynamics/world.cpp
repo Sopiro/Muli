@@ -146,14 +146,17 @@ void World::Solve()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
+        body->sweep.alpha0 = 0.0f;
+
         if ((body->flag & RigidBody::Flag::flag_island) == 0)
         {
             continue;
         }
 
+        muliAssert(body->type != RigidBody::Type::static_body);
+
         // Clear island flag
         body->flag &= ~RigidBody::Flag::flag_island;
-        body->sweep.alpha0 = 0.0f;
 
         // Synchronize transform and collider tree node
         body->SynchronizeTransform();
@@ -169,22 +172,22 @@ void World::SolveTOI()
 {
     Island island{ this, 2 * max_toi_contacts, max_toi_contacts, 0 };
 
-    for (Contact* c = contactManager.contactList; c; c = c->next)
-    {
-        // Invalidate TOI
-        c->flag &= ~(Contact::flag_toi | Contact::flag_island);
-        c->toiCount = 0;
-        c->toi = 1.0f;
-    }
-
+    // Find TOI events and solve them
     while (true)
     {
+        contactManager.UpdateContactGraph();
+
         // Find the first TOI
         Contact* minContact = nullptr;
         float minAlpha = 1.0f;
 
         for (Contact* c = contactManager.contactList; c; c = c->next)
         {
+            if (c->IsEnabled() == false)
+            {
+                continue;
+            }
+
             if (c->toiCount > max_sub_steps)
             {
                 continue;
@@ -222,15 +225,15 @@ void World::SolveTOI()
                 bool collideB = bodyB->IsContinuous() || typeB != RigidBody::Type::dynamic_body;
 
                 // Are these two non-continuous dynamic bodies?
+                // Discard non-continuous vs non-continuous case
                 if (collideA == false && collideB == false)
                 {
                     continue;
                 }
 
-                // Compute the TOI for this contact.
-                // Put the sweeps onto the same time interval.
+                // Compute the TOI for this contact
+                // Put the sweeps onto the same time interval
                 float alpha0 = bodyA->sweep.alpha0;
-
                 if (bodyA->sweep.alpha0 < bodyB->sweep.alpha0)
                 {
                     alpha0 = bodyB->sweep.alpha0;
@@ -249,16 +252,16 @@ void World::SolveTOI()
                 input.shapeB = colliderB->shape;
                 input.sweepA = bodyA->sweep;
                 input.sweepB = bodyB->sweep;
+                // input.tMax = minAlpha;
                 input.tMax = 1.0f;
 
                 TOIOutput output;
-                FindTimeOfImpact(input, &output);
+                ComputeTimeOfImpact(input, &output);
 
-                float beta = output.t;
                 if (output.state == TOIOutput::touching)
                 {
-                    // Beta is the fraction in [alpha0, 1.0]
-                    alpha = Min(alpha0 + (1.0f - alpha0) * beta, 1.0f);
+                    // TOI is the fraction in [alpha0, 1.0]
+                    alpha = Min(alpha0 + (1.0f - alpha0) * output.t, 1.0f);
                 }
                 else
                 {
@@ -305,6 +308,7 @@ void World::SolveTOI()
         if (minContact->IsTouching() == false)
         {
             // Restore the sweeps
+            minContact->SetEnabled(false); // Prevent duplicate
             bodyA->sweep = save1;
             bodyB->sweep = save2;
             bodyA->SynchronizeTransform();
@@ -312,8 +316,8 @@ void World::SolveTOI()
             continue;
         }
 
-        bodyA->Awake();
-        bodyB->Awake();
+        // bodyA->Awake();
+        // bodyB->Awake();
 
         // Build the island
         island.Clear();
@@ -325,7 +329,11 @@ void World::SolveTOI()
         bodyB->flag |= RigidBody::flag_island;
         minContact->flag |= Contact::flag_island;
 
-        island.Solve();
+        // subs-tep the rest time
+        float dt = (1.0f - minAlpha) * settings.dt;
+        settings.warm_starting = false;
+        island.SolveTOI(dt);
+        settings.warm_starting = true;
 
         // Reset island flags and synchronize broad-phase
         for (int32 i = 0; i < island.bodyCount; ++i)
@@ -340,12 +348,26 @@ void World::SolveTOI()
 
             body->SynchronizeColliders();
 
-            // Invalidate all contact TOIs on this displaced body.
+            // Invalidate all contact TOIs on this displaced body
             for (ContactEdge* ce = body->contactList; ce; ce = ce->next)
             {
                 ce->contact->flag &= ~(Contact::flag_toi | Contact::flag_island);
             }
         }
+    }
+
+    for (RigidBody* body = bodyList; body; body = body->next)
+    {
+        body->sweep.alpha0 = 0.0f;
+        body->flag &= ~RigidBody::Flag::flag_island;
+    }
+
+    for (Contact* contact = contactManager.contactList; contact; contact = contact->next)
+    {
+        // Invalidate TOI
+        contact->flag &= ~(Contact::flag_toi | Contact::flag_island);
+        contact->toiCount = 0;
+        contact->toi = 1.0f;
     }
 }
 
@@ -360,6 +382,9 @@ void World::Step(float dt)
     }
 
     contactManager.UpdateContactGraph();
+
+    // Narrow phase
+    contactManager.EvaluateContacts();
 
     Solve();
 

@@ -112,6 +112,7 @@ void Demo::EnableBodyCreate()
         {
             RigidBody* b = create_circle ? world->CreateCircle(0.15f * 1.414f) : world->CreateBox(0.3f);
             b->SetPosition(mStart);
+            b->SetContinuous(true);
 
             Vec2 f = mStart - cursorPos;
             f *= settings.inv_dt * b->GetMass() * 3.0f;

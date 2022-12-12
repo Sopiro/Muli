@@ -21,12 +21,8 @@ ContactManager::~ContactManager()
     Reset();
 }
 
-void ContactManager::UpdateContactGraph()
+void ContactManager::EvaluateContacts()
 {
-    // Find contacts, insert into the contact graph
-    // broadphase will callback OnNewContact()
-    broadPhase.FindContacts();
-
     // Narrow phase
     // Evaluate contacts, prepare for solving step
     Contact* c = contactList;

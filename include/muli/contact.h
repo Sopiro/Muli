@@ -48,6 +48,9 @@ public:
     float GetSurfaceSpeed() const;
     bool IsTouching() const;
 
+    void SetEnabled(bool enabled);
+    bool IsEnabled() const;
+
 private:
     friend class World;
     friend class Island;
@@ -59,8 +62,9 @@ private:
 
     enum
     {
-        flag_island = 1 << 0,
-        flag_toi = 1 << 1,
+        flag_enabled = 1,
+        flag_island = 1 << 1,
+        flag_toi = 1 << 2,
     };
 
     void Update();
@@ -150,6 +154,23 @@ inline float Contact::GetSurfaceSpeed() const
 inline bool Contact::IsTouching() const
 {
     return touching;
+}
+
+inline void Contact::SetEnabled(bool enabled)
+{
+    if (enabled)
+    {
+        flag |= flag_enabled;
+    }
+    else
+    {
+        flag &= ~flag_enabled;
+    }
+}
+
+inline bool Contact::IsEnabled() const
+{
+    return (flag & flag_enabled) == flag_enabled;
 }
 
 } // namespace muli

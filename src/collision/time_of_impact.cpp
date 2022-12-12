@@ -223,7 +223,7 @@ struct SeparationFunction
 
 constexpr int32 max_iteration = 20;
 
-void FindTimeOfImpact(const TOIInput& input, TOIOutput* output)
+void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
 {
     output->state = TOIOutput::unknown;
     output->t = input.tMax;

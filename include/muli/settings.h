@@ -39,9 +39,6 @@ struct WorldSettings
     bool apply_gravity = true;
     Vec2 gravity{ 0.0f, -10.0f };
 
-    bool warm_starting = true;
-    float position_correction = 0.2f; // 0.0 ~ 1.0
-
     float penetration_slop = LINEAR_SLOP; // meter
     float restitution_slop = 0.2f;        // m/s
 
@@ -54,12 +51,15 @@ struct WorldSettings
     float rest_linear_tolerance = 0.01f * 0.01f;                                           // (m/s)^2
     float reset_angular_tolerance = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
 
-    bool continuous = true;
+    bool continuous = false;
 
     AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 
     mutable float dt;
     mutable float inv_dt;
+
+    mutable bool warm_starting = true;
+    float position_correction = 0.2f; // 0.0 ~ 1.0
 };
 
 } // namespace muli

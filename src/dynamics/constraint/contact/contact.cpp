@@ -32,6 +32,9 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 void Contact::Update()
 {
     ContactManifold oldManifold = manifold;
+
+    flag |= flag_enabled;
+
     float oldNormalImpulse[MAX_CONTACT_POINT];
     float oldTangentImpulse[MAX_CONTACT_POINT];
 

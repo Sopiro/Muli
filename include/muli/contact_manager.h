@@ -14,6 +14,7 @@ public:
     ~ContactManager();
 
     void UpdateContactGraph();
+    void EvaluateContacts();
     void Reset();
 
     int32 GetContactCount() const;
@@ -39,6 +40,13 @@ private:
     void Destroy(Contact* c);
     void OnNewContact(Collider*, Collider*);
 };
+
+inline void ContactManager::UpdateContactGraph()
+{
+    // Find contacts, insert into the contact graph
+    // broadphase will callback OnNewContact()
+    broadPhase.FindContacts();
+}
 
 inline void ContactManager::AddCollider(Collider* collider)
 {

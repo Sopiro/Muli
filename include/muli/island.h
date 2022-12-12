@@ -18,6 +18,7 @@ private:
     void Add(Joint* joint);
 
     void Solve();
+    void SolveTOI(float dt);
     void Clear();
 
     World* world;
@@ -40,6 +41,7 @@ private:
 inline void Island::Add(RigidBody* body)
 {
     muliAssert(bodyCount < bodyCapacity);
+    body->islandIndex = bodyCount;
     bodies[bodyCount++] = body;
 }
 

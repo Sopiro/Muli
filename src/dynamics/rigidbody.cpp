@@ -12,6 +12,7 @@ namespace muli
 RigidBody::RigidBody(RigidBody::Type _type)
     : type{ _type }
     , flag{ 0 }
+    , islandIndex{ 0 }
     , world{ nullptr }
     , islandID{ 0 }
     , resting{ 0.0f }

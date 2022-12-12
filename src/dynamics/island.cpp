@@ -187,4 +187,29 @@ void Island::Solve()
     }
 }
 
+void Island::SolveTOI(float dt)
+{
+    for (int32 i = 0; i < contactCount; ++i)
+    {
+        contacts[i]->Prepare();
+    }
+
+    for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
+    {
+        for (int32 j = 0; j < contactCount; ++j)
+        {
+            contacts[j]->SolveVelocityConstraint();
+        }
+    }
+
+    for (int32 i = 0; i < bodyCount; ++i)
+    {
+        RigidBody* b = bodies[i];
+
+        b->sweep.c += b->linearVelocity * dt;
+        b->sweep.a += b->angularVelocity * dt;
+        b->SynchronizeTransform();
+    }
+}
+
 } // namespace muli
