@@ -63,8 +63,9 @@ private:
     enum
     {
         flag_enabled = 1,
-        flag_island = 1 << 1,
-        flag_toi = 1 << 2,
+        flag_touching = 1 << 1,
+        flag_island = 1 << 2,
+        flag_toi = 1 << 3,
     };
 
     void Update();
@@ -89,8 +90,6 @@ private:
     float restitution;
     float friction;
     float surfaceSpeed;
-
-    bool touching;
 
     ContactManifold manifold;
 
@@ -153,7 +152,7 @@ inline float Contact::GetSurfaceSpeed() const
 
 inline bool Contact::IsTouching() const
 {
-    return touching;
+    return (flag & flag_touching) == flag_touching;
 }
 
 inline void Contact::SetEnabled(bool enabled)

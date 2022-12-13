@@ -115,7 +115,7 @@ void Demo::EnableBodyCreate()
             b->SetContinuous(true);
 
             Vec2 f = mStart - cursorPos;
-            f *= settings.inv_dt * b->GetMass() * 3.0f;
+            f *= settings.inv_dt * b->GetMass() * 7.0f;
             b->SetForce(f);
             create = false;
             game.RegisterRenderBody(b);
@@ -328,6 +328,8 @@ void Demo::EnableKeyboardShortcut()
     if (Input::IsKeyPressed(GLFW_KEY_C)) options.reset_camera = !options.reset_camera;
     if (Input::IsKeyPressed(GLFW_KEY_SPACE)) options.pause = !options.pause;
     if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) options.step = true;
+
+    if (Input::IsKeyPressed(GLFW_KEY_U)) settings.continuous = !settings.continuous;
     if (Input::IsKeyPressed(GLFW_KEY_G))
     {
         settings.apply_gravity = !settings.apply_gravity;

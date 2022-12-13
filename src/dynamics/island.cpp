@@ -47,11 +47,11 @@ void Island::Solve()
         {
             b->linearVelocity.SetZero();
             b->angularVelocity = 0.0f;
-            b->flag |= RigidBody::Flag::flag_sleeping;
+            b->flag |= RigidBody::flag_sleeping;
         }
         else
         {
-            b->flag &= ~RigidBody::Flag::flag_sleeping;
+            b->flag &= ~RigidBody::flag_sleeping;
         }
 
         if (((b->angularVelocity * b->angularVelocity < world->settings.reset_angular_tolerance) &&

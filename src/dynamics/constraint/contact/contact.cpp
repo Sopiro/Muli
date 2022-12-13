@@ -13,8 +13,9 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     : Constraint(_colliderA->body, _colliderB->body, _settings)
     , colliderA{ _colliderA }
     , colliderB{ _colliderB }
-    , touching{ false }
     , flag{ 0 }
+    , toi{ 0.0f }
+    , toiCount{ 0 }
 {
     muliAssert(colliderA->GetType() >= colliderB->GetType());
 
@@ -38,13 +39,22 @@ void Contact::Update()
     float oldNormalImpulse[MAX_CONTACT_POINT];
     float oldTangentImpulse[MAX_CONTACT_POINT];
 
-    bool wasTouching = touching;
+    bool wasTouching = (flag & flag_touching) == flag_touching;
 
     // clang-format off
-    touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
+    bool touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
                                           colliderB->shape, bodyB->transform,
                                           &manifold);
     // clang-format on
+
+    if (touching)
+    {
+        flag |= flag_touching;
+    }
+    else
+    {
+        flag &= ~flag_touching;
+    }
 
     for (int32 i = 0; i < MAX_CONTACT_POINT; ++i)
     {
@@ -88,7 +98,7 @@ void Contact::Update()
         b2 = bodyB;
     }
 
-    // Warm start the contact solver
+    // Restore the impulses to warm start the solver
     for (int32 n = 0; n < manifold.numContacts; ++n)
     {
         int32 o = 0;

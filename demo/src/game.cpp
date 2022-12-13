@@ -96,7 +96,7 @@ void Game::UpdateUI()
 
                 // ImGui::ColorEdit4("Background color", &app.clearColor.x);
                 // ImGui::Separator();
-                ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
                     ImGui::Checkbox("Camera reset", &options.reset_camera);
@@ -108,6 +108,7 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Show contact normal", &options.show_contact_normal);
                 }
 
+                ImGui::SetNextItemOpen(true, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Simulation settings"))
                 {
                     WorldSettings& settings = demo->GetWorldSettings();

@@ -31,14 +31,6 @@ public:
         dynamic_body,
     };
 
-    enum Flag
-    {
-        flag_island = 1 << 0,
-        flag_sleeping = 1 << 1,
-        flag_fixed_rotation = 1 << 2,
-        flag_continuous = 1 << 3,
-    };
-
     RigidBody(RigidBody::Type type);
     ~RigidBody() noexcept;
 
@@ -185,6 +177,14 @@ protected:
     friend class PrismaticJoint;
     friend class PulleyJoint;
     friend class MotorJoint;
+
+    enum
+    {
+        flag_island = 1 << 0,
+        flag_sleeping = 1 << 1,
+        flag_fixed_rotation = 1 << 2,
+        flag_continuous = 1 << 3,
+    };
 
     Type type;
 
@@ -359,12 +359,12 @@ inline void RigidBody::Awake()
     }
 
     resting = 0.0f;
-    flag &= ~Flag::flag_sleeping;
+    flag &= ~flag_sleeping;
 }
 
 inline void RigidBody::AddForce(const Vec2& localPoint, const Vec2& _force)
 {
-    if (type != dynamic_body)
+    if (type != Type::dynamic_body)
     {
         return;
     }
@@ -386,7 +386,7 @@ inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
 
 inline void RigidBody::SetLinearVelocity(float vx, float vy)
 {
-    if (type == static_body)
+    if (type == Type::static_body)
     {
         return;
     }
@@ -401,7 +401,7 @@ inline float RigidBody::GetAngularVelocity() const
 
 inline void RigidBody::SetAngularVelocity(float _angularVelocity)
 {
-    if (type == static_body)
+    if (type == Type::static_body)
     {
         return;
     }
@@ -416,7 +416,7 @@ inline const Vec2& RigidBody::GetForce() const
 
 inline void RigidBody::SetForce(const Vec2& _force)
 {
-    if (type != dynamic_body)
+    if (type != Type::dynamic_body)
     {
         return;
     }
@@ -431,7 +431,7 @@ inline float RigidBody::GetTorque() const
 
 inline void RigidBody::SetTorque(float _torque)
 {
-    if (type != dynamic_body)
+    if (type != Type::dynamic_body)
     {
         return;
     }
@@ -466,7 +466,7 @@ inline RigidBody::Type RigidBody::GetType() const
 
 inline bool RigidBody::IsSleeping() const
 {
-    return (flag & Flag::flag_sleeping) == Flag::flag_sleeping;
+    return (flag & flag_sleeping) == flag_sleeping;
 }
 
 inline void RigidBody::SetFixedRotation(bool fixed)
@@ -485,7 +485,7 @@ inline void RigidBody::SetFixedRotation(bool fixed)
 
 inline bool RigidBody::IsRotationFixed() const
 {
-    return (flag & Flag::flag_fixed_rotation) == Flag::flag_fixed_rotation;
+    return (flag & flag_fixed_rotation) == flag_fixed_rotation;
 }
 
 inline void RigidBody::SetContinuous(bool continuous)

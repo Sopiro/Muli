@@ -26,7 +26,7 @@ public:
         // b->SetLinearVelocity(100.0f, 0.0f);
 
         b = world->CreateCapsule(2.8f, 0.05f, true);
-        b->SetPosition(0.0f, 7.2f);
+        b->SetPosition(LinearRand(-0.5f, 0.5f), 7.2f);
         b->SetLinearVelocity(0.0f, -100.0f);
         b->SetAngularVelocity(LinearRand(-20.0f, 20.0f));
         b->SetContinuous(true);

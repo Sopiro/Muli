@@ -8,8 +8,8 @@
 namespace muli
 {
 
-World::World(const WorldSettings& simulationSettings)
-    : settings{ simulationSettings }
+World::World(const WorldSettings& _settings)
+    : settings{ _settings }
     , contactManager{ this }
     , bodyList{ nullptr }
     , bodyListTail{ nullptr }
@@ -69,12 +69,12 @@ void World::Solve()
             continue;
         }
 
-        if (b->flag & RigidBody::Flag::flag_island)
+        if (b->flag & RigidBody::flag_island)
         {
             continue;
         }
 
-        if (b->flag & RigidBody::Flag::flag_sleeping)
+        if (b->flag & RigidBody::flag_sleeping)
         {
             ++sleepingBodies;
             continue;
@@ -88,23 +88,23 @@ void World::Solve()
         {
             RigidBody* t = stack[--stackPointer];
 
-            if (t->type == RigidBody::Type::static_body || (t->flag & RigidBody::Flag::flag_island))
+            if (t->type == RigidBody::Type::static_body || (t->flag & RigidBody::flag_island))
             {
                 continue;
             }
 
-            t->flag |= RigidBody::Flag::flag_island;
+            t->flag |= RigidBody::flag_island;
             t->islandID = islandID;
             island.Add(t);
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
-                if (ce->other->flag & RigidBody::Flag::flag_island)
+                if (ce->other->flag & RigidBody::flag_island)
                 {
                     continue;
                 }
 
-                if (ce->contact->touching)
+                if (ce->contact->flag & Contact::flag_touching)
                 {
                     island.Add(ce->contact);
                     stack[stackPointer++] = ce->other;
@@ -119,7 +119,7 @@ void World::Solve()
                     t->Awake();
                 }
 
-                if (je->other->flag & RigidBody::Flag::flag_island)
+                if (je->other->flag & RigidBody::flag_island)
                 {
                     continue;
                 }
@@ -148,7 +148,7 @@ void World::Solve()
     {
         body->sweep.alpha0 = 0.0f;
 
-        if ((body->flag & RigidBody::Flag::flag_island) == 0)
+        if ((body->flag & RigidBody::flag_island) == 0)
         {
             continue;
         }
@@ -156,7 +156,7 @@ void World::Solve()
         muliAssert(body->type != RigidBody::Type::static_body);
 
         // Clear island flag
-        body->flag &= ~RigidBody::Flag::flag_island;
+        body->flag &= ~RigidBody::flag_island;
 
         // Synchronize transform and collider tree node
         body->SynchronizeTransform();
@@ -359,7 +359,7 @@ void World::SolveTOI()
     for (RigidBody* body = bodyList; body; body = body->next)
     {
         body->sweep.alpha0 = 0.0f;
-        body->flag &= ~RigidBody::Flag::flag_island;
+        body->flag &= ~RigidBody::flag_island;
     }
 
     for (Contact* contact = contactManager.contactList; contact; contact = contact->next)

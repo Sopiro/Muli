@@ -29,7 +29,7 @@ namespace muli
 class World final
 {
 public:
-    World(const WorldSettings& simulationSettings);
+    World(const WorldSettings& settings);
     ~World() noexcept;
 
     World(const World&) noexcept = delete;
