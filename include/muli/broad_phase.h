@@ -1,7 +1,7 @@
 #pragma once
 
 #include "aabb.h"
-#include "aabbtree.h"
+#include "aabb_tree.h"
 #include "common.h"
 
 namespace muli

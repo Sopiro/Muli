@@ -60,6 +60,7 @@ public:
 
     bool TestOverlap(int32 nodeA, int32 nodeB) const;
     const AABB& GetAABB(int32 node) const;
+    void ClearMoved(int32 node) const;
 
     void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
     void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
@@ -114,6 +115,13 @@ inline const AABB& AABBTree::GetAABB(int32 node) const
     muliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].aabb;
+}
+
+inline void AABBTree::ClearMoved(int32 node) const
+{
+    muliAssert(0 <= node && node < nodeCapacity);
+
+    nodes[node].moved = false;
 }
 
 inline float AABBTree::ComputeTreeCost() const

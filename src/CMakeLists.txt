@@ -1,6 +1,6 @@
 set(HEADER_FILES
     ../include/muli/aabb.h
-    ../include/muli/aabbtree.h
+    ../include/muli/aabb_tree.h
     ../include/muli/broad_phase.h
     ../include/muli/contact_manager.h
 
@@ -72,7 +72,7 @@ set(SOURCE_FILES
     collision/distance.cpp
     collision/time_of_impact.cpp
 
-    collision/aabbtree.cpp
+    collision/aabb_tree.cpp
     collision/broad_phase.cpp
 
     collision/circle.cpp
