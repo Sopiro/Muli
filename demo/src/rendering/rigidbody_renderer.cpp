@@ -100,7 +100,7 @@ void RigidBodyRenderer::Render()
         if (!(body->UserFlag & UserFlag::remove_outline))
         {
             glLineWidth(1.0f);
-            shader->SetColor(Vec3{ 0.0f });
+            shader->SetColor(zero_vec3);
             mesh->Draw(GL_LINE_LOOP);
         }
     }

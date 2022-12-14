@@ -104,14 +104,14 @@ public:
     int32 GetColliderCount() const;
 
     Collider* CreateCircleCollider(float radius,
-                                   const Vec2& position = Vec2{ 0.0f },
+                                   const Vec2& position = zero_vec2,
                                    float density = DEFAULT_DENSITY,
                                    const Material& material = default_material);
 
     Collider* CreateBoxCollider(float width,
                                 float height,
                                 float radius = DEFAULT_RADIUS,
-                                const Vec2& position = Vec2{ 0.0f },
+                                const Vec2& position = zero_vec2,
                                 float angle = 0.0f,
                                 float density = DEFAULT_DENSITY,
                                 const Material& material = default_material);
@@ -119,7 +119,7 @@ public:
     Collider* CreateCapsuleCollider(float length,
                                     float radius,
                                     bool horizontal = false,
-                                    const Vec2& position = Vec2{ 0.0f },
+                                    const Vec2& position = zero_vec2,
                                     float density = DEFAULT_DENSITY,
                                     const Material& material = default_material);
 

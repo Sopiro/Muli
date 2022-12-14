@@ -98,7 +98,7 @@ end:
 void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
 {
     Polytope polytope{ simplex };
-    PolytopeEdge edge{ 0, FLT_MAX, Vec2{ 0.0f } };
+    PolytopeEdge edge{ 0, FLT_MAX, zero_vec2 };
 
     for (int32 k = 0; k < EPA_MAX_ITERATION; ++k)
     {
