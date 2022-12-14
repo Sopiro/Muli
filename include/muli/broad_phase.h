@@ -49,31 +49,4 @@ inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) co
     return tree.TestOverlap(colliderA->node, colliderB->node);
 }
 
-inline void BroadPhase::Add(Collider* collider, const AABB& aabb)
-{
-    int32 node = tree.CreateNode(collider, aabb);
-    collider->node = node;
-
-    BufferMove(node);
-}
-
-inline void BroadPhase::Remove(Collider* collider)
-{
-    int32 node = collider->node;
-    tree.RemoveNode(node);
-
-    UnBufferMove(node);
-}
-
-inline void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
-{
-    int32 node = collider->node;
-
-    bool nodeMoved = tree.MoveNode(node, aabb, displacement, collider->body->IsSleeping());
-    if (nodeMoved)
-    {
-        BufferMove(node);
-    }
-}
-
 } // namespace muli

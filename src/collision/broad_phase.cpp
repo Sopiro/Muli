@@ -80,6 +80,34 @@ void BroadPhase::FindNewContacts()
     moveCount = 0;
 }
 
+void BroadPhase::Add(Collider* collider, const AABB& aabb)
+{
+    int32 node = tree.CreateNode(collider, aabb);
+    collider->node = node;
+
+    BufferMove(node);
+}
+
+void BroadPhase::Remove(Collider* collider)
+{
+    int32 node = collider->node;
+    tree.RemoveNode(node);
+
+    UnBufferMove(node);
+}
+
+void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
+{
+    int32 node = collider->node;
+    bool rested = collider->body->resting > world->settings.sleeping_treshold;
+
+    bool nodeMoved = tree.MoveNode(node, aabb, displacement, rested);
+    if (nodeMoved)
+    {
+        BufferMove(node);
+    }
+}
+
 bool BroadPhase::QueryCallback(int nodeB, Collider* colliderB)
 {
     if (nodeA == nodeB)

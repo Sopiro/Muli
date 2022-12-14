@@ -23,7 +23,8 @@ protected:
 
     void AddCollider(Collider* collider);
     void RemoveCollider(Collider* collider);
-    void UpdateCollider(Collider* collider);
+    void UpdateCollider(Collider* collider, const Transform& tf);
+    void UpdateCollider(Collider* collider, const Transform& tf0, const Transform& tf1);
 
 private:
     friend class World;

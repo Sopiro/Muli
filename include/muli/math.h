@@ -141,6 +141,7 @@ struct Vec2
     }
 };
 
+constexpr Vec2 zero_vec2{ 0.0f };
 struct Vec3
 {
     float x, y, z;
@@ -275,6 +276,7 @@ struct Vec3
     }
 };
 
+constexpr Vec3 zero_vec3{ 0.0f };
 struct Vec4
 {
     float x, y, z, w;

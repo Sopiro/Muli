@@ -370,9 +370,23 @@ void RigidBody::ResetMassData()
 
 void RigidBody::SynchronizeColliders()
 {
-    for (Collider* collider = colliderList; collider; collider = collider->next)
+    if (IsSleeping())
     {
-        world->contactManager.UpdateCollider(collider);
+        for (Collider* collider = colliderList; collider; collider = collider->next)
+        {
+            world->contactManager.UpdateCollider(collider, transform);
+        }
+    }
+    else
+    {
+        // Transform at previus step
+        Transform tf0;
+        sweep.GetTransform(0.0f, &tf0);
+
+        for (Collider* collider = colliderList; collider; collider = collider->next)
+        {
+            world->contactManager.UpdateCollider(collider, tf0, transform);
+        }
     }
 }
 
