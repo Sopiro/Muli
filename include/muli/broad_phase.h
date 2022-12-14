@@ -11,18 +11,15 @@ class ContactManager;
 class BroadPhase
 {
 public:
-    BroadPhase(World* world,
-               ContactManager* contactManager,
-               float aabbMargin = DEFAULT_AABB_MARGIN,
-               float aabbMultiplier = DEFAULT_AABB_MULTIPLIER);
+    BroadPhase(World* world, ContactManager* contactManager);
     ~BroadPhase();
 
     void FindContacts();
     bool TestOverlap(Collider* colliderA, Collider* colliderB) const;
 
-    void Add(Collider* collider, AABB aabb);
+    void Add(Collider* collider, const AABB& aabb);
     void Remove(Collider* collider);
-    void Update(Collider* collider, AABB aabb, const Vec2& displacement);
+    void Update(Collider* collider, const AABB& aabb, const Vec2& displacement);
 
     bool QueryCallback(Collider* collider);
 
@@ -32,9 +29,6 @@ protected:
     World* world;
     ContactManager* contactManager;
     AABBTree tree;
-
-    float aabbMargin;
-    float aabbMultiplier;
 
 private:
     Collider** moveBuffer;
@@ -51,7 +45,7 @@ private:
 
 inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) const
 {
-    return TestOverlapAABB(tree.nodes[colliderA->node].aabb, tree.nodes[colliderB->node].aabb);
+    return tree.TestOverlap(colliderA->node, colliderB->node);
 }
 
 } // namespace muli

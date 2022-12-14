@@ -30,21 +30,17 @@ AABBTree::~AABBTree() noexcept
     nodeCount = 0;
 }
 
-int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
+int32 AABBTree::InsertLeaf(int32 leaf)
 {
-    int32 newNode = AllocateNode();
-
-    nodes[newNode].aabb = aabb;
-    nodes[newNode].isLeaf = true;
-    nodes[newNode].collider = collider;
-    nodes[newNode].parent = nullNode;
-    collider->node = newNode;
+    muliAssert(0 <= leaf && leaf < nodeCapacity);
 
     if (root == nullNode)
     {
-        root = newNode;
-        return newNode;
+        root = leaf;
+        return leaf;
     }
+
+    AABB aabb = nodes[leaf].aabb;
 
     // Find the best sibling for the new leaf
 
@@ -159,21 +155,21 @@ int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
         }
 
         nodes[newParent].child1 = bestSibling;
-        nodes[newParent].child2 = newNode;
+        nodes[newParent].child2 = leaf;
         nodes[bestSibling].parent = newParent;
-        nodes[newNode].parent = newParent;
+        nodes[leaf].parent = newParent;
     }
     else
     {
         nodes[newParent].child1 = bestSibling;
-        nodes[newParent].child2 = newNode;
+        nodes[newParent].child2 = leaf;
         nodes[bestSibling].parent = newParent;
-        nodes[newNode].parent = newParent;
+        nodes[leaf].parent = newParent;
         root = newParent;
     }
 
     // Walk back up the tree refitting ancestors' AABB and applying rotations
-    int32 ancestor = nodes[newNode].parent;
+    int32 ancestor = nodes[leaf].parent;
     while (ancestor != nullNode)
     {
         int32 child1 = nodes[ancestor].child1;
@@ -186,23 +182,18 @@ int32 AABBTree::Insert(Collider* collider, const AABB& aabb)
         ancestor = nodes[ancestor].parent;
     }
 
-    return newNode;
+    return leaf;
 }
 
-void AABBTree::Remove(Collider* collider)
+void AABBTree::RemoveLeaf(int32 leaf)
 {
-    int32 node = collider->node;
-    if (node == nullNode)
-    {
-        return;
-    }
+    muliAssert(0 <= leaf && leaf < nodeCapacity);
 
-    int32 parent = nodes[node].parent;
-    collider->node = nullNode;
+    int32 parent = nodes[leaf].parent;
 
     if (parent != nullNode) // node is not root
     {
-        int32 sibling = nodes[parent].child1 == node ? nodes[parent].child2 : nodes[parent].child1;
+        int32 sibling = nodes[parent].child1 == leaf ? nodes[parent].child2 : nodes[parent].child1;
 
         if (nodes[parent].parent != nullNode) // sibling has grandparent
         {
@@ -225,7 +216,6 @@ void AABBTree::Remove(Collider* collider)
             nodes[sibling].parent = nullNode;
         }
 
-        FreeNode(node);
         FreeNode(parent);
 
         int32 ancestor = nodes[sibling].parent;
@@ -241,12 +231,75 @@ void AABBTree::Remove(Collider* collider)
     }
     else // node is root
     {
-        muliAssert(root == node);
+        muliAssert(root == leaf);
 
         root = nullNode;
-        FreeNode(node);
     }
 }
+
+int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
+{
+    int32 newNode = AllocateNode();
+
+    // Fatten the aabb
+    nodes[newNode].aabb.max = aabb.max + DEFAULT_AABB_MARGIN;
+    nodes[newNode].aabb.min = aabb.min - DEFAULT_AABB_MARGIN;
+    nodes[newNode].isLeaf = true;
+    nodes[newNode].collider = collider;
+    nodes[newNode].parent = nullNode;
+    nodes[newNode].moved = true;
+
+    InsertLeaf(newNode);
+
+    return newNode;
+}
+
+bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement)
+{
+    muliAssert(nodes[node].isLeaf);
+
+    const AABB& treeAABB = nodes[node].aabb;
+    if (ContainsAABB(treeAABB, aabb))
+    {
+        return false;
+    }
+
+    Vec2 d = displacement * DEFAULT_AABB_MULTIPLIER;
+
+    if (d.x > 0.0f)
+    {
+        aabb.max.x += d.x;
+    }
+    else
+    {
+        aabb.min.x += d.x;
+    }
+
+    if (d.y > 0.0f)
+    {
+        aabb.max.y += d.y;
+    }
+    else
+    {
+        aabb.min.y += d.y;
+    }
+
+    // Fatten the aabb
+    aabb.max += DEFAULT_AABB_MARGIN;
+    aabb.min -= DEFAULT_AABB_MARGIN;
+
+    RemoveLeaf(node);
+
+    nodes[node].aabb = aabb;
+
+    InsertLeaf(node);
+
+    nodes[node].moved = true;
+
+    return true;
+}
+
+void AABBTree::RemoveNode(int32 node) {}
 
 void AABBTree::Rotate(int32 node)
 {
@@ -599,6 +652,7 @@ int32 AABBTree::AllocateNode()
     nodes[node].parent = nullNode;
     nodes[node].child1 = nullNode;
     nodes[node].child2 = nullNode;
+    nodes[node].moved = false;
     ++nodeCount;
 
     return node;

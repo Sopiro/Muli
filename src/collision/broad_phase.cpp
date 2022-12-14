@@ -6,11 +6,9 @@
 namespace muli
 {
 
-BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager, float _aabbMargin, float _aabbMultiplier)
+BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager)
     : world{ _world }
     , contactManager{ _contactManager }
-    , aabbMargin{ _aabbMargin }
-    , aabbMultiplier{ _aabbMultiplier }
     , moveCapacity{ 16 }
     , moveCount{ 0 }
 {
@@ -50,63 +48,28 @@ void BroadPhase::UnBufferMove(Collider* collider)
     }
 }
 
-void BroadPhase::Add(Collider* collider, AABB aabb)
+void BroadPhase::Add(Collider* collider, const AABB& aabb)
 {
-    // Fatten the aabb
-    aabb.min -= aabbMargin;
-    aabb.max += aabbMargin;
+    int32 node = tree.CreateNode(collider, aabb);
+    collider->node = node;
 
-    int32 index = tree.Insert(collider, aabb);
     BufferMove(collider);
 }
 
 void BroadPhase::Remove(Collider* collider)
 {
-    tree.Remove(collider);
+    tree.RemoveNode(collider->node);
+
     UnBufferMove(collider);
 }
 
-void BroadPhase::Update(Collider* collider, AABB aabb, const Vec2& displacement)
+void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
 {
-    int32 node = collider->node;
-    AABB treeAABB = tree.nodes[node].aabb;
-
-    RigidBody* body = collider->body;
-
-    bool awake = body->resting < world->settings.sleeping_treshold;
-
-    if (ContainsAABB(treeAABB, aabb) && awake)
+    bool moved = tree.MoveNode(collider->node, aabb, displacement);
+    if (moved)
     {
-        return;
+        BufferMove(collider);
     }
-
-    Vec2 d = displacement * aabbMultiplier;
-
-    if (d.x > 0.0f)
-    {
-        aabb.max.x += d.x;
-    }
-    else
-    {
-        aabb.min.x += d.x;
-    }
-
-    if (d.y > 0.0f)
-    {
-        aabb.max.y += d.y;
-    }
-    else
-    {
-        aabb.min.y += d.y;
-    }
-
-    aabb.max += aabbMargin;
-    aabb.min -= aabbMargin;
-
-    tree.Remove(collider);
-    tree.Insert(collider, aabb);
-
-    BufferMove(collider);
 }
 
 void BroadPhase::FindContacts()
@@ -123,8 +86,10 @@ void BroadPhase::FindContacts()
         bodyA = colliderA->body;
         typeA = colliderA->GetType();
 
+        const AABB& treeAABB = tree.GetAABB(colliderA->node);
+
         // This will callback our BroadPhase::QueryCallback(Collider*)
-        tree.Query(tree.nodes[colliderA->node].aabb, this);
+        tree.Query(treeAABB, this);
     }
 
     for (int i = 0; i < moveCount; ++i)

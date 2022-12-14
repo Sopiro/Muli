@@ -10,27 +10,27 @@ void PositionSolver::Prepare(Contact* _contact, int32 index)
 {
     contact = _contact;
 
-    Transform tA{ contact->b1->sweep.c, contact->b1->sweep.a };
-    Transform tB{ contact->b2->sweep.c, contact->b2->sweep.a };
+    Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
+    Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
-    localPlainPoint = MulT(tA, contact->manifold.referencePoint.position);
-    localClipPoint = MulT(tB, contact->manifold.contactPoints[index].position);
-    localNormal = MulT(tA.rotation, contact->manifold.contactNormal);
+    localPlainPoint = MulT(tfA, contact->manifold.referencePoint.position);
+    localClipPoint = MulT(tfB, contact->manifold.contactPoints[index].position);
+    localNormal = MulT(tfA.rotation, contact->manifold.contactNormal);
 }
 
 bool PositionSolver::Solve()
 {
-    Transform tA{ contact->b1->sweep.c, contact->b1->sweep.a };
-    Transform tB{ contact->b2->sweep.c, contact->b2->sweep.a };
+    Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
+    Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
-    Vec2 planePoint = tA * localPlainPoint;
-    Vec2 clipPoint = tB * localClipPoint; // penetration point
-    Vec2 normal = tA.rotation * localNormal;
+    Vec2 planePoint = tfA * localPlainPoint;
+    Vec2 clipPoint = tfB * localClipPoint; // penetration point
+    Vec2 normal = tfA.rotation * localNormal;
 
     float separation = Dot(clipPoint - planePoint, normal);
 
-    Vec2 ra = clipPoint - tA.position;
-    Vec2 rb = clipPoint - tB.position;
+    Vec2 ra = clipPoint - tfA.position;
+    Vec2 rb = clipPoint - tfB.position;
 
     float ran = Cross(ra, normal);
     float rbn = Cross(rb, normal);

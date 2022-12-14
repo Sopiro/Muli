@@ -34,8 +34,10 @@ struct Node
     int32 child1;
     int32 child2;
 
-    Collider* collider;
     int32 next;
+    bool moved;
+
+    Collider* collider;
 };
 
 class AABBTree
@@ -50,9 +52,14 @@ public:
     AABBTree(AABBTree&&) noexcept = delete;
     AABBTree& operator=(AABBTree&&) noexcept = delete;
 
-    int32 Insert(Collider* collider, const AABB& aabb);
-    void Remove(Collider* collider);
     void Reset();
+
+    int32 CreateNode(Collider* collider, const AABB& aabb);
+    bool MoveNode(int32 node, AABB aabb, const Vec2& displacement);
+    void RemoveNode(int32 node);
+
+    bool TestOverlap(int32 nodeA, int32 nodeB) const;
+    const AABB& GetAABB(int32 node) const;
 
     void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
     void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
@@ -74,8 +81,6 @@ public:
     void Rebuild();
 
 private:
-    friend class BroadPhase;
-
     int32 nodeID;
 
     Node* nodes;
@@ -89,9 +94,27 @@ private:
     int32 AllocateNode();
     void FreeNode(int32 node);
 
+    int32 InsertLeaf(int32 leaf);
+    void RemoveLeaf(int32 leaf);
+
     void Rotate(int32 node);
     void Swap(int32 node1, int32 node2);
 };
+
+inline bool AABBTree::TestOverlap(int32 nodeA, int32 nodeB) const
+{
+    muliAssert(0 <= nodeA && nodeA < nodeCapacity);
+    muliAssert(0 <= nodeB && nodeB < nodeCapacity);
+
+    return TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb);
+}
+
+inline const AABB& AABBTree::GetAABB(int32 node) const
+{
+    muliAssert(0 <= node && node < nodeCapacity);
+
+    return nodes[node].aabb;
+}
 
 inline float AABBTree::ComputeTreeCost() const
 {

@@ -314,7 +314,7 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
                 break;
             }
 
-            // Compute initial the separation for the deepest points at t2
+            // Compute the initial separation for the deepest points at t2
             float s1 = fcn.ComputeSeparation(idA, idB, t1);
 
             // Check for initial overlap
