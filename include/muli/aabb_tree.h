@@ -315,7 +315,7 @@ void AABBTree::Traverse(T* callback) const
     {
         int32 current = stack.Pop();
 
-        if (!nodes[current].isLeaf)
+        if (!nodes[current].IsLeaf())
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);

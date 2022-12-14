@@ -83,7 +83,7 @@ int32 AABBTree::InsertLeaf(int32 leaf)
     // O(log n)
     // This method is faster when inserting a new node, but builds a slightly bad quality tree.
     int32 bestSibling = root;
-    while (nodes[bestSibling].isLeaf == false)
+    while (nodes[bestSibling].IsLeaf() == false)
     {
         int32 child1 = nodes[bestSibling].child1;
         int32 child2 = nodes[bestSibling].child2;
@@ -96,7 +96,7 @@ int32 AABBTree::InsertLeaf(int32 leaf)
         float inheritanceCost = combinedArea - area;
 
         float cost1;
-        if (nodes[child1].isLeaf)
+        if (nodes[child1].IsLeaf())
         {
             cost1 = SAH(Union(nodes[child1].aabb, aabb)) + inheritanceCost;
         }
@@ -108,7 +108,7 @@ int32 AABBTree::InsertLeaf(int32 leaf)
         }
 
         float cost2;
-        if (nodes[child2].isLeaf)
+        if (nodes[child2].IsLeaf())
         {
             cost2 = SAH(Union(nodes[child2].aabb, aabb)) + inheritanceCost;
         }
