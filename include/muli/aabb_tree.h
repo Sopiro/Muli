@@ -16,19 +16,23 @@ namespace muli
 inline float SAH(const AABB& aabb)
 {
 #if 1
-    return Area(aabb);
+    return aabb.GetArea();
 #else
-    return Perimeter(aabb);
+    return aabb.GetPerimeter();
 #endif
 }
 
-// typedef int32 NodePointer;
+// typedef int32 NodeProxy;
 
 struct Node
 {
+    bool IsLeaf() const
+    {
+        return child1 == nullNode;
+    }
+
     int32 id;
     AABB aabb;
-    bool isLeaf;
 
     int32 parent;
     int32 child1;
@@ -37,7 +41,7 @@ struct Node
     int32 next;
     bool moved;
 
-    Collider* collider;
+    Collider* collider; // user data
 };
 
 class AABBTree
@@ -55,7 +59,7 @@ public:
     void Reset();
 
     int32 CreateNode(Collider* collider, const AABB& aabb);
-    bool MoveNode(int32 node, AABB aabb, const Vec2& displacement);
+    bool MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool forceMove);
     void RemoveNode(int32 node);
 
     bool TestOverlap(int32 nodeA, int32 nodeB) const;
@@ -153,7 +157,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
             continue;
         }
 
-        if (nodes[current].isLeaf)
+        if (nodes[current].IsLeaf())
         {
             bool proceed = callback->QueryCallback(nodes[current].collider);
             if (proceed == false)
@@ -189,7 +193,7 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
             continue;
         }
 
-        if (nodes[current].isLeaf)
+        if (nodes[current].IsLeaf())
         {
             bool proceed = callback->QueryCallback(nodes[current].collider);
             if (proceed == false)
@@ -250,7 +254,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
             continue;
         }
 
-        if (node->isLeaf)
+        if (node->IsLeaf())
         {
             RayCastInput subInput;
             subInput.from = p1;

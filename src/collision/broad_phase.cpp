@@ -50,8 +50,8 @@ void BroadPhase::UnBufferMove(Collider* collider)
 
 void BroadPhase::Add(Collider* collider, const AABB& aabb)
 {
-    int32 node = tree.CreateNode(collider, aabb);
-    collider->node = node;
+    int32 treeNode = tree.CreateNode(collider, aabb);
+    collider->node = treeNode;
 
     BufferMove(collider);
 }
@@ -65,7 +65,7 @@ void BroadPhase::Remove(Collider* collider)
 
 void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
 {
-    bool moved = tree.MoveNode(collider->node, aabb, displacement);
+    bool moved = tree.MoveNode(collider->node, aabb, displacement, collider->body->IsSleeping());
     if (moved)
     {
         BufferMove(collider);

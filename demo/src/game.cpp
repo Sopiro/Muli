@@ -324,7 +324,11 @@ void Game::Render()
     {
         const AABBTree& tree = demo->GetWorld().GetBVH();
         tree.Traverse([&](const Node* n) -> void {
-            if (!options.show_bvh && !n->isLeaf) return;
+            if (options.show_bvh == false && n->IsLeaf() == false)
+            {
+                return;
+            }
+
             lines.push_back(n->aabb.min);
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });
             lines.push_back({ n->aabb.max.x, n->aabb.min.y });

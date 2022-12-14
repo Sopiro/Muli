@@ -163,11 +163,43 @@ void ContactManager::Destroy(Contact* c)
     --contactCount;
 }
 
+void ContactManager::AddCollider(Collider* collider)
+{
+    broadPhase.Add(collider, collider->GetAABB());
+}
+
+void ContactManager::RemoveCollider(Collider* collider)
+{
+    broadPhase.Remove(collider);
+    collider->node = nullNode;
+
+    RigidBody* body = collider->body;
+
+    // Destroy any contacts associated with the collider
+    ContactEdge* edge = body->contactList;
+    while (edge)
+    {
+        Contact* contact = edge->contact;
+        edge = edge->next;
+
+        Collider* colliderA = contact->GetColliderA();
+        Collider* colliderB = contact->GetColliderB();
+
+        if (collider == colliderA || collider == colliderB)
+        {
+            Destroy(contact);
+
+            colliderA->body->Awake();
+            colliderB->body->Awake();
+        }
+    }
+}
+
 void ContactManager::UpdateCollider(Collider* collider)
 {
     RigidBody* body = collider->body;
 
-    if (body->IsContinuous())
+    if (world->settings.continuous)
     {
         Sweep* sweep = &body->sweep;
 

@@ -1,5 +1,4 @@
 #include "muli/rigidbody.h"
-#include "muli/aabbtree.h"
 #include "muli/capsule.h"
 #include "muli/circle.h"
 #include "muli/collider.h"

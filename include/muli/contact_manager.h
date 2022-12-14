@@ -47,37 +47,6 @@ inline void ContactManager::UpdateContactGraph()
     broadPhase.FindContacts();
 }
 
-inline void ContactManager::AddCollider(Collider* collider)
-{
-    broadPhase.Add(collider, collider->GetAABB());
-}
-
-inline void ContactManager::RemoveCollider(Collider* collider)
-{
-    broadPhase.Remove(collider);
-
-    RigidBody* body = collider->body;
-
-    // Destroy any contacts associated with the collider
-    ContactEdge* edge = body->contactList;
-    while (edge)
-    {
-        Contact* contact = edge->contact;
-        edge = edge->next;
-
-        Collider* colliderA = contact->GetColliderA();
-        Collider* colliderB = contact->GetColliderB();
-
-        if (collider == colliderA || collider == colliderB)
-        {
-            Destroy(contact);
-
-            colliderA->body->Awake();
-            colliderB->body->Awake();
-        }
-    }
-}
-
 inline int32 ContactManager::GetContactCount() const
 {
     return contactCount;

@@ -72,7 +72,7 @@ int32 AABBTree::InsertLeaf(int32 leaf)
         float lowerBoundCost = SAH(aabb) + inheritedCost;
         if (lowerBoundCost < bestCost)
         {
-            if (!nodes[current].isLeaf)
+            if (nodes[current].IsLeaf() == false)
             {
                 stack.Emplace(nodes[current].child1, inheritedCost);
                 stack.Emplace(nodes[current].child2, inheritedCost);
@@ -139,7 +139,6 @@ int32 AABBTree::InsertLeaf(int32 leaf)
     int32 oldParent = nodes[bestSibling].parent;
     int32 newParent = AllocateNode();
     nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
-    nodes[newParent].isLeaf = false;
     nodes[newParent].collider = nullptr;
     nodes[newParent].parent = oldParent;
 
@@ -244,7 +243,6 @@ int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
     // Fatten the aabb
     nodes[newNode].aabb.max = aabb.max + DEFAULT_AABB_MARGIN;
     nodes[newNode].aabb.min = aabb.min - DEFAULT_AABB_MARGIN;
-    nodes[newNode].isLeaf = true;
     nodes[newNode].collider = collider;
     nodes[newNode].parent = nullNode;
     nodes[newNode].moved = true;
@@ -254,12 +252,12 @@ int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
     return newNode;
 }
 
-bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement)
+bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool forceMove)
 {
-    muliAssert(nodes[node].isLeaf);
+    muliAssert(nodes[node].IsLeaf());
 
     const AABB& treeAABB = nodes[node].aabb;
-    if (ContainsAABB(treeAABB, aabb))
+    if (treeAABB.Contains(aabb) && forceMove == false)
     {
         return false;
     }
@@ -299,11 +297,18 @@ bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement)
     return true;
 }
 
-void AABBTree::RemoveNode(int32 node) {}
+void AABBTree::RemoveNode(int32 node)
+{
+    muliAssert(0 <= node && node < nodeCapacity);
+    muliAssert(nodes[node].IsLeaf());
+
+    RemoveLeaf(node);
+    FreeNode(node);
+}
 
 void AABBTree::Rotate(int32 node)
 {
-    if (nodes[node].isLeaf)
+    if (nodes[node].IsLeaf())
     {
         return;
     }
@@ -332,7 +337,7 @@ void AABBTree::Rotate(int32 node)
     costDiffs[0] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb)) - nodeArea;
     costDiffs[1] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb)) - nodeArea;
 
-    if (nodes[sibling].isLeaf == false)
+    if (nodes[sibling].IsLeaf() == false)
     {
         float siblingArea = SAH(nodes[sibling].aabb);
         costDiffs[2] = SAH(Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb)) - siblingArea;
@@ -457,7 +462,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& ca
             continue;
         }
 
-        if (nodes[current].isLeaf)
+        if (nodes[current].IsLeaf())
         {
             bool proceed = callback(nodes[current].collider);
             if (proceed == false)
@@ -492,7 +497,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
             continue;
         }
 
-        if (nodes[current].isLeaf)
+        if (nodes[current].IsLeaf())
         {
             bool proceed = callback(nodes[current].collider);
             if (proceed == false)
@@ -522,7 +527,7 @@ void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
     {
         int32 current = stack.Pop();
 
-        if (!nodes[current].isLeaf)
+        if (!nodes[current].IsLeaf())
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);
@@ -577,7 +582,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
             continue;
         }
 
-        if (node->isLeaf)
+        if (node->IsLeaf())
         {
             RayCastInput subInput;
             subInput.from = p1;
@@ -686,7 +691,7 @@ void AABBTree::Rebuild()
         }
 
         // Clean the leaf
-        if (nodes[i].isLeaf)
+        if (nodes[i].IsLeaf())
         {
             nodes[i].parent = nullNode;
 
