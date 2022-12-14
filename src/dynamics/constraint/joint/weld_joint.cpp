@@ -72,7 +72,7 @@ void WeldJoint::Prepare()
     }
 }
 
-void WeldJoint::SolveVelocityConstraint()
+void WeldJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)

@@ -30,6 +30,7 @@ public:
 
         b = world->CreateCapsule(1.0f, 0.5f, false, RigidBody::Type::dynamic_body);
         b->SetPosition(-2.5, 240.0f);
+        b->SetContinuous(true);
     }
 
     static Demo* Create(Game& game)

@@ -59,7 +59,7 @@ void DistanceJoint::Prepare()
     }
 }
 
-void DistanceJoint::SolveVelocityConstraint()
+void DistanceJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

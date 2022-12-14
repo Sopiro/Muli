@@ -46,7 +46,7 @@ void PulleyJoint::Prepare()
     float lengthA = ua.Length();
     float lengthB = ub.Length();
 
-    if (lengthA > LINEAR_SLOP)
+    if (lengthA > linear_slop)
     {
         ua *= 1.0f / lengthA;
     }
@@ -55,7 +55,7 @@ void PulleyJoint::Prepare()
         ua.SetZero();
     }
 
-    if (lengthB > LINEAR_SLOP)
+    if (lengthB > linear_slop)
     {
         ub *= 1.0f / lengthB;
     }
@@ -87,7 +87,7 @@ void PulleyJoint::Prepare()
     }
 }
 
-void PulleyJoint::SolveVelocityConstraint()
+void PulleyJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

@@ -74,7 +74,7 @@ void PrismaticJoint::Prepare()
     }
 }
 
-void PrismaticJoint::SolveVelocityConstraint()
+void PrismaticJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

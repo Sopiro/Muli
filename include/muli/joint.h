@@ -73,9 +73,9 @@ public:
           RigidBody* bodyA,
           RigidBody* bodyB,
           const WorldSettings& settings,
-          float frequency = DEFAULT_FREQUENCY,
-          float dampingRatio = DEFAULT_DAMPING_RATIO,
-          float jointMass = DEFAULT_JOINT_MASS);
+          float frequency = default_joint_frequency,
+          float dampingRatio = default_joint_damping_ratio,
+          float jointMass = default_joint_mass);
     virtual ~Joint() noexcept;
 
     float GetFrequency() const;

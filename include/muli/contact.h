@@ -70,9 +70,9 @@ private:
 
     void Update();
     virtual void Prepare() override;
-    virtual void SolveVelocityConstraint() override;
-    virtual bool SolvePositionConstraint() override;
-    bool SolveTOIPositionConstraint();
+    virtual void SolveVelocityConstraints() override;
+    virtual bool SolvePositionConstraints() override;
+    bool SolveTOIPositionConstraints();
 
     DetectionFunction* collisionDetectionFunction;
 
@@ -94,9 +94,9 @@ private:
 
     ContactManifold manifold;
 
-    ContactSolver normalSolvers[MAX_CONTACT_POINT];
-    ContactSolver tangentSolvers[MAX_CONTACT_POINT];
-    PositionSolver positionSolvers[MAX_CONTACT_POINT];
+    ContactSolver normalSolvers[max_contact_points];
+    ContactSolver tangentSolvers[max_contact_points];
+    PositionSolver positionSolvers[max_contact_points];
     BlockSolver blockSolver;
 
     // Impulse for position correction

@@ -70,7 +70,7 @@ void MotorJoint::Prepare()
     }
 }
 
-void MotorJoint::SolveVelocityConstraint()
+void MotorJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)

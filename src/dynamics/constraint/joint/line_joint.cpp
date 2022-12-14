@@ -69,7 +69,7 @@ void LineJoint::Prepare()
     }
 }
 
-void LineJoint::SolveVelocityConstraint()
+void LineJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

@@ -52,7 +52,7 @@ bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& 
     Vec2 save[MAX_SIMPLEX_VERTEX_COUNT];
     int32 saveCount;
 
-    for (int32 k = 0; k < GJK_MAX_ITERATION; ++k)
+    for (int32 k = 0; k < gjk_max_iteration; ++k)
     {
         simplex.Save(save, &saveCount);
         simplex.Advance(origin);
@@ -92,7 +92,7 @@ end:
     result->direction = direction.Normalized();
     result->distance = distance;
 
-    return distance < GJK_TOLERANCE;
+    return distance < gjk_tolerance;
 }
 
 void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
@@ -100,13 +100,13 @@ void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& 
     Polytope polytope{ simplex };
     PolytopeEdge edge{ 0, FLT_MAX, zero_vec2 };
 
-    for (int32 k = 0; k < EPA_MAX_ITERATION; ++k)
+    for (int32 k = 0; k < epa_max_iteration; ++k)
     {
         edge = polytope.GetClosestEdge();
         Vec2 supportPoint = CSOSupport(a, tfA, b, tfB, edge.normal).point;
         float newDistance = Dot(edge.normal, supportPoint);
 
-        if (Abs(edge.distance - newDistance) > EPA_TOLERANCE)
+        if (Abs(edge.distance - newDistance) > epa_tolerance)
         {
             // Insert the support vertex so that it expands our polytope
             polytope.vertices.Insert(edge.index + 1, supportPoint);
@@ -188,7 +188,7 @@ static void FindContactPoints(
     ClipEdge(inc, ref->p1.position, -manifold->contactNormal, true);
 
     // If two points are closer than threshold, merge them into one point
-    if (inc->GetLength() <= CONTACT_MERGE_THRESHOLD)
+    if (inc->GetLength() <= contact_merge_threshold)
     {
         manifold->contactPoints[0] = ContactPoint{ inc->p1.position, inc->p1.id };
         manifold->numContacts = 1;

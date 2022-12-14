@@ -36,8 +36,8 @@ void Contact::Update()
 
     flag |= flag_enabled;
 
-    float oldNormalImpulse[MAX_CONTACT_POINT];
-    float oldTangentImpulse[MAX_CONTACT_POINT];
+    float oldNormalImpulse[max_contact_points];
+    float oldTangentImpulse[max_contact_points];
 
     bool wasTouching = (flag & flag_touching) == flag_touching;
 
@@ -56,7 +56,7 @@ void Contact::Update()
         flag &= ~flag_touching;
     }
 
-    for (int32 i = 0; i < MAX_CONTACT_POINT; ++i)
+    for (int32 i = 0; i < max_contact_points; ++i)
     {
         oldNormalImpulse[i] = normalSolvers[i].impulseSum;
         oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
@@ -133,7 +133,7 @@ void Contact::Prepare()
     }
 }
 
-void Contact::SolveVelocityConstraint()
+void Contact::SolveVelocityConstraints()
 {
     // Solve tangential constraint first
     for (int32 i = 0; i < manifold.numContacts; ++i)
@@ -155,7 +155,7 @@ void Contact::SolveVelocityConstraint()
     }
 }
 
-bool Contact::SolvePositionConstraint()
+bool Contact::SolvePositionConstraints()
 {
     bool solved = true;
 
@@ -178,7 +178,7 @@ bool Contact::SolvePositionConstraint()
     return solved;
 }
 
-bool Contact::SolveTOIPositionConstraint()
+bool Contact::SolveTOIPositionConstraints()
 {
     bool solved = true;
 

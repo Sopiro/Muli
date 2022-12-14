@@ -44,8 +44,8 @@ public:
      * More reading:
      * https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=4&t=1354
      */
-    virtual void SolveVelocityConstraint() = 0;
-    virtual bool SolvePositionConstraint()
+    virtual void SolveVelocityConstraints() = 0;
+    virtual bool SolvePositionConstraints()
     {
         return true;
     }

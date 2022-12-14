@@ -16,6 +16,7 @@ Game::Game(Application& _app)
 
     InitDemo(demo_count - 1);
     // InitDemo(0);
+    // InitDemo(42); // Logo
 }
 
 Game::~Game() noexcept

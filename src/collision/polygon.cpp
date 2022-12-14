@@ -7,7 +7,7 @@ namespace muli
 Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition, float _radius)
     : Shape(polygon, _radius)
 {
-    if (_vertexCount > MAX_LOCAL_POLYGON_VERTICES)
+    if (_vertexCount > max_local_polygon_vertices)
     {
         vertices = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
         normals = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
@@ -393,7 +393,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
     Vec2 d = p2 - p1;
 
     // Offset for polygon skin
-    float offset = (radius <= DEFAULT_RADIUS) ? 0.0f : radius;
+    float offset = (radius <= default_radius) ? 0.0f : radius;
 
     float near = 0.0f;
     float far = input.maxFraction;

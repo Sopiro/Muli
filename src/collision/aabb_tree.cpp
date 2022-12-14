@@ -241,8 +241,8 @@ int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
     int32 newNode = AllocateNode();
 
     // Fatten the aabb
-    nodes[newNode].aabb.max = aabb.max + DEFAULT_AABB_MARGIN;
-    nodes[newNode].aabb.min = aabb.min - DEFAULT_AABB_MARGIN;
+    nodes[newNode].aabb.max = aabb.max + aabb_margin;
+    nodes[newNode].aabb.min = aabb.min - aabb_margin;
     nodes[newNode].collider = collider;
     nodes[newNode].parent = nullNode;
     nodes[newNode].moved = true;
@@ -262,7 +262,7 @@ bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool fo
         return false;
     }
 
-    Vec2 d = displacement * DEFAULT_AABB_MULTIPLIER;
+    Vec2 d = displacement * aabb_multiplier;
 
     if (d.x > 0.0f)
     {
@@ -283,8 +283,8 @@ bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool fo
     }
 
     // Fatten the aabb
-    aabb.max += DEFAULT_AABB_MARGIN;
-    aabb.min -= DEFAULT_AABB_MARGIN;
+    aabb.max += aabb_margin;
+    aabb.min -= aabb_margin;
 
     RemoveLeaf(node);
 

@@ -109,12 +109,12 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = contactCount; j > 0; j--)
         {
-            contacts[j - 1]->SolveVelocityConstraint();
+            contacts[j - 1]->SolveVelocityConstraints();
         }
 #endif
         for (int32 j = jointCount; j > 0; j--)
         {
-            joints[j - 1]->SolveVelocityConstraint();
+            joints[j - 1]->SolveVelocityConstraints();
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
@@ -161,23 +161,23 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = contactCount; j > 0; j--)
         {
-            contactSolved &= contacts[j - 1]->SolvePositionConstraint();
+            contactSolved &= contacts[j - 1]->SolvePositionConstraints();
         }
 #endif
         for (int32 j = jointCount; j > 0; j--)
         {
-            jointSolved &= joints[j - 1]->SolvePositionConstraint();
+            jointSolved &= joints[j - 1]->SolvePositionConstraints();
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contactSolved &= contacts[j]->SolvePositionConstraint();
+            contactSolved &= contacts[j]->SolvePositionConstraints();
         }
 #endif
         for (int32 j = 0; j < jointCount; ++j)
         {
-            jointSolved &= joints[j]->SolvePositionConstraint();
+            jointSolved &= joints[j]->SolvePositionConstraints();
         }
 #endif
         if (contactSolved && jointSolved)
@@ -191,15 +191,19 @@ constexpr int32 toi_postion_iteration = 10;
 
 void Island::SolveTOI(float dt)
 {
+    bool warmStartingEnabled = world->settings.warm_starting;
+    world->settings.warm_starting = false;
+
     for (int32 i = 0; i < contactCount; ++i)
     {
         contacts[i]->Prepare();
     }
 
+    // Move the TOI contact to a safe position so that the next ComputeTimeOfImpact() returns the separated state
     Contact* toiContact = contacts[0];
     for (int32 i = 0; i < toi_postion_iteration; ++i)
     {
-        bool solved = toiContact->SolveTOIPositionConstraint();
+        bool solved = toiContact->SolveTOIPositionConstraints();
         if (solved)
         {
             break;
@@ -216,10 +220,21 @@ void Island::SolveTOI(float dt)
 
     for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
     {
+#if SOLVE_CONTACTS_BACKWARD
+#if SOLVE_CONTACT_CONSTRAINT
+        for (int32 j = contactCount; j > 0; j--)
+        {
+            contacts[j - 1]->SolveVelocityConstraints();
+        }
+#endif
+#else
+#if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
             contacts[j]->SolveVelocityConstraint();
         }
+#endif
+#endif
     }
 
     for (int32 i = 0; i < world->settings.position_iterations; ++i)
@@ -227,7 +242,7 @@ void Island::SolveTOI(float dt)
         bool solved = true;
         for (int32 j = 0; j < contactCount; ++j)
         {
-            solved &= contacts[j]->SolvePositionConstraint();
+            solved &= contacts[j]->SolvePositionConstraints();
         }
 
         if (solved)
@@ -244,6 +259,8 @@ void Island::SolveTOI(float dt)
         b->sweep.a += b->angularVelocity * dt;
         b->SynchronizeTransform();
     }
+
+    world->settings.warm_starting = warmStartingEnabled;
 }
 
 } // namespace muli

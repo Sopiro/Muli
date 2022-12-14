@@ -2,18 +2,16 @@
 
 #include "shape.h"
 
-#define MAX_LOCAL_POLYGON_VERTICES 8
-
 namespace muli
 {
 
 class Polygon : public Shape
 {
 public:
-    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = false, float radius = DEFAULT_RADIUS);
-    Polygon(std::initializer_list<Vec2> vertices, bool resetPosition = false, float radius = DEFAULT_RADIUS);
-    Polygon(float width, float height, float radius = DEFAULT_RADIUS, const Vec2& position = zero_vec2, float angle = 0.0f);
-    Polygon(float size, float radius = DEFAULT_RADIUS, const Vec2& position = zero_vec2, float angle = 0.0f);
+    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = false, float radius = default_radius);
+    Polygon(std::initializer_list<Vec2> vertices, bool resetPosition = false, float radius = default_radius);
+    Polygon(float width, float height, float radius = default_radius, const Vec2& position = zero_vec2, float angle = 0.0f);
+    Polygon(float size, float radius = default_radius, const Vec2& position = zero_vec2, float angle = 0.0f);
     ~Polygon();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
@@ -38,8 +36,8 @@ protected:
     int32 vertexCount;
 
 private:
-    Vec2 localVertices[MAX_LOCAL_POLYGON_VERTICES];
-    Vec2 localNormals[MAX_LOCAL_POLYGON_VERTICES];
+    Vec2 localVertices[max_local_polygon_vertices];
+    Vec2 localNormals[max_local_polygon_vertices];
 };
 
 inline Vec2 Polygon::GetVertex(int32 id) const

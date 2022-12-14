@@ -14,6 +14,6 @@ struct Material
     CollisionFilter filter;
 };
 
-constexpr Material default_material{ DEFAULT_FRICTION, DEFAULT_RESTITUTION, DEFAULT_SURFACESPEED, CollisionFilter{} };
+constexpr Material default_material{ default_friction, default_restitution, default_surface_speed, CollisionFilter{} };
 
 } // namespace muli

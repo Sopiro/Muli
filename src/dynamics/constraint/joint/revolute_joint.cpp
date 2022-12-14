@@ -56,7 +56,7 @@ void RevoluteJoint::Prepare()
     }
 }
 
-void RevoluteJoint::SolveVelocityConstraint()
+void RevoluteJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)

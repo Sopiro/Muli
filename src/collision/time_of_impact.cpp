@@ -240,8 +240,8 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
     float tMax = input.tMax;
 
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
-    float target = Max(LINEAR_SLOP, r2 - 2.0f * LINEAR_SLOP);
-    float tolerance = 0.1f * LINEAR_SLOP;
+    float target = Max(linear_slop, r2 - 2.0f * linear_slop);
+    float tolerance = 0.1f * linear_slop;
     muliAssert(target > tolerance);
 
     float t1 = 0.0f;

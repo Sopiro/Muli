@@ -18,9 +18,10 @@ public:
 
         RigidBody* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
-        b->SetLinearVelocity(12.0f, 0.0f);
+        b->SetLinearVelocity(20.0f, 0.0f);
         b->SetAngularVelocity(1.0f);
         b->SetLinearDamping(0.1f);
+        b->SetContinuous(true);
 
         for (int i = 0; i < 500; ++i)
         {

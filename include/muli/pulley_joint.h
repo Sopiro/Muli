@@ -24,7 +24,7 @@ public:
                 float jointMass = 1.0f);
 
     virtual void Prepare() override;
-    virtual void SolveVelocityConstraint() override;
+    virtual void SolveVelocityConstraints() override;
 
     const Vec2& GetGroundAnchorA() const;
     const Vec2& GetGroundAnchorB() const;

@@ -24,7 +24,7 @@ class Shape;
 // 64byte
 struct ContactManifold
 {
-    ContactPoint contactPoints[MAX_CONTACT_POINT];
+    ContactPoint contactPoints[max_contact_points];
     ContactPoint referencePoint;
     Vec2 contactNormal; // Contact normal is always pointing from a to b
     Vec2 contactTangent;

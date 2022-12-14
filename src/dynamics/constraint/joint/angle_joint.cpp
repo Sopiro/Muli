@@ -37,7 +37,7 @@ void AngleJoint::Prepare()
     }
 }
 
-void AngleJoint::SolveVelocityConstraint()
+void AngleJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

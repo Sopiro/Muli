@@ -51,7 +51,7 @@ void GrabJoint::Prepare()
     }
 }
 
-void GrabJoint::SolveVelocityConstraint()
+void GrabJoint::SolveVelocityConstraints()
 {
     // Calculate corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

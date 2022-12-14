@@ -19,7 +19,7 @@ World::World(const WorldSettings& _settings)
     , numIslands{ 0 }
     , sleepingBodies{ 0 }
 {
-    muliAssert(DEFAULT_RADIUS >= LINEAR_SLOP * 2.0f);
+    muliAssert(default_radius >= linear_slop * 2.0f);
 }
 
 World::~World() noexcept
@@ -332,9 +332,7 @@ void World::SolveTOI()
 
         // subs-tep the rest time
         float dt = (1.0f - minAlpha) * settings.dt;
-        settings.warm_starting = false;
         island.SolveTOI(dt);
-        settings.warm_starting = true;
 
         // Reset island flags and synchronize broad-phase
         for (int32 i = 0; i < island.bodyCount; ++i)
