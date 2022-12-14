@@ -66,6 +66,7 @@ void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
     RigidBody* bodyB = colliderB->body;
 
     muliAssert(bodyA != bodyB);
+    muliAssert(colliderA->GetType() >= colliderB->GetType());
 
     if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
     {

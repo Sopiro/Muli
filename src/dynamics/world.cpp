@@ -527,7 +527,7 @@ std::vector<Collider*> World::Query(const Vec2& point) const
     std::vector<Collider*> res;
     res.reserve(8);
 
-    contactManager.broadPhase.tree.Query(point, [&](Collider* collider) -> bool {
+    contactManager.broadPhase.tree.Query(point, [&](int32 node, Collider* collider) -> bool {
         if (collider->TestPoint(point))
         {
             res.push_back(collider);
@@ -548,7 +548,7 @@ std::vector<Collider*> World::Query(const AABB& aabb) const
     Polygon box{ vertices, 4, false, 0.0f };
     Transform t{ identity };
 
-    contactManager.broadPhase.tree.Query(aabb, [&](Collider* collider) -> bool {
+    contactManager.broadPhase.tree.Query(aabb, [&](int32 node, Collider* collider) -> bool {
         if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
             res.push_back(collider);
@@ -567,7 +567,7 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
         Vec2 point;
         WorldQueryCallback* callback;
 
-        bool QueryCallback(Collider* collider)
+        bool QueryCallback(int32 node, Collider* collider)
         {
             if (collider->TestPoint(point))
             {
@@ -600,7 +600,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
         {
         }
 
-        bool QueryCallback(Collider* collider)
+        bool QueryCallback(int32 node, Collider* collider)
         {
             if (DetectCollision(collider->shape, collider->body->transform, &region, t))
             {

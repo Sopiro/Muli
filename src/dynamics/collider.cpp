@@ -12,7 +12,6 @@ ContactListener defaultListener;
 Collider::Collider()
     : next{ nullptr }
     , node{ 0 }
-    , moved{ false }
     , OnDestroy{ nullptr }
     , ContactListener{ &defaultListener }
 {

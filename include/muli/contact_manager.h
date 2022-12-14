@@ -42,9 +42,9 @@ private:
 
 inline void ContactManager::UpdateContactGraph()
 {
-    // Find contacts, insert into the contact graph
-    // broadphase will callback OnNewContact()
-    broadPhase.FindContacts();
+    // Find new contacts for moved objects
+    // broadphase will callback OnNewContact(Collider*, Collider*)
+    broadPhase.FindNewContacts();
 }
 
 inline int32 ContactManager::GetContactCount() const

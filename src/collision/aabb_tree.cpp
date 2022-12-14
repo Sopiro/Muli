@@ -443,7 +443,7 @@ void AABBTree::Swap(int32 node1, int32 node2)
     nodes[node1].parent = parent2;
 }
 
-void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const
+void AABBTree::Query(const Vec2& point, const std::function<bool(int32, Collider*)>& callback) const
 {
     if (root == nullNode)
     {
@@ -464,7 +464,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& ca
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback(nodes[current].collider);
+            bool proceed = callback(current, nodes[current].collider);
             if (proceed == false)
             {
                 return;
@@ -478,7 +478,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(Collider*)>& ca
     }
 }
 
-void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const
+void AABBTree::Query(const AABB& aabb, const std::function<bool(int32, Collider*)>& callback) const
 {
     if (root == nullNode)
     {
@@ -499,7 +499,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(Collider*)>& cal
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback(nodes[current].collider);
+            bool proceed = callback(current, nodes[current].collider);
             if (proceed == false)
             {
                 return;

@@ -65,9 +65,11 @@ public:
     bool TestOverlap(int32 nodeA, int32 nodeB) const;
     const AABB& GetAABB(int32 node) const;
     void ClearMoved(int32 node) const;
+    bool WasMoved(int32 node) const;
+    Collider* GetData(int32 node) const;
 
-    void Query(const Vec2& point, const std::function<bool(Collider*)>& callback) const;
-    void Query(const AABB& aabb, const std::function<bool(Collider*)>& callback) const;
+    void Query(const Vec2& point, const std::function<bool(int32, Collider*)>& callback) const;
+    void Query(const AABB& aabb, const std::function<bool(int32, Collider*)>& callback) const;
     template <typename T>
     void Query(const Vec2& point, T* callback) const;
     template <typename T>
@@ -128,6 +130,20 @@ inline void AABBTree::ClearMoved(int32 node) const
     nodes[node].moved = false;
 }
 
+inline bool AABBTree::WasMoved(int32 node) const
+{
+    muliAssert(0 <= node && node < nodeCapacity);
+
+    return nodes[node].moved;
+}
+
+inline Collider* AABBTree::GetData(int32 node) const
+{
+    muliAssert(0 <= node && node < nodeCapacity);
+
+    return nodes[node].collider;
+}
+
 inline float AABBTree::ComputeTreeCost() const
 {
     float cost = 0.0f;
@@ -159,7 +175,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback->QueryCallback(nodes[current].collider);
+            bool proceed = callback->QueryCallback(current, nodes[current].collider);
             if (proceed == false)
             {
                 return;
@@ -195,7 +211,7 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback->QueryCallback(nodes[current].collider);
+            bool proceed = callback->QueryCallback(current, nodes[current].collider);
             if (proceed == false)
             {
                 return;

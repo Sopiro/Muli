@@ -12,7 +12,7 @@ BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager)
     , moveCapacity{ 16 }
     , moveCount{ 0 }
 {
-    moveBuffer = (Collider**)malloc(sizeof(Collider*) * moveCapacity);
+    moveBuffer = (int32*)malloc(moveCapacity * sizeof(int32));
 }
 
 BroadPhase::~BroadPhase()
@@ -20,92 +20,69 @@ BroadPhase::~BroadPhase()
     free(moveBuffer);
 }
 
-void BroadPhase::BufferMove(Collider* collider)
+void BroadPhase::BufferMove(int32 node)
 {
+    // Grow the buffer as needed
     if (moveCount == moveCapacity)
     {
-        Collider** old = moveBuffer;
+        int32* old = moveBuffer;
         moveCapacity *= 2;
-        moveBuffer = (Collider**)malloc(moveCapacity * sizeof(Collider*));
-        memcpy(moveBuffer, old, moveCount * sizeof(Collider*));
+        moveBuffer = (int32*)malloc(moveCapacity * sizeof(int32));
+        memcpy(moveBuffer, old, moveCount * sizeof(int32));
         free(old);
     }
 
-    moveBuffer[moveCount] = collider;
+    moveBuffer[moveCount] = node;
     ++moveCount;
-
-    collider->moved = true;
 }
 
-void BroadPhase::UnBufferMove(Collider* collider)
+void BroadPhase::UnBufferMove(int32 node)
 {
     for (int32 i = 0; i < moveCount; ++i)
     {
-        if (moveBuffer[i] == collider)
+        if (moveBuffer[i] == node)
         {
-            moveBuffer[i] = nullptr;
+            moveBuffer[i] = nullNode;
         }
     }
 }
 
-void BroadPhase::Add(Collider* collider, const AABB& aabb)
-{
-    int32 treeNode = tree.CreateNode(collider, aabb);
-    collider->node = treeNode;
-
-    BufferMove(collider);
-}
-
-void BroadPhase::Remove(Collider* collider)
-{
-    tree.RemoveNode(collider->node);
-
-    UnBufferMove(collider);
-}
-
-void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
-{
-    bool moved = tree.MoveNode(collider->node, aabb, displacement, collider->body->IsSleeping());
-    if (moved)
-    {
-        BufferMove(collider);
-    }
-}
-
-void BroadPhase::FindContacts()
+void BroadPhase::FindNewContacts()
 {
     for (int32 i = 0; i < moveCount; ++i)
     {
-        colliderA = moveBuffer[i];
-
-        if (colliderA == nullptr)
+        nodeA = moveBuffer[i];
+        if (nodeA == nullNode)
         {
             continue;
         }
 
+        colliderA = tree.GetData(nodeA);
         bodyA = colliderA->body;
         typeA = colliderA->GetType();
 
         const AABB& treeAABB = tree.GetAABB(colliderA->node);
 
-        // This will callback our BroadPhase::QueryCallback(Collider*)
+        // This will callback our BroadPhase::QueryCallback(int32, Collider*)
         tree.Query(treeAABB, this);
     }
 
+    // Clear move buffer for next step
     for (int i = 0; i < moveCount; ++i)
     {
-        if (moveBuffer[i])
+        int32 node = moveBuffer[i];
+        if (node != nullNode)
         {
-            moveBuffer[i]->moved = false;
+            tree.ClearMoved(node);
         }
     }
 
     moveCount = 0;
 }
 
-bool BroadPhase::QueryCallback(Collider* colliderB)
+bool BroadPhase::QueryCallback(int nodeB, Collider* colliderB)
 {
-    if (colliderA == colliderB)
+    if (nodeA == nodeB)
     {
         return true;
     }
@@ -117,7 +94,7 @@ bool BroadPhase::QueryCallback(Collider* colliderB)
     }
 
     // Avoid duplicate contact
-    if (colliderB->moved && colliderA < colliderB)
+    if (tree.WasMoved(nodeB) && nodeA < nodeB)
     {
         return true;
     }
