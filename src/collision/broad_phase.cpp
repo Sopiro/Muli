@@ -128,7 +128,7 @@ bool BroadPhase::QueryCallback(int nodeB, Collider* colliderB)
     }
 
     Shape::Type typeB = colliderB->GetType();
-    if (typeA < typeB)
+    if (typeA <= typeB)
     {
         contactManager->OnNewContact(colliderB, colliderA);
     }

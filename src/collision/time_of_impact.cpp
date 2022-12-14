@@ -41,7 +41,7 @@ struct SeparationFunction
             // Point A vs. Point B
             type = points;
 
-            // separating axis in world space
+            // Separating axis in world space
             axis = featuresB[0].position - featuresA[0].position;
             axis.Normalize();
         }
@@ -241,7 +241,7 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
 
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
     float target = Max(LINEAR_SLOP, r2 - 2.0f * LINEAR_SLOP);
-    float tolerance = 0.25f * LINEAR_SLOP;
+    float tolerance = 0.1f * LINEAR_SLOP;
     muliAssert(target > tolerance);
 
     float t1 = 0.0f;
@@ -390,11 +390,11 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
                 }
             }
 
-            ++vertexPushInteration;
             if (vertexPushInteration == maxVertexPushIterations)
             {
                 break;
             }
+            ++vertexPushInteration;
         }
 
         ++iteration;

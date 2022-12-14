@@ -3,13 +3,14 @@
 #include "aabb.h"
 
 #define MAX_CONTACT_POINT 2
+#define LINEAR_SLOP 0.002f
 
 // Default broad phase settings
 #define DEFAULT_AABB_MARGIN 0.05f
 #define DEFAULT_AABB_MULTIPLIER 4.0f
 
 // Default body settings
-#define DEFAULT_RADIUS 0.005f // stable if greater than 0.5 * PENETRATION_SLOP
+#define DEFAULT_RADIUS LINEAR_SLOP * 2.0f // Must be greater than 2.0 * LINEAR_SLOP
 #define DEFAULT_DENSITY 12.5f
 #define DEFAULT_FRICTION 0.5f
 #define DEFAULT_RESTITUTION 0.0f
@@ -28,8 +29,6 @@
 #define TANGENT_MIN_LENGTH 0.01f
 #define CONTACT_MERGE_THRESHOLD 1.415f * TANGENT_MIN_LENGTH
 
-#define LINEAR_SLOP 0.005f
-
 namespace muli
 {
 
@@ -39,8 +38,7 @@ struct WorldSettings
     bool apply_gravity = true;
     Vec2 gravity{ 0.0f, -10.0f };
 
-    float penetration_slop = LINEAR_SLOP; // meter
-    float restitution_slop = 0.2f;        // m/s
+    float restitution_slop = 0.2f; // m/s
 
     bool block_solve = true;
     int32 velocity_iterations = 8;

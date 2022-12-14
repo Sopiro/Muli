@@ -12,6 +12,7 @@ class PositionSolver
 public:
     void Prepare(Contact* contact, int32 index);
     bool Solve();
+    bool SolveTOI();
 
 private:
     friend class Contact;

@@ -19,6 +19,7 @@ World::World(const WorldSettings& _settings)
     , numIslands{ 0 }
     , sleepingBodies{ 0 }
 {
+    muliAssert(DEFAULT_RADIUS >= LINEAR_SLOP * 2.0f);
 }
 
 World::~World() noexcept
@@ -316,8 +317,8 @@ void World::SolveTOI()
             continue;
         }
 
-        // bodyA->Awake();
-        // bodyB->Awake();
+        bodyA->Awake();
+        bodyB->Awake();
 
         // Build the island
         island.Clear();

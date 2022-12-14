@@ -72,6 +72,7 @@ private:
     virtual void Prepare() override;
     virtual void SolveVelocityConstraint() override;
     virtual bool SolvePositionConstraint() override;
+    bool SolveTOIPositionConstraint();
 
     DetectionFunction* collisionDetectionFunction;
 

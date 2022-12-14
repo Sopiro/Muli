@@ -46,7 +46,7 @@ void PulleyJoint::Prepare()
     float lengthA = ua.Length();
     float lengthB = ub.Length();
 
-    if (lengthA > settings.penetration_slop)
+    if (lengthA > LINEAR_SLOP)
     {
         ua *= 1.0f / lengthA;
     }
@@ -55,7 +55,7 @@ void PulleyJoint::Prepare()
         ua.SetZero();
     }
 
-    if (lengthB > settings.penetration_slop)
+    if (lengthB > LINEAR_SLOP)
     {
         ub *= 1.0f / lengthB;
     }

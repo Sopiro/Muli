@@ -43,8 +43,8 @@ void Contact::Update()
 
     // clang-format off
     bool touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
-                                          colliderB->shape, bodyB->transform,
-                                          &manifold);
+                                               colliderB->shape, bodyB->transform,
+                                               &manifold);
     // clang-format on
 
     if (touching)
@@ -168,6 +168,29 @@ bool Contact::SolvePositionConstraint()
     for (int32 i = 0; i < manifold.numContacts; ++i)
     {
         solved &= positionSolvers[i].Solve();
+    }
+
+    b1->sweep.c += b1->invMass * cLinearImpulseA;
+    b1->sweep.a += b1->invInertia * cAngularImpulseA;
+    b2->sweep.c += b2->invMass * cLinearImpulseB;
+    b2->sweep.a += b2->invInertia * cAngularImpulseB;
+
+    return solved;
+}
+
+bool Contact::SolveTOIPositionConstraint()
+{
+    bool solved = true;
+
+    cLinearImpulseA.SetZero();
+    cLinearImpulseB.SetZero();
+    cAngularImpulseA = 0.0f;
+    cAngularImpulseB = 0.0f;
+
+    // Solve position constraint
+    for (int32 i = 0; i < manifold.numContacts; ++i)
+    {
+        solved &= positionSolvers[i].SolveTOI();
     }
 
     b1->sweep.c += b1->invMass * cLinearImpulseA;
