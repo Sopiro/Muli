@@ -239,9 +239,18 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
 
     float tMax = input.tMax;
 
+    /*
+        target = r2 - linear_slop * 4.0 (position solver threshold)
+        r2 - linear_slop * 2.0          (TOI position solver threshold)
+
+        s - target  > tolerance        | TOIOutput::separated
+        0.0 < s - target < tolerance   | TOIOutput::touching
+    */
+
+    // The radius must be at least twice as large as linear_slop
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
-    float target = Max(linear_slop, r2 - 2.0f * linear_slop);
-    float tolerance = 0.1f * linear_slop;
+    float target = Max(linear_slop, r2 - 4.0f * linear_slop);
+    float tolerance = 0.2f * linear_slop;
     muliAssert(target > tolerance);
 
     float t1 = 0.0f;
@@ -295,6 +304,7 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
             float s2 = fcn.FindMinSeparation(t2, &idA, &idB);
 
             // Is the final configuration separated?
+            // s2 - target > tolerance
             if (s2 > target + tolerance)
             {
                 // Victory!

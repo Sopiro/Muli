@@ -6,7 +6,7 @@ namespace muli
 {
 
 constexpr int32 max_contact_points = 2;
-constexpr float linear_slop = 0.0025f;
+constexpr float linear_slop = 0.002f;
 
 // Default broad phase settings
 constexpr float aabb_margin = 0.05f;
