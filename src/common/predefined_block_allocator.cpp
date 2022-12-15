@@ -9,8 +9,8 @@ namespace muli
 // Capsule          : 56
 // Polygon          : 184
 // Collider         : 80
-// RigidBody        : 168
-// Contact          : 632
+// RigidBody        : 192
+// Contact          : 616
 // Manifold         : 64
 
 // Angle joint      : 160

@@ -4,13 +4,8 @@
 
 #include "application.h"
 
-int main(int argc, char** argv)
+void PrintSizes()
 {
-#if defined(_WIN32) && defined(_DEBUG)
-    // Enable memory-leak reports
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
     std::cout << "Circle: " << sizeof(muli::Circle) << '\n';
     std::cout << "Capsule: " << sizeof(muli::Capsule) << '\n';
     std::cout << "Polygon: " << sizeof(muli::Polygon) << '\n';
@@ -29,6 +24,16 @@ int main(int argc, char** argv)
     std::cout << "Pulley joint: " << sizeof(muli::PulleyJoint) << '\n';
     std::cout << "Revolute joint: " << sizeof(muli::RevoluteJoint) << '\n';
     std::cout << "Weld joint: " << sizeof(muli::WeldJoint) << '\n' << std::endl;
+}
+
+int main(int argc, char** argv)
+{
+#if defined(_WIN32) && defined(_DEBUG)
+    // Enable memory-leak reports
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+    PrintSizes();
 
     muli::Application* app = muli::Application::Create(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 

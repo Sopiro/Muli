@@ -211,6 +211,7 @@ protected:
     uint16 flag;
 
     int32 islandIndex;
+    int32 islandID;
 
     void ResetMassData();
     void SynchronizeTransform();
@@ -220,7 +221,6 @@ protected:
 
 private:
     World* world;
-    int32 islandID;
 
     ContactEdge* contactList;
     JointEdge* jointList;

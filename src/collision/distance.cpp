@@ -8,8 +8,8 @@ namespace muli
 float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ClosestFeatures* features)
 {
     GJKResult gjkResult;
-    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
 
+    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
     if (collide == true)
     {
         return 0.0f;

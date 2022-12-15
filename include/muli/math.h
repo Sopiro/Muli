@@ -530,6 +530,9 @@ struct Mat3
     Mat3 Translate(const Vec2& v);
 };
 
+struct Rotation;
+struct Transform;
+
 struct Mat4
 {
     Vec4 ex, ey, ez, ew;
@@ -540,6 +543,8 @@ struct Mat4
         : Mat4(1.0f)
     {
     }
+
+    Mat4(const Transform& t);
 
     Mat4(float _v)
     {

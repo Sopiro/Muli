@@ -28,6 +28,8 @@ struct TOIOutput
     float t;
 };
 
+// Bilateral advancement method by Erin Catto, the author of Box2d(https://box2d.org/)
+// https://www.youtube.com/watch?v=7_nKOET6zwI
 void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output);
 
 } // namespace muli

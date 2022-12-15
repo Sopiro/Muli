@@ -22,9 +22,9 @@ Mat3 Mat3::Rotate(float z)
     Mat3 t;
 
     // clang-format off
-    t.ex.x = cos; t.ey.x = -sin; t.ez.x = 0;
-    t.ex.y = sin; t.ey.y = cos;  t.ez.y = 0;
-    t.ex.z = 0;   t.ey.z = 0;    t.ez.z = 1;
+    t.ex.x = cos;  t.ey.x = -sin;  t.ez.x = 0.0f;
+    t.ex.y = sin;  t.ey.y = cos;   t.ez.y = 0.0f;
+    t.ex.z = 0.0f; t.ey.z = 0.0f;  t.ez.z = 1.0f;
     // clang-format on
 
     return Mul(*this, t);
@@ -82,6 +82,38 @@ Mat3 Mat3::GetInverse() const
     return t;
 }
 
+Mat4::Mat4(const Transform& t)
+{
+    float angle = t.rotation.GetAngle();
+
+    constexpr float sinX = 0.0f;
+    constexpr float cosX = 1.0f;
+    constexpr float sinY = 0.0f;
+    constexpr float cosY = 1.0f;
+    float sinZ = sinf(angle);
+    float cosZ = cosf(angle);
+
+    ex.x = cosY * cosZ;
+    ex.y = sinX * sinY * cosZ + cosX * sinZ;
+    ex.z = -cosX * sinY * cosZ + sinX * sinZ;
+    ex.w = 0.0f;
+
+    ey.x = -cosY * sinZ;
+    ey.y = -sinX * sinY * sinZ + cosX * cosZ;
+    ey.z = cosX * sinY * sinZ + sinX * cosZ;
+    ey.w = 0.0f;
+
+    ez.x = sinY;
+    ez.y = -sinX * cosY;
+    ez.z = cosX * cosY;
+    ez.w = 0.0f;
+
+    ew.x = t.position.x;
+    ew.y = t.position.y;
+    ew.z = 0.0f;
+    ew.w = 1.0f;
+}
+
 Mat4 Mat4::Scale(float x, float y, float z)
 {
     Mat4 t;
@@ -108,22 +140,22 @@ Mat4 Mat4::Rotate(float x, float y, float z)
     t.ex.x = cosY * cosZ;
     t.ex.y = sinX * sinY * cosZ + cosX * sinZ;
     t.ex.z = -cosX * sinY * cosZ + sinX * sinZ;
-    t.ex.w = 0;
+    t.ex.w = 0.0f;
 
     t.ey.x = -cosY * sinZ;
     t.ey.y = -sinX * sinY * sinZ + cosX * cosZ;
     t.ey.z = cosX * sinY * sinZ + sinX * cosZ;
-    t.ey.w = 0;
+    t.ey.w = 0.0f;
 
     t.ez.x = sinY;
     t.ez.y = -sinX * cosY;
     t.ez.z = cosX * cosY;
-    t.ez.w = 0;
+    t.ez.w = 0.0f;
 
-    t.ew.x = 0;
-    t.ew.y = 0;
-    t.ew.z = 0;
-    t.ew.w = 1;
+    t.ew.x = 0.0f;
+    t.ew.y = 0.0f;
+    t.ew.z = 0.0f;
+    t.ew.w = 1.0f;
 
     return Mul(*this, t);
 }

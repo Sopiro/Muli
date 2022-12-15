@@ -14,25 +14,21 @@ RigidBodyRenderer::RigidBodyRenderer(Game& _game)
     shader->Use();
 }
 
-void RigidBodyRenderer::Render()
+void RigidBodyRenderer::Render() const
 {
     shader->Use();
 
-    for (uint32 i = 0; i < collidersAndMeshes.size(); ++i)
+    for (size_t i = 0; i < collidersAndMeshes.size(); ++i)
     {
         Collider* collider = collidersAndMeshes[i].first;
         RigidBody* body = collider->GetBody();
 
         RigidBody::Type type = body->GetType();
 
-        std::unique_ptr<Mesh>& mesh = collidersAndMeshes[i].second;
+        const std::unique_ptr<Mesh>& mesh = collidersAndMeshes[i].second;
 
-        Vec2 pos = body->GetPosition();
-
-        Mat4 t = Mat4{ 1.0f }.Translate(pos.x, pos.y, 0.0f);
-        Mat4 r = Mat4{ 1.0f }.Rotate(0.0f, 0.0f, body->GetAngle());
-
-        shader->SetModelMatrix(t * r);
+        Mat4 t{ body->GetTransform() };
+        shader->SetModelMatrix(t);
 
         if ((options.draw_outline_only == false && body->IsSleeping() == false))
         {
@@ -106,6 +102,30 @@ void RigidBodyRenderer::Render()
     }
 }
 
+void RigidBodyRenderer::Render(Collider* collider, const Transform& transform) const
+{
+    for (size_t i = 0; i < collidersAndMeshes.size(); ++i)
+    {
+        Collider* c = collidersAndMeshes[i].first;
+        if (c != collider)
+        {
+            continue;
+        }
+
+        RigidBody* body = c->GetBody();
+        Mat4 t = Mat4{ transform };
+
+        shader->Use();
+        shader->SetModelMatrix(t);
+        shader->SetColor(Vec3{ 0.2f });
+
+        const std::unique_ptr<Mesh>& mesh = collidersAndMeshes[i].second;
+        mesh->Draw(GL_LINE_LOOP);
+
+        break;
+    }
+}
+
 // Viewport space -> NDC -> world spcae
 Vec2 RigidBodyRenderer::Pick(const Vec2& screenPos) const
 {
@@ -123,9 +143,9 @@ Vec2 RigidBodyRenderer::Pick(const Vec2& screenPos) const
     Mat4 invVP = (shader->projMatrix * shader->viewMatrix).GetInverse();
 
     // World space
-    Vec4 invPos = invVP * Vec4{ worldPos.x, worldPos.y, 0, 1 };
+    Vec4 invPos = invVP * Vec4{ worldPos.x, worldPos.y, 0.0f, 1.0f };
 
-    return { invPos.x, invPos.y };
+    return Vec2{ invPos.x, invPos.y };
 }
 
 } // namespace muli

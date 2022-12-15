@@ -18,7 +18,7 @@ public:
 
         RigidBody* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
-        b->SetLinearVelocity(20.0f, 0.0f);
+        b->SetLinearVelocity(30.0f, 0.0f);
         b->SetAngularVelocity(1.0f);
         b->SetLinearDamping(0.1f);
         b->SetContinuous(true);
@@ -27,6 +27,7 @@ public:
         {
             RigidBody* c = world->CreateCircle(r);
             c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);
+            c->SetLinearDamping(0.1f);
         }
 
         camera.position.Set(-5.0f, 0.0f);

@@ -83,7 +83,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept
     return *this;
 }
 
-void Mesh::Draw(GLenum drawMode)
+void Mesh::Draw(GLenum drawMode) const
 {
     glBindVertexArray(VAO);
 

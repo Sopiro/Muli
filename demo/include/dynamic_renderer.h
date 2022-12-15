@@ -16,7 +16,7 @@ public:
     void SetProjectionMatrix(const Mat4& projMatrix);
     void SetViewMatrix(const Mat4& viewMatrix);
 
-    virtual void Render() override;
+    virtual void Render() const override{};
     void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
 
 private:
@@ -33,8 +33,6 @@ private:
     uint32 VAO;
     uint32 VBO;
 };
-
-inline void DynamicRenderer::Render() {}
 
 inline void DynamicRenderer::SetProjectionMatrix(const Mat4& _projMatrix)
 {

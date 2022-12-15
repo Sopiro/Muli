@@ -31,6 +31,7 @@ public:
     Vec2 GetWorldCursorPosition() const;
     DebugOptions& GetDebugOptions();
     void RegisterRenderBody(RigidBody* b);
+    const RigidBodyRenderer& GetRigidBodyRenderer() const;
     std::vector<Vec2>& GetPointList();
     std::vector<Vec2>& GetLineList();
     float GetTime() const;
@@ -94,6 +95,11 @@ inline float Game::GetTime() const
 inline void Game::RestartDemo()
 {
     InitDemo(demoIndex);
+}
+
+inline const RigidBodyRenderer& Game::GetRigidBodyRenderer() const
+{
+    return rRenderer;
 }
 
 inline void Game::OnDestroy(Collider* me)

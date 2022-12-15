@@ -18,7 +18,7 @@ public:
     Renderer(Renderer&&) noexcept = delete;
     Renderer& operator=(Renderer&&) noexcept = delete;
 
-    virtual void Render() = 0;
+    virtual void Render() const = 0;
 };
 
 } // namespace muli

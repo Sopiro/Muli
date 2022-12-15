@@ -1,35 +1,32 @@
 #include "demo.h"
 #include "game.h"
-#include "muli/time_of_impact.h"
+#include "window.h"
 
 namespace muli
 {
 
+static bool drawTrajectory = true;
+
 class ContinuousTest : public Demo
 {
 public:
+    RigidBody* target;
+    Capsule* stick;
+
     ContinuousTest(Game& game)
         : Demo(game)
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
-        float start = 0.5f;
-        float size = 0.3f;
-        float gap = 0.25f;
-
         world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, RigidBody::Type::static_body);
 
-        RigidBody* b;
-        // b = world->CreateBox(0.2f);
-        // b->SetPosition(-3, 1);
-        // b->SetContinuous(true);
-        // b->SetLinearVelocity(100.0f, 0.0f);
+        target = world->CreateCapsule(2.8f, 0.05f, true);
+        target->SetPosition(LinearRand(-0.5f, 0.5f), 7.2f);
+        target->SetLinearVelocity(0.0f, -100.0f);
+        target->SetAngularVelocity(LinearRand(-20.0f, 20.0f));
+        target->SetContinuous(true);
 
-        b = world->CreateCapsule(2.8f, 0.05f, true);
-        b->SetPosition(LinearRand(-0.5f, 0.5f), 7.2f);
-        b->SetLinearVelocity(0.0f, -100.0f);
-        b->SetAngularVelocity(LinearRand(-20.0f, 20.0f));
-        b->SetContinuous(true);
+        stick = (Capsule*)target->GetColliderList()->GetShape();
 
         settings.continuous = true;
     }
@@ -39,21 +36,26 @@ public:
         std::vector<Vec2>& pl = game.GetPointList();
         std::vector<Vec2>& ll = game.GetLineList();
 
-        for (RigidBody* b = world->GetBodyList(); b; b = b->GetNext())
+        if (drawTrajectory)
         {
-            if (!b->IsContinuous())
-            {
-                continue;
-            }
+            Transform t = target->GetTransform();
+            t.rotation = t.rotation.GetAngle() + target->GetAngularVelocity() * settings.dt;
+            t.position += target->GetLinearVelocity() * settings.dt;
 
-            const Sweep& s = b->GetSweep();
-
-            pl.push_back(s.c0);
-            pl.push_back(s.c);
-
-            ll.push_back(s.c0);
-            ll.push_back(s.c);
+            game.GetRigidBodyRenderer().Render(target->GetColliderList(), t);
         }
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
+
+        if (ImGui::Begin("Options"))
+        {
+            ImGui::Checkbox("Draw trajectory", &drawTrajectory);
+        }
+        ImGui::End();
     }
 
     ~ContinuousTest() {}

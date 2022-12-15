@@ -408,8 +408,6 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
             ++vertexPushInteration;
         }
 
-        ++iteration;
-
         if (done)
         {
             break;
@@ -422,6 +420,7 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
             output->t = t1;
             break;
         }
+        ++iteration;
     }
 }
 

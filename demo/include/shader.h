@@ -16,7 +16,7 @@ public:
     Shader(Shader&&) noexcept = delete;
     Shader& operator=(Shader&&) noexcept = delete;
 
-    void Use();
+    void Use() const;
 
 protected:
     Shader(const char* vsCode, const char* fsCode);
@@ -25,7 +25,7 @@ protected:
     uint32 shaderHandle{ 0 };
 };
 
-inline void Shader::Use()
+inline void Shader::Use() const
 {
     glUseProgram(shaderHandle);
 }

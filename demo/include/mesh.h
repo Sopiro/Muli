@@ -17,7 +17,7 @@ public:
     Mesh(Mesh&&) noexcept;
     Mesh& operator=(Mesh&&) noexcept;
 
-    void Draw(GLenum drawMode = GL_TRIANGLES);
+    void Draw(GLenum drawMode = GL_TRIANGLES) const;
 
 private:
     bool moved = false;
