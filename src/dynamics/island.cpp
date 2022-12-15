@@ -188,6 +188,8 @@ void Island::Solve()
 }
 
 constexpr int32 toi_postion_iteration = 10;
+constexpr int32 toi_index_1 = 0;
+constexpr int32 toi_index_2 = 1;
 
 void Island::SolveTOI(float dt)
 {
@@ -200,23 +202,25 @@ void Island::SolveTOI(float dt)
     }
 
     // Move the TOI contact to a safe position so that the next ComputeTimeOfImpact() returns the separated state
-    Contact* toiContact = contacts[0];
     for (int32 i = 0; i < toi_postion_iteration; ++i)
     {
-        bool solved = toiContact->SolveTOIPositionConstraints();
+        bool solved = true;
+
+        for (int32 j = 0; j < contactCount; ++j)
+        {
+            solved &= contacts[j]->SolveTOIPositionConstraints();
+        }
+
         if (solved)
         {
             break;
         }
     }
 
-    for (int32 i = 0; i < bodyCount; ++i)
-    {
-        RigidBody* b = bodies[i];
-
-        b->sweep.c0 = b->sweep.c;
-        b->sweep.a0 = b->sweep.a;
-    }
+    bodies[toi_index_1]->sweep.c0 = bodies[toi_index_1]->sweep.c;
+    bodies[toi_index_1]->sweep.a0 = bodies[toi_index_1]->sweep.a;
+    bodies[toi_index_2]->sweep.c0 = bodies[toi_index_2]->sweep.c;
+    bodies[toi_index_2]->sweep.a0 = bodies[toi_index_2]->sweep.a;
 
     for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
     {
@@ -235,20 +239,6 @@ void Island::SolveTOI(float dt)
         }
 #endif
 #endif
-    }
-
-    for (int32 i = 0; i < world->settings.position_iterations; ++i)
-    {
-        bool solved = true;
-        for (int32 j = 0; j < contactCount; ++j)
-        {
-            solved &= contacts[j]->SolvePositionConstraints();
-        }
-
-        if (solved)
-        {
-            break;
-        }
     }
 
     for (int32 i = 0; i < bodyCount; ++i)

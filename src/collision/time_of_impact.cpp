@@ -240,16 +240,17 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
     float tMax = input.tMax;
 
     /*
-        target = r2 - linear_slop * 4.0 (position solver threshold)
-        r2 - linear_slop * 2.0          (TOI position solver threshold)
+        target        = r2 - linear_slop * 4.0 (discrete position solver threshold)
+        safe position = r2 - linear_slop * 2.0 (TOI position solver threshold)
 
         s - target  > tolerance        | TOIOutput::separated
         0.0 < s - target < tolerance   | TOIOutput::touching
-    */
 
-    // The radius must be at least twice as large as linear_slop
+        The radius must be at least twice as large as linear_slop
+        otherwise TOI computation will stuck in touching state
+    */
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
-    float target = Max(linear_slop, r2 - 4.0f * linear_slop);
+    float target = Max(linear_slop, r2 - position_solver_treshold);
     float tolerance = 0.2f * linear_slop;
     muliAssert(target > tolerance);
 

@@ -2,6 +2,7 @@
 #include "muli/block_solver.h"
 #include "muli/callbacks.h"
 #include "muli/contact_solver.h"
+#include "muli/settings.h"
 #include "muli/world.h"
 
 namespace muli
@@ -21,7 +22,6 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 
     manifold.numContacts = 0;
 
-    beta = settings.position_correction;
     restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
@@ -193,10 +193,18 @@ bool Contact::SolveTOIPositionConstraints()
         solved &= positionSolvers[i].SolveTOI();
     }
 
-    b1->sweep.c += b1->invMass * cLinearImpulseA;
-    b1->sweep.a += b1->invInertia * cAngularImpulseA;
-    b2->sweep.c += b2->invMass * cLinearImpulseB;
-    b2->sweep.a += b2->invInertia * cAngularImpulseB;
+    // Push the body only if it's involved in TOI contact
+    // TOI index == 0 or 1
+    if (b1->islandIndex < 2)
+    {
+        b1->sweep.c += b1->invMass * cLinearImpulseA;
+        b1->sweep.a += b1->invInertia * cAngularImpulseA;
+    }
+    if (b2->islandIndex < 2)
+    {
+        b2->sweep.c += b2->invMass * cLinearImpulseB;
+        b2->sweep.a += b2->invInertia * cAngularImpulseB;
+    }
 
     return solved;
 }

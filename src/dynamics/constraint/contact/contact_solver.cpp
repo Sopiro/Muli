@@ -34,8 +34,7 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
         float normalVelocity = Dot(c->manifold.contactNormal, relativeVelocity);
 
         // Position correction by velocity steering
-        // bias = -c->settings.POSITION_CORRECTION_BETA * c->settings.INV_DT *
-        //        Max(c->manifold.penetrationDepth - c->settings.PENETRATION_SLOP, 0.0f);
+        // bias = -position_correction * c->settings.inv_dt * Max(c->manifold.penetrationDepth - linear_slop, 0.0f);
 
 #if 0
         if (-c->settings.RESTITUTION_SLOP > normalVelocity)

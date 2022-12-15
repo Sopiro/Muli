@@ -19,7 +19,8 @@ World::World(const WorldSettings& _settings)
     , numIslands{ 0 }
     , sleepingBodies{ 0 }
 {
-    muliAssert(default_radius >= linear_slop * 2.0f);
+    muliAssert(default_radius >= toi_position_solver_treshold);
+    muliAssert(position_solver_treshold > toi_position_solver_treshold);
 }
 
 World::~World() noexcept

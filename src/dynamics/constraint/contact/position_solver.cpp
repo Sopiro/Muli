@@ -44,7 +44,7 @@ bool PositionSolver::Solve()
     // clang-format on
 
     // Constraint (bias)
-    float c = Min(contact->settings.position_correction * (separation + linear_slop), 0.0f);
+    float c = Min(position_correction * (separation + linear_slop), 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
@@ -55,9 +55,9 @@ bool PositionSolver::Solve()
     contact->cLinearImpulseB += impulse;
     contact->cAngularImpulseB += Cross(rb, impulse);
 
-    // We can't expect separation >= -PENETRATION_SLOP
-    // because we don't push the separation above -PENETRATION_SLOP
-    return -separation <= linear_slop * 4.0f;
+    // We can't expect separation >= -linear_slop
+    // because we don't push the separation above -linear_slop
+    return -separation <= position_solver_treshold;
 }
 
 bool PositionSolver::SolveTOI()
@@ -86,7 +86,7 @@ bool PositionSolver::SolveTOI()
     // clang-format on
 
     // Constraint (bias)
-    float c = Min(contact->settings.position_correction * (separation + linear_slop), 0.0f);
+    float c = Min(toi_position_correction * (separation + linear_slop), 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
@@ -97,9 +97,8 @@ bool PositionSolver::SolveTOI()
     contact->cLinearImpulseB += impulse;
     contact->cAngularImpulseB += Cross(rb, impulse);
 
-    // We can't expect separation >= -PENETRATION_SLOP
-    // because we don't push the separation above -PENETRATION_SLOP
-    return -separation <= linear_slop * 2.0f;
+    // TOI position solver must push further than the discrete position solver
+    return -separation <= toi_position_solver_treshold;
 }
 
 } // namespace muli
