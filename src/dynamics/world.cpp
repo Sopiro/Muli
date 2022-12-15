@@ -19,8 +19,8 @@ World::World(const WorldSettings& _settings)
     , numIslands{ 0 }
     , sleepingBodies{ 0 }
 {
-    muliAssert(default_radius >= toi_position_solver_treshold);
-    muliAssert(position_solver_treshold > toi_position_solver_treshold);
+    muliAssert(default_radius >= toi_position_solver_threshold);
+    muliAssert(position_solver_threshold > toi_position_solver_threshold);
 }
 
 World::~World() noexcept
@@ -527,7 +527,7 @@ std::vector<Collider*> World::Query(const Vec2& point) const
     std::vector<Collider*> res;
     res.reserve(8);
 
-    contactManager.broadPhase.tree.Query(point, [&](int32 node, Collider* collider) -> bool {
+    contactManager.broadPhase.tree.Query(point, [&](NodeProxy node, Collider* collider) -> bool {
         if (collider->TestPoint(point))
         {
             res.push_back(collider);
@@ -548,7 +548,7 @@ std::vector<Collider*> World::Query(const AABB& aabb) const
     Polygon box{ vertices, 4, false, 0.0f };
     Transform t{ identity };
 
-    contactManager.broadPhase.tree.Query(aabb, [&](int32 node, Collider* collider) -> bool {
+    contactManager.broadPhase.tree.Query(aabb, [&](NodeProxy node, Collider* collider) -> bool {
         if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
             res.push_back(collider);
@@ -567,7 +567,7 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
         Vec2 point;
         WorldQueryCallback* callback;
 
-        bool QueryCallback(int32 node, Collider* collider)
+        bool QueryCallback(NodeProxy node, Collider* collider)
         {
             if (collider->TestPoint(point))
             {
@@ -600,7 +600,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
         {
         }
 
-        bool QueryCallback(int32 node, Collider* collider)
+        bool QueryCallback(NodeProxy node, Collider* collider)
         {
             if (DetectCollision(collider->shape, collider->body->transform, &region, t))
             {

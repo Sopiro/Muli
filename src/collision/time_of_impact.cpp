@@ -250,7 +250,7 @@ void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
         otherwise TOI computation will stuck in touching state
     */
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
-    float target = Max(linear_slop, r2 - position_solver_treshold);
+    float target = Max(linear_slop, r2 - position_solver_threshold);
     float tolerance = 0.2f * linear_slop;
     muliAssert(target > tolerance);
 

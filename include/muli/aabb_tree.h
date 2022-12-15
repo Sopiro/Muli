@@ -7,7 +7,7 @@
 #include "growable_array.h"
 #include "settings.h"
 
-#define nullNode (-1)
+#define null_node (-1)
 
 namespace muli
 {
@@ -22,23 +22,23 @@ inline float SAH(const AABB& aabb)
 #endif
 }
 
-// typedef int32 NodeProxy;
+typedef int32 NodeProxy;
 
 struct Node
 {
     bool IsLeaf() const
     {
-        return child1 == nullNode;
+        return child1 == null_node;
     }
 
     int32 id;
     AABB aabb;
 
-    int32 parent;
-    int32 child1;
-    int32 child2;
+    NodeProxy parent;
+    NodeProxy child1;
+    NodeProxy child2;
 
-    int32 next;
+    NodeProxy next;
     bool moved;
 
     Collider* collider; // user data
@@ -58,18 +58,18 @@ public:
 
     void Reset();
 
-    int32 CreateNode(Collider* collider, const AABB& aabb);
-    bool MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool forceMove);
-    void RemoveNode(int32 node);
+    NodeProxy CreateNode(Collider* collider, const AABB& aabb);
+    bool MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove);
+    void RemoveNode(NodeProxy node);
 
-    bool TestOverlap(int32 nodeA, int32 nodeB) const;
-    const AABB& GetAABB(int32 node) const;
-    void ClearMoved(int32 node) const;
-    bool WasMoved(int32 node) const;
-    Collider* GetData(int32 node) const;
+    bool TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const;
+    const AABB& GetAABB(NodeProxy node) const;
+    void ClearMoved(NodeProxy node) const;
+    bool WasMoved(NodeProxy node) const;
+    Collider* GetData(NodeProxy node) const;
 
-    void Query(const Vec2& point, const std::function<bool(int32, Collider*)>& callback) const;
-    void Query(const AABB& aabb, const std::function<bool(int32, Collider*)>& callback) const;
+    void Query(const Vec2& point, const std::function<bool(NodeProxy, Collider*)>& callback) const;
+    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Collider*)>& callback) const;
     template <typename T>
     void Query(const Vec2& point, T* callback) const;
     template <typename T>
@@ -88,27 +88,26 @@ public:
     void Rebuild();
 
 private:
-    int32 nodeID;
+    NodeProxy nodeID;
+    NodeProxy root;
 
     Node* nodes;
-    int32 root;
-
     int32 nodeCount;
     int32 nodeCapacity;
 
-    int32 freeList;
+    NodeProxy freeList;
 
-    int32 AllocateNode();
-    void FreeNode(int32 node);
+    NodeProxy AllocateNode();
+    void FreeNode(NodeProxy node);
 
-    int32 InsertLeaf(int32 leaf);
-    void RemoveLeaf(int32 leaf);
+    NodeProxy InsertLeaf(NodeProxy leaf);
+    void RemoveLeaf(NodeProxy leaf);
 
-    void Rotate(int32 node);
-    void Swap(int32 node1, int32 node2);
+    void Rotate(NodeProxy node);
+    void Swap(NodeProxy node1, NodeProxy node2);
 };
 
-inline bool AABBTree::TestOverlap(int32 nodeA, int32 nodeB) const
+inline bool AABBTree::TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const
 {
     muliAssert(0 <= nodeA && nodeA < nodeCapacity);
     muliAssert(0 <= nodeB && nodeB < nodeCapacity);
@@ -116,28 +115,28 @@ inline bool AABBTree::TestOverlap(int32 nodeA, int32 nodeB) const
     return TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb);
 }
 
-inline const AABB& AABBTree::GetAABB(int32 node) const
+inline const AABB& AABBTree::GetAABB(NodeProxy node) const
 {
     muliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].aabb;
 }
 
-inline void AABBTree::ClearMoved(int32 node) const
+inline void AABBTree::ClearMoved(NodeProxy node) const
 {
     muliAssert(0 <= node && node < nodeCapacity);
 
     nodes[node].moved = false;
 }
 
-inline bool AABBTree::WasMoved(int32 node) const
+inline bool AABBTree::WasMoved(NodeProxy node) const
 {
     muliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].moved;
 }
 
-inline Collider* AABBTree::GetData(int32 node) const
+inline Collider* AABBTree::GetData(NodeProxy node) const
 {
     muliAssert(0 <= node && node < nodeCapacity);
 
@@ -156,17 +155,17 @@ inline float AABBTree::ComputeTreeCost() const
 template <typename T>
 void AABBTree::Query(const Vec2& point, T* callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!TestPointInsideAABB(nodes[current].aabb, point))
         {
@@ -192,17 +191,17 @@ void AABBTree::Query(const Vec2& point, T* callback) const
 template <typename T>
 void AABBTree::Query(const AABB& aabb, T* callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!TestOverlapAABB(nodes[current].aabb, aabb))
         {
@@ -244,13 +243,13 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
     rayAABB.min = Min(p1, end);
     rayAABB.max = Max(p1, end);
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() > 0)
     {
-        int32 nodeID = stack.Pop();
-        if (nodeID == nullNode)
+        NodeProxy nodeID = stack.Pop();
+        if (nodeID == null_node)
         {
             continue;
         }
@@ -303,17 +302,17 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
 template <typename T>
 void AABBTree::Traverse(T* callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!nodes[current].IsLeaf())
         {

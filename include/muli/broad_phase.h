@@ -21,7 +21,7 @@ public:
     void Remove(Collider* collider);
     void Update(Collider* collider, const AABB& aabb, const Vec2& displacement);
 
-    bool QueryCallback(int32 node, Collider* collider);
+    bool QueryCallback(NodeProxy node, Collider* collider);
 
 protected:
     friend class World;
@@ -31,17 +31,17 @@ protected:
     AABBTree tree;
 
 private:
-    int32* moveBuffer;
+    NodeProxy* moveBuffer;
     int32 moveCount;
     int32 moveCapacity;
 
-    int32 nodeA;
+    NodeProxy nodeA;
     RigidBody* bodyA;
     Collider* colliderA;
     Shape::Type typeA;
 
-    void BufferMove(int32 node);
-    void UnBufferMove(int32 node);
+    void BufferMove(NodeProxy node);
+    void UnBufferMove(NodeProxy node);
 };
 
 inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) const

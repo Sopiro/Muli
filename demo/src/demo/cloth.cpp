@@ -12,8 +12,8 @@ public:
     {
         options.draw_outline_only = true;
 
-        const uint32 rows = 24;
-        const uint32 cols = (uint32)(rows * 1.4f);
+        const int32 rows = 24;
+        const int32 cols = (uint32)(rows * 1.4f);
         float radius = 0.02f;
 
         float width = 4.5f;
@@ -73,10 +73,10 @@ public:
         w3->SetPosition(mr->GetPosition() + Vec2{ 0.0f, gap });
         w4->SetPosition(tr->GetPosition() + Vec2{ gap, gap });
 
-        world->CreateDistanceJoint(w1, tl, -1.0f, 15.0f, 1.0f, tl->GetMass());
-        world->CreateDistanceJoint(w2, ml, -1.0f, 15.0f, 1.0f, ml->GetMass());
-        world->CreateDistanceJoint(w3, mr, -1.0f, 15.0f, 1.0f, mr->GetMass());
-        world->CreateDistanceJoint(w4, tr, -1.0f, 15.0f, 1.0f, tr->GetMass());
+        world->CreateDistanceJoint(w1, tl, -1.0f, 20.0f, 1.0f, tl->GetMass());
+        world->CreateDistanceJoint(w2, ml, -1.0f, 20.0f, 1.0f, ml->GetMass());
+        world->CreateDistanceJoint(w3, mr, -1.0f, 20.0f, 1.0f, mr->GetMass());
+        world->CreateDistanceJoint(w4, tr, -1.0f, 20.0f, 1.0f, tr->GetMass());
     }
 
     ~Cloth()

@@ -7,7 +7,7 @@ namespace muli
 
 AABBTree::AABBTree()
     : nodeID{ 0 }
-    , root{ nullNode }
+    , root{ null_node }
     , nodeCapacity{ 32 }
     , nodeCount{ 0 }
 {
@@ -19,22 +19,23 @@ AABBTree::AABBTree()
     {
         nodes[i].next = i + 1;
     }
-    nodes[nodeCapacity - 1].next = nullNode;
+    nodes[nodeCapacity - 1].next = null_node;
     freeList = 0;
 }
 
 AABBTree::~AABBTree() noexcept
 {
     free(nodes);
-    root = nullNode;
+    root = null_node;
     nodeCount = 0;
 }
 
-int32 AABBTree::InsertLeaf(int32 leaf)
+NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 {
     muliAssert(0 <= leaf && leaf < nodeCapacity);
+    muliAssert(nodes[leaf].IsLeaf());
 
-    if (root == nullNode)
+    if (root == null_node)
     {
         root = leaf;
         return leaf;
@@ -45,15 +46,15 @@ int32 AABBTree::InsertLeaf(int32 leaf)
     // Find the best sibling for the new leaf
 
 #if 1
-    int32 bestSibling = root;
+    NodeProxy bestSibling = root;
     float bestCost = SAH(Union(nodes[root].aabb, aabb));
 
-    GrowableArray<std::pair<int32, float>, 256> stack;
+    GrowableArray<std::pair<NodeProxy, float>, 256> stack;
     stack.Emplace(root, 0.0f);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Back().first;
+        NodeProxy current = stack.Back().first;
         float inheritedCost = stack.Back().second;
         stack.Pop();
 
@@ -82,11 +83,11 @@ int32 AABBTree::InsertLeaf(int32 leaf)
 #else
     // O(log n)
     // This method is faster when inserting a new node, but builds a slightly bad quality tree.
-    int32 bestSibling = root;
+    NodeProxy bestSibling = root;
     while (nodes[bestSibling].IsLeaf() == false)
     {
-        int32 child1 = nodes[bestSibling].child1;
-        int32 child2 = nodes[bestSibling].child2;
+        NodeProxy child1 = nodes[bestSibling].child1;
+        NodeProxy child2 = nodes[bestSibling].child2;
 
         float area = SAH(nodes[bestSibling].aabb);
         AABB combined = Union(nodes[bestSibling].aabb, aabb);
@@ -136,13 +137,13 @@ int32 AABBTree::InsertLeaf(int32 leaf)
 #endif
 
     // Create a new parent
-    int32 oldParent = nodes[bestSibling].parent;
-    int32 newParent = AllocateNode();
+    NodeProxy oldParent = nodes[bestSibling].parent;
+    NodeProxy newParent = AllocateNode();
     nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
     nodes[newParent].collider = nullptr;
     nodes[newParent].parent = oldParent;
 
-    if (oldParent != nullNode)
+    if (oldParent != null_node)
     {
         if (nodes[oldParent].child1 == bestSibling)
         {
@@ -168,11 +169,11 @@ int32 AABBTree::InsertLeaf(int32 leaf)
     }
 
     // Walk back up the tree refitting ancestors' AABB and applying rotations
-    int32 ancestor = nodes[leaf].parent;
-    while (ancestor != nullNode)
+    NodeProxy ancestor = nodes[leaf].parent;
+    while (ancestor != null_node)
     {
-        int32 child1 = nodes[ancestor].child1;
-        int32 child2 = nodes[ancestor].child2;
+        NodeProxy child1 = nodes[ancestor].child1;
+        NodeProxy child2 = nodes[ancestor].child2;
 
         nodes[ancestor].aabb = Union(nodes[child1].aabb, nodes[child2].aabb);
 
@@ -184,21 +185,22 @@ int32 AABBTree::InsertLeaf(int32 leaf)
     return leaf;
 }
 
-void AABBTree::RemoveLeaf(int32 leaf)
+void AABBTree::RemoveLeaf(NodeProxy leaf)
 {
     muliAssert(0 <= leaf && leaf < nodeCapacity);
+    muliAssert(nodes[leaf].IsLeaf());
 
-    int32 parent = nodes[leaf].parent;
+    NodeProxy parent = nodes[leaf].parent;
 
-    if (parent != nullNode) // node is not root
+    if (parent != null_node) // node is not root
     {
-        int32 sibling = nodes[parent].child1 == leaf ? nodes[parent].child2 : nodes[parent].child1;
+        NodeProxy sibling = nodes[parent].child1 == leaf ? nodes[parent].child2 : nodes[parent].child1;
 
-        if (nodes[parent].parent != nullNode) // sibling has grandparent
+        if (nodes[parent].parent != null_node) // sibling has grandparent
         {
             nodes[sibling].parent = nodes[parent].parent;
 
-            int32 grandParent = nodes[parent].parent;
+            NodeProxy grandParent = nodes[parent].parent;
             if (nodes[grandParent].child1 == parent)
             {
                 nodes[grandParent].child1 = sibling;
@@ -212,16 +214,16 @@ void AABBTree::RemoveLeaf(int32 leaf)
         {
             root = sibling;
 
-            nodes[sibling].parent = nullNode;
+            nodes[sibling].parent = null_node;
         }
 
         FreeNode(parent);
 
-        int32 ancestor = nodes[sibling].parent;
-        while (ancestor != nullNode)
+        NodeProxy ancestor = nodes[sibling].parent;
+        while (ancestor != null_node)
         {
-            int32 child1 = nodes[ancestor].child1;
-            int32 child2 = nodes[ancestor].child2;
+            NodeProxy child1 = nodes[ancestor].child1;
+            NodeProxy child2 = nodes[ancestor].child2;
 
             nodes[ancestor].aabb = Union(nodes[child1].aabb, nodes[child2].aabb);
 
@@ -232,19 +234,19 @@ void AABBTree::RemoveLeaf(int32 leaf)
     {
         muliAssert(root == leaf);
 
-        root = nullNode;
+        root = null_node;
     }
 }
 
-int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
+NodeProxy AABBTree::CreateNode(Collider* collider, const AABB& aabb)
 {
-    int32 newNode = AllocateNode();
+    NodeProxy newNode = AllocateNode();
 
     // Fatten the aabb
     nodes[newNode].aabb.max = aabb.max + aabb_margin;
     nodes[newNode].aabb.min = aabb.min - aabb_margin;
     nodes[newNode].collider = collider;
-    nodes[newNode].parent = nullNode;
+    nodes[newNode].parent = null_node;
     nodes[newNode].moved = true;
 
     InsertLeaf(newNode);
@@ -252,8 +254,9 @@ int32 AABBTree::CreateNode(Collider* collider, const AABB& aabb)
     return newNode;
 }
 
-bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool forceMove)
+bool AABBTree::MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove)
 {
+    muliAssert(0 <= node && node < nodeCapacity);
     muliAssert(nodes[node].IsLeaf());
 
     const AABB& treeAABB = nodes[node].aabb;
@@ -297,7 +300,7 @@ bool AABBTree::MoveNode(int32 node, AABB aabb, const Vec2& displacement, bool fo
     return true;
 }
 
-void AABBTree::RemoveNode(int32 node)
+void AABBTree::RemoveNode(NodeProxy node)
 {
     muliAssert(0 <= node && node < nodeCapacity);
     muliAssert(nodes[node].IsLeaf());
@@ -306,21 +309,21 @@ void AABBTree::RemoveNode(int32 node)
     FreeNode(node);
 }
 
-void AABBTree::Rotate(int32 node)
+void AABBTree::Rotate(NodeProxy node)
 {
     if (nodes[node].IsLeaf())
     {
         return;
     }
 
-    if (nodes[node].parent == nullNode)
+    if (nodes[node].parent == null_node)
     {
         return;
     }
 
-    int32 parent = nodes[node].parent;
+    NodeProxy parent = nodes[node].parent;
 
-    int32 sibling;
+    NodeProxy sibling;
     if (nodes[parent].child1 == node)
     {
         sibling = nodes[parent].child2;
@@ -418,10 +421,10 @@ void AABBTree::Rotate(int32 node)
     }
 }
 
-void AABBTree::Swap(int32 node1, int32 node2)
+void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
 {
-    int32 parent1 = nodes[node1].parent;
-    int32 parent2 = nodes[node2].parent;
+    NodeProxy parent1 = nodes[node1].parent;
+    NodeProxy parent2 = nodes[node2].parent;
 
     if (parent1 == parent2)
     {
@@ -443,19 +446,19 @@ void AABBTree::Swap(int32 node1, int32 node2)
     nodes[node1].parent = parent2;
 }
 
-void AABBTree::Query(const Vec2& point, const std::function<bool(int32, Collider*)>& callback) const
+void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Collider*)>& callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!TestPointInsideAABB(nodes[current].aabb, point))
         {
@@ -478,19 +481,19 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(int32, Collider
     }
 }
 
-void AABBTree::Query(const AABB& aabb, const std::function<bool(int32, Collider*)>& callback) const
+void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Collider*)>& callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!TestOverlapAABB(nodes[current].aabb, aabb))
         {
@@ -515,17 +518,17 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(int32, Collider*
 
 void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
 {
-    if (root == nullNode)
+    if (root == null_node)
     {
         return;
     }
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() != 0)
     {
-        int32 current = stack.Pop();
+        NodeProxy current = stack.Pop();
 
         if (!nodes[current].IsLeaf())
         {
@@ -556,18 +559,18 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     rayAABB.min = Min(p1, end);
     rayAABB.max = Max(p1, end);
 
-    GrowableArray<int32, 256> stack;
+    GrowableArray<NodeProxy, 256> stack;
     stack.Emplace(root);
 
     while (stack.Count() > 0)
     {
-        int32 nodeID = stack.Pop();
-        if (nodeID == nullNode)
+        NodeProxy nodeIndex = stack.Pop();
+        if (nodeIndex == null_node)
         {
             continue;
         }
 
-        const Node* node = nodes + nodeID;
+        const Node* node = nodes + nodeIndex;
         if (TestOverlapAABB(node->aabb, rayAABB) == false)
         {
             continue;
@@ -615,7 +618,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
 void AABBTree::Reset()
 {
     nodeID = 0;
-    root = nullNode;
+    root = null_node;
     nodeCount = 0;
     memset(nodes, 0, nodeCapacity * sizeof(Node));
 
@@ -624,13 +627,13 @@ void AABBTree::Reset()
     {
         nodes[i].next = i + 1;
     }
-    nodes[nodeCapacity - 1].next = nullNode;
+    nodes[nodeCapacity - 1].next = null_node;
     freeList = 0;
 }
 
-int32 AABBTree::AllocateNode()
+NodeProxy AABBTree::AllocateNode()
 {
-    if (freeList == nullNode)
+    if (freeList == null_node)
     {
         muliAssert(nodeCount == nodeCapacity);
 
@@ -647,23 +650,23 @@ int32 AABBTree::AllocateNode()
         {
             nodes[i].next = i + 1;
         }
-        nodes[nodeCapacity - 1].next = nullNode;
+        nodes[nodeCapacity - 1].next = null_node;
         freeList = nodeCount;
     }
 
-    int32 node = freeList;
+    NodeProxy node = freeList;
     freeList = nodes[node].next;
     nodes[node].id = ++nodeID;
-    nodes[node].parent = nullNode;
-    nodes[node].child1 = nullNode;
-    nodes[node].child2 = nullNode;
+    nodes[node].parent = null_node;
+    nodes[node].child1 = null_node;
+    nodes[node].child2 = null_node;
     nodes[node].moved = false;
     ++nodeCount;
 
     return node;
 }
 
-void AABBTree::FreeNode(int32 node)
+void AABBTree::FreeNode(NodeProxy node)
 {
     muliAssert(0 <= node && node <= nodeCapacity);
     muliAssert(0 < nodeCount);
@@ -676,9 +679,9 @@ void AABBTree::FreeNode(int32 node)
 
 void AABBTree::Rebuild()
 {
-    // Rebuild the tree with bottom up approach.
+    // Rebuild the tree with bottom up approach
 
-    int32* leaves = (int32*)malloc(nodeCount * sizeof(Node));
+    NodeProxy* leaves = (NodeProxy*)malloc(nodeCount * sizeof(NodeProxy));
     int32 count = 0;
 
     // Build an array of leaf node
@@ -693,7 +696,7 @@ void AABBTree::Rebuild()
         // Clean the leaf
         if (nodes[i].IsLeaf())
         {
-            nodes[i].parent = nullNode;
+            nodes[i].parent = null_node;
 
             leaves[count++] = i;
         }
@@ -731,19 +734,19 @@ void AABBTree::Rebuild()
             }
         }
 
-        int32 index1 = leaves[minI];
-        int32 index2 = leaves[minJ];
+        NodeProxy index1 = leaves[minI];
+        NodeProxy index2 = leaves[minJ];
         Node* child1 = nodes + index1;
         Node* child2 = nodes + index2;
 
         // Create a parent(internal) node
-        int32 parentIndex = AllocateNode();
+        NodeProxy parentIndex = AllocateNode();
         Node* parent = nodes + parentIndex;
 
         parent->child1 = index1;
         parent->child2 = index2;
         parent->aabb = Union(child1->aabb, child2->aabb);
-        parent->parent = nullNode;
+        parent->parent = null_node;
 
         child1->parent = parentIndex;
         child2->parent = parentIndex;

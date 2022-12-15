@@ -12,6 +12,7 @@ namespace muli
 
 class ColliderDestoryCallback;
 class ContactListener;
+typedef int32 NodeProxy;
 
 class Collider
 {
@@ -72,7 +73,7 @@ private:
     Shape* shape;
 
     Collider* next;
-    int32 node;
+    NodeProxy node;
 };
 
 inline RigidBody* Collider::GetBody() const

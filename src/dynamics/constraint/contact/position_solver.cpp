@@ -57,7 +57,7 @@ bool PositionSolver::Solve()
 
     // We can't expect separation >= -linear_slop
     // because we don't push the separation above -linear_slop
-    return -separation <= position_solver_treshold;
+    return -separation <= position_solver_threshold;
 }
 
 bool PositionSolver::SolveTOI()
@@ -98,7 +98,7 @@ bool PositionSolver::SolveTOI()
     contact->cAngularImpulseB += Cross(rb, impulse);
 
     // TOI position solver must push further than the discrete position solver
-    return -separation <= toi_position_solver_treshold;
+    return -separation <= toi_position_solver_threshold;
 }
 
 } // namespace muli
