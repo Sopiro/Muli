@@ -26,6 +26,12 @@ Game::~Game() noexcept
 
 void Game::Update(float dt)
 {
+    if (restart)
+    {
+        InitDemo(newIndex);
+        restart = false;
+    }
+
     time += dt;
 
     UpdateInput();
@@ -35,10 +41,9 @@ void Game::Update(float dt)
 
 void Game::UpdateInput()
 {
-    if (Input::IsKeyPressed(GLFW_KEY_R))
-    {
-        InitDemo(demoIndex);
-    }
+    if (Input::IsKeyPressed(GLFW_KEY_R)) RestartDemo();
+    if (Input::IsKeyPressed(GLFW_KEY_PAGE_DOWN)) PrevDemo();
+    if (Input::IsKeyPressed(GLFW_KEY_PAGE_UP)) NextDemo();
 
     demo->UpdateInput();
 }
@@ -206,11 +211,11 @@ void Game::Render()
             GrabJoint* gj = static_cast<GrabJoint*>(j);
 
             const Vec2& anchor = b->GetTransform() * gj->GetLocalAnchor();
-            points.push_back(anchor);
-            points.push_back(gj->GetTarget());
+            points.emplace_back(anchor);
+            points.emplace_back(gj->GetTarget());
 
-            lines.push_back(anchor);
-            lines.push_back(gj->GetTarget());
+            lines.emplace_back(anchor);
+            lines.emplace_back(gj->GetTarget());
         }
         break;
         case Joint::Type::revolute_joint:
@@ -223,13 +228,13 @@ void Game::Render()
             const Vec2& anchorA = ba->GetTransform() * rj->GetLocalAnchorA();
             const Vec2& anchorB = bb->GetTransform() * rj->GetLocalAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(anchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(anchorB);
 
-            lines.push_back(anchorA);
-            lines.push_back(ba->GetPosition());
-            lines.push_back(anchorB);
-            lines.push_back(bb->GetPosition());
+            lines.emplace_back(anchorA);
+            lines.emplace_back(ba->GetPosition());
+            lines.emplace_back(anchorB);
+            lines.emplace_back(bb->GetPosition());
         }
         break;
         case Joint::Type::distance_joint:
@@ -241,11 +246,11 @@ void Game::Render()
             const Vec2& anchorA = ba->GetTransform() * dj->GetLocalAnchorA();
             const Vec2& anchorB = bb->GetTransform() * dj->GetLocalAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(anchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(anchorB);
 
-            lines.push_back(anchorA);
-            lines.push_back(anchorB);
+            lines.emplace_back(anchorA);
+            lines.emplace_back(anchorB);
         }
         break;
         case Joint::Type::line_joint:
@@ -257,11 +262,11 @@ void Game::Render()
             const Vec2& anchorA = ba->GetTransform() * lj->GetLocalAnchorA();
             const Vec2& anchorB = bb->GetTransform() * lj->GetLocalAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(anchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(anchorB);
 
-            lines.push_back(anchorA);
-            lines.push_back(anchorB);
+            lines.emplace_back(anchorA);
+            lines.emplace_back(anchorB);
         }
         case Joint::Type::prismatic_joint:
         {
@@ -272,11 +277,11 @@ void Game::Render()
             const Vec2& anchorA = ba->GetTransform() * pj->GetLocalAnchorA();
             const Vec2& anchorB = bb->GetTransform() * pj->GetLocalAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(anchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(anchorB);
 
-            lines.push_back(anchorA);
-            lines.push_back(anchorB);
+            lines.emplace_back(anchorA);
+            lines.emplace_back(anchorB);
         }
         break;
         case Joint::Type::pulley_joint:
@@ -290,17 +295,17 @@ void Game::Render()
             const Vec2& groundAnchorA = pj->GetGroundAnchorA();
             const Vec2& groundAnchorB = pj->GetGroundAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(groundAnchorA);
-            points.push_back(anchorB);
-            points.push_back(groundAnchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(groundAnchorA);
+            points.emplace_back(anchorB);
+            points.emplace_back(groundAnchorB);
 
-            lines.push_back(anchorA);
-            lines.push_back(groundAnchorA);
-            lines.push_back(anchorB);
-            lines.push_back(groundAnchorB);
-            lines.push_back(groundAnchorA);
-            lines.push_back(groundAnchorB);
+            lines.emplace_back(anchorA);
+            lines.emplace_back(groundAnchorA);
+            lines.emplace_back(anchorB);
+            lines.emplace_back(groundAnchorB);
+            lines.emplace_back(groundAnchorA);
+            lines.emplace_back(groundAnchorB);
         }
         break;
         case Joint::Type::motor_joint:
@@ -312,8 +317,8 @@ void Game::Render()
             const Vec2& anchorA = ba->GetTransform() * pj->GetLocalAnchorA();
             const Vec2& anchorB = bb->GetTransform() * pj->GetLocalAnchorB();
 
-            points.push_back(anchorA);
-            points.push_back(anchorB);
+            points.emplace_back(anchorA);
+            points.emplace_back(anchorB);
         }
         break;
         default:
@@ -330,14 +335,14 @@ void Game::Render()
                 return;
             }
 
-            lines.push_back(n->aabb.min);
-            lines.push_back({ n->aabb.max.x, n->aabb.min.y });
-            lines.push_back({ n->aabb.max.x, n->aabb.min.y });
-            lines.push_back(n->aabb.max);
-            lines.push_back(n->aabb.max);
-            lines.push_back({ n->aabb.min.x, n->aabb.max.y });
-            lines.push_back({ n->aabb.min.x, n->aabb.max.y });
-            lines.push_back(n->aabb.min);
+            lines.emplace_back(n->aabb.min);
+            lines.emplace_back(n->aabb.max.x, n->aabb.min.y);
+            lines.emplace_back(n->aabb.max.x, n->aabb.min.y);
+            lines.emplace_back(n->aabb.max);
+            lines.emplace_back(n->aabb.max);
+            lines.emplace_back(n->aabb.min.x, n->aabb.max.y);
+            lines.emplace_back(n->aabb.min.x, n->aabb.max.y);
+            lines.emplace_back(n->aabb.min);
         });
     }
 
@@ -361,18 +366,18 @@ void Game::Render()
 
                 if (options.show_contact_point)
                 {
-                    points.push_back(cp);
+                    points.emplace_back(cp);
                 }
                 if (options.show_contact_normal)
                 {
-                    lines.push_back(cp);
-                    lines.push_back(cp + m.contactNormal * 0.15f);
+                    lines.emplace_back(cp);
+                    lines.emplace_back(cp + m.contactNormal * 0.15f);
 
-                    lines.push_back(cp + m.contactNormal * 0.15f);
-                    lines.push_back(cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
+                    lines.emplace_back(cp + m.contactNormal * 0.15f);
+                    lines.emplace_back(cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
 
-                    lines.push_back(cp + m.contactNormal * 0.15f);
-                    lines.push_back(cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
+                    lines.emplace_back(cp + m.contactNormal * 0.15f);
+                    lines.emplace_back(cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
                 }
             }
 

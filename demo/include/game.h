@@ -36,6 +36,8 @@ public:
     std::vector<Vec2>& GetLineList();
     float GetTime() const;
     void RestartDemo();
+    void NextDemo();
+    void PrevDemo();
 
 private:
     Application& app;
@@ -47,8 +49,10 @@ private:
 
     float time = 0.0f;
 
-    uint32 demoIndex;
+    int32 newIndex;
+    int32 demoIndex;
     Demo* demo = nullptr;
+    bool restart = false;
     DebugOptions options;
 
     void UpdateProjectionMatrix();
@@ -94,7 +98,20 @@ inline float Game::GetTime() const
 
 inline void Game::RestartDemo()
 {
-    InitDemo(demoIndex);
+    restart = true;
+    newIndex = demoIndex;
+}
+
+inline void Game::NextDemo()
+{
+    newIndex = (demoIndex + 1) % demo_count;
+    restart = true;
+}
+
+inline void Game::PrevDemo()
+{
+    newIndex = (demoIndex - 1 + demo_count) % demo_count;
+    restart = true;
 }
 
 inline const RigidBodyRenderer& Game::GetRigidBodyRenderer() const

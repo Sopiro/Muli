@@ -79,7 +79,10 @@ public:
         {
             ImGui::Text("Shapes");
             ImGui::PushID(0);
-            ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items));
+            if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
+            {
+                game.RestartDemo();
+            }
             ImGui::PopID();
 
             ImGui::Checkbox("Draw trajectory", &drawTrajectory);

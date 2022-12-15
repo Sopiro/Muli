@@ -26,7 +26,7 @@ constexpr float aabb_margin = 0.05f;
 constexpr float aabb_multiplier = 4.0f;
 
 // Default body settings
-constexpr float default_radius = linear_slop * 2.0f; // Must be greater than 2.0 * linear_slop
+constexpr float default_radius = linear_slop * 2.5f; // Must be greater than 2.0 * linear_slop
 constexpr float default_density = 12.5f;
 constexpr float default_friction = 0.5f;
 constexpr float default_restitution = 0.0f;
