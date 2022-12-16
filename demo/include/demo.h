@@ -54,6 +54,15 @@ public:
     }
 
 protected:
+    void FindTargetBody();
+    void EnableKeyboardShortcut();
+    void EnableBodyCreate();
+    bool EnablePolygonCreate();
+    void EnableBodyRemove();
+    bool EnableAddForce();
+    bool EnableBodyGrab();
+    void EnableCameraControl();
+
     Game& game;
     DebugOptions& options;
 
@@ -68,15 +77,6 @@ protected:
     RigidBody* targetBody;
     Collider* targetCollider;
     GrabJoint* gj;
-
-    void ComputeProperty();
-    void EnableKeyboardShortcut();
-    void EnableBodyCreate();
-    bool EnablePolygonCreate();
-    void EnableBodyRemove();
-    bool EnableAddForce();
-    bool EnableBodyGrab();
-    void EnableCameraControl();
 };
 
 typedef Demo* DemoCreateFunction(Game& game);

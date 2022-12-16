@@ -31,7 +31,7 @@ Demo::~Demo()
 
 void Demo::UpdateInput()
 {
-    ComputeProperty();
+    FindTargetBody();
     EnableKeyboardShortcut();
 
     if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
@@ -51,7 +51,7 @@ void Demo::UpdateInput()
     }
 }
 
-void Demo::ComputeProperty()
+void Demo::FindTargetBody()
 {
     cursorPos = game.GetWorldCursorPosition();
     qr = world->Query(cursorPos); // Query result
@@ -125,6 +125,7 @@ void Demo::EnableBodyCreate()
 
 bool Demo::EnablePolygonCreate()
 {
+    static Vec2 mStart;
     static bool creating = false;
     static bool staticBody;
     static std::vector<Vec2> points;
@@ -134,11 +135,13 @@ bool Demo::EnablePolygonCreate()
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
         {
+            mStart = cursorPos;
             creating = true;
             staticBody = false;
         }
         else if (Input::IsKeyDown(GLFW_KEY_LEFT_ALT))
         {
+            mStart = cursorPos;
             creating = true;
             staticBody = true;
         }
@@ -157,7 +160,13 @@ bool Demo::EnablePolygonCreate()
             hull = ComputeConvexHull(points);
         }
 
-        for (uint32 i = 0; i < hull.size(); ++i)
+        if (hull.size() < 3)
+        {
+            ll.push_back(hull.back());
+            ll.push_back(cursorPos);
+        }
+
+        for (size_t i = 0; i < hull.size(); ++i)
         {
             Vec2& v0 = hull[i];
             Vec2& v1 = hull[(i + 1) % hull.size()];
@@ -171,16 +180,26 @@ bool Demo::EnablePolygonCreate()
             switch (hull.size())
             {
             case 1:
-                b = world->CreateCircle(0.2f, type);
+            {
+                float r = Max(0.1f, Dist(hull.back(), cursorPos));
+                b = world->CreateCircle(r, type);
                 b->SetPosition(hull[0]);
                 break;
+            }
             case 2:
-                b = world->CreateCapsule(hull[0], hull[1], 0.05f, type, false);
+            {
+                float r = Max(0.05f, Dist(hull.back(), cursorPos));
+                b = world->CreateCapsule(hull[0], hull[1], r, type, false);
                 break;
+            }
             default:
+            {
                 b = world->CreatePolygon(hull, type, false);
                 break;
             }
+            }
+
+            b->SetContinuous(settings.continuous);
 
             game.RegisterRenderBody(b);
             creating = false;
@@ -330,10 +349,18 @@ void Demo::EnableKeyboardShortcut()
     if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) options.step = true;
 
     if (Input::IsKeyPressed(GLFW_KEY_U)) settings.continuous = !settings.continuous;
+    if (Input::IsKeyPressed(GLFW_KEY_I)) settings.sub_stepping = !settings.sub_stepping;
     if (Input::IsKeyPressed(GLFW_KEY_G))
     {
         settings.apply_gravity = !settings.apply_gravity;
         world->Awake();
+    }
+    if (Input::IsKeyPressed(GLFW_KEY_T))
+    {
+        if (targetBody)
+        {
+            targetBody->SetContinuous(!targetBody->IsContinuous());
+        }
     }
 }
 

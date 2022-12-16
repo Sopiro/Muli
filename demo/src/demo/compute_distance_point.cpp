@@ -53,7 +53,7 @@ public:
 
     void UpdateInput() override
     {
-        ComputeProperty();
+        FindTargetBody();
         EnableCameraControl();
 
         closest = b->GetClosestPoint(cursorPos);
