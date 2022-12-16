@@ -55,6 +55,7 @@ struct WorldSettings
     float reset_angular_tolerance = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
 
     bool continuous = true;
+    bool sub_stepping = false;
 
     AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
 

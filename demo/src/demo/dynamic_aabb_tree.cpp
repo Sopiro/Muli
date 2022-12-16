@@ -57,7 +57,7 @@ public:
 
         if (ImGui::Begin("Options"))
         {
-            ImGui::Text("Tree cost: %.4f", world->GetBVH().ComputeTreeCost());
+            ImGui::Text("Tree cost: %.4f", world->GetDynamicTree().ComputeTreeCost());
             ImGui::InputText("Seed", seed, 20);
             ImGui::Separator();
             if (ImGui::Button("Generate"))
@@ -73,7 +73,7 @@ public:
             }
             if (ImGui::Button("Rebuild bottom up"))
             {
-                world->RebuildBVH();
+                world->RebuildDynamicTree();
             }
         }
         ImGui::End();

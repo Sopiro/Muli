@@ -16,8 +16,9 @@ World::World(const WorldSettings& _settings)
     , jointList{ nullptr }
     , bodyCount{ 0 }
     , jointCount{ 0 }
-    , numIslands{ 0 }
-    , sleepingBodies{ 0 }
+    , islandCount{ 0 }
+    , sleepingBodyCount{ 0 }
+    , stepComplete{ true }
 {
     muliAssert(default_radius >= toi_position_solver_threshold);
     muliAssert(position_solver_threshold > toi_position_solver_threshold);
@@ -45,8 +46,8 @@ void World::Reset()
     muliAssert(jointCount == 0);
     muliAssert(blockAllocator.GetBlockCount() == 0);
 
-    destroyBufferBody.clear();
-    destroyBufferJoint.clear();
+    destroyBodyBuffer.clear();
+    destroyJointBuffer.clear();
 }
 
 void World::Solve()
@@ -56,7 +57,7 @@ void World::Solve()
 
     int32 restingBodies = 0;
     int32 islandID = 0;
-    sleepingBodies = 0;
+    sleepingBodyCount = 0;
 
     // Use stack allocator to avoid per-frame allocation
     RigidBody** stack = (RigidBody**)stackAllocator.Allocate(bodyCount * sizeof(RigidBody*));
@@ -78,7 +79,7 @@ void World::Solve()
 
         if (b->flag & RigidBody::flag_sleeping)
         {
-            ++sleepingBodies;
+            ++sleepingBodyCount;
             continue;
         }
 
@@ -149,7 +150,7 @@ void World::Solve()
 
     stackAllocator.Free(stack, bodyCount);
 
-    numIslands = islandID;
+    islandCount = islandID;
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
@@ -175,7 +176,7 @@ constexpr int32 max_sub_steps = 8;
 constexpr int32 max_toi_contacts = 32;
 
 // Find TOI contacts and solve them
-void World::SolveTOI()
+float World::SolveTOI()
 {
     Island island{ this, 2 * max_toi_contacts, max_toi_contacts, 0 };
 
@@ -289,7 +290,7 @@ void World::SolveTOI()
         if (minContact == nullptr || 1.0f - 10.0f * MULI_EPSILON < minAlpha)
         {
             // Done! No more TOI events
-            // stepComplete = true;
+            stepComplete = true;
             break;
         }
 
@@ -435,7 +436,16 @@ void World::SolveTOI()
                 ce->contact->flag &= ~(Contact::flag_toi | Contact::flag_island);
             }
         }
+
+        if (settings.sub_stepping)
+        {
+            // Solve only one TOI event and passed the remaining computation to the next Step() call
+            stepComplete = false;
+            return minAlpha;
+        }
     }
+
+    muliAssert(stepComplete == true);
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
@@ -445,46 +455,54 @@ void World::SolveTOI()
 
     for (Contact* contact = contactManager.contactList; contact; contact = contact->next)
     {
-        // Invalidate TOI
         contact->flag &= ~(Contact::flag_toi | Contact::flag_island);
         contact->toiCount = 0;
         contact->toi = 1.0f;
     }
+
+    return 1.0f;
 }
 
-void World::Step(float dt)
+float World::Step(float dt)
 {
     settings.dt = dt;
     settings.inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
 
     if (settings.inv_dt == 0.0f)
     {
-        return;
+        return 0.0f;
     }
 
-    contactManager.UpdateContactGraph();
+    if (stepComplete)
+    {
+        // Update broad-phase contact graph
+        contactManager.UpdateContactGraph();
 
-    // Narrow phase
-    contactManager.EvaluateContacts();
+        // Narrow-phase
+        contactManager.EvaluateContacts();
 
-    Solve();
+        Solve();
+    }
 
+    float progress = 1.0f;
     if (settings.continuous)
     {
-        SolveTOI();
+        progress = SolveTOI();
     }
 
-    for (RigidBody* b : destroyBufferBody)
+    for (RigidBody* b : destroyBodyBuffer)
     {
         Destroy(b);
     }
-    for (Joint* j : destroyBufferJoint)
+    for (Joint* j : destroyJointBuffer)
     {
         Destroy(j);
     }
 
-    destroyBufferBody.clear();
-    destroyBufferJoint.clear();
+    destroyBodyBuffer.clear();
+    destroyJointBuffer.clear();
+
+    return progress;
 }
 
 void World::Destroy(RigidBody* body)
@@ -536,7 +554,7 @@ void World::Destroy(const std::vector<RigidBody*>& bodies)
 
 void World::BufferDestroy(RigidBody* body)
 {
-    destroyBufferBody.push_back(body);
+    destroyBodyBuffer.push_back(body);
 }
 
 void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
@@ -592,7 +610,7 @@ void World::Destroy(const std::vector<Joint*>& joints)
 
 void World::BufferDestroy(Joint* joint)
 {
-    destroyBufferJoint.push_back(joint);
+    destroyJointBuffer.push_back(joint);
 }
 
 void World::BufferDestroy(const std::vector<Joint*>& joints)

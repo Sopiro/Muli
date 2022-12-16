@@ -38,7 +38,7 @@ public:
     World(World&&) noexcept = delete;
     World& operator=(World&&) noexcept = delete;
 
-    void Step(float dt);
+    float Step(float dt);
     void Reset();
 
     void Destroy(RigidBody* body);
@@ -188,19 +188,25 @@ public:
     int32 GetSleepingBodyCount() const;
     int32 GetAwakeIslandCount() const;
 
-    const AABBTree& GetBVH() const;
-    void RebuildBVH();
+    const AABBTree& GetDynamicTree() const;
+    void RebuildDynamicTree();
 
     void Awake();
 
 private:
     friend class RigidBody;
     friend class Island;
-    friend class BroadPhase;
     friend class ContactManager;
+    friend class BroadPhase;
+
+    void Solve();
+    float SolveTOI();
+
+    void FreeBody(RigidBody* body);
+    void AddJoint(Joint* joint);
+    void FreeJoint(Joint* joint);
 
     const WorldSettings& settings;
-
     ContactManager contactManager;
 
     // Doubly linked list of all registered rigid bodies
@@ -211,18 +217,13 @@ private:
     Joint* jointList;
     int32 jointCount;
 
-    int32 numIslands;
-    int32 sleepingBodies;
+    int32 islandCount;
+    int32 sleepingBodyCount;
 
-    std::vector<RigidBody*> destroyBufferBody;
-    std::vector<Joint*> destroyBufferJoint;
+    bool stepComplete;
 
-    void Solve();
-    void SolveTOI();
-
-    void FreeBody(RigidBody* body);
-    void AddJoint(Joint* joint);
-    void FreeJoint(Joint* joint);
+    std::vector<RigidBody*> destroyBodyBuffer;
+    std::vector<Joint*> destroyJointBuffer;
 
     StackAllocator stackAllocator;
     BlockAllocator blockAllocator;
@@ -253,12 +254,12 @@ inline int32 World::GetBodyCount() const
 
 inline int32 World::GetSleepingBodyCount() const
 {
-    return sleepingBodies;
+    return sleepingBodyCount;
 }
 
 inline int32 World::GetAwakeIslandCount() const
 {
-    return numIslands;
+    return islandCount;
 }
 
 inline const Contact* World::GetContacts() const
@@ -281,12 +282,12 @@ inline int32 World::GetJointCount() const
     return jointCount;
 }
 
-inline const AABBTree& World::GetBVH() const
+inline const AABBTree& World::GetDynamicTree() const
 {
     return contactManager.broadPhase.tree;
 }
 
-inline void World::RebuildBVH()
+inline void World::RebuildDynamicTree()
 {
     contactManager.broadPhase.tree.Rebuild();
 }

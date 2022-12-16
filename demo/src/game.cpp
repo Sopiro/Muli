@@ -136,6 +136,7 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Warm starting", &settings.warm_starting);
                     ImGui::Checkbox("Sleeping", &settings.sleeping);
                     ImGui::Checkbox("Continuous", &settings.continuous);
+                    ImGui::Checkbox("Sub-stepping", &settings.sub_stepping);
                 }
 
                 World& world = demo->GetWorld();
@@ -328,7 +329,7 @@ void Game::Render()
 
     if (options.show_bvh || options.show_aabb)
     {
-        const AABBTree& tree = demo->GetWorld().GetBVH();
+        const AABBTree& tree = demo->GetWorld().GetDynamicTree();
         tree.Traverse([&](const Node* n) -> void {
             if (options.show_bvh == false && n->IsLeaf() == false)
             {
