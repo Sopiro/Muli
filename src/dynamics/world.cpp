@@ -90,7 +90,12 @@ void World::Solve()
         {
             RigidBody* t = stack[--stackPointer];
 
-            if (t->type == RigidBody::Type::static_body || (t->flag & RigidBody::flag_island))
+            if (t->type == RigidBody::Type::static_body)
+            {
+                continue;
+            }
+
+            if (t->flag & RigidBody::flag_island)
             {
                 continue;
             }
@@ -160,7 +165,7 @@ void World::Solve()
         // Clear island flag
         body->flag &= ~RigidBody::flag_island;
 
-        // Synchronize transform and collider tree node
+        // Synchronize transform and broad-phase collider node
         body->SynchronizeTransform();
         body->SynchronizeColliders();
     }
@@ -174,7 +179,6 @@ void World::SolveTOI()
 {
     Island island{ this, 2 * max_toi_contacts, max_toi_contacts, 0 };
 
-    // Find TOI events and solve them
     while (true)
     {
         contactManager.UpdateContactGraph();
@@ -226,14 +230,14 @@ void World::SolveTOI()
                 bool collideA = bodyA->IsContinuous() || typeA != RigidBody::Type::dynamic_body;
                 bool collideB = bodyB->IsContinuous() || typeB != RigidBody::Type::dynamic_body;
 
-                // Are these two non-continuous dynamic bodies?
-                // Discard non-continuous vs non-continuous case
+                // Discard non-continuous dynamic vs. non-continuous dynamic case
                 if (collideA == false && collideB == false)
                 {
                     continue;
                 }
 
                 // Compute the TOI for this contact
+
                 // Put the sweeps onto the same time interval
                 float alpha0 = bodyA->sweep.alpha0;
                 if (bodyA->sweep.alpha0 < bodyB->sweep.alpha0)
@@ -241,7 +245,7 @@ void World::SolveTOI()
                     alpha0 = bodyB->sweep.alpha0;
                     bodyA->sweep.Advance(alpha0);
                 }
-                else if (bodyB->sweep.alpha0 < bodyA->sweep.alpha0)
+                else if (bodyA->sweep.alpha0 > bodyB->sweep.alpha0)
                 {
                     alpha0 = bodyA->sweep.alpha0;
                     bodyB->sweep.Advance(alpha0);
@@ -254,7 +258,6 @@ void World::SolveTOI()
                 input.shapeB = colliderB->shape;
                 input.sweepA = bodyA->sweep;
                 input.sweepB = bodyB->sweep;
-                // input.tMax = minAlpha;
                 input.tMax = 1.0f;
 
                 TOIOutput output;
@@ -307,7 +310,8 @@ void World::SolveTOI()
         minContact->flag &= ~Contact::flag_toi;
         ++minContact->toiCount;
 
-        if (minContact->IsTouching() == false)
+        // Contact disabled by the user or no contacts point found
+        if (minContact->IsEnabled() == false || minContact->IsTouching() == false)
         {
             // Restore the sweeps
             minContact->SetEnabled(false); // Prevent duplicate
@@ -331,11 +335,88 @@ void World::SolveTOI()
         bodyB->flag |= RigidBody::flag_island;
         minContact->flag |= Contact::flag_island;
 
-        // subs-tep the rest time
+        // Find contacts for TOI contact bodies
+        RigidBody* bodies[2] = { bodyA, bodyB };
+        for (int32 i = 0; i < 2; ++i)
+        {
+            RigidBody* body = bodies[i];
+
+            if (body->type != RigidBody::Type::dynamic_body)
+            {
+                continue;
+            }
+
+            for (ContactEdge* ce = body->contactList; ce; ce = ce->next)
+            {
+                if (island.bodyCount == island.bodyCapacity)
+                {
+                    break;
+                }
+
+                if (island.contactCount == island.contactCapacity)
+                {
+                    break;
+                }
+
+                Contact* contact = ce->contact;
+
+                if (contact->flag & Contact::flag_island)
+                {
+                    continue;
+                }
+
+                RigidBody* other = ce->other;
+
+                // Discard non-continuous dynamic vs. non-continuous dynamic case
+                if (body->IsContinuous() == false && other->IsContinuous() == false &&
+                    other->type == RigidBody::Type::dynamic_body)
+                {
+                    continue;
+                }
+
+                Sweep save = other->sweep;
+
+                // Tentatively advance the body to the TOI
+                if ((other->flag & RigidBody::flag_island) == 0)
+                {
+                    other->Advance(minAlpha);
+                }
+
+                // Find the contact points
+                contact->Update();
+
+                // Contact disabled by the user or no contacts point found
+                if (contact->IsEnabled() == false || contact->IsTouching() == false)
+                {
+                    other->sweep = save;
+                    other->SynchronizeTransform();
+                    continue;
+                }
+
+                // Add the contact to the island
+                contact->flag |= Contact::flag_island;
+                island.Add(contact);
+
+                // Has the other body already been added to the island?
+                if (other->flag & RigidBody::flag_island)
+                {
+                    continue;
+                }
+
+                if (other->type != RigidBody::static_body)
+                {
+                    other->Awake();
+                }
+
+                island.Add(other);
+            }
+        }
+
+        // step the rest time
         float dt = (1.0f - minAlpha) * settings.dt;
         island.SolveTOI(dt);
 
-        // Reset island flags and synchronize broad-phase
+        // Reset island flags and synchronize broad-phase collider node
         for (int32 i = 0; i < island.bodyCount; ++i)
         {
             RigidBody* body = island.bodies[i];
