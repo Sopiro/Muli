@@ -9,17 +9,18 @@
 ## Features  
 
 ### Collision  
+  - Continuous collision detection (Bilateral advancement by Erin Catto of box2d)
   - Shapes: circle, capsule and convex polygon
-  - Support rounded polygon
-  - Multiple shapes attached to single body
+  - Support for rounded polygons
+  - Multiple shapes attached to a single body
   - Dynamic, static and kinematic bodies
   - Collision filtering
   - Dynamic AABB tree broadphase
-  - Dynamic tree accelerated ray casting, area querying
+  - Dynamic tree accelerated ray casting and area querying
   - Easy-to-use collision detection and distance funtions
   
 ### Physics Simulation
-  - Constrained dynamics
+  - Continuous physics simulation (Time of impact solver and sub-stepping)  
   - Efficient and persistent contact management from box2d
   - Constraint islanding and sleeping
   - Stable stacking with 2-contact LCP solver (Block solver)
@@ -34,7 +35,7 @@
   - OpenGL based demo framework
   - Cross platform C++17 library
   - Intuitive and straightforward API
-  - Utilize efficient custom memory allocators
+  - Utilizes efficient custom memory allocators
   
 ## Example
 ```c++
@@ -71,13 +72,10 @@ int main()
 - You can find the executable demo in the `build/bin`
 
 ## Todo
-- Implement position solve step for joints
-- Continuous simulation  
+- Implement position solve step for joints  
 
 ## References
-
-Here are great resources to learn building a physics engine!
-
+Here are some great resources to learn how to build a physics engine!
 - https://box2d.org/publications/
 - https://allenchou.net/game-physics-series/
 - https://dyn4j.org/blog/
