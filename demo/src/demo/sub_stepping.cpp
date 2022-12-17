@@ -5,6 +5,8 @@
 namespace muli
 {
 
+static float angle = 45.0f;
+
 class SubStepping : public Demo
 {
 public:
@@ -17,13 +19,11 @@ public:
 
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
-        float size = 15.0f;
-        float r = 0.25f;
-        float spread = 10.0f;
+        RigidBody* b = world->CreateCircle(1.5f);
 
-        RigidBody* b = world->CreateCircle(2.0f);
-        b->SetPosition(90.0, 28.0f);
-        b->SetLinearVelocity(-40.0f, 0.0f);
+        Vec2 p = PolarToCart(DegToRad(angle), 120.0f);
+        b->SetPosition(p + Vec2{ 0.0f, 9.0f });
+        b->SetLinearVelocity(-p * 0.4f + Vec2{ 0.0f, 9.0f });
         b->SetAngularVelocity(0.0f);
         b->SetContinuous(true);
 
@@ -34,11 +34,11 @@ public:
         float xStart = -(rows - 1.0f) * (boxSize + xGap) / 2.0f;
         float yStart = 0.2f + boxSize / 2.0f + yGap;
 
-        for (int y = 0; y < rows; ++y)
+        for (int32 y = 0; y < rows; ++y)
         {
-            for (int x = 0; x < rows - y; ++x)
+            for (int32 x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = world->CreateBox(boxSize);
+                b = world->CreateBox(boxSize);
                 b->SetPosition(xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap));
                 b->SetContinuous(true);
             }
@@ -66,13 +66,14 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
+        ImGui::SetNextWindowSize({ 320, 80 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Options"))
+        if (ImGui::Begin("Sub-stepping"))
         {
-            ImGui::Text("Step progress");
             ImGui::ProgressBar(progress, ImVec2{ 0.0f, 0.0f });
-            // ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::Text("Step progress");
+            ImGui::SliderFloat("Throw angle", &angle, 0.0f, 180.0f, "%.2f", 1.0f);
         }
         ImGui::End();
     }
@@ -83,6 +84,6 @@ public:
     }
 };
 
-DemoFrame sub_stepping{ "Sub stepping", SubStepping::Create };
+DemoFrame sub_stepping{ "Sub-stepping", SubStepping::Create };
 
 } // namespace muli

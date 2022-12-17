@@ -1245,9 +1245,14 @@ inline float Round(float s)
     return roundf(s);
 }
 
-inline float DegToRad(float degrees)
+inline float DegToRad(float deg)
 {
-    return degrees * MULI_PI / 180.0f;
+    return deg * MULI_PI / 180.0f;
+}
+
+inline float RadToDeg(float rad)
+{
+    return rad * 180.0f / MULI_PI;
 }
 
 template <typename T>

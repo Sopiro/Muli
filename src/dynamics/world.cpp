@@ -107,23 +107,34 @@ void World::Solve()
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
+                Contact* c = ce->contact;
+
+                if ((c->flag & Contact::flag_enabled) == 0)
+                {
+                    continue;
+                }
+
+                if ((c->flag & Contact::flag_touching) == 0)
+                {
+                    continue;
+                }
+
                 if (ce->other->flag & RigidBody::flag_island)
                 {
                     continue;
                 }
 
-                if (ce->contact->flag & Contact::flag_touching)
-                {
-                    island.Add(ce->contact);
-                    stack[stackPointer++] = ce->other;
-                }
+                island.Add(c);
+                stack[stackPointer++] = ce->other;
             }
 
             for (JointEdge* je = t->jointList; je; je = je->next)
             {
+                Joint* j = je->joint;
+
                 if (je->other == t)
                 {
-                    island.Add(je->joint);
+                    island.Add(j);
                     t->Awake();
                 }
 
@@ -132,7 +143,7 @@ void World::Solve()
                     continue;
                 }
 
-                island.Add(je->joint);
+                island.Add(j);
                 stack[stackPointer++] = je->other;
             }
 
@@ -154,7 +165,7 @@ void World::Solve()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
-        body->sweep.alpha0 = 0.0f;
+        muliAssert(body->sweep.alpha0 == 0.0f);
 
         if ((body->flag & RigidBody::flag_island) == 0)
         {

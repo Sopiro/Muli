@@ -18,9 +18,9 @@ public:
         float xStart = -(rows - 1.0f) * (boxSize + xGap) / 2.0f;
         float yStart = 0.2f + boxSize / 2.0f + yGap;
 
-        for (int y = 0; y < rows; ++y)
+        for (int32 y = 0; y < rows; ++y)
         {
-            for (int x = 0; x < rows - y; ++x)
+            for (int32 x = 0; x < rows - y; ++x)
             {
                 RigidBody* b = world->CreateBox(boxSize);
                 b->SetPosition(xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap));

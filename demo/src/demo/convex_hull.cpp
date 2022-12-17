@@ -69,7 +69,7 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
-        ImGui::Begin("Overlay", NULL,
+        ImGui::Begin("Convex hull", NULL,
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
         ImGui::TextColored(ImColor{ 12, 11, 14 }, "Removed vertices: %ld", vertices.size() - convexHull.size());

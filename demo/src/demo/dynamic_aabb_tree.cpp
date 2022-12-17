@@ -5,7 +5,7 @@
 namespace muli
 {
 
-static char seed[20] = "woowakgood";
+static char seed[20] = "wakgood";
 
 class DynamicAABBTree : public Demo
 {
@@ -53,9 +53,9 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 200, 145 }, ImGuiCond_Once);
+        ImGui::SetNextWindowSize({ 200, 150 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Options"))
+        if (ImGui::Begin("Dynamic AABB tree"))
         {
             ImGui::Text("Tree cost: %.4f", world->GetDynamicTree().ComputeTreeCost());
             ImGui::InputText("Seed", seed, 20);

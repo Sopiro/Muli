@@ -81,7 +81,7 @@ public:
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
         ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Options"))
+        if (ImGui::Begin("Ray casting"))
         {
             ImGui::Text("Ray start");
             ImGui::DragFloat2("", &from.x, 0.1f);

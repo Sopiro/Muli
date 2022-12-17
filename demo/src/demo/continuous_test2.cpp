@@ -75,7 +75,7 @@ public:
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
         ImGui::SetNextWindowSize({ 200, 180 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Control"))
+        if (ImGui::Begin("Continuous test 2"))
         {
             ImGui::Text("Shapes");
             ImGui::PushID(0);
