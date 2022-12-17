@@ -89,7 +89,7 @@ void Game::UpdateUI()
                 }
 
                 static int f = Window::Get().GetRefreshRate();
-                ImGui::SetNextItemWidth(120);
+                ImGui::SetNextItemWidth(150);
                 if (ImGui::SliderInt("Frame rate", &f, 30, 300))
                 {
                     app.SetFrameRate(f);
@@ -166,7 +166,7 @@ void Game::UpdateUI()
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 26 * ImGui::GetTextLineHeightWithSpacing() }))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 28 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
                     for (uint32 i = 0; i < demo_count; ++i)
                     {

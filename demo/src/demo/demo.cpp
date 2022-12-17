@@ -340,6 +340,7 @@ bool Demo::EnableAddForce()
 
 void Demo::EnableKeyboardShortcut()
 {
+    if (Input::IsKeyPressed(GLFW_KEY_O)) options.draw_outline_only = !options.draw_outline_only;
     if (Input::IsKeyPressed(GLFW_KEY_V)) options.show_bvh = !options.show_bvh;
     if (Input::IsKeyPressed(GLFW_KEY_B)) options.show_aabb = !options.show_aabb;
     if (Input::IsKeyPressed(GLFW_KEY_P)) options.show_contact_point = !options.show_contact_point;
@@ -464,6 +465,7 @@ extern DemoFrame breakable;
 extern DemoFrame distance_test;
 extern DemoFrame continuous_test;
 extern DemoFrame continuous_test2;
+extern DemoFrame sub_stepping;
 
 static int32 init_demos()
 {
@@ -514,6 +516,7 @@ static int32 init_demos()
     demos[demo_count++] = distance_test;
     demos[demo_count++] = continuous_test;
     demos[demo_count++] = continuous_test2;
+    demos[demo_count++] = sub_stepping;
 
     return demo_count;
 }

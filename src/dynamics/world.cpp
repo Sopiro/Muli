@@ -311,7 +311,7 @@ float World::SolveTOI()
         minContact->flag &= ~Contact::flag_toi;
         ++minContact->toiCount;
 
-        // Contact disabled by the user or no contacts point found
+        // Contact disabled by the user or no contact points found
         if (minContact->IsEnabled() == false || minContact->IsTouching() == false)
         {
             // Restore the sweeps
@@ -386,7 +386,7 @@ float World::SolveTOI()
                 // Find the contact points
                 contact->Update();
 
-                // Contact disabled by the user or no contacts point found
+                // Contact disabled by the user or no contact points found
                 if (contact->IsEnabled() == false || contact->IsTouching() == false)
                 {
                     other->sweep = save;
