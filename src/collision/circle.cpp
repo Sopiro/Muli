@@ -6,7 +6,7 @@ namespace muli
 Circle::Circle(float _radius, const Vec2& _center)
     : Shape(circle, _radius)
 {
-    area = radius * radius * MULI_PI;
+    area = radius * radius * pi;
     center = _center;
 }
 

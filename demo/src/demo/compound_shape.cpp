@@ -49,7 +49,7 @@ public:
             Vec2 pos = LinearRand(Vec2{ -5.0f }, Vec2{ 5.0f });
             pos.y += 15.0f;
 
-            float angle = LinearRand(0.0f, MULI_PI);
+            float angle = LinearRand(0.0f, pi);
 
             b = world->CreateBox(w, h, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);

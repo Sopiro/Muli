@@ -21,7 +21,7 @@ public:
 
         float r = 0.38f;
 
-        for (int i = 0; i < 1000; ++i)
+        for (int32 i = 0; i < 1000; ++i)
         {
             RigidBody* b = world->CreateBox(r);
             b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,

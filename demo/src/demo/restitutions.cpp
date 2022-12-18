@@ -11,7 +11,7 @@ public:
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
-        int count = 11;
+        int32 count = 11;
         float gap = 0.5f;
         float size = 0.3f;
 
@@ -21,7 +21,7 @@ public:
         bool r = LinearRand(0.0f, 1.0f) > 0.5f;
 
         RigidBody* b;
-        for (int i = 0; i < count; ++i)
+        for (int32 i = 0; i < count; ++i)
         {
             if (r)
                 b = world->CreateBox(size);

@@ -298,7 +298,7 @@ float World::SolveTOI()
             }
         }
 
-        if (minContact == nullptr || 1.0f - 10.0f * MULI_EPSILON < minAlpha)
+        if (minContact == nullptr || 1.0f - 10.0f * epsilon < minAlpha)
         {
             // Done! No more TOI events
             stepComplete = true;
@@ -958,7 +958,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 
     for (int32 i = 0; i < vertexCount; ++i)
     {
-        angles.push_back(LinearRand(0.0f, 1.0f) * (MULI_PI * 2.0f - MULI_EPSILON));
+        angles.push_back(LinearRand(0.0f, 1.0f) * (pi * 2.0f - epsilon));
     }
 
     std::sort(angles.begin(), angles.end());
@@ -986,8 +986,8 @@ RigidBody* World::CreateRegularPolygon(
         vertexCount = LinearRand(3, 12);
     }
 
-    float angleStart = initialAngle - MULI_PI / 2.0f;
-    float angle = MULI_PI * 2.0f / vertexCount;
+    float angleStart = initialAngle - pi / 2.0f;
+    float angle = pi * 2.0f / vertexCount;
 
     std::vector<Vec2> vertices;
     vertices.reserve(vertexCount);

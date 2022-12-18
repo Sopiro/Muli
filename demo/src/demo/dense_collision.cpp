@@ -23,7 +23,7 @@ public:
         b->SetLinearDamping(0.1f);
         b->SetContinuous(true);
 
-        for (int i = 0; i < 500; ++i)
+        for (int32 i = 0; i < 500; ++i)
         {
             RigidBody* c = world->CreateCircle(r);
             c->SetPosition(LinearRand(0.0f, spread * 1.414f), LinearRand(0.0f, spread * 0.9f) - spread / 2.0f);

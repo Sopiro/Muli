@@ -40,7 +40,7 @@ public:
             }
 
             b->SetPosition(LinearRand(Vec2{ -range, -range }, Vec2{ range, range }));
-            b->SetRotation(LinearRand(0.0f, MULI_PI));
+            b->SetRotation(LinearRand(0.0f, pi));
         }
 
         camera.position = 0.0f;

@@ -32,7 +32,7 @@ public:
 
         // Reduce the amplitude by half every second
         float halfLife = 1.0f;
-        float frequency = -Log(0.5f) / (halfLife * MULI_PI * 2.0f);
+        float frequency = -Log(0.5f) / (halfLife * pi * 2.0f);
 
         b = world->CreateBox(0.3f);
         b->SetPosition(-3.0f, 3.6f);

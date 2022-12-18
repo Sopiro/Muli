@@ -172,7 +172,7 @@ void ContactManager::AddCollider(Collider* collider)
 void ContactManager::RemoveCollider(Collider* collider)
 {
     broadPhase.Remove(collider);
-    collider->node = null_node;
+    collider->node = nullNode;
 
     RigidBody* body = collider->body;
 

@@ -1,6 +1,6 @@
 #include "muli/island.h"
 
-#define SOLVE_CONTACTS_BACKWARD 1
+#define SOLVE_CONTACTS_BACKWARD 0
 #define SOLVE_CONTACT_CONSTRAINT 1
 
 namespace muli
@@ -120,12 +120,12 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contacts[j]->SolveVelocityConstraint();
+            contacts[j]->SolveVelocityConstraints();
         }
 #endif
         for (int32 j = 0; j < jointCount; ++j)
         {
-            joints[j]->SolveVelocityConstraint();
+            joints[j]->SolveVelocityConstraints();
         }
 #endif
     }
@@ -235,7 +235,7 @@ void Island::SolveTOI(float dt)
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contacts[j]->SolveVelocityConstraint();
+            contacts[j]->SolveVelocityConstraints();
         }
 #endif
 #endif

@@ -24,8 +24,8 @@ public:
 
         bool t = LinearRand(0.0f, 1.0f) > 0.5;
 
-        int count = 12;
-        for (int i = 1; i < count; ++i)
+        int32 count = 12;
+        for (int32 i = 1; i < count; ++i)
         {
             RigidBody* b2 = world->CreateBox(sizeW, sizeH);
             b2->SetPosition(xStart - (gap + sizeW) * (i + 1), yStart);

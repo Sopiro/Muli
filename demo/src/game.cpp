@@ -9,7 +9,7 @@ Game::Game(Application& _app)
     , rRenderer{ *this }
 {
     UpdateProjectionMatrix();
-    Window::Get().SetFramebufferSizeChangeCallback([&](int width, int height) -> void {
+    Window::Get().SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
         glViewport(0, 0, width, height);
         UpdateProjectionMatrix();
     });
@@ -88,7 +88,7 @@ void Game::UpdateUI()
                     if (ImGui::Button("Restart")) InitDemo(demoIndex);
                 }
 
-                static int f = Window::Get().GetRefreshRate();
+                static int32 f = Window::Get().GetRefreshRate();
                 ImGui::SetNextItemWidth(150);
                 if (ImGui::SliderInt("Frame rate", &f, 30, 300))
                 {
@@ -123,12 +123,12 @@ void Game::UpdateUI()
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
-                        int velIterations = settings.velocity_iterations;
+                        int32 velIterations = settings.velocity_iterations;
                         ImGui::SliderInt("Velocity", &velIterations, 0, 50);
                         settings.velocity_iterations = static_cast<uint32>(velIterations);
 
                         ImGui::SetNextItemWidth(120);
-                        int posIterations = settings.position_iterations;
+                        int32 posIterations = settings.position_iterations;
                         ImGui::SliderInt("Position", &posIterations, 0, 50);
                         settings.position_iterations = static_cast<uint32>(posIterations);
                     }

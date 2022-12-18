@@ -7,7 +7,7 @@ namespace muli
 
 AABBTree::AABBTree()
     : nodeID{ 0 }
-    , root{ null_node }
+    , root{ nullNode }
     , nodeCapacity{ 32 }
     , nodeCount{ 0 }
 {
@@ -19,14 +19,14 @@ AABBTree::AABBTree()
     {
         nodes[i].next = i + 1;
     }
-    nodes[nodeCapacity - 1].next = null_node;
+    nodes[nodeCapacity - 1].next = nullNode;
     freeList = 0;
 }
 
 AABBTree::~AABBTree() noexcept
 {
     free(nodes);
-    root = null_node;
+    root = nullNode;
     nodeCount = 0;
 }
 
@@ -35,7 +35,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     muliAssert(0 <= leaf && leaf < nodeCapacity);
     muliAssert(nodes[leaf].IsLeaf());
 
-    if (root == null_node)
+    if (root == nullNode)
     {
         root = leaf;
         return leaf;
@@ -143,7 +143,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     nodes[newParent].collider = nullptr;
     nodes[newParent].parent = oldParent;
 
-    if (oldParent != null_node)
+    if (oldParent != nullNode)
     {
         if (nodes[oldParent].child1 == bestSibling)
         {
@@ -170,7 +170,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 
     // Walk back up the tree refitting ancestors' AABB and applying rotations
     NodeProxy ancestor = nodes[leaf].parent;
-    while (ancestor != null_node)
+    while (ancestor != nullNode)
     {
         NodeProxy child1 = nodes[ancestor].child1;
         NodeProxy child2 = nodes[ancestor].child2;
@@ -192,11 +192,11 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
 
     NodeProxy parent = nodes[leaf].parent;
 
-    if (parent != null_node) // node is not root
+    if (parent != nullNode) // node is not root
     {
         NodeProxy sibling = nodes[parent].child1 == leaf ? nodes[parent].child2 : nodes[parent].child1;
 
-        if (nodes[parent].parent != null_node) // sibling has grandparent
+        if (nodes[parent].parent != nullNode) // sibling has grandparent
         {
             nodes[sibling].parent = nodes[parent].parent;
 
@@ -214,13 +214,13 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
         {
             root = sibling;
 
-            nodes[sibling].parent = null_node;
+            nodes[sibling].parent = nullNode;
         }
 
         FreeNode(parent);
 
         NodeProxy ancestor = nodes[sibling].parent;
-        while (ancestor != null_node)
+        while (ancestor != nullNode)
         {
             NodeProxy child1 = nodes[ancestor].child1;
             NodeProxy child2 = nodes[ancestor].child2;
@@ -234,7 +234,7 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
     {
         muliAssert(root == leaf);
 
-        root = null_node;
+        root = nullNode;
     }
 }
 
@@ -246,7 +246,7 @@ NodeProxy AABBTree::CreateNode(Collider* collider, const AABB& aabb)
     nodes[newNode].aabb.max = aabb.max + aabb_margin;
     nodes[newNode].aabb.min = aabb.min - aabb_margin;
     nodes[newNode].collider = collider;
-    nodes[newNode].parent = null_node;
+    nodes[newNode].parent = nullNode;
     nodes[newNode].moved = true;
 
     InsertLeaf(newNode);
@@ -316,7 +316,7 @@ void AABBTree::Rotate(NodeProxy node)
         return;
     }
 
-    if (nodes[node].parent == null_node)
+    if (nodes[node].parent == nullNode)
     {
         return;
     }
@@ -448,7 +448,7 @@ void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
 
 void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Collider*)>& callback) const
 {
-    if (root == null_node)
+    if (root == nullNode)
     {
         return;
     }
@@ -483,7 +483,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Coll
 
 void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Collider*)>& callback) const
 {
-    if (root == null_node)
+    if (root == nullNode)
     {
         return;
     }
@@ -518,7 +518,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Colli
 
 void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
 {
-    if (root == null_node)
+    if (root == nullNode)
     {
         return;
     }
@@ -565,7 +565,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     while (stack.Count() > 0)
     {
         NodeProxy nodeIndex = stack.Pop();
-        if (nodeIndex == null_node)
+        if (nodeIndex == nullNode)
         {
             continue;
         }
@@ -618,7 +618,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
 void AABBTree::Reset()
 {
     nodeID = 0;
-    root = null_node;
+    root = nullNode;
     nodeCount = 0;
     memset(nodes, 0, nodeCapacity * sizeof(Node));
 
@@ -627,13 +627,13 @@ void AABBTree::Reset()
     {
         nodes[i].next = i + 1;
     }
-    nodes[nodeCapacity - 1].next = null_node;
+    nodes[nodeCapacity - 1].next = nullNode;
     freeList = 0;
 }
 
 NodeProxy AABBTree::AllocateNode()
 {
-    if (freeList == null_node)
+    if (freeList == nullNode)
     {
         muliAssert(nodeCount == nodeCapacity);
 
@@ -650,16 +650,16 @@ NodeProxy AABBTree::AllocateNode()
         {
             nodes[i].next = i + 1;
         }
-        nodes[nodeCapacity - 1].next = null_node;
+        nodes[nodeCapacity - 1].next = nullNode;
         freeList = nodeCount;
     }
 
     NodeProxy node = freeList;
     freeList = nodes[node].next;
     nodes[node].id = ++nodeID;
-    nodes[node].parent = null_node;
-    nodes[node].child1 = null_node;
-    nodes[node].child2 = null_node;
+    nodes[node].parent = nullNode;
+    nodes[node].child1 = nullNode;
+    nodes[node].child2 = nullNode;
     nodes[node].moved = false;
     ++nodeCount;
 
@@ -696,7 +696,7 @@ void AABBTree::Rebuild()
         // Clean the leaf
         if (nodes[i].IsLeaf())
         {
-            nodes[i].parent = null_node;
+            nodes[i].parent = nullNode;
 
             leaves[count++] = i;
         }
@@ -746,7 +746,7 @@ void AABBTree::Rebuild()
         parent->child1 = index1;
         parent->child2 = index2;
         parent->aabb = Union(child1->aabb, child2->aabb);
-        parent->parent = null_node;
+        parent->parent = nullNode;
 
         child1->parent = parentIndex;
         child2->parent = parentIndex;

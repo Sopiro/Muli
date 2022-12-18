@@ -6,7 +6,7 @@ namespace muli
 {
 
 static bool drawTrajectory = true;
-static int selection = 1;
+static int32 selection = 1;
 const char* items[] = { "Circle", "Box", "Capsule", "Rounded polygon", "Random" };
 
 class ContinuousTest2 : public Demo
@@ -47,7 +47,7 @@ public:
             break;
         }
 
-        target->SetRotation(LinearRand(-MULI_PI / 2.0f, MULI_PI / 2.0f));
+        target->SetRotation(LinearRand(-pi / 2.0f, pi / 2.0f));
         target->SetPosition(-1.0f, 3.0f);
         target->SetContinuous(true);
         target->SetLinearVelocity(100.0f, 0.0f);

@@ -14,12 +14,12 @@ public:
 
     static void Init();
     static void Update();
-    static bool IsKeyDown(int key);
-    static bool IsKeyPressed(int key);
-    static bool IsKeyReleased(int key);
-    static bool IsMouseDown(int button);
-    static bool IsMousePressed(int button);
-    static bool IsMouseReleased(int button);
+    static bool IsKeyDown(int32 key);
+    static bool IsKeyPressed(int32 key);
+    static bool IsKeyReleased(int32 key);
+    static bool IsMouseDown(int32 button);
+    static bool IsMousePressed(int32 button);
+    static bool IsMouseReleased(int32 button);
     static Vec2 GetMousePosition();
     static Vec2 GetMouseAcceleration();
     static Vec2 GetMouseScroll();
@@ -60,32 +60,32 @@ inline void Input::Update()
     mouseScroll.SetZero();
 }
 
-inline bool Input::IsKeyDown(int key)
+inline bool Input::IsKeyDown(int32 key)
 {
     return currKeys[key];
 }
 
-inline bool Input::IsKeyPressed(int key)
+inline bool Input::IsKeyPressed(int32 key)
 {
     return currKeys[key] && !lastKeys[key];
 }
 
-inline bool Input::IsKeyReleased(int key)
+inline bool Input::IsKeyReleased(int32 key)
 {
     return !currKeys[key] && lastKeys[key];
 }
 
-inline bool Input::IsMouseDown(int button)
+inline bool Input::IsMouseDown(int32 button)
 {
     return currBtns[button];
 }
 
-inline bool Input::IsMousePressed(int button)
+inline bool Input::IsMousePressed(int32 button)
 {
     return currBtns[button] && !lastBtns[button];
 }
 
-inline bool Input::IsMouseReleased(int button)
+inline bool Input::IsMouseReleased(int32 button)
 {
     return !currBtns[button] && lastBtns[button];
 }

@@ -9,7 +9,7 @@ namespace muli
 class Application final
 {
 public:
-    static Application* Create(int width, int height, std::string title);
+    static Application* Create(int32 width, int32 height, std::string title);
 
     ~Application() noexcept;
 
@@ -28,7 +28,7 @@ public:
 private:
     static Application* app;
 
-    Application(int width, int height, std::string title);
+    Application(int32 width, int32 height, std::string title);
     void Update(float dt);
     void Render();
 
@@ -37,7 +37,7 @@ private:
     double frameTime;
 };
 
-inline Application* Application::Create(int width, int height, std::string title)
+inline Application* Application::Create(int32 width, int32 height, std::string title)
 {
     muliAssert(app == nullptr);
 
@@ -47,7 +47,7 @@ inline Application* Application::Create(int width, int height, std::string title
 
 inline void Application::SetFrameRate(uint32 frameRate)
 {
-    frameRate = std::clamp<int>(frameRate, 30, 300);
+    frameRate = std::clamp<int32>(frameRate, 30, 300);
     frameTime = 1.0 / frameRate;
 }
 

@@ -12,6 +12,11 @@ struct AABB
         return (min + max) * 0.5f;
     }
 
+    Vec2 GetExtents() const
+    {
+        return (max - min) * 0.5f;
+    }
+
     float GetArea() const
     {
         return (max.x - min.x) * (max.y - min.y);

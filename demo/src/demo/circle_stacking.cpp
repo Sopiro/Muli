@@ -16,11 +16,11 @@ public:
         float size = 0.3f;
         float gap = 0.3f;
 
-        int rows = 10;
+        int32 rows = 10;
 
-        for (int i = 0; i < rows; ++i)
+        for (int32 i = 0; i < rows; ++i)
         {
-            for (int j = i; j < rows; ++j)
+            for (int32 j = i; j < rows; ++j)
             {
                 RigidBody* c = world->CreateCircle(size);
                 c->SetPosition(xStart + (gap + size * 2) * i, yStart + (gap + size * 2) * j);

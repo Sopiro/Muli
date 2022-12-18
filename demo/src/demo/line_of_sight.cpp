@@ -32,7 +32,7 @@ public:
                 else if (r < 1.0f)
                 {
                     b = world->CreateCapsule(0.2f, 0.1f);
-                    b->SetRotation(LinearRand(0.0f, MULI_PI));
+                    b->SetRotation(LinearRand(0.0f, pi));
                 }
                 else if (r < 2.0f)
                 {
@@ -62,8 +62,8 @@ public:
         std::vector<Vec2>& pl = game.GetPointList();
         std::vector<Vec2>& ll = game.GetLineList();
 
-        float angleDelta = MULI_PI * 2.0f / count;
-        for (float angle = 0.0f; angle < MULI_PI * 2.0f; angle += angleDelta)
+        float angleDelta = pi * 2.0f / count;
+        for (float angle = 0.0f; angle < pi * 2.0f; angle += angleDelta)
         {
             Vec2 to = cursorPos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
 

@@ -21,12 +21,12 @@ public:
 
         float r = 0.3f;
 
-        for (int i = 0; i < 1000; ++i)
+        for (int32 i = 0; i < 1000; ++i)
         {
             RigidBody* c = world->CreateCapsule(r, r / 2.0f);
             c->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
                            LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            c->SetRotation(LinearRand(0.0f, MULI_PI * 2.0f));
+            c->SetRotation(LinearRand(0.0f, pi * 2.0f));
         }
 
         camera.position = { 0.0f, 0.0f };

@@ -11,11 +11,11 @@
 
 #include "types.h"
 
-#define MULI_PI 3.14159265359f
-#define MULI_EPSILON FLT_EPSILON
-
 namespace muli
 {
+
+constexpr float pi = 3.14159265359f;
+constexpr float epsilon = FLT_EPSILON;
 
 enum Identity
 {
@@ -251,7 +251,7 @@ struct Vec3
     void Normalize()
     {
         float length = Length();
-        if (length < MULI_EPSILON)
+        if (length < epsilon)
         {
             return;
         }
@@ -265,7 +265,7 @@ struct Vec3
     Vec3 Normalized() const
     {
         float length = Length();
-        if (length < MULI_EPSILON)
+        if (length < epsilon)
         {
             return Vec3{ 0.0f, 0.0f, 0.0f };
         }
@@ -1247,12 +1247,12 @@ inline float Round(float s)
 
 inline float DegToRad(float deg)
 {
-    return deg * MULI_PI / 180.0f;
+    return deg * pi / 180.0f;
 }
 
 inline float RadToDeg(float rad)
 {
-    return rad * 180.0f / MULI_PI;
+    return rad * 180.0f / pi;
 }
 
 template <typename T>
@@ -1326,7 +1326,7 @@ inline void Sweep::Advance(float alpha)
 
 inline void Sweep::Normalize()
 {
-    float pi2 = 2.0f * MULI_PI;
+    float pi2 = 2.0f * pi;
     float d = pi2 * Floor(a0 / pi2);
     a0 -= d;
     a -= d;

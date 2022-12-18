@@ -7,12 +7,6 @@ namespace muli
 
 class Contact;
 
-enum ContactType
-{
-    Normal = 0,
-    Tangent
-};
-
 struct Jacobian
 {
     Vec2 va;  // -normal
@@ -26,8 +20,8 @@ class ContactSolver
 public:
     enum Type
     {
-        normal = 0,
-        tangent
+        normal,
+        tangent,
     };
 
     void Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType);

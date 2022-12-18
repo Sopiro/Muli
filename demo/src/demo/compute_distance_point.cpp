@@ -45,7 +45,7 @@ public:
             b = world->CreateCapsule(size, size / 2.0f);
         }
 
-        b->SetRotation(LinearRand(0.0f, MULI_PI));
+        b->SetRotation(LinearRand(0.0f, pi));
 
         camera.position = 0.0f;
         camera.scale = 0.5f;

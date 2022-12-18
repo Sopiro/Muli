@@ -15,9 +15,9 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
 static std::random_device rd;
 static std::mt19937 g(rd());
 
-inline int LinearRand(int32 _min, int32 _max)
+inline int32 LinearRand(int32 _min, int32 _max)
 {
-    std::uniform_int_distribution<int> ud(_min, _max);
+    std::uniform_int_distribution<int32> ud(_min, _max);
 
     return ud(g);
 }

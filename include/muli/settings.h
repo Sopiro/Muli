@@ -50,9 +50,9 @@ struct WorldSettings
     int32 position_iterations = 3;
 
     bool sleeping = true;
-    float sleeping_treshold = 0.5f;                                                        // second
-    float rest_linear_tolerance = 0.01f * 0.01f;                                           // (m/s)^2
-    float reset_angular_tolerance = (0.5f * MULI_PI / 180.0f) * (0.5f * MULI_PI / 180.0f); // (rad/s)^2
+    float sleeping_treshold = 0.5f;                                              // second
+    float rest_linear_tolerance = 0.01f * 0.01f;                                 // (m/s)^2
+    float reset_angular_tolerance = (0.5f * pi / 180.0f) * (0.5f * pi / 180.0f); // (rad/s)^2
 
     bool continuous = true;
     bool sub_stepping = false;

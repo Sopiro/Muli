@@ -16,18 +16,18 @@ public:
         float size = 0.3f;
         float gap = 0.3f;
 
-        int rows = 11;
+        int32 rows = 11;
 
-        for (int i = 0; i < rows; ++i)
+        for (int32 i = 0; i < rows; ++i)
         {
-            for (int j = 0; j < rows; ++j)
+            for (int32 j = 0; j < rows; ++j)
             {
                 RigidBody* c = world->CreateCapsule(size, size / 2.0f);
                 c->SetPosition(xStart + (gap + size * 2) * i, yStart + (gap + size * 2) * j);
-                int k = Abs(rows / 2 - i) + 2;
+                int32 k = Abs(rows / 2 - i) + 2;
                 if (j % k == 0)
                 {
-                    c->SetRotation(MULI_PI / 2.0f);
+                    c->SetRotation(pi / 2.0f);
                 }
             }
         }

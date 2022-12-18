@@ -48,7 +48,7 @@ public:
             Vec2 pos = LinearRand(Vec2{ -5.0f }, Vec2{ 5.0f });
             pos.y += 30.0f;
 
-            float angle = LinearRand(0.0f, MULI_PI);
+            float angle = LinearRand(0.0f, pi);
 
             b = world->CreateRandomConvexPolygon(size, 6, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);

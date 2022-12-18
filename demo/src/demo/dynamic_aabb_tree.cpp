@@ -44,7 +44,7 @@ public:
             float y = Random(-range, range);
 
             b->SetPosition(x, y);
-            b->SetRotation(Random(0.0f, MULI_PI));
+            b->SetRotation(Random(0.0f, pi));
         }
 
         camera.position.SetZero();

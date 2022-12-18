@@ -19,7 +19,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
         Vec2 localCenter = c->GetCenter();
         float radius = c->GetRadius();
 
-        float angle = MULI_PI * 2.0f / circlePolygonCount;
+        float angle = pi * 2.0f / circlePolygonCount;
 
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;
@@ -85,7 +85,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
             vertices3.push_back(vn0);
 
             float theta = AngleBetween(n0, n1);
-            float cCount = circlePolygonCount * theta / (2.0f * MULI_PI);
+            float cCount = circlePolygonCount * theta / (2.0f * pi);
 
             for (int32 j = 0; j < cCount; ++j)
             {
@@ -119,10 +119,10 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
         texCoords.emplace_back(v1 - normal * r);
 
         // Start from bottom right
-        float angle = MULI_PI * 2.0f / circlePolygonCount;
+        float angle = pi * 2.0f / circlePolygonCount;
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
-            float currentAngle = angleOffset - MULI_PI / 2.0f + angle * i;
+            float currentAngle = angleOffset - pi / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;
@@ -138,7 +138,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, uint32 circlePolygo
         // Left top to left bottom
         for (uint32_t i = 0; i < circlePolygonCount / 2.0f; ++i)
         {
-            float currentAngle = angleOffset + MULI_PI / 2.0f + angle * i;
+            float currentAngle = angleOffset + pi / 2.0f + angle * i;
 
             Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
             corner *= r;

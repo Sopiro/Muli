@@ -7,7 +7,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, const Vec2& _ce
     : Shape(capsule, _radius)
     , length{ _length }
 {
-    area = length * radius * 2.0f + MULI_PI * radius * radius;
+    area = length * radius * 2.0f + pi * radius * radius;
 
     if (_horizontal)
     {
@@ -31,7 +31,7 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
 {
     Vec2 a2b = p2 - p1;
     length = a2b.Length();
-    area = length * radius * 2.0f + MULI_PI * radius * radius;
+    area = length * radius * 2.0f + pi * radius * radius;
 
     va = p1;
     vb = p2;

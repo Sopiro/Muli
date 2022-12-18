@@ -44,7 +44,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
     area += Cross(v0, v1) * 0.5f;
     area += radius * (v0 - v1).Length();
 
-    area += MULI_PI * radius * radius; // corner arc
+    area += pi * radius * radius; // corner arc
 
     if (_resetPosition)
     {

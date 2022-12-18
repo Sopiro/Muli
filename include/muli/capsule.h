@@ -78,9 +78,9 @@ inline void Capsule::ComputeMass(float density, MassData* outMassData) const
 
     inertia = rectInertia * rectArea * invArea;
 
-    float circleArea = MULI_PI * radius * radius;
-    float halfCircleInertia = ((MULI_PI / 4) - 8.0f / (9.0f * MULI_PI)) * radius * radius * radius * radius;
-    float dist2 = length * 0.5f + (4.0f * radius) / (MULI_PI * 3.0f);
+    float circleArea = pi * radius * radius;
+    float halfCircleInertia = ((pi / 4) - 8.0f / (9.0f * pi)) * radius * radius * radius * radius;
+    float dist2 = length * 0.5f + (4.0f * radius) / (pi * 3.0f);
     dist2 *= dist2;
 
     inertia += (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f * invArea;

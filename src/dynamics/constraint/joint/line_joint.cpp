@@ -18,7 +18,7 @@ LineJoint::LineJoint(RigidBody* _bodyA,
     localAnchorA = MulT(bodyA->GetTransform(), _anchor);
     localAnchorB = MulT(bodyB->GetTransform(), _anchor);
 
-    if (_dir.Length2() < MULI_EPSILON)
+    if (_dir.Length2() < epsilon)
     {
         Vec2 d = MulT(bodyA->GetRotation(), (_bodyB->GetPosition() - _bodyA->GetPosition()).Normalized());
         localYAxis = Cross(1.0f, d);

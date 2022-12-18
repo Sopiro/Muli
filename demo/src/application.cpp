@@ -5,7 +5,7 @@ namespace muli
 
 Application* Application::app = nullptr;
 
-Application::Application(int width, int height, std::string title)
+Application::Application(int32 width, int32 height, std::string title)
     : window(width, height, std::move(title))
 {
     Input::Init();

@@ -3,12 +3,12 @@
 namespace muli
 {
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_error_callback(int32 error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-Window::Window(int width, int height, std::string title)
+Window::Window(int32 width, int32 height, std::string title)
 {
     muliAssert(window == nullptr);
     window = this;

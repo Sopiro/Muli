@@ -19,7 +19,7 @@ public:
         CreateRagdoll(0.0f, 5.0f, 1.0f);
 
         RigidBody* c = world->CreateCircle(0.6f);
-        float r = LinearRand(0.0f, MULI_PI);
+        float r = LinearRand(0.0f, pi);
         Vec2 p{ Cos(r), Sin(r) };
         p *= 8.0f;
 

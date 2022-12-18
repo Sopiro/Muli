@@ -6,11 +6,11 @@ namespace muli
 Shader::Shader(const char* vsCode, const char* fsCode)
 {
     // vertex shader
-    int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    int32 vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vsCode, NULL);
     glCompileShader(vertexShader);
 
-    int success = 0;
+    int32 success = 0;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
@@ -21,7 +21,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     }
 
     // fragment shader
-    int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    int32 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fsCode, NULL);
     glCompileShader(fragmentShader);
 
@@ -36,7 +36,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     }
 
     // pipeline (or program)
-    int shaderProgram = glCreateProgram();
+    int32 shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);

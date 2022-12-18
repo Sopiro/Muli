@@ -22,33 +22,33 @@ public:
     Window(Window&&) noexcept = delete;
     Window& operator=(const Window&&) noexcept = delete;
 
-    void SetFramebufferSizeChangeCallback(const std::function<void(int width, int height)>& callback);
+    void SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback);
 
     Vec2 GetWindowSize() const;
     int32 GetRefreshRate() const;
 
 private:
     friend class Application;
-    friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
+    friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int32 width, int32 height);
 
     inline static Window* window;
-    Window(int width, int height, std::string title);
+    Window(int32 width, int32 height, std::string title);
 
-    int width;
-    int height;
+    int32 width;
+    int32 height;
     int32 refreshRate;
 
     GLFWwindow* glfwWindow;
-    std::function<void(int width, int height)> framebufferSizeChangeCallback = nullptr;
+    std::function<void(int32 width, int32 height)> framebufferSizeChangeCallback = nullptr;
 
     bool ShouldClose() const;
     void BeginFrame(const Vec4& clearColor) const;
     void EndFrame() const;
 
-    static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height);
-    static void OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
-    static void OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier);
-    static void OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch);
+    static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int32 width, int32 height);
+    static void OnKeyEvent(GLFWwindow* glfwWindow, int32 key, int32 scancode, int32 action, int32 mods);
+    static void OnMouseButton(GLFWwindow* glfwWindow, int32 button, int32 action, int32 modifier);
+    static void OnCharEvent(GLFWwindow* glfwWindow, uint32 ch);
     static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
     static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
 };
@@ -58,7 +58,7 @@ inline Window& Window::Get()
     return *window;
 }
 
-inline void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, int height)
+inline void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int32 width, int32 height)
 {
     window->width = width;
     window->height = height;
@@ -69,7 +69,7 @@ inline void Window::OnFramebufferSizeChange(GLFWwindow* glfwWindow, int width, i
     }
 }
 
-inline void Window::OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods)
+inline void Window::OnKeyEvent(GLFWwindow* glfwWindow, int32 key, int32 scancode, int32 action, int32 mods)
 {
     ImGui_ImplGlfw_KeyCallback(glfwWindow, key, scancode, action, mods);
 
@@ -85,7 +85,7 @@ inline void Window::OnKeyEvent(GLFWwindow* glfwWindow, int key, int scancode, in
     }
 }
 
-inline void Window::OnMouseButton(GLFWwindow* glfwWindow, int button, int action, int modifier)
+inline void Window::OnMouseButton(GLFWwindow* glfwWindow, int32 button, int32 action, int32 modifier)
 {
     ImGui_ImplGlfw_MouseButtonCallback(glfwWindow, button, action, modifier);
 
@@ -101,7 +101,7 @@ inline void Window::OnMouseButton(GLFWwindow* glfwWindow, int button, int action
     }
 }
 
-inline void Window::OnCharEvent(GLFWwindow* glfwWindow, unsigned int ch)
+inline void Window::OnCharEvent(GLFWwindow* glfwWindow, uint32 ch)
 {
     ImGui_ImplGlfw_CharCallback(glfwWindow, ch);
 }
@@ -122,7 +122,7 @@ inline void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoff
     Input::mouseScroll.y = static_cast<float>(yoffset);
 }
 
-inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int width, int height)>& callback)
+inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback)
 {
     framebufferSizeChangeCallback = callback;
 }
