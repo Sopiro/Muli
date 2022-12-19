@@ -14,7 +14,7 @@ class ColliderDestoryCallback;
 class ContactListener;
 typedef int32 NodeProxy;
 
-class Collider
+class Collider final
 {
 public:
     RigidBody* GetBody() const;

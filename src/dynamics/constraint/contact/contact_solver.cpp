@@ -7,7 +7,7 @@ namespace muli
 
 void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType)
 {
-    // Calculate Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass M
     // J = [-dir, -ra × dir, dir, rb × dir] (dir: Contact vector, normal or tangent)
     // M = (J · M^-1 · J^t)^-1
 
@@ -68,7 +68,7 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
 
 void ContactSolver::Solve(const ContactSolver* normalContact)
 {
-    // Calculate corrective impulse: Pc
+    // Compute corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 

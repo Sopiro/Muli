@@ -1,4 +1,5 @@
 #include "muli/collider.h"
+#include "muli/aabb_tree.h"
 #include "muli/callbacks.h"
 #include "muli/capsule.h"
 #include "muli/circle.h"
@@ -11,7 +12,7 @@ ContactListener defaultListener;
 
 Collider::Collider()
     : next{ nullptr }
-    , node{ 0 }
+    , node{ nullNode }
     , OnDestroy{ nullptr }
     , ContactListener{ &defaultListener }
 {
