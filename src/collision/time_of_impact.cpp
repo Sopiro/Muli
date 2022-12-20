@@ -174,7 +174,7 @@ struct SeparationFunction
         case points:
         {
             Vec2 localPointA = shapeA->GetVertex(idA);
-            Vec2 localPointB = shapeA->GetVertex(idB);
+            Vec2 localPointB = shapeB->GetVertex(idB);
 
             Vec2 pointA = tfA * localPointA;
             Vec2 pointB = tfB * localPointB;
