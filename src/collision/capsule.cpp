@@ -48,18 +48,21 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
 Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
-    UV w = ComputeWeights(va, vb, localQ);
+
+    float u = Dot(localQ - vb, va - vb);
+    float v = Dot(localQ - va, vb - va);
 
     Vec2 closest;
     Vec2 normal;
     float distance;
-    if (w.v <= 0) // Region A
+
+    if (v <= 0.0f) // Region A
     {
         closest = va;
         normal = localQ - va;
         distance = normal.Normalize();
     }
-    else if (w.v >= 1) // Region B
+    else if (u <= 0.0f) // Region B
     {
         closest = vb;
         normal = localQ - vb;
@@ -141,7 +144,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         }
     }
 
-    // Translate edge along the normal
+    // Translate edge along normal
     if (distance > 0.0f)
     {
         v1 += normal * radius;
@@ -176,10 +179,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
     // Point on the v1-v2 line
     Vec2 q = p1 + t * d;
 
-    float l2 = Dot(e, e);
-    muliAssert(l2 > 0.0f);
-
-    float u = Dot(q - v1, e) / l2;
+    float u = Dot(q - v1, e);
     if (u < 0.0f)
     {
         // Ray cast to va circle
@@ -211,7 +211,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
             return false;
         }
     }
-    else if (u > 1.0f)
+    else if (u > Dot(e, e))
     {
         // Ray cast to vb circle
         Vec2 f = p1 - vb;

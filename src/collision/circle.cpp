@@ -39,7 +39,7 @@ bool Circle::RayCast(const Transform& transform, const RayCastInput& input, RayC
     float c = Dot(f, f) - r2;
 
     // Quadratic equation discriminant
-    float discriminant = b * b - 4 * a * c;
+    float discriminant = b * b - 4.0f * a * c;
 
     if (discriminant < 0.0f)
     {

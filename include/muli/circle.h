@@ -13,11 +13,13 @@ public:
     ~Circle() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
-    virtual Vec2 GetVertex(int32 id) const override;
-    virtual int32 GetVertexCount() const override;
-    virtual ContactPoint Support(const Vec2& localDir) const override;
-    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
+
+    virtual int32 GetVertexCount() const override;
+    virtual Vec2 GetVertex(int32 id) const override;
+    virtual int32 GetSupport(const Vec2& localDir) const override;
+    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
+
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
     virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
@@ -49,9 +51,9 @@ inline int32 Circle::GetVertexCount() const
     return 1;
 }
 
-inline ContactPoint Circle::Support(const Vec2& localDir) const
+inline int32 Circle::GetSupport(const Vec2& localDir) const
 {
-    return ContactPoint{ center, 0 };
+    return 0;
 }
 
 inline void Circle::ComputeMass(float density, MassData* outMassData) const

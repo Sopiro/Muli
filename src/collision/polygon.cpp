@@ -68,8 +68,8 @@ Polygon::Polygon(float width, float height, float _radius, const Vec2& position,
     normals = localNormals;
     vertexCount = 4;
 
-    float hx = width / 2.0f;
-    float hy = height / 2.0f;
+    float hx = width * 0.5f;
+    float hy = height * 0.5f;
 
     Transform t{ position, angle };
 
@@ -112,7 +112,6 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
 
-    UV w;
     Vec2 normal;
 
     int32 dir = 0;
@@ -126,8 +125,10 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
         const Vec2& v0 = vertices[i0];
         const Vec2& v1 = vertices[i1];
 
-        w = ComputeWeights(v0, v1, localQ);
-        if (w.v <= 0) // Region v0
+        float u = Dot(localQ - v1, v0 - v1);
+        float v = Dot(localQ - v0, v1 - v0);
+
+        if (v <= 0.0f) // Region v0
         {
             if (dir > 0)
             {
@@ -144,9 +145,10 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
             }
 
             dir = -1;
+            // Go clock wise!
             i0 = (i0 - 1 + vertexCount) % vertexCount;
         }
-        else if (w.v >= 1) // Region v1
+        else if (u <= 0.0f) // Region v1
         {
             if (dir < 0)
             {
@@ -163,9 +165,10 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
             }
 
             dir = 1;
+            // Go counter-clock wise!
             i0 = (i0 + 1) % vertexCount;
         }
-        else // Inside the region
+        else // Inside the edge
         {
             normal = normals[i0];
             float distance = Dot(localQ - v0, normal);
@@ -189,13 +192,14 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
     return q;
 }
 
+// Returns the farthest edge along dir
 Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     Vec2 localDir = MulT(transform.rotation, dir);
-    ContactPoint farthest = Support(localDir);
 
-    Vec2 curr = farthest.position;
-    int32 index = farthest.id;
+    int32 index = GetSupport(localDir);
+    Vec2 curr = vertices[index];
+
     int32 prevIndex = (index - 1 + vertexCount) % vertexCount;
     int32 nextIndex = (index + 1) % vertexCount;
 
@@ -205,8 +209,7 @@ Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
     Vec2 e1 = (curr - prev).Normalized();
     Vec2 e2 = (curr - next).Normalized();
 
-    bool w = Dot(e1, localDir) <= Dot(e2, localDir);
-    if (w)
+    if (Dot(e1, localDir) <= Dot(e2, localDir))
     {
         return Edge{ transform * prev, transform * curr, prevIndex, index };
     }
@@ -216,10 +219,10 @@ Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
     }
 }
 
-ContactPoint Polygon::Support(const Vec2& localDir) const
+int32 Polygon::GetSupport(const Vec2& localDir) const
 {
     int32 index = 0;
-    float maxValue = Dot(localDir, vertices[index]);
+    float maxValue = Dot(localDir, vertices[0]);
 
     for (int32 i = 1; i < vertexCount; ++i)
     {
@@ -231,7 +234,7 @@ ContactPoint Polygon::Support(const Vec2& localDir) const
         }
     }
 
-    return ContactPoint{ vertices[index], index };
+    return index;
 }
 
 void Polygon::ComputeMass(float density, MassData* outMassData) const
@@ -457,7 +460,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         Vec2 e = v2 - v1;
         Vec2 q = p1 + d * near;
 
-        float u = Dot(q - (v1 + n * radius), e) / Dot(e, e);
+        float u = Dot(q - (v1 + n * radius), e);
 
         if (u < 0.0f)
         {
@@ -469,7 +472,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             float c = Dot(f, f) - radius * radius;
 
             // Quadratic equation discriminant
-            float discriminant = b * b - 4 * a * c;
+            float discriminant = b * b - 4.0f * a * c;
 
             if (discriminant < 0.0f)
             {
@@ -490,7 +493,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
                 return false;
             }
         }
-        else if (u > 1.0f)
+        else if (u > Dot(e, e))
         {
             // Ray cast to a v2 circle
             Vec2 f = p1 - v2;
@@ -500,7 +503,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             float c = Dot(f, f) - radius * radius;
 
             // Quadratic equation discriminant
-            float discriminant = b * b - 4 * a * c;
+            float discriminant = b * b - 4.0f * a * c;
 
             if (discriminant < 0.0f)
             {

@@ -8,12 +8,6 @@ namespace muli
 
 struct Edge
 {
-    ContactPoint p1;
-    ContactPoint p2;
-
-    Vec2 dir;
-    Vec2 normal;
-
     Edge() = default;
 
     Edge(const ContactPoint& _p1, const ContactPoint& _p2)
@@ -67,6 +61,12 @@ struct Edge
         p1.position += d;
         p2.position += d;
     }
+
+    ContactPoint p1;
+    ContactPoint p2;
+
+    Vec2 dir;
+    Vec2 normal;
 };
 
 } // namespace muli

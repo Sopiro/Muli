@@ -37,11 +37,13 @@ public:
     const Vec2& GetCenter() const;
 
     virtual void ComputeMass(float density, MassData* outMassData) const = 0;
-    virtual ContactPoint Support(const Vec2& localDir) const = 0;
-    virtual Vec2 GetVertex(int32 id) const = 0;
-    virtual int32 GetVertexCount() const = 0;
-    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const = 0;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const = 0;
+
+    virtual int32 GetVertexCount() const = 0;
+    virtual Vec2 GetVertex(int32 id) const = 0;
+    virtual int32 GetSupport(const Vec2& localDir) const = 0;
+    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const = 0;
+
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const = 0;
     virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const = 0;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const = 0;

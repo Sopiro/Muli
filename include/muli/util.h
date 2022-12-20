@@ -55,9 +55,9 @@ struct UV
 // Project point P to line segment AB to compute barycentric weights
 inline UV ComputeWeights(const Vec2& a, const Vec2& b, const Vec2& p)
 {
-    Vec2 dir = b - a;
-    float len = dir.Normalize();
-    float region = Dot(dir, p - a) / len;
+    Vec2 e = b - a;
+    float len = e.Normalize();
+    float region = Dot(e, p - a) / len;
 
     return UV{ 1.0f - region, region };
 }

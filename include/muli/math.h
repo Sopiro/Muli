@@ -648,9 +648,6 @@ struct Rotation
 
 struct Transform
 {
-    Vec2 position;
-    Rotation rotation;
-
     Transform() = default;
 
     Transform(Identity)
@@ -682,6 +679,9 @@ struct Transform
         position.SetZero();
         rotation.SetIdentity();
     }
+
+    Vec2 position;
+    Rotation rotation;
 };
 
 // Describes the swept motion of rigid body

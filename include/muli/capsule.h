@@ -13,11 +13,13 @@ public:
     ~Capsule() = default;
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
-    virtual Vec2 GetVertex(int32 id) const override;
-    virtual int32 GetVertexCount() const override;
-    virtual ContactPoint Support(const Vec2& localDir) const override;
-    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
+
+    virtual int32 GetVertexCount() const override;
+    virtual Vec2 GetVertex(int32 id) const override;
+    virtual int32 GetSupport(const Vec2& localDir) const override;
+    virtual Edge GetFeaturedEdge(const Transform& transform, const Vec2& dir) const override;
+
     virtual bool TestPoint(const Transform& transform, const Vec2& q) const override;
     virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
@@ -58,10 +60,10 @@ inline int32 Capsule::GetVertexCount() const
     return 2;
 }
 
-inline ContactPoint Capsule::Support(const Vec2& localDir) const
+inline int32 Capsule::GetSupport(const Vec2& localDir) const
 {
-    Vec2 dir = vb - va;
-    return Dot(dir, localDir) > 0.0f ? ContactPoint{ vb, 1 } : ContactPoint{ va, 0 };
+    Vec2 e = vb - va;
+    return Dot(e, localDir) > 0.0f ? 1 : 0;
 }
 
 inline void Capsule::ComputeMass(float density, MassData* outMassData) const
@@ -79,7 +81,7 @@ inline void Capsule::ComputeMass(float density, MassData* outMassData) const
     inertia = rectInertia * rectArea * invArea;
 
     float circleArea = pi * radius * radius;
-    float halfCircleInertia = ((pi / 4) - 8.0f / (9.0f * pi)) * radius * radius * radius * radius;
+    float halfCircleInertia = ((pi / 4.0f) - 8.0f / (9.0f * pi)) * radius * radius * radius * radius;
     float dist2 = length * 0.5f + (4.0f * radius) / (pi * 3.0f);
     dist2 *= dist2;
 

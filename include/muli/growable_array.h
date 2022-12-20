@@ -11,15 +11,15 @@ class GrowableArray
 {
 public:
     GrowableArray()
-        : array{ stack_array }
+        : array{ stackArray }
         , count{ 0 }
         , capacity{ N }
     {
     }
 
-    ~GrowableArray()
+    ~GrowableArray() noexcept
     {
-        if (array != stack_array)
+        if (array != stackArray)
         {
             free(array);
             array = nullptr;
@@ -34,10 +34,10 @@ public:
     GrowableArray& operator=(const GrowableArray& other) noexcept
     {
         muliAssert(this != &other);
-        if (other.array == other.stack_array)
+        if (other.array == other.stackArray)
         {
-            array = stack_array;
-            memcpy(stack_array, other.stack_array, other.count * sizeof(T));
+            array = stackArray;
+            memcpy(stackArray, other.stackArray, other.count * sizeof(T));
         }
         else
         {
@@ -59,15 +59,15 @@ public:
     GrowableArray& operator=(GrowableArray&& other) noexcept
     {
         muliAssert(this != &other);
-        if (other.array == other.stack_array)
+        if (other.array == other.stackArray)
         {
-            array = stack_array;
-            memcpy(stack_array, other.stack_array, other.count * sizeof(T));
+            array = stackArray;
+            memcpy(stackArray, other.stackArray, other.count * sizeof(T));
         }
         else
         {
             array = other.array;
-            other.array = other.stack_array;
+            other.array = other.stackArray;
             other.count = 0;
             other.capacity = N;
         }
@@ -89,7 +89,7 @@ public:
             array = (T*)malloc(capacity * sizeof(T));
             memcpy(array, old, count * sizeof(T));
 
-            if (old != stack_array)
+            if (old != stackArray)
             {
                 free(old);
             }
@@ -107,6 +107,7 @@ public:
     {
         Emplace(std::move(data));
     }
+
     T Pop()
     {
         assert(count > 0);
@@ -132,7 +133,7 @@ public:
             array = (T*)malloc(capacity * sizeof(T));
             memcpy(array, old, count * sizeof(T));
 
-            if (old != stack_array)
+            if (old != stackArray)
             {
                 free(old);
             }
@@ -174,11 +175,11 @@ public:
 
     void Reset()
     {
-        if (array != stack_array)
+        if (array != stackArray)
         {
             free(array);
         }
-        array = stack_array;
+        array = stackArray;
         count = 0;
     }
 
@@ -199,7 +200,7 @@ public:
 
 private:
     T* array;
-    T stack_array[N];
+    T stackArray[N];
     int32 count;
     int32 capacity;
 };

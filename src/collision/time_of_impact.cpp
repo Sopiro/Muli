@@ -111,8 +111,8 @@ struct SeparationFunction
             Vec2 localAxisA = MulT(tfA.rotation, axis);
             Vec2 localAxisB = MulT(tfB.rotation, -axis);
 
-            *idA = shapeA->Support(localAxisA).id;
-            *idB = shapeB->Support(localAxisB).id;
+            *idA = shapeA->GetSupport(localAxisA);
+            *idB = shapeB->GetSupport(localAxisB);
 
             Vec2 localPointA = shapeA->GetVertex(*idA);
             Vec2 localPointB = shapeB->GetVertex(*idB);
@@ -132,7 +132,7 @@ struct SeparationFunction
             Vec2 localAxisB = MulT(tfB.rotation, -normal);
 
             *idA = -1;
-            *idB = shapeB->Support(localAxisB).id;
+            *idB = shapeB->GetSupport(localAxisB);
 
             Vec2 localPointB = shapeB->GetVertex(*idB);
             Vec2 pointB = tfB * localPointB;
@@ -148,7 +148,7 @@ struct SeparationFunction
 
             Vec2 localAxisA = MulT(tfA.rotation, -normal);
 
-            *idA = shapeA->Support(localAxisA).id;
+            *idA = shapeA->GetSupport(localAxisA);
             *idB = -1;
 
             Vec2 localPointA = shapeA->GetVertex(*idA);

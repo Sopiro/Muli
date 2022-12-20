@@ -26,7 +26,7 @@ struct ContactManifold
 {
     ContactPoint contactPoints[max_contact_points];
     ContactPoint referencePoint;
-    Vec2 contactNormal; // Contact normal is always pointing from a to b
+    Vec2 contactNormal; // Contact normal is always pointing from bodyA to bodyB
     Vec2 contactTangent;
     float penetrationDepth;
     int32 numContacts;
@@ -64,7 +64,9 @@ struct GJKResult
     float distance;
 };
 
-bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, GJKResult* result);
+bool GJK(const Shape* a, const Transform& tfA,
+         const Shape* b, const Transform& tfB,
+         GJKResult* result);
 
 struct EPAResult
 {
@@ -72,7 +74,9 @@ struct EPAResult
     float penetrationDepth;
 };
 
-void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result);
+void EPA(const Shape* a, const Transform& tfA,
+         const Shape* b, const Transform& tfB,
+         const Simplex& simplex, EPAResult* result);
 
 // clang-format on
 

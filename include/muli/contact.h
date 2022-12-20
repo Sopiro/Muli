@@ -38,6 +38,8 @@ public:
 
     Collider* GetColliderA() const;
     Collider* GetColliderB() const;
+    RigidBody* GetReferenceBody() const;
+    RigidBody* GetIncidentBody() const;
 
     const Contact* GetNext() const;
     const Contact* GetPrev() const;
@@ -94,16 +96,15 @@ private:
 
     ContactManifold manifold;
 
+    // TODO: Integrate decoupled solvers into SolveVelocityConstraints() and SolvePositionConstraints() for optimization
     ContactSolver normalSolvers[max_contact_points];
     ContactSolver tangentSolvers[max_contact_points];
     PositionSolver positionSolvers[max_contact_points];
     BlockSolver blockSolver;
 
-    // Impulse for position correction
-    Vec2 cLinearImpulseA;
-    float cAngularImpulseA;
-    Vec2 cLinearImpulseB;
-    float cAngularImpulseB;
+    // Impulse buffer for position correction
+    Vec2 cLinearImpulseA, cLinearImpulseB;
+    float cAngularImpulseA, cAngularImpulseB;
 
     uint16 flag;
 
@@ -119,6 +120,16 @@ inline Collider* Contact::GetColliderA() const
 inline Collider* Contact::GetColliderB() const
 {
     return colliderB;
+}
+
+inline RigidBody* Contact::GetReferenceBody() const
+{
+    return b1;
+}
+
+inline RigidBody* Contact::GetIncidentBody() const
+{
+    return b2;
 }
 
 inline const Contact* Contact::GetPrev() const
