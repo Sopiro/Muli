@@ -87,8 +87,8 @@ bool ShapeCast(const Shape* a,
     Vec2 pointB = tfB * b->GetVertex(idB);
     Vec2 v = pointA - pointB;
 
-    float target = Max(toi_position_solver_threshold, r2 - toi_position_solver_threshold);
-    float tolerance = linear_slop * 0.2f;
+    float target = Max(default_radius, r2 - toi_position_solver_threshold);
+    float tolerance = linear_slop * 0.1f;
 
     const int32 maxIterations = 20;
     int32 iteration = 0;

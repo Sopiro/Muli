@@ -243,7 +243,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
     */
     float r2 = shapeA->GetRadius() + shapeB->GetRadius();
     float target = Max(linear_slop, r2 - position_solver_threshold);
-    float tolerance = 0.2f * linear_slop;
+    float tolerance = 0.1f * linear_slop;
     muliAssert(target > tolerance);
 
     float t1 = 0.0f;
