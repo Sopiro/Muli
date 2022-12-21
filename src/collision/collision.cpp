@@ -41,8 +41,8 @@ bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& 
 {
     Simplex simplex;
 
-    // Random initial search direction (prefer direction along gravity)
-    Vec2 direction{ 0.0f, 1.0f };
+    // Random initial search direction
+    Vec2 direction = tfB.position - tfA.position;
     SupportPoint support = CSOSupport(a, tfA, b, tfB, direction);
     simplex.AddVertex(support);
 

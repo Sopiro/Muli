@@ -17,9 +17,12 @@ typedef int32 NodeProxy;
 class Collider final
 {
 public:
-    RigidBody* GetBody() const;
+    RigidBody* GetBody();
+    const RigidBody* GetBody() const;
 
     Shape::Type GetType() const;
+
+    Shape* GetShape();
     const Shape* GetShape() const;
 
     const CollisionFilter& GetFilter() const;
@@ -45,7 +48,8 @@ public:
     Vec2 GetClosestPoint(const Vec2& q) const;
     bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
 
-    Collider* GetNext() const;
+    Collider* GetNext();
+    const Collider* GetNext() const;
 
     ColliderDestoryCallback* OnDestroy;
     muli::ContactListener* ContactListener;
@@ -76,7 +80,12 @@ private:
     NodeProxy node;
 };
 
-inline RigidBody* Collider::GetBody() const
+inline RigidBody* Collider::GetBody()
+{
+    return body;
+}
+
+inline const RigidBody* Collider::GetBody() const
 {
     return body;
 }
@@ -84,6 +93,11 @@ inline RigidBody* Collider::GetBody() const
 inline Shape::Type Collider::GetType() const
 {
     return shape->GetType();
+}
+
+inline Shape* Collider::GetShape()
+{
+    return shape;
 }
 
 inline const Shape* Collider::GetShape() const
@@ -192,7 +206,12 @@ inline bool Collider::RayCast(const RayCastInput& input, RayCastOutput* output) 
     return shape->RayCast(body->transform, input, output);
 }
 
-inline Collider* Collider::GetNext() const
+inline Collider* Collider::GetNext()
+{
+    return next;
+}
+
+inline const Collider* Collider::GetNext() const
 {
     return next;
 }

@@ -265,15 +265,8 @@ float World::SolveTOI()
 
                 muliAssert(alpha0 < 1.0f);
 
-                TOIInput input;
-                input.shapeA = colliderA->shape;
-                input.shapeB = colliderB->shape;
-                input.sweepA = bodyA->sweep;
-                input.sweepB = bodyB->sweep;
-                input.tMax = 1.0f;
-
                 TOIOutput output;
-                ComputeTimeOfImpact(input, &output);
+                ComputeTimeOfImpact(colliderA->shape, bodyA->sweep, colliderB->shape, bodyB->sweep, 1.0f, &output);
 
                 if (output.state == TOIOutput::touching)
                 {

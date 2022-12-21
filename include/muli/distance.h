@@ -23,6 +23,16 @@ float ComputeDistance(const Shape* a, const Transform& tfA,
                       const Shape* b, const Transform& tfB, 
                       Vec2* pointA, Vec2* pointB);
 
+struct ShapeCastInput
+{
+    Shape* shapeA;
+    Shape* shapeB;
+    Transform* tfA;
+    Transform* tfB;
+    Vec2 translationA;
+    Vec2 translationB;
+};
+
 struct ShapeCastOutput
 {
     Vec2 point;
@@ -39,5 +49,10 @@ bool ShapeCast(const Shape* a, const Transform& tfA,
                ShapeCastOutput* output);
 
 // clang-format on 
+
+inline bool ShapeCast(const ShapeCastInput& input, ShapeCastOutput* output)
+{
+    return ShapeCast(input.shapeA, *input.tfA, input.shapeB, *input.tfB, input.translationA, input.translationB, output);
+}
 
 } // namespace muli

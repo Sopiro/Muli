@@ -99,7 +99,11 @@ public:
         ImGui::End();
     }
 
-    ~ShapeCastTest() {}
+    ~ShapeCastTest()
+    {
+        options.show_contact_normal = false;
+        options.show_contact_point = false;
+    }
 
     static Demo* Create(Game& game)
     {

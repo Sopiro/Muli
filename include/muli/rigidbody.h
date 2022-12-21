@@ -40,15 +40,15 @@ public:
     RigidBody(RigidBody&&) noexcept = delete;
     RigidBody& operator=(RigidBody&&) = delete;
 
-    const Sweep& GetSweep() const;
-
     const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
     void SetTransform(const Transform& transform);
     void SetTransform(const Vec2& pos, float angle);
+
     const Vec2& GetPosition() const;
     void SetPosition(const Vec2& pos);
     void SetPosition(float x, float y);
+    const Sweep& GetSweep() const;
 
     const Rotation& GetRotation() const;
     float GetAngle() const;
@@ -92,16 +92,41 @@ public:
     bool IsContinuous() const;
 
     int32 GetIslandID() const;
-    RigidBody* GetPrev() const;
-    RigidBody* GetNext() const;
-    World* GetWorld() const;
+
+    RigidBody* GetPrev();
+    const RigidBody* GetPrev() const;
+    RigidBody* GetNext();
+    const RigidBody* GetNext() const;
+    World* GetWorld();
+    const World* GetWorld() const;
+
+    // These material functions affect all child colliders
+    void SetCollisionFilter(const CollisionFilter& filter) const;
+    void SetFriction(float friction) const;
+    void SetRestitution(float restitution) const;
+    void SetSurfaceSpeed(float surfaceSpeed) const;
+
+    bool TestPoint(const Vec2& q) const;
+    Vec2 GetClosestPoint(const Vec2& q) const;
+    void RayCastAny(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+    bool RayCastClosest(
+        const Vec2& from,
+        const Vec2& to,
+        const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
+    void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback) const;
+    bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const;
 
     // Collider factory functions
 
     Collider* CreateCollider(Shape* shape, float density = default_density, const Material& material = default_material);
     void DestoryCollider(Collider* collider);
-    Collider* GetColliderList() const;
+
     int32 GetColliderCount() const;
+    Collider* GetColliderList();
+    const Collider* GetColliderList() const;
 
     Collider* CreateCircleCollider(float radius,
                                    const Vec2& position = zero_vec2,
@@ -129,24 +154,6 @@ public:
                                     bool resetPosition = false,
                                     float density = default_density,
                                     const Material& material = default_material);
-
-    void SetCollisionFilter(const CollisionFilter& filter) const;
-    void SetFriction(float friction) const;
-    void SetRestitution(float restitution) const;
-    void SetSurfaceSpeed(float surfaceSpeed) const;
-
-    bool TestPoint(const Vec2& q) const;
-    Vec2 GetClosestPoint(const Vec2& q) const;
-    void RayCastAny(
-        const Vec2& from,
-        const Vec2& to,
-        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
-    bool RayCastClosest(
-        const Vec2& from,
-        const Vec2& to,
-        const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback) const;
-    void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback) const;
-    bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const;
 
     // Callbacks
     BodyDestoryCallback* OnDestroy;
@@ -510,22 +517,42 @@ inline int32 RigidBody::GetIslandID() const
     return islandID;
 }
 
-inline RigidBody* RigidBody::GetPrev() const
+inline RigidBody* RigidBody::GetPrev()
 {
     return prev;
 }
 
-inline RigidBody* RigidBody::GetNext() const
+inline const RigidBody* RigidBody::GetPrev() const
+{
+    return prev;
+}
+
+inline RigidBody* RigidBody::GetNext()
 {
     return next;
 }
 
-inline World* RigidBody::GetWorld() const
+inline const RigidBody* RigidBody::GetNext() const
+{
+    return next;
+}
+
+inline const World* RigidBody::GetWorld() const
 {
     return world;
 }
 
-inline Collider* RigidBody::GetColliderList() const
+inline World* RigidBody::GetWorld()
+{
+    return world;
+}
+
+inline Collider* RigidBody::GetColliderList()
+{
+    return colliderList;
+}
+
+inline const Collider* RigidBody::GetColliderList() const
 {
     return colliderList;
 }

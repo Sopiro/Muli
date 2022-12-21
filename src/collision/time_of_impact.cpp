@@ -223,21 +223,13 @@ struct SeparationFunction
 
 constexpr int32 max_iteration = 20;
 
-void ComputeTimeOfImpact(const TOIInput& input, TOIOutput* output)
+void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB, Sweep sweepB, float tMax, TOIOutput* output)
 {
     output->state = TOIOutput::unknown;
-    output->t = input.tMax;
-
-    const Shape* shapeA = input.shapeA;
-    const Shape* shapeB = input.shapeB;
-
-    Sweep sweepA = input.sweepA;
-    Sweep sweepB = input.sweepB;
+    output->t = tMax;
 
     sweepA.Normalize();
     sweepB.Normalize();
-
-    float tMax = input.tMax;
 
     /*
         target        = r2 - linear_slop * 4.0 (discrete position solver threshold)
