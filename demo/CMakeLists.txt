@@ -85,6 +85,7 @@ set(DEMO_SOURCE_FILES
     src/demo/continuous_test.cpp
     src/demo/continuous_test2.cpp
     src/demo/sub_stepping.cpp
+    src/demo/shape_cast_test.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})

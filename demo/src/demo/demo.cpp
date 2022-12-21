@@ -467,6 +467,7 @@ extern DemoFrame distance_test;
 extern DemoFrame continuous_test;
 extern DemoFrame continuous_test2;
 extern DemoFrame sub_stepping;
+extern DemoFrame shape_cast;
 
 static int32 init_demos()
 {
@@ -518,6 +519,7 @@ static int32 init_demos()
     demos[demo_count++] = continuous_test;
     demos[demo_count++] = continuous_test2;
     demos[demo_count++] = sub_stepping;
+    demos[demo_count++] = shape_cast;
 
     return demo_count;
 }
