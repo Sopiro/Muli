@@ -33,8 +33,8 @@ float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, c
 float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, Vec2* pointA, Vec2* pointB)
 {
     GJKResult gjkResult;
-    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
 
+    bool collide = GJK(a, tfA, b, tfB, &gjkResult);
     if (collide == true)
     {
         return 0.0f;
@@ -78,9 +78,14 @@ bool ShapeCast(const Shape* a,
 
     Simplex simplex;
 
+    // SupportPoint support = CSOSupport(a, tfA, b, tfB, -r);
+
     // Get CSO support point in -r direction
-    SupportPoint support = CSOSupport(a, tfA, b, tfB, -r);
-    Vec2 v = support.point;
+    int32 idA = a->GetSupport(MulT(tfA.rotation, -r));
+    Vec2 pointA = tfA * a->GetVertex(idA);
+    int32 idB = b->GetSupport(MulT(tfB.rotation, r));
+    Vec2 pointB = tfB * b->GetVertex(idB);
+    Vec2 v = pointA - pointB;
 
     float target = Max(toi_position_solver_threshold, r2 - toi_position_solver_threshold);
     float tolerance = linear_slop * 0.2f;
@@ -93,13 +98,17 @@ bool ShapeCast(const Shape* a,
         muliAssert(simplex.count < 3);
 
         // Get CSO support point in -v direction
-        support = CSOSupport(a, tfA, b, tfB, -v);
+        idA = a->GetSupport(MulT(tfA.rotation, -v));
+        pointA = tfA * a->GetVertex(idA);
+        idB = b->GetSupport(MulT(tfB.rotation, v));
+        pointB = tfB * b->GetVertex(idB);
+        Vec2 p = pointA - pointB;
 
         // -v is a normal at hit point
         v.Normalize();
 
         // Find intersection with support plane
-        float vp = Dot(v, support.point);
+        float vp = Dot(v, p);
         float vr = Dot(v, r);
         if (vp - target > t * vr)
         {
@@ -119,9 +128,10 @@ bool ShapeCast(const Shape* a,
         }
 
         SupportPoint* vertex = simplex.vertices + simplex.count;
-        vertex->pointA = support.pointA;
-        vertex->pointB = support.pointB;
-        vertex->pointB.position += t * r; // This effectively shifts the ray origin to the new clip point
+        vertex->pointA.id = idA;
+        vertex->pointA.position = pointA;
+        vertex->pointB.id = idB;
+        vertex->pointB.position = pointB + t * r; // This effectively shifts the ray origin to the new clip point
         vertex->point = vertex->pointA.position - vertex->pointB.position;
         vertex->weight = 1.0f;
         simplex.count += 1;
@@ -145,7 +155,6 @@ bool ShapeCast(const Shape* a,
         return false;
     }
 
-    Vec2 pointA, pointB;
     simplex.GetWitnessPoint(&pointA, &pointB);
 
     if (v.Length2() > 0.0f)

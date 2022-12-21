@@ -76,7 +76,8 @@ struct EPAResult
 
 void EPA(const Shape* a, const Transform& tfA,
          const Shape* b, const Transform& tfB,
-         const Simplex& simplex, EPAResult* result);
+         const Simplex& simplex,
+         EPAResult* result);
 
 // clang-format on
 
