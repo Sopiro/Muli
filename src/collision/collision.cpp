@@ -25,7 +25,7 @@ void InitializeDetectionFunctionMap();
  *
  * 'dir' should be normalized
  */
-inline SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir)
+SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir)
 {
     SupportPoint supportPoint;
     supportPoint.pointA.id = a->GetSupport(MulT(tfA.rotation, dir));
