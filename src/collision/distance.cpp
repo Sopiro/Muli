@@ -5,8 +5,6 @@
 namespace muli
 {
 
-extern SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir);
-
 float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ClosestFeatures* features)
 {
     GJKResult gjkResult;

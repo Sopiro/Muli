@@ -6,6 +6,8 @@
 namespace muli
 {
 
+extern SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir);
+
 // Closest features in world space
 struct ClosestFeatures
 {
