@@ -8,7 +8,7 @@ namespace muli
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& texCoords, const std::vector<uint32>& indices);
+    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& texCoords, const std::vector<int32>& indices);
     ~Mesh() noexcept;
 
     Mesh(const Mesh&) noexcept = delete;
@@ -24,13 +24,13 @@ private:
 
     std::vector<Vec3> vertices;
     std::vector<Vec2> texCoords;
-    std::vector<uint32> indices;
+    std::vector<int32> indices;
 
-    uint32 VBOv;
-    uint32 VBOt;
-    uint32 VAO;
-    uint32 EBOt;
-    uint32 EBOl;
+    GLuint VBOv;
+    GLuint VBOt;
+    GLuint VAO;
+    GLuint EBOt;
+    GLuint EBOl;
 };
 
 } // namespace muli

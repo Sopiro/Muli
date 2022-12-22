@@ -20,8 +20,8 @@ public:
         float px = 0.0;
         float d = 1;
 
-        uint32 count = 20;
-        for (uint32 i = 0; i < count; ++i)
+        int32 count = 20;
+        for (int32 i = 0; i < count; ++i)
         {
             if (i % (count / 4) == 0)
             {

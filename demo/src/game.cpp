@@ -125,12 +125,12 @@ void Game::UpdateUI()
                         ImGui::SetNextItemWidth(120);
                         int32 velIterations = settings.velocity_iterations;
                         ImGui::SliderInt("Velocity", &velIterations, 0, 50);
-                        settings.velocity_iterations = static_cast<uint32>(velIterations);
+                        settings.velocity_iterations = velIterations;
 
                         ImGui::SetNextItemWidth(120);
                         int32 posIterations = settings.position_iterations;
                         ImGui::SliderInt("Position", &posIterations, 0, 50);
-                        settings.position_iterations = static_cast<uint32>(posIterations);
+                        settings.position_iterations = posIterations;
                     }
                     ImGui::Checkbox("Contact block solve", &settings.block_solve);
                     ImGui::Checkbox("Warm starting", &settings.warm_starting);
@@ -168,7 +168,7 @@ void Game::UpdateUI()
             {
                 if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 28 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
-                    for (uint32 i = 0; i < demo_count; ++i)
+                    for (int32 i = 0; i < demo_count; ++i)
                     {
                         const bool selected = (demoIndex == i);
 
@@ -409,7 +409,7 @@ void Game::UpdateProjectionMatrix()
     dRenderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::InitDemo(uint32 index)
+void Game::InitDemo(int32 index)
 {
     if (index >= demo_count)
     {

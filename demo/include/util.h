@@ -4,9 +4,10 @@
 namespace muli
 {
 
-std::unique_ptr<Mesh> GenerateMesh(const Collider* body, uint32 circlePolygonCount = 13);
+std::unique_ptr<Mesh> GenerateMesh(const Collider* body, int32 circlePolygonCount = 13);
 
-std::vector<uint32> Triangulate(const std::vector<Vec2>& vertices);
+// Modified Ear-clipping algorithm, only works for convex geometry
+std::vector<int32> Triangulate(const std::vector<Vec2>& vertices);
 
 /*
  * https://gist.github.com/ciembor/1494530

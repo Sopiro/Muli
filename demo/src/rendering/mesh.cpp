@@ -3,7 +3,7 @@
 namespace muli
 {
 
-Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<uint32>& _indices)
+Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoords, const std::vector<int32>& _indices)
     : vertices{ _vertices }
     , texCoords{ _texCoords }
     , indices{ _indices }
@@ -35,16 +35,16 @@ Mesh::Mesh(const std::vector<Vec3>& _vertices, const std::vector<Vec2>& _texCoor
     }
     glBindVertexArray(0);
 
-    // indices for triangle
+    // indices for triangles
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * indices.size(), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int32) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
-    std::vector<uint32> indices_l(vertices.size());
-    std::iota(indices_l.begin(), indices_l.end(), 0);
+    std::vector<int32> indicesL(vertices.size());
+    std::iota(indicesL.begin(), indicesL.end(), 0);
 
-    // indices for outline
+    // indices for outlines
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * indices_l.size(), indices_l.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int32) * indicesL.size(), indicesL.data(), GL_STATIC_DRAW);
 }
 
 Mesh::~Mesh() noexcept

@@ -39,7 +39,7 @@ public:
 
         Joint* j = world->CreateRevoluteJoint(b0, bl, b0->GetPosition() - Vec2{ 0.2f, 0.0f });
 
-        for (uint32 i = 1; i < 14; ++i)
+        for (int32 i = 1; i < 14; ++i)
         {
             RigidBody* b1 = world->CreateCapsule(length, radius, true);
             b1->SetSurfaceSpeed(3.0f);

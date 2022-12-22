@@ -58,7 +58,7 @@ private:
     void UpdateProjectionMatrix();
     void UpdateUI();
     void UpdateInput();
-    void InitDemo(uint32 demo);
+    void InitDemo(int32 demo);
     virtual void OnDestroy(Collider* me) override;
 };
 

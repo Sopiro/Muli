@@ -1,7 +1,11 @@
 #include "demo.h"
+#include "window.h"
 
 namespace muli
 {
+
+static int32 count = 20;
+static float error = 0.0f;
 
 class BoxStacking : public Demo
 {
@@ -11,18 +15,28 @@ public:
     {
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
 
-        float start = 0.5f;
         float size = 0.3f;
-        float gap = 0.25f;
+        float gap = 0.1f;
+        float start = 0.2f + size / 2.0f + gap;
 
-        // float error = 0.015f;
-        float error = 0.0f;
-
-        for (uint32 i = 0; i < 20; ++i)
+        for (int32 i = 0; i < count; ++i)
         {
             RigidBody* b = world->CreateBox(size);
             b->SetPosition(LinearRand(-error, error), start + i * (size + gap));
         }
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowSize({ 180, 80 }, ImGuiCond_Once);
+
+        if (ImGui::Begin("Box stacking"))
+        {
+            ImGui::SliderInt("Count", &count, 1, 50);
+            ImGui::SliderFloat("Error", &error, 0.0f, 0.1f, "%.2f", 1.0f);
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)

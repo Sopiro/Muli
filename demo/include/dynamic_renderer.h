@@ -17,21 +17,21 @@ public:
     void SetViewMatrix(const Mat4& viewMatrix);
 
     virtual void Render() const override{};
-    void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = { 0.0f, 0.0f, 0.0f });
+    void Draw(const std::vector<Vec2>& vertices, GLenum drawMode = GL_LINES, Vec3 color = zero_vec3);
 
 private:
     friend class DynamicShader;
 
-    const uint32 maxVertexCount = 1024; // must be a even number
+    const size_t maxVertexCount = 1024; // must be a even number
 
     // All registered rigid bodies
-    std::unique_ptr<DynamicShader> shader{};
+    std::unique_ptr<DynamicShader> shader;
 
     Mat4 viewMatrix;
     Mat4 projMatrix;
 
-    uint32 VAO;
-    uint32 VBO;
+    GLuint VAO;
+    GLuint VBO;
 };
 
 inline void DynamicRenderer::SetProjectionMatrix(const Mat4& _projMatrix)

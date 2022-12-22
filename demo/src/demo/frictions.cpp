@@ -41,7 +41,7 @@ public:
 
         std::array<float, 5> frictions = { 0.4f, 0.2f, 0.12f, 0.04f, 0.0f };
 
-        for (uint32 i = 0; i < frictions.size(); ++i)
+        for (size_t i = 0; i < frictions.size(); ++i)
         {
             b = world->CreateBox(size, size);
             b->SetPosition(xStart + (size + gap) * i, yStart);

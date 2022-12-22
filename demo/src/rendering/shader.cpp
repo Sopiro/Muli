@@ -36,7 +36,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     }
 
     // pipeline (or program)
-    int32 shaderProgram = glCreateProgram();
+    GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);

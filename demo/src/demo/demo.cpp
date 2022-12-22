@@ -416,7 +416,7 @@ void Demo::Step()
     }
 }
 
-uint32 demo_count = 0;
+int32 demo_count = 0;
 DemoFrame demos[MAX_DEMOS];
 
 extern DemoFrame single_box;

@@ -88,7 +88,7 @@ struct DemoFrame
 };
 
 #define MAX_DEMOS 100
-extern uint32 demo_count;
+extern int32 demo_count;
 extern DemoFrame demos[MAX_DEMOS];
 
 } // namespace muli
