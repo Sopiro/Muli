@@ -14,7 +14,7 @@ public:
         RigidBody* b = world->CreateEmptyBody();
 
         float adjust = 0.7f;
-        float radius = 0.12f;
+        float radius = 0.1f;
         // 우
         b->CreateCircleCollider(0.5f, Vec2{ -3.0f + adjust, 3.0f });
         b->CreateCapsuleCollider(Vec2{ -3.9f + adjust, 2.0f }, Vec2{ -2.1f + adjust, 2.0f }, radius);

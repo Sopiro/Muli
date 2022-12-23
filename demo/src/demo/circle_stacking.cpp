@@ -23,7 +23,7 @@ public:
             for (int32 j = i; j < rows; ++j)
             {
                 RigidBody* c = world->CreateCircle(size);
-                c->SetPosition(xStart + (gap + size * 2) * i, yStart + (gap + size * 2) * j);
+                c->SetPosition(xStart + (gap + size * 2.0f) * i, yStart + (gap + size * 2.0f) * j);
             }
         }
     }

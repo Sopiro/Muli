@@ -183,9 +183,6 @@ void World::Solve()
     }
 }
 
-constexpr int32 max_sub_steps = 8;
-constexpr int32 max_toi_contacts = 32;
-
 // Find TOI contacts and solve them
 float World::SolveTOI()
 {

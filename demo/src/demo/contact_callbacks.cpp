@@ -26,7 +26,6 @@ public:
                 RigidBody* b = world->CreateRandomConvexPolygon(size, 6);
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
                 b->SetLinearVelocity(b->GetPosition() * LinearRand(0.5f, 0.7f));
-                b->SetFriction(LinearRand(0.2f, 1.0f));
             }
         }
 
@@ -40,7 +39,7 @@ public:
     {
         if (other->GetBody()->GetType() != RigidBody::Type::static_body)
         {
-            world->BufferDestroy(other->GetBody());
+            world->Destroy(other->GetBody());
         }
         // std::cout << "Contact begin" << std::endl;
     }

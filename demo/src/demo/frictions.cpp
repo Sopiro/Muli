@@ -12,6 +12,7 @@ public:
         float groundFriction = 0.5f;
 
         RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
+
         ground->SetFriction(groundFriction);
 
         RigidBody* b = world->CreateCapsule(6.5f, 0.05f, true, RigidBody::Type::static_body);

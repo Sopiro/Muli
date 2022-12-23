@@ -23,10 +23,7 @@ public:
         RigidBody* b;
         for (int32 i = 0; i < count; ++i)
         {
-            if (r)
-                b = world->CreateBox(size);
-            else
-                b = world->CreateCircle(size / 2.0f);
+            b = r ? world->CreateBox(size) : world->CreateCircle(size / 2.0f);
             b->SetPosition(xStart + gap * i, yStart);
             float attenuation = (count - i) / (float)count;
             b->SetRestitution(1.0f - attenuation * attenuation);

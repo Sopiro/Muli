@@ -187,7 +187,7 @@ void Island::Solve()
     }
 }
 
-constexpr int32 toi_postion_iteration = 10;
+constexpr int32 toi_postion_iteration = 20;
 constexpr int32 toi_index_1 = 0;
 constexpr int32 toi_index_2 = 1;
 
