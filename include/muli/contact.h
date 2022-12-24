@@ -19,6 +19,11 @@ inline float MixRestitution(float r1, float r2)
     return Max(r1, r2);
 }
 
+inline float MixRestitutionTreshold(float t1, float t2)
+{
+    return Min(t1, t2);
+}
+
 class RigidBody;
 class Contact;
 
@@ -47,6 +52,7 @@ public:
     const ContactManifold& GetContactManifold() const;
     float GetFriction() const;
     float GetRestitution() const;
+    float GetRestitutionTreshold() const;
     float GetSurfaceSpeed() const;
     bool IsTouching() const;
 
@@ -90,8 +96,9 @@ private:
     ContactEdge nodeA;
     ContactEdge nodeB;
 
-    float restitution;
     float friction;
+    float restitution;
+    float restitutionThreshold;
     float surfaceSpeed;
 
     ContactManifold manifold;
@@ -155,6 +162,11 @@ inline float Contact::GetFriction() const
 inline float Contact::GetRestitution() const
 {
     return restitution;
+}
+
+inline float Contact::GetRestitutionTreshold() const
+{
+    return restitutionThreshold;
 }
 
 inline float Contact::GetSurfaceSpeed() const

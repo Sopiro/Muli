@@ -7,7 +7,7 @@ namespace muli
 
 static bool drawTrajectory = true;
 static int32 selection = 1;
-const char* items[] = { "Circle", "Box", "Capsule", "Rounded polygon", "Random" };
+static const char* items[] = { "Circle", "Box", "Capsule", "Rounded polygon", "Random" };
 
 class ContinuousTest2 : public Demo
 {

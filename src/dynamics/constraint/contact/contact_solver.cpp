@@ -33,17 +33,17 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
         // Normal velocity == veclocity constraint: jv
         float normalVelocity = Dot(c->manifold.contactNormal, relativeVelocity);
 
-        // Position correction by velocity steering
-        // bias = -position_correction * c->settings.inv_dt * Max(c->manifold.penetrationDepth - linear_slop, 0.0f);
-
-#if 0
-        if (-c->settings.RESTITUTION_SLOP > normalVelocity)
+#if 1
+        if (-normalVelocity > c->restitutionThreshold)
         {
-            bias += c->restitution * normalVelocity;
+            bias = c->restitution * normalVelocity;
         }
 #else
-        bias += c->restitution * Min(normalVelocity + c->settings.restitution_slop, 0.0f);
+        bias = c->restitution * Min(normalVelocity + c->restitutionThreshold, 0.0f);
 #endif
+
+        // Position correction by velocity steering
+        // bias += -position_correction * c->settings.inv_dt * Max(c->manifold.penetrationDepth - linear_slop, 0.0f);
     }
     else
     {

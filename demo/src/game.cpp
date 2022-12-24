@@ -48,6 +48,8 @@ void Game::UpdateInput()
     demo->UpdateInput();
 }
 
+extern bool block_solve;
+
 void Game::UpdateUI()
 {
     // ImGui::ShowDemoWindow();
@@ -132,7 +134,7 @@ void Game::UpdateUI()
                         ImGui::SliderInt("Position", &posIterations, 0, 50);
                         settings.position_iterations = posIterations;
                     }
-                    ImGui::Checkbox("Contact block solve", &settings.block_solve);
+                    ImGui::Checkbox("Contact block solve", &block_solve);
                     ImGui::Checkbox("Warm starting", &settings.warm_starting);
                     ImGui::Checkbox("Sleeping", &settings.sleeping);
                     ImGui::Checkbox("Continuous", &settings.continuous);

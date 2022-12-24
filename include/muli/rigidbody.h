@@ -104,6 +104,7 @@ public:
     void SetCollisionFilter(const CollisionFilter& filter) const;
     void SetFriction(float friction) const;
     void SetRestitution(float restitution) const;
+    void SetRestitutionThreshold(float threshold) const;
     void SetSurfaceSpeed(float surfaceSpeed) const;
 
     bool TestPoint(const Vec2& q) const;

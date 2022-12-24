@@ -45,7 +45,7 @@ public:
         if (vertices.size() != lastHull)
         {
             convexHull = ComputeConvexHull(vertices);
-            lastHull = vertices.size();
+            lastHull = convexHull.size();
         }
     }
 

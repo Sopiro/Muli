@@ -44,8 +44,8 @@ set(DEMO_SOURCE_FILES
     src/demo/springs.cpp
     src/demo/random_convex_polygons.cpp
     src/demo/seesaw.cpp
-    src/demo/frictions.cpp
-    src/demo/restitutions.cpp
+    src/demo/friction_test.cpp
+    src/demo/restitution_test.cpp
     src/demo/multi_pendulum.cpp
     src/demo/suspension_bridge.cpp
     src/demo/circle_stacking.cpp

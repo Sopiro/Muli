@@ -239,12 +239,11 @@ static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b,
 static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     const Capsule* c = static_cast<const Capsule*>(a);
+    Vec2 va = c->GetVertexA();
+    Vec2 vb = c->GetVertexB();
 
     Vec2 pb = tfB * b->GetCenter();
     Vec2 localP = MulT(tfA, pb);
-
-    Vec2 va = c->GetVertexA();
-    Vec2 vb = c->GetVertexB();
 
     float u = Dot(localP - vb, va - vb);
     float v = Dot(localP - va, vb - va);
@@ -254,19 +253,19 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     float distance;
     int32 index;
 
-    if (v <= 0.0f) // Region A: vertex collision
+    if (v <= 0.0f) // Region A
     {
         normal = localP - va;
         distance = normal.Normalize();
         index = 0;
     }
-    else if (u <= 0.0f) // Region B: vertex collision
+    else if (u <= 0.0f) // Region B
     {
         normal = localP - vb;
         distance = normal.Normalize();
         index = 1;
     }
-    else // Region AB: Edge vs. vertex collision
+    else // Region AB
     {
         normal = Cross(1.0f, vb - va).Normalized();
         distance = Dot(localP - va, normal);
@@ -293,7 +292,7 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     Vec2 point = tfA * (index ? vb : va);
 
     manifold->contactNormal = normal;
-    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
+    manifold->contactTangent.Set(-normal.y, normal.x);
     manifold->penetrationDepth = r2 - distance;
     manifold->contactPoints[0].id = 0;
     manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
@@ -308,25 +307,20 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     const Polygon* p = static_cast<const Polygon*>(a);
-    Vec2 pb = tfB * b->GetCenter();
-
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
+    Vec2 pb = tfB * b->GetCenter();
     Vec2 localP = MulT(tfA, pb);
 
     float minSeparation = -FLT_MAX;
     float r2 = a->GetRadius() + b->GetRadius();
 
     int32 index;
-
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i = 0; i < vertexCount; ++i)
     {
-        Vec2 n0 = normals[i0];
-
-        float separation = Dot(n0, localP - vertices[i0]);
+        float separation = Dot(normals[i], localP - vertices[i]);
         if (separation > r2)
         {
             return false;
@@ -335,14 +329,12 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         if (separation > minSeparation)
         {
             minSeparation = separation;
-            index = i0;
+            index = i;
         }
-
-        i0 = i1;
     }
 
     // Circle center is inside the polygon
-    if (minSeparation < 0)
+    if (minSeparation < 0.0f)
     {
         if (manifold == nullptr)
         {
@@ -367,11 +359,11 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
     Vec2 v0 = vertices[index];
     Vec2 v1 = vertices[(index + 1) % vertexCount];
-    Vec2 normal;
 
     float u = Dot(localP - v1, v0 - v1);
     float v = Dot(localP - v0, v1 - v0);
 
+    Vec2 normal;
     float distance;
 
     if (v <= 0.0f) // Region v0

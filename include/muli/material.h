@@ -8,12 +8,13 @@ namespace muli
 
 struct Material
 {
-    float friction;
-    float restitution;
-    float surfaceSpeed;
-    CollisionFilter filter;
+    float friction = default_friction;
+    float restitution = default_restitution;
+    float restitutionTreshold = default_restitution_treshold;
+    float surfaceSpeed = default_surface_speed;
+    CollisionFilter filter{};
 };
 
-constexpr Material default_material{ default_friction, default_restitution, default_surface_speed, CollisionFilter{} };
+constexpr Material default_material{};
 
 } // namespace muli

@@ -265,6 +265,31 @@ float World::SolveTOI()
                 TOIOutput output;
                 ComputeTimeOfImpact(colliderA->shape, bodyA->sweep, colliderB->shape, bodyB->sweep, 1.0f, &output);
 
+#if 0
+                switch (output.state)
+                {
+                case TOIOutput::unknown:
+                    std::cout << "unknown" << std::endl;
+                    break;
+                case TOIOutput::failed:
+                    std::cout << "failed" << std::endl;
+                    break;
+                case TOIOutput::overlapped:
+                    std::cout << "overlapped" << std::endl;
+                    break;
+                case TOIOutput::touching:
+                    std::cout << "touching: " << output.t << std::endl;
+                    break;
+                case TOIOutput::separated:
+                    std::cout << "separated" << std::endl;
+                    break;
+
+                default:
+                    muliAssert(false);
+                    break;
+                }
+#endif
+
                 if (output.state == TOIOutput::touching)
                 {
                     // TOI is the fraction in [alpha0, 1.0]

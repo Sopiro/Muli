@@ -8,6 +8,7 @@
 namespace muli
 {
 
+bool block_solve = true;
 extern DetectionFunction* DetectionFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
 
 Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings& _settings)
@@ -22,8 +23,9 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 
     manifold.numContacts = 0;
 
-    restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
+    restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
+    restitutionThreshold = MixRestitutionTreshold(colliderA->GetRestitutionTreshold(), colliderB->GetRestitutionTreshold());
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
 
     collisionDetectionFunction = DetectionFunctionMap[colliderA->GetType()][colliderB->GetType()];
@@ -127,7 +129,7 @@ void Contact::Prepare()
         positionSolvers[i].Prepare(this, i);
     }
 
-    if (manifold.numContacts == 2 && settings.block_solve)
+    if (manifold.numContacts == 2 && block_solve == true)
     {
         blockSolver.Prepare(this);
     }
@@ -141,7 +143,7 @@ void Contact::SolveVelocityConstraints()
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
-    if (manifold.numContacts == 1 || !settings.block_solve || (blockSolver.enabled == false))
+    if (manifold.numContacts == 1 || block_solve == false || blockSolver.enabled == false)
     {
         for (int32 i = 0; i < manifold.numContacts; ++i)
         {

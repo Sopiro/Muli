@@ -62,7 +62,6 @@ public:
         {
             RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
             c->SetPosition(LinearRand(-5.5f, -3.0f), 7.0f);
-            c->SetRestitution(0.1f);
 
             game.RegisterRenderBody(c);
 

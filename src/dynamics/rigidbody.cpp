@@ -307,6 +307,14 @@ void RigidBody::SetRestitution(float restitution) const
     }
 }
 
+void RigidBody::SetRestitutionThreshold(float threshold) const
+{
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        collider->SetRestitutionTreshold(threshold);
+    }
+}
+
 void RigidBody::SetSurfaceSpeed(float surfaceSpeed) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)

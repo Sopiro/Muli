@@ -3,10 +3,10 @@
 namespace muli
 {
 
-class Frictions : public Demo
+class FrictionTest : public Demo
 {
 public:
-    Frictions(Game& game)
+    FrictionTest(Game& game)
         : Demo(game)
     {
         float groundFriction = 0.5f;
@@ -53,10 +53,10 @@ public:
 
     static Demo* Create(Game& game)
     {
-        return new Frictions(game);
+        return new FrictionTest(game);
     }
 };
 
-DemoFrame frictions{ "Frictions", Frictions::Create };
+DemoFrame friction_test{ "Friction test", FrictionTest::Create };
 
 } // namespace muli

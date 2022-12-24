@@ -39,6 +39,8 @@ public:
     void SetFriction(float friction);
     float GetRestitution() const;
     void SetRestitution(float restitution);
+    float GetRestitutionTreshold() const;
+    void SetRestitutionTreshold(float treshold);
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float surfaceSpeed);
 
@@ -155,6 +157,16 @@ inline float Collider::GetRestitution() const
 inline void Collider::SetRestitution(float _restitution)
 {
     material.restitution = _restitution;
+}
+
+inline float Collider::GetRestitutionTreshold() const
+{
+    return material.restitutionTreshold;
+}
+
+inline void Collider::SetRestitutionTreshold(float _treshold)
+{
+    material.restitutionTreshold = _treshold;
 }
 
 inline float Collider::GetSurfaceSpeed() const
