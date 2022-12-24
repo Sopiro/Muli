@@ -198,6 +198,11 @@ void Island::SolveTOI(float dt)
 
     for (int32 i = 0; i < contactCount; ++i)
     {
+        contacts[i]->SaveImpulses();
+    }
+
+    for (int32 i = 0; i < contactCount; ++i)
+    {
         contacts[i]->Prepare();
     }
 
@@ -239,6 +244,11 @@ void Island::SolveTOI(float dt)
         }
 #endif
 #endif
+    }
+
+    for (int32 i = 0; i < contactCount; ++i)
+    {
+        contacts[i]->RestoreImpulses();
     }
 
     for (int32 i = 0; i < bodyCount; ++i)

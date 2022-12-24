@@ -51,11 +51,10 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
     }
 
     // clang-format off
-    float k
-        = c->b1->invMass
-        + j.wa * c->b1->invInertia * j.wa
-        + c->b2->invMass
-        + j.wb * c->b2->invInertia * j.wb;
+    float k = c->b1->invMass
+            + j.wa * c->b1->invInertia * j.wa
+            + c->b2->invMass
+            + j.wb * c->b2->invInertia * j.wb;
     // clang-format on
 
     m = k > 0.0f ? 1.0f / k : 0.0f;
@@ -63,6 +62,10 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
     if (c->settings.warm_starting)
     {
         ApplyImpulse(impulseSum);
+    }
+    else
+    {
+        impulseSum = 0.0f;
     }
 }
 

@@ -82,6 +82,9 @@ private:
     virtual bool SolvePositionConstraints() override;
     bool SolveTOIPositionConstraints();
 
+    void SaveImpulses();
+    void RestoreImpulses();
+
     DetectionFunction* collisionDetectionFunction;
 
     RigidBody* b1; // Reference body
@@ -194,6 +197,24 @@ inline void Contact::SetEnabled(bool enabled)
 inline bool Contact::IsEnabled() const
 {
     return (flag & flag_enabled) == flag_enabled;
+}
+
+inline void Contact::SaveImpulses()
+{
+    for (int32 i = 0; i < manifold.numContacts; ++i)
+    {
+        normalSolvers[i].impulseSumSave = normalSolvers[i].impulseSum;
+        tangentSolvers[i].impulseSumSave = tangentSolvers[i].impulseSum;
+    }
+}
+
+inline void Contact::RestoreImpulses()
+{
+    for (int32 i = 0; i < manifold.numContacts; ++i)
+    {
+        normalSolvers[i].impulseSum = normalSolvers[i].impulseSumSave;
+        tangentSolvers[i].impulseSum = tangentSolvers[i].impulseSumSave;
+    }
 }
 
 } // namespace muli
