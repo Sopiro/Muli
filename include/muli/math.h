@@ -17,6 +17,15 @@ namespace muli
 constexpr float pi = 3.14159265359f;
 constexpr float epsilon = FLT_EPSILON;
 
+struct Vec2;
+struct Vec3;
+struct Vec4;
+struct Mat3;
+struct Mat4;
+struct Rotation;
+struct Transform;
+struct Sweep;
+
 enum Identity
 {
     identity
@@ -397,6 +406,146 @@ struct Vec4
     }
 };
 
+struct Quat
+{
+    Quat() = default;
+
+    Quat(Identity)
+        : Quat(1.0f)
+    {
+    }
+
+    Quat(float _x, float _y, float _z, float _w)
+        : x{ _x }
+        , y{ _y }
+        , z{ _z }
+        , w{ _w }
+    {
+    }
+
+    constexpr explicit Quat(float _w)
+        : x{ 0.0f }
+        , y{ 0.0f }
+        , z{ 0.0f }
+        , w{ _w }
+    {
+    }
+
+    Quat(const Mat3& m);
+
+    Quat(const Vec3& dir, const Vec3& up);
+
+    // Axis must be normalized
+    Quat(float angle, const Vec3& unitAxis)
+    {
+        float halfAngle = angle * 0.5f;
+
+        float s = sinf(halfAngle);
+        x = unitAxis.x * s;
+        y = unitAxis.y * s;
+        z = unitAxis.z * s;
+        w = cosf(halfAngle);
+    }
+
+    Quat operator-()
+    {
+        return Quat{ -x, -y, -z, -w };
+    }
+
+    Quat operator*(float s) const
+    {
+        return Quat{ x * s, y * s, z * s, w * s };
+    }
+
+    bool IsIdentity() const
+    {
+        return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
+    }
+
+    // Magnitude
+    float Length() const
+    {
+        return sqrtf(x * x + y * y + z * z + w * w);
+    }
+
+    float Length2() const
+    {
+        return x * x + y * y + z * z + w * w;
+    }
+
+    float Normalize()
+    {
+        float length = Length();
+        float invLength = 1.0f / length;
+        x *= invLength;
+        y *= invLength;
+        z *= invLength;
+        w *= invLength;
+
+        return length;
+    }
+
+    Quat Normalized() const
+    {
+        float length = Length();
+        if (length < epsilon)
+        {
+            return Quat{ 0.0f, 0.0f, 0.0f, 0.0f };
+        }
+
+        float invLength = 1.0f / length;
+
+        return Quat{ x * invLength, y * invLength, z * invLength, w * invLength };
+    }
+
+    Quat GetConjugate() const
+    {
+        return Quat{ -x, -y, -z, w };
+    }
+
+    Vec3 GetImaginaryPart() const
+    {
+        return Vec3{ x, y, z };
+    }
+
+    // Optimized qvq'
+    Vec3 Rotate(const Vec3& v) const
+    {
+        float vx = 2.0f * v.x;
+        float vy = 2.0f * v.y;
+        float vz = 2.0f * v.z;
+        float w2 = w * w - 0.5f;
+
+        float dot2 = (x * vx + y * vy + z * vz);
+
+        return Vec3((vx * w2 + (y * vz - z * vy) * w + x * dot2), (vy * w2 + (z * vx - x * vz) * w + y * dot2),
+                    (vz * w2 + (x * vy - y * vx) * w + z * dot2));
+    }
+
+    Vec3 RotateInv(const Vec3& v) const
+    {
+        float vx = 2.0f * v.x;
+        float vy = 2.0f * v.y;
+        float vz = 2.0f * v.z;
+        float w2 = w * w - 0.5f;
+
+        float dot2 = (x * vx + y * vy + z * vz);
+
+        return Vec3((vx * w2 - (y * vz - z * vy) * w + x * dot2), (vy * w2 - (z * vx - x * vz) * w + y * dot2),
+                    (vz * w2 - (x * vy - y * vx) * w + z * dot2));
+    }
+
+    void SetIdentity()
+    {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        w = 1.0f;
+    }
+
+    float x, y, z, w;
+};
+
 // Column major matrices
 
 struct Mat2
@@ -550,9 +699,6 @@ struct Mat3
     Mat3 Translate(float x, float y);
     Mat3 Translate(const Vec2& v);
 };
-
-struct Rotation;
-struct Transform;
 
 struct Mat4
 {
@@ -1297,7 +1443,7 @@ inline T Slerp(const T& start, const T& end, float percent)
 template <typename T>
 inline T Reflect(const T& v, const T& n)
 {
-    return v - 2 * Dot(v, n) * n;
+    return v - 2.0f * Dot(v, n) * n;
 }
 
 inline float AngleBetween(const Vec2& a, const Vec2& b)

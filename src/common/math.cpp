@@ -3,6 +3,46 @@
 namespace muli
 {
 
+// https://math.stackexchange.com/questions/893984/conversion-of-rotation-matrix-to-quaternion
+Quat::Quat(const Mat3& m)
+{
+    if (m.ez.z < float(0))
+    {
+        if (m.ex.x > m.ey.y)
+        {
+            float t = 1.0f + m.ex.x - m.ey.y - m.ez.z;
+            *this = Quat(t, m.ex.y + m.ey.x, m.ez.x + m.ex.z, m.ey.z - m.ez.y) * (0.5f / sqrtf(t));
+        }
+        else
+        {
+            float t = 1.0f - m.ex.x + m.ey.y - m.ez.z;
+            *this = Quat(m.ex.y + m.ey.x, t, m.ey.z + m.ez.y, m.ez.x - m.ex.z) * (0.5f / sqrtf(t));
+        }
+    }
+    else
+    {
+        if (m.ex.x < -m.ey.y)
+        {
+            float t = 1.0f - m.ex.x - m.ey.y + m.ez.z;
+            *this = Quat(m.ez.x + m.ex.z, m.ey.z + m.ez.y, t, m.ex.y - m.ey.x) * (0.5f / sqrtf(t));
+        }
+        else
+        {
+            float t = 1.0f + m.ex.x + m.ey.y + m.ez.z;
+            *this = Quat(m.ey.z - m.ez.y, m.ez.x - m.ex.z, m.ex.y - m.ey.x, t) * (0.5f / sqrtf(t));
+        }
+    }
+}
+
+Quat::Quat(const Vec3& dir, const Vec3& up)
+{
+    Mat3 rotation;
+
+    rotation.ez = -dir;
+    rotation.ex = Cross(up, rotation.ez).Normalized();
+    rotation.ey = Cross(rotation.ez, rotation.ex);
+}
+
 Mat3 Mat3::Scale(float x, float y)
 {
     Mat3 t;
