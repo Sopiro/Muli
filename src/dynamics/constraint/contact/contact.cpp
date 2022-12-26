@@ -37,6 +37,13 @@ void Contact::Update()
     flag |= flag_enabled;
 
     ContactManifold oldManifold = manifold;
+    for (int32 i = 0; i < max_contact_points; ++i)
+    {
+        normalSolvers[i].impulseSave = normalSolvers[i].impulse;
+        tangentSolvers[i].impulseSave = tangentSolvers[i].impulse;
+        normalSolvers[i].impulse = 0.0f;
+        tangentSolvers[i].impulse = 0.0f;
+    }
 
     // clang-format off
     bool wasTouching = (flag & flag_touching) == flag_touching;
@@ -76,18 +83,9 @@ void Contact::Update()
         b2 = bodyB;
     }
 
-    for (int32 i = 0; i < oldManifold.contactCount; ++i)
-    {
-        normalSolvers[i].impulseSave = normalSolvers[i].impulse;
-        tangentSolvers[i].impulseSave = tangentSolvers[i].impulse;
-    }
-
     // Restore the impulses to warm start the solver
     for (int32 n = 0; n < manifold.contactCount; ++n)
     {
-        normalSolvers[n].impulse = 0.0f;
-        tangentSolvers[n].impulse = 0.0f;
-
         for (int32 o = 0; o < oldManifold.contactCount; ++o)
         {
             if (manifold.contactPoints[n].id == oldManifold.contactPoints[o].id)
