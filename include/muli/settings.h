@@ -34,6 +34,10 @@ constexpr float aabb_multiplier = 4.0f;
 
 // Radius must be greater than 2.0 * linear_slop for stable CCD
 // Otherwise, TOI solver will never converge to a safe position
+
+// While minimum_radius is the minimum radius required for stable CCD,
+// it's not recommended to use it as the minimum value.
+// Instead, it is advisable to use the default_radius as the minimum radius.
 constexpr float minimum_radius = linear_slop * 2.0f + linear_slop * 0.05f;
 constexpr float default_radius = linear_slop * 3.0f;
 constexpr float default_density = 12.5f;
