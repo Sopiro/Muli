@@ -198,11 +198,8 @@ void Island::SolveTOI(float dt)
 
     for (int32 i = 0; i < contactCount; ++i)
     {
+        // Save the impulses computed by the discrete solver
         contacts[i]->SaveImpulses();
-    }
-
-    for (int32 i = 0; i < contactCount; ++i)
-    {
         contacts[i]->Prepare();
     }
 
@@ -246,8 +243,12 @@ void Island::SolveTOI(float dt)
 #endif
     }
 
+    // We don't need position correction
+    // Because we solved the velocity constraints in a position that is already safe by the TOI position solver
+
     for (int32 i = 0; i < contactCount; ++i)
     {
+        // Restore the impulses of the discrete solver
         contacts[i]->RestoreImpulses();
     }
 

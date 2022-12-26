@@ -87,7 +87,7 @@ void BlockSolver::Solve()
     Jacobian j1 = nc1->j;
     Jacobian j2 = nc2->j;
 
-    Vec2 a{ nc1->impulseSum, nc2->impulseSum }; // old total impulse
+    Vec2 a{ nc1->impulse, nc2->impulse }; // old total impulse
     muliAssert(a.x >= 0.0f && a.y >= 0.0f);
 
     // clang-format off
@@ -192,8 +192,8 @@ solved:
     c->b2->angularVelocity += c->b2->invInertia * (j1.wb * d.x + j2.wb * d.y);
 
     // Accumulate
-    nc1->impulseSum = x.x;
-    nc2->impulseSum = x.y;
+    nc1->impulse = x.x;
+    nc2->impulse = x.y;
 }
 
 } // namespace muli

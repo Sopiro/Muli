@@ -182,20 +182,21 @@ static void FindContactPoints(
     ClipEdge(inc, ref->p2.position, -ref->dir, false);
     ClipEdge(inc, ref->p1.position, -manifold->contactNormal, true);
 
-    // If two points are closer than threshold, merge them into one point
-    if (inc->GetLength() <= contact_merge_threshold)
+    // To ensure consistent warm starting, the contact point id is always set based on Shape A
+    if (inc->GetLength2() <= contact_merge_threshold)
     {
-        manifold->contactPoints[0].id = inc->p1.id;
+        // If two points are closer than the threshold, merge them into one point
+        manifold->contactPoints[0].id = edgeA.p1.id;
         manifold->contactPoints[0].position = inc->p1.position;
-        manifold->numContacts = 1;
+        manifold->contactCount = 1;
     }
     else
     {
-        manifold->contactPoints[0].id = inc->p1.id;
+        manifold->contactPoints[0].id = edgeA.p1.id;
         manifold->contactPoints[0].position = inc->p1.position;
-        manifold->contactPoints[1].id = inc->p2.id;
+        manifold->contactPoints[1].id = edgeA.p2.id;
         manifold->contactPoints[1].position = inc->p2.position;
-        manifold->numContacts = 2;
+        manifold->contactCount = 2;
     }
 
     manifold->referencePoint = ref->p1;
@@ -228,7 +229,7 @@ static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b,
         manifold->contactPoints[0].position = pb + (-manifold->contactNormal * b->GetRadius());
         manifold->referencePoint.id = 0;
         manifold->referencePoint.position = pa + (manifold->contactNormal * a->GetRadius());
-        manifold->numContacts = 1;
+        manifold->contactCount = 1;
         manifold->penetrationDepth = r2 - d;
         manifold->featureFlipped = false;
 
@@ -298,7 +299,7 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
     manifold->referencePoint.id = index;
     manifold->referencePoint.position = point + normal * a->GetRadius();
-    manifold->numContacts = 1;
+    manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
     return true;
@@ -351,7 +352,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
         manifold->referencePoint.id = index;
         manifold->referencePoint.position = point + normal * a->GetRadius();
-        manifold->numContacts = 1;
+        manifold->contactCount = 1;
         manifold->featureFlipped = false;
 
         return true;
@@ -403,7 +404,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
     manifold->referencePoint.id = index;
     manifold->referencePoint.position = point + normal * a->GetRadius();
-    manifold->numContacts = 1;
+    manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
     return true;
@@ -440,7 +441,7 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
                 manifold->contactNormal = normal;
                 manifold->contactTangent.Set(-normal.y, normal.x);
                 manifold->contactPoints[0] = supportB;
-                manifold->numContacts = 1;
+                manifold->contactCount = 1;
                 manifold->referencePoint = supportA;
                 manifold->penetrationDepth = r2 - gjkResult.distance;
                 manifold->featureFlipped = false;

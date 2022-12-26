@@ -29,7 +29,7 @@ struct ContactManifold
     Vec2 contactNormal; // Contact normal is always pointing from bodyA to bodyB
     Vec2 contactTangent;
     float penetrationDepth;
-    int32 numContacts;
+    int32 contactCount;
     bool featureFlipped;
 };
 

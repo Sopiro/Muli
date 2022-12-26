@@ -61,11 +61,11 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
 
     if (c->settings.warm_starting)
     {
-        ApplyImpulse(impulseSum);
-    }
-    else
-    {
-        impulseSum = 0.0f;
+        // Warm start
+        c->b1->linearVelocity += j.va * (c->b1->invMass * impulse);
+        c->b1->angularVelocity += c->b1->invInertia * j.wa * impulse;
+        c->b2->linearVelocity += j.vb * (c->b2->invMass * impulse);
+        c->b2->angularVelocity += c->b2->invInertia * j.wb * impulse;
     }
 }
 
@@ -84,28 +84,24 @@ void ContactSolver::Solve(const ContactSolver* normalContact)
              + j.wb * c->b2->angularVelocity;
     // clang-format on
 
-    // Clamp impulse correctly and accumulate it
     float lambda = m * -(jv + bias);
-    float oldImpulseSum = impulseSum;
 
+    // Clamp impulse correctly and accumulate it
+    float oldImpulse = impulse;
     switch (type)
     {
     case normal:
-        impulseSum = Max(0.0f, impulseSum + lambda);
+        impulse = Max(0.0f, impulse + lambda);
         break;
     case tangent:
-        float maxFriction = c->friction * normalContact->impulseSum;
-        impulseSum = Clamp(impulseSum + lambda, -maxFriction, maxFriction);
+        float maxFriction = c->friction * normalContact->impulse;
+        impulse = Clamp(impulse + lambda, -maxFriction, maxFriction);
         break;
     }
 
-    lambda = impulseSum - oldImpulseSum;
+    lambda = impulse - oldImpulse;
 
-    ApplyImpulse(lambda);
-}
-
-inline void ContactSolver::ApplyImpulse(float lambda)
-{
+    // Apply impulse
     // V2 = V2' + M^-1 ⋅ Pc
     // Pc = J^t ⋅ λ
 

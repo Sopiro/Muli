@@ -41,10 +41,9 @@ private:
 
     float bias;
     float m; // effective mass
-    float impulseSum = 0.0f;
-    float impulseSumSave = 0.0f;
 
-    void ApplyImpulse(float lambda);
+    float impulse = 0.0f; // impluse sum
+    float impulseSave = 0.0f;
 };
 
 } // namespace muli

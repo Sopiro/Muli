@@ -53,10 +53,15 @@ struct Edge
 
     float GetLength() const
     {
-        return (p2.position - p1.position).Length();
+        return Dist(p1.position, p2.position);
     }
 
-    void Translate(Vec2&& d)
+    float GetLength2() const
+    {
+        return Dist2(p1.position, p2.position);
+    }
+
+    void Translate(const Vec2& d)
     {
         p1.position += d;
         p2.position += d;

@@ -76,11 +76,12 @@ private:
         flag_toi = 1 << 3,
     };
 
-    void Update();
     virtual void Prepare() override;
     virtual void SolveVelocityConstraints() override;
     virtual bool SolvePositionConstraints() override;
     bool SolveTOIPositionConstraints();
+
+    void Update();
 
     void SaveImpulses();
     void RestoreImpulses();
@@ -201,19 +202,21 @@ inline bool Contact::IsEnabled() const
 
 inline void Contact::SaveImpulses()
 {
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].impulseSumSave = normalSolvers[i].impulseSum;
-        tangentSolvers[i].impulseSumSave = tangentSolvers[i].impulseSum;
+        normalSolvers[i].impulseSave = normalSolvers[i].impulse;
+        tangentSolvers[i].impulseSave = tangentSolvers[i].impulse;
+        normalSolvers[i].impulse = 0.0f;
+        tangentSolvers[i].impulse = 0.0f;
     }
 }
 
 inline void Contact::RestoreImpulses()
 {
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].impulseSum = normalSolvers[i].impulseSumSave;
-        tangentSolvers[i].impulseSum = tangentSolvers[i].impulseSumSave;
+        normalSolvers[i].impulse = normalSolvers[i].impulseSave;
+        tangentSolvers[i].impulse = tangentSolvers[i].impulseSave;
     }
 }
 

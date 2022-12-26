@@ -21,7 +21,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 {
     muliAssert(colliderA->GetType() >= colliderB->GetType());
 
-    manifold.numContacts = 0;
+    manifold.contactCount = 0;
 
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
     restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
@@ -34,16 +34,12 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
 
 void Contact::Update()
 {
-    ContactManifold oldManifold = manifold;
-
     flag |= flag_enabled;
 
-    float oldNormalImpulse[max_contact_points];
-    float oldTangentImpulse[max_contact_points];
-
-    bool wasTouching = (flag & flag_touching) == flag_touching;
+    ContactManifold oldManifold = manifold;
 
     // clang-format off
+    bool wasTouching = (flag & flag_touching) == flag_touching;
     bool touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
                                                colliderB->shape, bodyB->transform,
                                                &manifold);
@@ -58,14 +54,6 @@ void Contact::Update()
         flag &= ~flag_touching;
     }
 
-    for (int32 i = 0; i < max_contact_points; ++i)
-    {
-        oldNormalImpulse[i] = normalSolvers[i].impulseSum;
-        oldTangentImpulse[i] = tangentSolvers[i].impulseSum;
-        normalSolvers[i].impulseSum = 0.0f;
-        tangentSolvers[i].impulseSum = 0.0f;
-    }
-
     if (touching == false)
     {
         if (wasTouching == true)
@@ -75,18 +63,6 @@ void Contact::Update()
         }
 
         return;
-    }
-
-    if (wasTouching == false && touching == true)
-    {
-        if (colliderA->ContactListener) colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
-        if (colliderB->ContactListener) colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
-    }
-
-    if (wasTouching == true && touching == true)
-    {
-        if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
-        if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
     }
 
     if (manifold.featureFlipped)
@@ -100,36 +76,52 @@ void Contact::Update()
         b2 = bodyB;
     }
 
-    // Restore the impulses to warm start the solver
-    for (int32 n = 0; n < manifold.numContacts; ++n)
+    for (int32 i = 0; i < oldManifold.contactCount; ++i)
     {
-        int32 o = 0;
-        for (; o < oldManifold.numContacts; ++o)
+        normalSolvers[i].impulseSave = normalSolvers[i].impulse;
+        tangentSolvers[i].impulseSave = tangentSolvers[i].impulse;
+    }
+
+    // Restore the impulses to warm start the solver
+    for (int32 n = 0; n < manifold.contactCount; ++n)
+    {
+        normalSolvers[n].impulse = 0.0f;
+        tangentSolvers[n].impulse = 0.0f;
+
+        for (int32 o = 0; o < oldManifold.contactCount; ++o)
         {
             if (manifold.contactPoints[n].id == oldManifold.contactPoints[o].id)
             {
+                normalSolvers[n].impulse = normalSolvers[o].impulseSave;
+                tangentSolvers[n].impulse = tangentSolvers[o].impulseSave;
                 break;
             }
         }
+    }
 
-        if (o < oldManifold.numContacts)
-        {
-            normalSolvers[n].impulseSum = oldNormalImpulse[o];
-            tangentSolvers[n].impulseSum = oldTangentImpulse[o];
-        }
+    if (wasTouching == false && touching == true)
+    {
+        if (colliderA->ContactListener) colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
+    }
+
+    if (wasTouching == true && touching == true)
+    {
+        if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
     }
 }
 
 void Contact::Prepare()
 {
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
         normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal);
         tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent);
         positionSolvers[i].Prepare(this, i);
     }
 
-    if (manifold.numContacts == 2 && block_solve == true)
+    if (manifold.contactCount == 2 && block_solve == true)
     {
         blockSolver.Prepare(this);
     }
@@ -138,14 +130,14 @@ void Contact::Prepare()
 void Contact::SolveVelocityConstraints()
 {
     // Solve tangential constraint first
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
         tangentSolvers[i].Solve(&normalSolvers[i]);
     }
 
-    if (manifold.numContacts == 1 || block_solve == false || blockSolver.enabled == false)
+    if (manifold.contactCount == 1 || block_solve == false || blockSolver.enabled == false)
     {
-        for (int32 i = 0; i < manifold.numContacts; ++i)
+        for (int32 i = 0; i < manifold.contactCount; ++i)
         {
             normalSolvers[i].Solve();
         }
@@ -167,7 +159,7 @@ bool Contact::SolvePositionConstraints()
     cAngularImpulseB = 0.0f;
 
     // Solve position constraint
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
         solved &= positionSolvers[i].Solve();
     }
@@ -190,7 +182,7 @@ bool Contact::SolveTOIPositionConstraints()
     cAngularImpulseB = 0.0f;
 
     // Solve position constraint
-    for (int32 i = 0; i < manifold.numContacts; ++i)
+    for (int32 i = 0; i < manifold.contactCount; ++i)
     {
         solved &= positionSolvers[i].SolveTOI();
     }
