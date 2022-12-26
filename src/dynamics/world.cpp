@@ -670,7 +670,7 @@ std::vector<Collider*> World::Query(const AABB& aabb) const
     res.reserve(8);
 
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    Polygon box{ vertices, 4, false, 0.0f };
+    Polygon box{ vertices, 4, false, minimum_radius };
     Transform t{ identity };
 
     contactManager.broadPhase.tree.Query(aabb, [&](NodeProxy node, Collider* collider) -> bool {

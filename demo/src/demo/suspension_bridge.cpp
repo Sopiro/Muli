@@ -1,7 +1,12 @@
 #include "demo.h"
+#include "game.h"
+#include "window.h"
 
 namespace muli
 {
+
+static int32 selection = 0;
+static const char* items[] = { "Revolute joint", "Distance joint" };
 
 class SuspensionBridge : public Demo
 {
@@ -9,7 +14,7 @@ public:
     SuspensionBridge(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
         float groundStart = 0.2f;
 
@@ -29,10 +34,9 @@ public:
 
         Joint* j;
 
-        bool revoluteBridge = LinearRand(0.0f, 1.0f) > 0.5;
         float frequency = 30.0f;
 
-        if (revoluteBridge)
+        if (selection == 0)
         {
             j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency,
                                            1.0f);
@@ -50,7 +54,7 @@ public:
             RigidBody* b2 = world->CreateBox(sizeX, sizeY);
             b2->SetPosition(xStart + sizeX / 2.0f + pillarWidth / 2.0f + gap + (gap + sizeX) * i, yStart + groundStart);
 
-            if (revoluteBridge)
+            if (selection == 0)
             {
                 j = world->CreateRevoluteJoint(b1, b2, (b1->GetPosition() + b2->GetPosition()) / 2.0f, frequency, 1.0f);
             }
@@ -68,7 +72,7 @@ public:
         pillar = world->CreateBox(pillarWidth, yStart, RigidBody::Type::static_body);
         pillar->SetPosition(-xStart, yStart / 2.0f + 0.2f);
 
-        if (revoluteBridge)
+        if (selection == 0)
         {
             j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency,
                                            1.0f);
@@ -83,6 +87,24 @@ public:
 
         camera.position = Vec2{ 0, 3.6f + 1.8f };
         camera.scale = Vec2{ 1.5f, 1.5f };
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowSize({ 160, 100 }, ImGuiCond_Once);
+
+        if (ImGui::Begin("Suspensiion bridge"))
+        {
+            ImGui::Text("Joint type");
+            ImGui::PushID(0);
+            if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
+            {
+                game.RestartDemo();
+            }
+            ImGui::PopID();
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)

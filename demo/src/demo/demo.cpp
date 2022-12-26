@@ -18,7 +18,7 @@ Demo::Demo(Game& _game)
 
     world = new World(settings);
 
-    camera.scale.Set(1.0f, 1.0f);
+    camera.scale.Set(1.0f);
     camera.rotation = 0.0f;
     camera.position.Set(0.0f, 3.6f);
 }

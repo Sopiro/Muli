@@ -328,8 +328,10 @@ void Polygon::ComputeAABB(const Transform& transform, AABB* outAABB) const
         max = Max(max, v);
     }
 
-    outAABB->min = min - radius;
-    outAABB->max = max + radius;
+    min -= radius;
+    max += radius;
+    outAABB->min = min;
+    outAABB->max = max;
 }
 
 bool Polygon::TestPoint(const Transform& transform, const Vec2& q) const

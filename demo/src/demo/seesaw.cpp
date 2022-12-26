@@ -9,7 +9,7 @@ public:
     Seesaw(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
         RigidBody* seesaw = world->CreateCapsule(6.0f, 0.05f, true);
         seesaw->SetPosition(0.0f, 0.45f);

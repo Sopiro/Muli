@@ -30,7 +30,7 @@ public:
         }
 
         // Pyramid
-        int32 rows = 12;
+        int32 rows = 15;
         float boxSize = 0.3f;
         float xGap = 0.0625f * boxSize / 0.5f;
         float yGap = 0.125f * boxSize / 0.5f;

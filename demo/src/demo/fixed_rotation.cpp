@@ -9,7 +9,7 @@ public:
     FixedRotation(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
         float start = 1.0f;
         float size = 0.3f;

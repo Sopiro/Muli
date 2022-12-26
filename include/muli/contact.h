@@ -50,6 +50,10 @@ public:
     const Contact* GetPrev() const;
 
     const ContactManifold& GetContactManifold() const;
+    int32 GetContactCount() const;
+    float GetNormalImpulse(int32 index) const;
+    float GetTangentImpulse(int32 index) const;
+
     float GetFriction() const;
     float GetRestitution() const;
     float GetRestitutionTreshold() const;
@@ -156,6 +160,23 @@ inline const Contact* Contact::GetNext() const
 inline const ContactManifold& Contact::GetContactManifold() const
 {
     return manifold;
+}
+
+inline int32 Contact::GetContactCount() const
+{
+    return manifold.contactCount;
+}
+
+inline float Contact::GetNormalImpulse(int32 index) const
+{
+    muliAssert(index == 0 || index == 1);
+    return normalSolvers[index].impulse;
+}
+
+inline float Contact::GetTangentImpulse(int32 index) const
+{
+    muliAssert(index == 0 || index == 1);
+    return tangentSolvers[index].impulse;
 }
 
 inline float Contact::GetFriction() const

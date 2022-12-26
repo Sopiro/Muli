@@ -13,7 +13,7 @@ public:
     Crank(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateBox(100.0f, 0.4f, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
         disk = world->CreateCircle(0.5f, RigidBody::Type::dynamic_body);
         disk->SetPosition(0, 1.0f);
@@ -22,12 +22,10 @@ public:
         world->CreateRevoluteJoint(disk, arm1, Vec2{ 0.5f, 1.0f });
 
         RigidBody* arm2 = world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 3.0f }, 0.1f);
+        arm2->CreateBoxCollider(1.0f, 0.2f, default_radius, Vec2{ 0.0f, 0.6f });
+
         world->CreateRevoluteJoint(arm1, arm2, Vec2{ 0.0f, 2.0f });
         world->CreatePrismaticJoint(ground, arm2, -1.0f);
-
-        RigidBody* plate = world->CreateBox(1.0f, 0.2f);
-        plate->SetPosition(0.0f, 3.05f);
-        world->CreateWeldJoint(arm2, plate);
 
         CollisionFilter filter;
         filter.filter = 1 << 1;
@@ -36,7 +34,6 @@ public:
         disk->SetCollisionFilter(filter);
         arm1->SetCollisionFilter(filter);
         arm2->SetCollisionFilter(filter);
-        plate->SetCollisionFilter(filter);
 
         motor = world->CreateMotorJoint(ground, disk, disk->GetPosition(), -1.0f, 100.0f);
 

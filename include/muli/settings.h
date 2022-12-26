@@ -27,13 +27,14 @@ constexpr int32 max_sub_steps = 8;
 constexpr int32 max_toi_contacts = 32;
 
 // Broad phase settings
-constexpr float aabb_margin = 0.05f;
+constexpr Vec2 aabb_margin{ 0.05f };
 constexpr float aabb_multiplier = 4.0f;
 
 // Default body/collider settings
 
 // Radius must be greater than 2.0 * linear_slop for stable CCD
 // Otherwise, TOI solver will never converge to a safe position
+constexpr float minimum_radius = linear_slop * 2.0f + linear_slop * 0.05f;
 constexpr float default_radius = linear_slop * 3.0f;
 constexpr float default_density = 12.5f;
 constexpr float default_friction = 0.5f;

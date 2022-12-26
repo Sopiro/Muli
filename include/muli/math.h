@@ -28,7 +28,7 @@ struct Vec2
 
     Vec2() = default;
 
-    constexpr Vec2(float _v)
+    constexpr explicit Vec2(float _v)
         : x{ _v }
         , y{ _v }
     {
@@ -44,6 +44,12 @@ struct Vec2
     {
         x = 0.0f;
         y = 0.0f;
+    }
+
+    void Set(float s)
+    {
+        x = s;
+        y = s;
     }
 
     void Set(float _x, float _y)
@@ -148,7 +154,7 @@ struct Vec3
 
     Vec3() = default;
 
-    constexpr Vec3(float _v)
+    constexpr explicit Vec3(float _v)
         : x{ _v }
         , y{ _v }
         , z{ _v }
@@ -174,6 +180,13 @@ struct Vec3
         x = 0.0f;
         y = 0.0f;
         z = 0.0f;
+    }
+
+    void Set(float s)
+    {
+        x = s;
+        y = s;
+        z = s;
     }
 
     void Set(float _x, float _y, float _z)
@@ -305,6 +318,14 @@ struct Vec4
         y = 0.0f;
         z = 0.0f;
         w = 0.0f;
+    }
+
+    void Set(float s)
+    {
+        x = s;
+        y = s;
+        z = s;
+        w = s;
     }
 
     void Set(float _x, float _y, float _z, float _w)

@@ -29,11 +29,11 @@ public:
 
         if (r < 1.0f)
         {
-            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, 0.0f);
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, minimum_radius);
         }
         else if (r < 2.0f)
         {
-            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, r / 10.0f);
+            b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, r / 10.0f + minimum_radius);
             b->UserFlag |= UserFlag::render_polygon_radius;
         }
         else if (r < 3.0f)
@@ -47,8 +47,8 @@ public:
 
         b->SetRotation(LinearRand(0.0f, pi));
 
-        camera.position = 0.0f;
-        camera.scale = 0.5f;
+        camera.position.SetZero();
+        camera.scale.Set(0.5f);
     }
 
     void UpdateInput() override

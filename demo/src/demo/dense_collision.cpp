@@ -1,7 +1,14 @@
 #include "demo.h"
+#include "game.h"
+#include "window.h"
 
 namespace muli
 {
+
+static float lv = 40.0f;
+static float av = 1.0f;
+static float ld = 0.1f;
+static float ad = 0.1f;
 
 class DenseCollision : public Demo
 {
@@ -18,9 +25,10 @@ public:
 
         RigidBody* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
-        b->SetLinearVelocity(30.0f, 0.0f);
-        b->SetAngularVelocity(1.0f);
-        b->SetLinearDamping(0.1f);
+        b->SetLinearVelocity(lv, 0.0f);
+        b->SetAngularVelocity(av);
+        b->SetLinearDamping(ld);
+        b->SetAngularDamping(ad);
         b->SetContinuous(true);
 
         for (int32 i = 0; i < 500; ++i)
@@ -31,7 +39,22 @@ public:
         }
 
         camera.position.Set(-5.0f, 0.0f);
-        camera.scale.Set(6.0f, 6.0f);
+        camera.scale.Set(6.0f);
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowSize({ 360, 125 }, ImGuiCond_Once);
+
+        if (ImGui::Begin("Continuous test 2"))
+        {
+            ImGui::SliderFloat("Linear velocity", &lv, 0.0f, 100.0f, "%.2f m/s");
+            ImGui::SliderFloat("Angular velocity", &av, 0.0f, 10.0f, "%.2f rad/s");
+            ImGui::SliderFloat("Linear damping", &ld, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Angular damping", &ad, 0.0f, 1.0f, "%.2f");
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)
