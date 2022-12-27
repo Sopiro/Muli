@@ -29,9 +29,8 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 180, 80 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Box stacking"))
+        if (ImGui::Begin("Box stacking", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::SliderInt("Count", &count, 1, 50);
             ImGui::SliderFloat("Error", &error, 0.0f, 0.1f, "%.2f", 1.0f);

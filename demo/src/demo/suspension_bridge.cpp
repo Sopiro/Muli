@@ -92,9 +92,8 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 160, 100 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Suspensiion bridge"))
+        if (ImGui::Begin("Suspensiion bridge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Joint type");
             ImGui::PushID(0);

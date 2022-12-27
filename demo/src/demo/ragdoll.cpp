@@ -48,7 +48,7 @@ public:
         body->SetPosition(headX, headY - headRadius - bodyHeight / 2.0f - neckGap);
 
         {
-            world->CreateWeldJoint(body, head, 15.0f);
+            world->CreateWeldJoint(body, head, body->GetPosition() + Vec2{ 0.0f, bodyHeight / 2.0f }, 20.0f);
         }
 
         // Arms

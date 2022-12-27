@@ -121,12 +121,16 @@ public:
                                        float jointMass = 1.0f);
     AngleJoint* CreateAngleJoint(
         RigidBody* bodyA, RigidBody* bodyB, float frequency = 15.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    WeldJoint* CreateWeldJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
+    WeldJoint* CreateWeldJoint(RigidBody* bodyA,
+                               RigidBody* bodyB,
+                               const Vec2& anchor,
+                               float frequency = -1.0f,
+                               float dampingRatio = 1.0f,
+                               float jointMass = 1.0f);
     LineJoint* CreateLineJoint(RigidBody* bodyA,
                                RigidBody* bodyB,
-                               Vec2 anchorA,
-                               Vec2 dir,
+                               const Vec2& anchorA,
+                               const Vec2& dir,
                                float frequency = 15.0f,
                                float dampingRatio = 1.0f,
                                float jointMass = 1.0f);

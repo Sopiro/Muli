@@ -53,9 +53,8 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 200, 150 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Dynamic AABB tree"))
+        if (ImGui::Begin("Dynamic AABB tree", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Tree cost: %.4f", world->GetDynamicTree().ComputeTreeCost());
             ImGui::InputText("Seed", seed, 20);

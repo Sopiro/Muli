@@ -33,9 +33,8 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 180, 60 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Pyramid"))
+        if (ImGui::Begin("Pyramid", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::SliderInt("Rows", &rows, 1, 100);
         }

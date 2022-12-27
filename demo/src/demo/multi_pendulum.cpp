@@ -1,7 +1,14 @@
 #include "demo.h"
-
+#include "game.h"
+#include "window.h"
 namespace muli
 {
+
+static int32 selection = 1;
+static const char* items[] = { "Revolute joint", "Distance joint" };
+static float f = 15.0f;
+static float d = 0.5f;
+static float m = 1.0f;
 
 class MultiPendulum : public Demo
 {
@@ -30,18 +37,41 @@ public:
             RigidBody* b2 = world->CreateBox(sizeW, sizeH);
             b2->SetPosition(xStart - (gap + sizeW) * (i + 1), yStart);
 
-            if (t)
+            if (selection == 0)
             {
-                j = world->CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, 15.0f, 0.5f);
+                j = world->CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, f, d, m);
             }
             else
             {
                 j = world->CreateDistanceJoint(b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 },
-                                               b2->GetPosition() + Vec2{ sizeW / 2, 0 });
+                                               b2->GetPosition() + Vec2{ sizeW / 2, 0 }, -1.0f, f, d, m);
             }
 
             b1 = b2;
         }
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("Multi pendulum", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Joint type");
+            ImGui::PushID(0);
+            if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
+            {
+                game.RestartDemo();
+            }
+            ImGui::Text("Frequency");
+            ImGui::SliderFloat("##Frequency", &f, 0.0f, 20.0f, "%.2f");
+            ImGui::Text("Damping ratio");
+            ImGui::SliderFloat("##Damping ratio", &d, 0.0f, 1.0f, "%.2f");
+            ImGui::Text("Joint mass");
+            ImGui::SliderFloat("##Joint mass", &m, 0.0f, 10.0f, "%.2f");
+            ImGui::PopID();
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)

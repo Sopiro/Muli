@@ -82,14 +82,15 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 360, 95 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Shape cast"))
+        if (ImGui::Begin("Shape cast", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (world->GetBodyCount() > 1)
             {
-                ImGui::DragFloat2("Translation A", &translationA.x, 0.1f);
-                ImGui::DragFloat2("Translation B", &translationB.x, 0.1f);
+                ImGui::Text("Translation A");
+                ImGui::DragFloat2("##Translation A", &translationA.x, 0.1f);
+                ImGui::Text("Translation B");
+                ImGui::DragFloat2("##Translation B", &translationB.x, 0.1f);
             }
             if (hit)
             {

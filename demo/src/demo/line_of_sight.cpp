@@ -83,9 +83,8 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 200, 100 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Line of sight"))
+        if (ImGui::Begin("Line of sight", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Ray count");
             ImGui::DragInt(" ", &count, 1.0f, 1, 360);

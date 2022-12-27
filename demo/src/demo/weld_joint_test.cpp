@@ -24,9 +24,8 @@ public:
             b2->Translate(t);
             c->Translate(t);
 
-            world->CreateWeldJoint(b1, b2);
-            world->CreateWeldJoint(b1, c);
-            world->CreateWeldJoint(b2, c);
+            world->CreateWeldJoint(b1, c, b1->GetPosition(), 15.0f);
+            world->CreateWeldJoint(b2, c, b2->GetPosition(), 15.0f);
 
             CollisionFilter cf{ i + 2, 1, 0xfffffffe };
             b1->SetCollisionFilter(cf);

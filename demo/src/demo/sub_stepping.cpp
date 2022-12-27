@@ -66,14 +66,14 @@ public:
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
-        ImGui::SetNextWindowSize({ 320, 80 }, ImGuiCond_Once);
 
-        if (ImGui::Begin("Sub-stepping"))
+        if (ImGui::Begin("Sub-stepping", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::ProgressBar(progress, ImVec2{ 0.0f, 0.0f });
-            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
             ImGui::Text("Step progress");
-            ImGui::SliderFloat("Throw angle", &angle, 0.0f, 180.0f, "%.2f", 1.0f);
+            ImGui::ProgressBar(progress, ImVec2{ 0.0f, 0.0f });
+            // ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::Text("Throw angle");
+            ImGui::SliderFloat("##Throw angle", &angle, 0.0f, 180.0f, "%.2f", 1.0f);
         }
         ImGui::End();
     }

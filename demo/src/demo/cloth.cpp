@@ -1,8 +1,12 @@
 #include "demo.h"
 #include "game.h"
+#include "window.h"
 
 namespace muli
 {
+
+static float f = 2.0f;
+static float d = 0.7f;
 
 class Cloth : public Demo
 {
@@ -49,12 +53,12 @@ public:
                 if (j + 1 < rows)
                 {
                     RigidBody* c10 = circles[j + 1][i];
-                    world->CreateDistanceJoint(c00, c10, -1.0f, 2.0f, 0.7f, 1.0f);
+                    world->CreateDistanceJoint(c00, c10, -1.0f, f, d, 1.0f);
                 }
                 if (i + 1 < cols)
                 {
                     RigidBody* c01 = circles[j][i + 1];
-                    world->CreateDistanceJoint(c00, c01, -1.0f, 2.0f, 0.7f, 1.0f);
+                    world->CreateDistanceJoint(c00, c01, -1.0f, f, d, 1.0f);
                 }
             }
         }
@@ -77,6 +81,20 @@ public:
         world->CreateDistanceJoint(w2, ml, -1.0f, 20.0f, 1.0f, ml->GetMass());
         world->CreateDistanceJoint(w3, mr, -1.0f, 20.0f, 1.0f, mr->GetMass());
         world->CreateDistanceJoint(w4, tr, -1.0f, 20.0f, 1.0f, tr->GetMass());
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("Cloth", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Frequency");
+            ImGui::SliderFloat("##Frequency", &f, 0.2f, 5.0f, "%.2f");
+            ImGui::Text("Damping ratio");
+            ImGui::SliderFloat("##Damping ratio", &d, 0.0f, 1.0f, "%.2f");
+        }
+        ImGui::End();
     }
 
     ~Cloth()
