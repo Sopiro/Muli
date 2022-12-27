@@ -339,7 +339,7 @@ bool Polygon::TestPoint(const Transform& transform, const Vec2& q) const
     Vec2 localQ = MulT(transform, q);
 
     int32 index = 0;
-    float maxSeparation = -FLT_MAX;
+    float maxSeparation = -max_value;
 
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)

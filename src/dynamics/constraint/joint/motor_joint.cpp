@@ -24,8 +24,8 @@ MotorJoint::MotorJoint(RigidBody* _bodyA,
     linearOffset.SetZero();
     angularOffset = 0.0f;
 
-    maxForce = _maxForce < 0 ? FLT_MAX : Clamp<float>(_maxForce, 0.0f, FLT_MAX);
-    maxTorque = _maxTorque < 0 ? FLT_MAX : Clamp<float>(_maxTorque, 0.0f, FLT_MAX);
+    maxForce = _maxForce < 0 ? max_value : Clamp<float>(_maxForce, 0.0f, max_value);
+    maxTorque = _maxTorque < 0 ? max_value : Clamp<float>(_maxTorque, 0.0f, max_value);
 }
 
 void MotorJoint::Prepare()

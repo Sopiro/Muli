@@ -6,7 +6,7 @@ namespace muli
 PolytopeEdge Polytope::GetClosestEdge() const
 {
     int32 minIndex = 0;
-    float minDistance = FLT_MAX;
+    float minDistance = max_value;
     Vec2 minNormal{ 0.0f };
 
     for (int32 i = 0; i < vertices.Count(); ++i)

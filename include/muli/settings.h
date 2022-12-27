@@ -68,7 +68,7 @@ struct WorldSettings
     bool continuous = true;
     bool sub_stepping = false;
 
-    AABB world_bounds{ Vec2{ -FLT_MAX, -FLT_MAX }, Vec2{ FLT_MAX, FLT_MAX } };
+    AABB world_bounds{ Vec2{ -max_value, -max_value }, Vec2{ max_value, max_value } };
 
     mutable bool warm_starting = true;
     mutable float dt;

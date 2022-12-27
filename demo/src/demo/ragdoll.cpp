@@ -33,7 +33,7 @@ public:
 
     void CreateRagdoll(float headX, float headY, float scale)
     {
-        float motorForce = FLT_MAX;
+        float motorForce = max_value;
 
         float headRadius = 0.3f * scale;
 

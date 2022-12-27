@@ -709,7 +709,7 @@ void AABBTree::Rebuild()
 
     while (count > 1)
     {
-        float minCost = FLT_MAX;
+        float minCost = max_value;
         int32 minI = -1;
         int32 minJ = -1;
 

@@ -95,7 +95,7 @@ end:
 void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
 {
     Polytope polytope{ simplex };
-    PolytopeEdge edge{ 0, FLT_MAX, zero_vec2 };
+    PolytopeEdge edge{ 0, max_value, zero_vec2 };
 
     for (int32 k = 0; k < epa_max_iteration; ++k)
     {
@@ -216,11 +216,6 @@ static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b,
     }
     else
     {
-        if (manifold == nullptr)
-        {
-            return true;
-        }
-
         d = Sqrt(d);
 
         manifold->contactNormal = (pb - pa).Normalized();
@@ -284,11 +279,6 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         return false;
     }
 
-    if (manifold == nullptr)
-    {
-        return true;
-    }
-
     normal = tfA.rotation * normal;
     Vec2 point = tfA * (index ? vb : va);
 
@@ -315,7 +305,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     Vec2 pb = tfB * b->GetCenter();
     Vec2 localP = MulT(tfA, pb);
 
-    float minSeparation = -FLT_MAX;
+    float minSeparation = -max_value;
     float r2 = a->GetRadius() + b->GetRadius();
 
     int32 index;
@@ -337,11 +327,6 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     // Circle center is inside the polygon
     if (minSeparation < 0.0f)
     {
-        if (manifold == nullptr)
-        {
-            return true;
-        }
-
         Vec2 normal = tfA.rotation * normals[index];
         Vec2 point = tfA * vertices[index];
 
@@ -389,11 +374,6 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         return false;
     }
 
-    if (manifold == nullptr)
-    {
-        return true;
-    }
-
     normal = tfA.rotation * normal;
     Vec2 point = tfA * vertices[index];
 
@@ -426,11 +406,6 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
         case 1: // vertex vs. vertex collision
             if (gjkResult.distance < r2)
             {
-                if (manifold == nullptr)
-                {
-                    return true;
-                }
-
                 Vec2 normal = (origin - simplex.vertices[0].point).Normalized();
 
                 ContactPoint supportA = simplex.vertices[0].pointA;
@@ -455,11 +430,6 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
         case 2: // vertex vs. edge collision
             if (gjkResult.distance < r2)
             {
-                if (manifold == nullptr)
-                {
-                    return true;
-                }
-
                 Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
                 Vec2 k = origin - simplex.vertices[0].point;
                 if (Dot(normal, k) < 0)
@@ -478,11 +448,6 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
     }
     else
     {
-        if (manifold == nullptr)
-        {
-            return true;
-        }
-
         // If the gjk termination simplex has vertices less than 3, expand to full simplex
         // We need a full n-simplex to start EPA (actually it's rare case)
         switch (simplex.count)
@@ -536,18 +501,20 @@ bool DetectCollision(const Shape* a, const Transform& tfA, const Shape* b, const
         InitializeDetectionFunctionMap();
     }
 
+    static ContactManifold default_manifold;
+    if (manifold == nullptr)
+    {
+        manifold = &default_manifold;
+    }
+
     Shape::Type shapeA = a->GetType();
     Shape::Type shapeB = b->GetType();
-
     if (shapeB > shapeA)
     {
         muliAssert(DetectionFunctionMap[shapeB][shapeA] != nullptr);
 
         bool collide = DetectionFunctionMap[shapeB][shapeA](b, tfB, a, tfA, manifold);
-        if (manifold)
-        {
-            manifold->featureFlipped = true;
-        }
+        manifold->featureFlipped = true;
 
         return collide;
     }

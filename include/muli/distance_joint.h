@@ -62,7 +62,7 @@ inline float DistanceJoint::GetJointLength() const
 
 inline void DistanceJoint::SetJointLength(float _length)
 {
-    length = Clamp<float>(length, 0, FLT_MAX);
+    length = Clamp<float>(length, 0, max_value);
 }
 
 } // namespace muli

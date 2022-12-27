@@ -371,7 +371,7 @@ void Demo::EnableCameraControl()
     if (Input::GetMouseScroll().y != 0)
     {
         camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
-        camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ FLT_MAX });
+        camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ max_value });
     }
 
     static bool cameraMove = false;

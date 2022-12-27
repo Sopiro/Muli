@@ -16,10 +16,12 @@ namespace muli
 
 constexpr float pi = 3.14159265359f;
 constexpr float epsilon = FLT_EPSILON;
+constexpr float max_value = FLT_MAX;
 
 struct Vec2;
 struct Vec3;
 struct Vec4;
+struct Mat2;
 struct Mat3;
 struct Mat4;
 struct Rotation;
