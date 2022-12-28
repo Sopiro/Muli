@@ -8,6 +8,8 @@ namespace muli
 static int32 selection = 0;
 static float threshold = 2.0f;
 static const char* items[] = { "Circle", "Box", "Capsule" };
+static int32 selection2 = 0;
+static const char* items2[] = { "Quadratic", "Linear" };
 
 class RestitutionTest : public Demo
 {
@@ -46,7 +48,8 @@ public:
 
             b->SetPosition(xStart + gap * i, yStart);
             float attenuation = (count - i) / (float)count;
-            b->SetRestitution(1.0f - attenuation * attenuation);
+            float restitution = 1.0f - (selection2 == 0 ? attenuation * attenuation : attenuation);
+            b->SetRestitution(restitution);
             b->SetRestitutionThreshold(threshold);
         }
     }
@@ -59,13 +62,20 @@ public:
         {
             ImGui::Text("Shape");
             ImGui::PushID(0);
-            if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
+            if (ImGui::ListBox("##Shape", &selection, items, IM_ARRAYSIZE(items)))
             {
                 game.RestartDemo();
             }
-            ImGui::Text("Restitution threshold");
-            ImGui::SliderFloat("", &threshold, 2.0f, 10.0f, "%.2f m/s");
             ImGui::PopID();
+
+            ImGui::Text("Attenuation");
+            if (ImGui::ListBox("##Attenuation", &selection2, items2, IM_ARRAYSIZE(items2)))
+            {
+                game.RestartDemo();
+            }
+
+            ImGui::Text("Restitution threshold");
+            ImGui::SliderFloat("##Restitution threshold", &threshold, 2.0f, 10.0f, "%.2f m/s");
         }
         ImGui::End();
     }
