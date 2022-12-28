@@ -42,7 +42,7 @@ void RigidBodyRenderer::Render() const
 
                 if (cf.group == default_collision_filter.group && cf.mask != default_collision_filter.mask)
                 {
-                    h = (((cf.filter - 2) * 17) % 360) / 360.0f;
+                    h = (((cf.bit - 2) * 17) % 360) / 360.0f;
                     s = 100.0f / 100.0f;
                     l = 75.0f / 100.0f;
                 }
@@ -80,7 +80,7 @@ void RigidBodyRenderer::Render() const
             case RigidBody::Type::static_body:
                 if (cf.group == default_collision_filter.group && cf.mask != default_collision_filter.mask)
                 {
-                    float h = (((cf.filter - 2) * 17) % 360) / 360.0f;
+                    float h = (((cf.bit - 2) * 17) % 360) / 360.0f;
                     float s = 100.0f / 100.0f;
                     float l = 75.0f / 100.0f;
 

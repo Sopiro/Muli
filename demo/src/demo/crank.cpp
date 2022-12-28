@@ -28,7 +28,7 @@ public:
         world->CreatePrismaticJoint(ground, arm2, -1.0f);
 
         CollisionFilter filter;
-        filter.filter = 1 << 1;
+        filter.bit = 1 << 1;
         filter.mask = ~(1 << 1);
 
         disk->SetCollisionFilter(filter);

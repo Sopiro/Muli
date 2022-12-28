@@ -8,7 +8,7 @@ namespace muli
 struct CollisionFilter
 {
     uint32 group = 1;
-    uint32 filter = 1;
+    uint32 bit = 1;
     uint32 mask = 0xffffffff;
 };
 
@@ -21,7 +21,7 @@ inline bool EvaluateFilter(const CollisionFilter& filterA, const CollisionFilter
         return true;
     }
 
-    return (filterA.mask & filterB.filter) != 0 && (filterB.mask & filterA.filter) != 0;
+    return (filterA.mask & filterB.bit) != 0 && (filterB.mask & filterA.bit) != 0;
 }
 
 } // namespace muli

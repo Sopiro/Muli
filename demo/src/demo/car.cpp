@@ -38,7 +38,7 @@ public:
         wheel2->Translate(0.0f, 5.0f);
 
         CollisionFilter filter;
-        filter.filter = 1 << 1;
+        filter.bit = 1 << 1;
         filter.mask = ~(1 << 1);
 
         body->SetCollisionFilter(filter);

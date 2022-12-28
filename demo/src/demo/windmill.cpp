@@ -19,7 +19,7 @@ public:
         windmill->SetPosition(0.0f, 3.0f);
 
         CollisionFilter filter;
-        filter.filter = 1 << 1;
+        filter.bit = 1 << 1;
         filter.mask = ~(1 << 1);
 
         stick->SetCollisionFilter(filter);

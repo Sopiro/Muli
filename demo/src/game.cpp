@@ -58,7 +58,7 @@ void Game::UpdateUI()
     ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
     ImGui::SetNextWindowSize({ 240, 535 }, ImGuiCond_Once);
 
-    if (ImGui::Begin("Control Panel"))
+    if (ImGui::Begin("Muli Engine", NULL))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;
         if (ImGui::BeginTabBar("TabBar", tab_bar_flags))
