@@ -17,9 +17,9 @@ struct Chunk
     Chunk* next;
 };
 
-constexpr int32 maxBlockSize = 1024;
-constexpr int32 blockUnit = 8;
-constexpr int32 blockSizeCount = maxBlockSize / blockUnit;
+constexpr int32 max_block_size = 1024;
+constexpr int32 block_unit = 8;
+constexpr int32 blick_size_count = max_block_size / block_unit;
 
 class BlockAllocator : public Allocator
 {
@@ -39,7 +39,7 @@ private:
     int32 chunkCount;
 
     Chunk* chunks;
-    Block* freeList[blockSizeCount];
+    Block* freeList[blick_size_count];
 };
 
 inline int32 BlockAllocator::GetBlockCount() const

@@ -8,7 +8,7 @@ namespace muli
 struct Chunk;
 struct Block;
 
-constexpr int32 predefinedBlockSizeCount = 16;
+constexpr int32 predefined_block_size_count = 16;
 
 class PredefinedBlockAllocator : public Allocator
 {
@@ -28,7 +28,7 @@ private:
     int32 chunkCount;
 
     Chunk* chunks;
-    Block* freeList[predefinedBlockSizeCount];
+    Block* freeList[predefined_block_size_count];
 };
 
 inline int32 PredefinedBlockAllocator::GetBlockCount() const

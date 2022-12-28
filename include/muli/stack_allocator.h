@@ -5,8 +5,8 @@
 namespace muli
 {
 
-constexpr int32 stackSize = 100 * 1024;
-constexpr int32 maxStackEntries = 32;
+constexpr int32 stack_size = 100 * 1024;
+constexpr int32 max_stack_entries = 32;
 
 struct StackEntry
 {
@@ -31,13 +31,13 @@ public:
     int32 GetMaxAllocation() const;
 
 private:
-    int8* stack[stackSize];
+    int8* stack[stack_size];
     int32 index;
 
     int32 allocation;
     int32 maxAllocation;
 
-    StackEntry entries[maxStackEntries];
+    StackEntry entries[max_stack_entries];
     int32 entryCount;
 };
 
