@@ -28,14 +28,13 @@
   - Contact callbacks: begin, touching, end, destory
   - Physics material: friction, restitution and surface speed
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, weld
-  - Tunable joint parameters  
   
 ### ETC
   - 40+ Demos
   - OpenGL based demo framework
-  - Cross platform C++17 library
+  - Cross platform library
   - Intuitive and straightforward API
-  - Utilizes efficient custom memory allocators
+  - Utilizes specialized memory allocators
   
 ## Example
 ```c++
