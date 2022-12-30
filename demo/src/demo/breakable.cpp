@@ -38,9 +38,9 @@ public:
 
     bool broke = false;
 
-    virtual void OnContactBegin(Collider* me, Collider* other, const Contact* contact) override {}
+    virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) override {}
 
-    virtual void OnContactTouching(Collider* me, Collider* other, const Contact* contact) override
+    virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) override
     {
         if (broke)
         {
@@ -70,7 +70,7 @@ public:
         broke = true;
     }
 
-    virtual void OnContactEnd(Collider* me, Collider* other, const Contact* contact) override {}
+    virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) override {}
 };
 
 DemoFrame breakable{ "Breakable", Breakable::Create };

@@ -58,6 +58,8 @@ public:
                                          motorDampingRatio, motorMass);
         motor2 = world->CreateMotorJoint(body, wheel2, wheel2->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency,
                                          motorDampingRatio, motorMass);
+
+        camera.scale.Set(1.5f);
     }
 
     void Step() override
@@ -96,6 +98,8 @@ public:
             motor1->SetAngularOffset(wheel1->GetAngle() - body->GetAngle());
             motor2->SetAngularOffset(wheel2->GetAngle() - body->GetAngle());
         }
+
+        camera.position = Lerp(camera.position, body->GetPosition(), 2.0f * dt);
     }
 
     static Demo* Create(Game& game)

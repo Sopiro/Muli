@@ -364,6 +364,21 @@ void Demo::EnableKeyboardShortcut()
             targetBody->SetContinuous(!targetBody->IsContinuous());
         }
     }
+    if (Input::IsKeyPressed(GLFW_KEY_F))
+    {
+        if (targetBody)
+        {
+            if (targetBody->IsRotationFixed())
+            {
+                targetBody->SetFixedRotation(false);
+            }
+            else
+            {
+                targetBody->SetFixedRotation(true);
+                targetBody->SetAngularVelocity(0.0f);
+            }
+        }
+    }
 }
 
 void Demo::EnableCameraControl()

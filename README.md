@@ -30,7 +30,7 @@
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, weld
   
 ### ETC
-  - 40+ Demos
+  - 50+ Demos
   - OpenGL based demo framework
   - Cross platform library
   - Intuitive and straightforward API

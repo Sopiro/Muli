@@ -33,9 +33,9 @@ class ContactListener
 {
 public:
     virtual ~ContactListener() {}
-    virtual void OnContactBegin(Collider* me, Collider* other, const Contact* contact) {}
-    virtual void OnContactTouching(Collider* me, Collider* other, const Contact* contact) {}
-    virtual void OnContactEnd(Collider* me, Collider* other, const Contact* contact) {}
+    virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) {}
+    virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) {}
+    virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) {}
 };
 
 class WorldQueryCallback

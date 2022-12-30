@@ -1,7 +1,11 @@
 #include "demo.h"
+#include "game.h"
+#include "window.h"
 
 namespace muli
 {
+
+static bool disable_contact = false;
 
 class ContactCallbacks : public Demo,
                          public ContactListener
@@ -35,22 +39,33 @@ public:
         c->ContactListener = this;
     }
 
-    virtual void OnContactBegin(Collider* me, Collider* other, const Contact* contact) override
+    virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) override
     {
-        if (other->GetBody()->GetType() != RigidBody::Type::static_body)
+        RigidBody* body = other->GetBody();
+        contact->SetEnabled(!disable_contact);
+
+        if (body->GetType() != RigidBody::Type::static_body)
         {
-            world->BufferDestroy(other->GetBody());
+            world->BufferDestroy(body);
         }
-        // std::cout << "Contact begin" << std::endl;
     }
-    virtual void OnContactTouching(Collider* me, Collider* other, const Contact* contact) override {}
-    virtual void OnContactEnd(Collider* me, Collider* other, const Contact* contact) override
+
+    virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) override {}
+
+    virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) override {}
+
+    void UpdateUI() override
     {
-        if (other->GetBody()->GetType() == RigidBody::Type::static_body)
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("Contact callbacks", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            world->BufferDestroy(other->GetBody());
+            if (ImGui::Checkbox("Disable contact", &disable_contact))
+            {
+                game.RestartDemo();
+            }
         }
-        // std::cout << "Contact end" << std::endl;
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)

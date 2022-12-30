@@ -90,7 +90,7 @@ public:
         if (ImGui::Begin("Cloth", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Frequency");
-            ImGui::SliderFloat("##Frequency", &f, 0.2f, 5.0f, "%.2f");
+            ImGui::SliderFloat("##Frequency", &f, 1.0f, 5.0f, "%.2f");
             ImGui::Text("Damping ratio");
             ImGui::SliderFloat("##Damping ratio", &d, 0.0f, 1.0f, "%.2f");
         }
