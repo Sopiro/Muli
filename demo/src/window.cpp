@@ -8,12 +8,14 @@ static void glfw_error_callback(int32 error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-Window::Window(int32 width, int32 height, std::string title)
+Window::Window(int32 _width, int32 _height, const std::string& _title)
+    : width{ _width }
+    , height{ _height }
 {
     muliAssert(window == nullptr);
     window = this;
 
-    std::puts("Initialize glfw");
+    puts("Initialize glfw");
 
     glfwSetErrorCallback(glfw_error_callback);
 
@@ -21,7 +23,7 @@ Window::Window(int32 width, int32 height, std::string title)
     {
         const char* description;
         glfwGetError(&description);
-        std::printf("failed to initialize glfw: %s", description);
+        printf("failed to initialize glfw: %s\n", description);
         exit(1);
     }
 
@@ -29,15 +31,12 @@ Window::Window(int32 width, int32 height, std::string title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Window::width = width;
-    Window::height = height;
+    glfwWindowHint(GLFW_SAMPLES, 4); // 4xMSAA
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
-    glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    glfwWindow = glfwCreateWindow(width, height, _title.c_str(), nullptr, nullptr);
     if (!glfwWindow)
     {
-        std::printf("%s\n", "failed to create glfw window");
+        printf("%s\n", "failed to create glfw window");
         glfwTerminate();
         exit(1);
     }
@@ -47,11 +46,11 @@ Window::Window(int32 width, int32 height, std::string title)
                          height, GLFW_DONT_CARE);
 
     glfwMakeContextCurrent(glfwWindow);
-    // glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(0); // Disable vsync
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::puts("failed to initialize glad");
+        puts("failed to initialize glad");
         glfwTerminate();
         exit(1);
     }
@@ -63,14 +62,14 @@ Window::Window(int32 width, int32 height, std::string title)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
 
-    ImGui::StyleColorsDark();
     // ImGui::StyleColorsClassic();
+    // ImGui::StyleColorsLight();
+    ImGui::StyleColorsDark();
 
     // Rounded corner style
     float rounding = 5.0f;
-    auto& style = ImGui::GetStyle();
+    ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = rounding;
     style.ChildRounding = rounding;
     style.FrameRounding = rounding;
@@ -82,12 +81,8 @@ Window::Window(int32 width, int32 height, std::string title)
     ImGui_ImplOpenGL3_Init("#version 330");
 
     // Setup font
-    ImFontConfig config;
-    config.OversampleH = 1;
-    config.OversampleV = 1;
-    config.PixelSnapH = true;
-    // io.Fonts->AddFontFromFileTTF("../../res/fonts/Roboto-Medium.ttf", 18.0f, &config);
-    //  io.Fonts->AddFontFromFileTTF("../../res/fonts/NotoSans-Regular.ttf", 16.0f, &config);
+    // io.Fonts->AddFontFromFileTTF("misc/Roboto-Medium.ttf", 13.0f);
+    // io.Fonts->AddFontFromFileTTF("misc/NotoSans-Regular.ttf", 13.0f);
 
     // Register some window callbacks
     glfwSetFramebufferSizeCallback(glfwWindow, OnFramebufferSizeChange);

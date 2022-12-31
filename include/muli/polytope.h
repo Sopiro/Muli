@@ -14,15 +14,12 @@ struct PolytopeEdge
     Vec2 normal;
 };
 
-class Polytope
+struct Polytope
 {
-public:
-    Polytope(const Simplex& simplex);
-
-    // Returns the edge closest to the Origin (0, 0)
-    PolytopeEdge GetClosestEdge() const;
-
     GrowableArray<Vec2, 8> vertices;
+
+    Polytope(const Simplex& simplex);
+    PolytopeEdge GetClosestEdge() const;
 };
 
 inline Polytope::Polytope(const Simplex& simplex)

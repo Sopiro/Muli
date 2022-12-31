@@ -12,8 +12,6 @@ namespace muli
 class Window final
 {
 public:
-    static Window& Get();
-
     ~Window() noexcept;
 
     Window(const Window&) noexcept = delete;
@@ -23,27 +21,26 @@ public:
     Window& operator=(const Window&&) noexcept = delete;
 
     void SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback);
-
     Vec2 GetWindowSize() const;
     int32 GetRefreshRate() const;
+
+    static Window& Get();
 
 private:
     friend class Application;
     friend void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int32 width, int32 height);
 
-    inline static Window* window;
-    Window(int32 width, int32 height, std::string title);
-
-    int32 width;
-    int32 height;
-    int32 refreshRate;
-
-    GLFWwindow* glfwWindow;
-    std::function<void(int32 width, int32 height)> framebufferSizeChangeCallback = nullptr;
+    Window(int32 width, int32 height, const std::string& title);
 
     bool ShouldClose() const;
     void BeginFrame(const Vec4& clearColor) const;
     void EndFrame() const;
+
+    int32 width, height;
+    int32 refreshRate;
+
+    GLFWwindow* glfwWindow;
+    std::function<void(int32 width, int32 height)> framebufferSizeChangeCallback = nullptr;
 
     static void OnFramebufferSizeChange(GLFWwindow* glfwWindow, int32 width, int32 height);
     static void OnKeyEvent(GLFWwindow* glfwWindow, int32 key, int32 scancode, int32 action, int32 mods);
@@ -51,6 +48,8 @@ private:
     static void OnCharEvent(GLFWwindow* glfwWindow, uint32 ch);
     static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
     static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
+
+    inline static Window* window;
 };
 
 inline Window& Window::Get()
@@ -158,7 +157,7 @@ inline void Window::EndFrame() const
 
 inline Vec2 Window::GetWindowSize() const
 {
-    return Vec2{ (float)width, (float)height };
+    return Vec2{ float(width), float(height) };
 }
 
 inline int32 Window::GetRefreshRate() const
