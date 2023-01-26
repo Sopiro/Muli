@@ -146,7 +146,7 @@ void Island::Solve()
         b->sweep.c += b->linearVelocity * world->settings.dt;
         b->sweep.a += b->angularVelocity * world->settings.dt;
 
-        if (!TestPointInsideAABB(world->settings.world_bounds, b->GetPosition()))
+        if (world->settings.world_bounds.TestPoint(b->GetPosition()) == false)
         {
             world->BufferDestroy(b);
         }

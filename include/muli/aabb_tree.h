@@ -112,7 +112,7 @@ inline bool AABBTree::TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const
     muliAssert(0 <= nodeA && nodeA < nodeCapacity);
     muliAssert(0 <= nodeB && nodeB < nodeCapacity);
 
-    return TestOverlapAABB(nodes[nodeA].aabb, nodes[nodeB].aabb);
+    return nodes[nodeA].aabb.TestOverlap(nodes[nodeB].aabb);
 }
 
 inline const AABB& AABBTree::GetAABB(NodeProxy node) const
@@ -167,7 +167,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
     {
         NodeProxy current = stack.Pop();
 
-        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        if (nodes[current].aabb.TestPoint(point) == false)
         {
             continue;
         }
@@ -203,7 +203,7 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
     {
         NodeProxy current = stack.Pop();
 
-        if (!TestOverlapAABB(nodes[current].aabb, aabb))
+        if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
             continue;
         }
@@ -255,7 +255,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
         }
 
         const Node* node = nodes + nodeID;
-        if (TestOverlapAABB(node->aabb, rayAABB) == false)
+        if (node->aabb.TestOverlap(rayAABB) == false)
         {
             continue;
         }
@@ -314,7 +314,7 @@ void AABBTree::Traverse(T* callback) const
     {
         NodeProxy current = stack.Pop();
 
-        if (!nodes[current].IsLeaf())
+        if (nodes[current].IsLeaf() == false)
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);

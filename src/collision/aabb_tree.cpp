@@ -460,7 +460,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Coll
     {
         NodeProxy current = stack.Pop();
 
-        if (!TestPointInsideAABB(nodes[current].aabb, point))
+        if (nodes[current].aabb.TestPoint(point) == false)
         {
             continue;
         }
@@ -495,7 +495,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Colli
     {
         NodeProxy current = stack.Pop();
 
-        if (!TestOverlapAABB(nodes[current].aabb, aabb))
+        if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
             continue;
         }
@@ -530,7 +530,7 @@ void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
     {
         NodeProxy current = stack.Pop();
 
-        if (!nodes[current].IsLeaf())
+        if (nodes[current].IsLeaf() == false)
         {
             stack.Emplace(nodes[current].child1);
             stack.Emplace(nodes[current].child2);
@@ -571,7 +571,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
         }
 
         const Node* node = nodes + nodeIndex;
-        if (TestOverlapAABB(node->aabb, rayAABB) == false)
+        if (node->aabb.TestOverlap(rayAABB) == false)
         {
             continue;
         }
