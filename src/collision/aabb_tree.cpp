@@ -140,7 +140,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     NodeProxy oldParent = nodes[bestSibling].parent;
     NodeProxy newParent = AllocateNode();
     nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
-    nodes[newParent].collider = nullptr;
+    nodes[newParent].data = nullptr;
     nodes[newParent].parent = oldParent;
 
     if (oldParent != nullNode)
@@ -238,14 +238,14 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
     }
 }
 
-NodeProxy AABBTree::CreateNode(Collider* collider, const AABB& aabb)
+NodeProxy AABBTree::CreateNode(Data* data, const AABB& aabb)
 {
     NodeProxy newNode = AllocateNode();
 
     // Fatten the aabb
     nodes[newNode].aabb.max = aabb.max + aabb_margin;
     nodes[newNode].aabb.min = aabb.min - aabb_margin;
-    nodes[newNode].collider = collider;
+    nodes[newNode].data = data;
     nodes[newNode].parent = nullNode;
     nodes[newNode].moved = true;
 
@@ -446,7 +446,7 @@ void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
     nodes[node1].parent = parent2;
 }
 
-void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Collider*)>& callback) const
+void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const
 {
     if (root == nullNode)
     {
@@ -467,7 +467,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Coll
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback(current, nodes[current].collider);
+            bool proceed = callback(current, nodes[current].data);
             if (proceed == false)
             {
                 return;
@@ -481,7 +481,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Coll
     }
 }
 
-void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Collider*)>& callback) const
+void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const
 {
     if (root == nullNode)
     {
@@ -502,7 +502,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Colli
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback(current, nodes[current].collider);
+            bool proceed = callback(current, nodes[current].data);
             if (proceed == false)
             {
                 return;
@@ -541,7 +541,7 @@ void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
     }
 }
 
-void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Collider*)>& callback) const
+void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Data*)>& callback) const
 {
     Vec2 p1 = input.from;
     Vec2 p2 = input.to;
@@ -592,7 +592,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
 
-            float value = callback(subInput, node->collider);
+            float value = callback(subInput, node->data);
             if (value == 0.0f)
             {
                 return;

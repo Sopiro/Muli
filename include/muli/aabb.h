@@ -87,7 +87,7 @@ struct AABB
 
 inline void Fix(AABB& aabb)
 {
-    auto a = Max(aabb.min, aabb.max);
+    Vec2 a = Max(aabb.min, aabb.max);
 
     Vec2 newMin = Min(aabb.min, aabb.max);
     Vec2 newMax = Max(aabb.min, aabb.max);

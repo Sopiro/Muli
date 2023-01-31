@@ -12,7 +12,7 @@
 namespace muli
 {
 
-// You can use Area() or Perimeter() as surface area heuristic(SAH) function
+// You can use Area() or Perimeter() as a surface area heuristic(SAH) function
 inline float SAH(const AABB& aabb)
 {
 #if 1
@@ -23,6 +23,7 @@ inline float SAH(const AABB& aabb)
 }
 
 typedef int32 NodeProxy;
+typedef Collider Data;
 
 struct Node
 {
@@ -41,7 +42,7 @@ struct Node
     NodeProxy next;
     bool moved;
 
-    Collider* collider; // user data
+    Data* data; // user data
 };
 
 class AABBTree
@@ -58,7 +59,7 @@ public:
 
     void Reset();
 
-    NodeProxy CreateNode(Collider* collider, const AABB& aabb);
+    NodeProxy CreateNode(Data* data, const AABB& aabb);
     bool MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove);
     void RemoveNode(NodeProxy node);
 
@@ -66,17 +67,16 @@ public:
     const AABB& GetAABB(NodeProxy node) const;
     void ClearMoved(NodeProxy node) const;
     bool WasMoved(NodeProxy node) const;
-    Collider* GetData(NodeProxy node) const;
+    Data* GetData(NodeProxy node) const;
 
-    void Query(const Vec2& point, const std::function<bool(NodeProxy, Collider*)>& callback) const;
-    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Collider*)>& callback) const;
+    void Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const;
+    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const;
     template <typename T>
     void Query(const Vec2& point, T* callback) const;
     template <typename T>
     void Query(const AABB& aabb, T* callback) const;
 
-    void RayCast(const RayCastInput& input,
-                 const std::function<float(const RayCastInput& input, Collider* collider)>& callback) const;
+    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Data* data)>& callback) const;
     template <typename T>
     void RayCast(const RayCastInput& input, T* callback) const;
 
@@ -136,11 +136,11 @@ inline bool AABBTree::WasMoved(NodeProxy node) const
     return nodes[node].moved;
 }
 
-inline Collider* AABBTree::GetData(NodeProxy node) const
+inline Data* AABBTree::GetData(NodeProxy node) const
 {
     muliAssert(0 <= node && node < nodeCapacity);
 
-    return nodes[node].collider;
+    return nodes[node].data;
 }
 
 inline float AABBTree::ComputeTreeCost() const
@@ -174,7 +174,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback->QueryCallback(current, nodes[current].collider);
+            bool proceed = callback->QueryCallback(current, nodes[current].data);
             if (proceed == false)
             {
                 return;
@@ -210,7 +210,7 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
 
         if (nodes[current].IsLeaf())
         {
-            bool proceed = callback->QueryCallback(current, nodes[current].collider);
+            bool proceed = callback->QueryCallback(current, nodes[current].data);
             if (proceed == false)
             {
                 return;
@@ -276,7 +276,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
 
-            float value = callback->RayCastCallback(subInput, node->collider);
+            float value = callback->RayCastCallback(subInput, node->data);
             if (value == 0.0f)
             {
                 return;
