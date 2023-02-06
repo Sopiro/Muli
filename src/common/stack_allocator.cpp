@@ -49,7 +49,7 @@ void StackAllocator::Free(void* p, int32 size)
 
     StackEntry* entry = entries + entryCount - 1;
     muliAssert(entry->data == p);
-    muliAssert(entry->size == size * 8);
+    muliAssert(entry->size == size);
 
     if (entry->mallocUsed)
     {

@@ -23,9 +23,9 @@ Island::Island(World* _world, int32 _bodyCapacity, int32 _contactCapacity, int32
 
 Island::~Island()
 {
-    world->stackAllocator.Free(joints, jointCapacity);
-    world->stackAllocator.Free(contacts, contactCapacity);
-    world->stackAllocator.Free(bodies, bodyCapacity);
+    world->stackAllocator.Free(joints, jointCapacity * sizeof(Joint*));
+    world->stackAllocator.Free(contacts, contactCapacity * sizeof(Contact*));
+    world->stackAllocator.Free(bodies, bodyCapacity * sizeof(RigidBody*));
 }
 
 void Island::Solve()

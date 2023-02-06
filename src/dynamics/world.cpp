@@ -159,7 +159,7 @@ void World::Solve()
         restingBodies = 0;
     }
 
-    stackAllocator.Free(stack, bodyCount);
+    stackAllocator.Free(stack, bodyCount * sizeof(RigidBody*));
 
     islandCount = islandID;
 
