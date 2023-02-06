@@ -1,6 +1,7 @@
 rmdir /s /q build
 mkdir build
-cd build
+pushd build
 cmake ..
-cmake --build . --config Release --parallel
-start muli.sln
+cmake --build .
+popd
+start build/muli.sln
