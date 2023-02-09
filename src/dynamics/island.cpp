@@ -72,20 +72,22 @@ void Island::Solve()
             b->linearVelocity += b->invMass * dt * (b->force + world->settings.apply_gravity * world->settings.gravity * b->mass);
             b->angularVelocity += b->invInertia * dt * b->torque;
 
-            // Apply damping (found in box2d)
-            // ODE: dv/dt + c * v = 0
-            // dv/dt = -c * v
-            // (1/v) dv = -c dt ; integrate both sides
-            // ln|v| = -c * t + C ; exponentiate both sides (C is integration constant)
-            // v = C * exp(-c * t)
-            // v(0) = C
-            // Solution: v(t) = v0 * exp(-c * t)
-            // Time step: v(t + dt) = v0 * exp(-c * (t + dt))
-            //                      = v0 * exp(-c * t) * exp(-c * dt)
-            //                      = v * exp(-c * dt)
-            // v2 = exp(-c * dt) * v1
-            // Pade approximation:
-            // v2 = v1 * 1 / (1 + c * dt)
+            /*
+               Apply damping (found in box2d)
+               ODE: dv/dt + c * v = 0
+               dv/dt = -c * v
+               (1/v) dv = -c dt ; integrate both sides
+               ln|v| = -c * t + C ; exponentiate both sides (C is integration constant)
+               v = C * exp(-c * t)
+               v(0) = C
+               Solution: v(t) = v0 * exp(-c * t)
+               Time step: v(t + dt) = v0 * exp(-c * (t + dt))
+                                    = v0 * exp(-c * t) * exp(-c * dt)
+                                    = v * exp(-c * dt)
+               v2 = exp(-c * dt) * v1
+               Pade approximation:
+               v2 = v1 * 1 / (1 + c * dt)
+            */
             b->linearVelocity *= 1.0f / (1.0f + b->linearDamping * dt);
             b->angularVelocity *= 1.0f / (1.0f + b->angularDamping * dt);
         }

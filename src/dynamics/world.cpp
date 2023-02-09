@@ -20,8 +20,10 @@ World::World(const WorldSettings& _settings)
     , sleepingBodyCount{ 0 }
     , stepComplete{ true }
 {
+    // Assertions for stable CCD
     muliAssert(default_radius >= toi_position_solver_threshold);
     muliAssert(position_solver_threshold > toi_position_solver_threshold);
+    muliAssert(toi_position_solver_threshold < linear_slop * 2.0f);
 }
 
 World::~World() noexcept

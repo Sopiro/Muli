@@ -233,7 +233,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
 
     /*
         target        = r2 - linear_slop * 4.0 (discrete position solver threshold)
-        safe position = r2 - linear_slop * 2.0 (TOI position solver threshold)
+        safe position < r2 - linear_slop * 2.0 (TOI position solver threshold)
 
         s - target  > tolerance        | TOIOutput::separated
         0.0 < s - target < tolerance   | TOIOutput::touching

@@ -10,9 +10,9 @@ constexpr int32 max_local_polygon_vertices = 8;
 
 constexpr float linear_slop = 0.002f; // meters
 constexpr float position_solver_threshold = linear_slop * 4.0f;
-constexpr float toi_position_solver_threshold = linear_slop * 2.0f;
+constexpr float toi_position_solver_threshold = linear_slop * 1.8f;
 constexpr float position_correction = 0.2f; // The baumgarte term (0.0 ~ 1.0)
-constexpr float toi_position_correction = 0.6f;
+constexpr float toi_position_correction = 0.55f;
 constexpr float max_position_correction = 0.2f; // meters
 
 // Collision detection settings
@@ -39,7 +39,7 @@ constexpr float aabb_multiplier = 4.0f;
 // it's not recommended to use it as the minimum value.
 // Instead, it is advisable to use the default_radius as the minimum radius.
 constexpr float minimum_radius = linear_slop * 2.0f + linear_slop * 0.05f;
-constexpr float default_radius = linear_slop * 3.0f;
+constexpr float default_radius = linear_slop * 2.5f;
 constexpr float default_density = 12.5f;
 constexpr float default_friction = 0.5f;
 constexpr float default_restitution = 0.0f;

@@ -46,7 +46,7 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        if (ImGui::Begin("Continuous test 2", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::Begin("Dense collision", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::SliderFloat("Linear velocity", &lv, 0.0f, 100.0f, "%.2f m/s");
             ImGui::SliderFloat("Angular velocity", &av, 0.0f, 10.0f, "%.2f rad/s");
