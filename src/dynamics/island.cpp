@@ -244,7 +244,7 @@ void Island::SolveTOI(float dt)
     }
 
     // We don't need position correction
-    // Because we solved the velocity constraints in a position that is already safe by the TOI position solver
+    // Because we solved velocity constraints in a position that is already safe
 
     for (int32 i = 0; i < contactCount; ++i)
     {

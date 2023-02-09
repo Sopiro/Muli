@@ -394,6 +394,9 @@ float World::SolveTOI()
 
                 RigidBody* other = ce->other;
 
+                // Awake linked bodies
+                other->Awake();
+
                 // Discard non-continuous dynamic vs. non-continuous dynamic case
                 if (body->IsContinuous() == false && other->IsContinuous() == false &&
                     other->type == RigidBody::Type::dynamic_body)
@@ -430,12 +433,18 @@ float World::SolveTOI()
                     continue;
                 }
 
-                if (other->type != RigidBody::static_body)
+                if (other->type == RigidBody::Type::static_body)
                 {
-                    other->Awake();
+                    continue;
                 }
 
                 island.Add(other);
+
+                // Awake linked bodies
+                for (ContactEdge* oce = other->contactList; oce; oce = oce->next)
+                {
+                    oce->other->Awake();
+                }
             }
         }
 
