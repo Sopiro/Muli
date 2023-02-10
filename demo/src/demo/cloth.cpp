@@ -68,11 +68,6 @@ public:
         RigidBody* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
         RigidBody* tr = circles[rows - 1][cols - 1];
 
-        RigidBody* w1 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        RigidBody* w2 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        RigidBody* w3 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        RigidBody* w4 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-
         world->CreateGrabJoint(tl, tl->GetPosition(), tl->GetPosition() + Vec2{ -gap, gap }, 15.0f, 1.0f, tl->GetMass());
         world->CreateGrabJoint(ml, ml->GetPosition(), ml->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
         world->CreateGrabJoint(mr, mr->GetPosition(), mr->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
