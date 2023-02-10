@@ -54,6 +54,7 @@ public:
             b->SetPosition(pos);
             b->SetRotation(angle);
             b->UserFlag |= UserFlag::render_polygon_radius;
+            // b->SetContinuous(true);
         }
     }
 

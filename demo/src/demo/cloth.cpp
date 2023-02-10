@@ -72,15 +72,11 @@ public:
         RigidBody* w2 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
         RigidBody* w3 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
         RigidBody* w4 = world->CreateCircle(0.1f, RigidBody::Type::static_body);
-        w1->SetPosition(tl->GetPosition() + Vec2{ -gap, gap });
-        w2->SetPosition(ml->GetPosition() + Vec2{ 0.0f, gap });
-        w3->SetPosition(mr->GetPosition() + Vec2{ 0.0f, gap });
-        w4->SetPosition(tr->GetPosition() + Vec2{ gap, gap });
 
-        world->CreateDistanceJoint(w1, tl, -1.0f, 20.0f, 1.0f, tl->GetMass());
-        world->CreateDistanceJoint(w2, ml, -1.0f, 20.0f, 1.0f, ml->GetMass());
-        world->CreateDistanceJoint(w3, mr, -1.0f, 20.0f, 1.0f, mr->GetMass());
-        world->CreateDistanceJoint(w4, tr, -1.0f, 20.0f, 1.0f, tr->GetMass());
+        world->CreateGrabJoint(tl, tl->GetPosition(), tl->GetPosition() + Vec2{ -gap, gap }, 15.0f, 1.0f, tl->GetMass());
+        world->CreateGrabJoint(ml, ml->GetPosition(), ml->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
+        world->CreateGrabJoint(mr, mr->GetPosition(), mr->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
+        world->CreateGrabJoint(tr, tr->GetPosition(), tr->GetPosition() + Vec2{ gap, gap }, 15.0f, 1.0f, tl->GetMass());
     }
 
     void UpdateUI() override

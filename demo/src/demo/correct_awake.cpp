@@ -33,7 +33,7 @@ public:
 
     void UpdateUI() override
     {
-        if (!t && game.GetTime() > 2.3f)
+        if (!t && world->GetSleepingBodyCount() >= count)
         {
             t = true;
             RigidBody* b = world->CreateBox(0.4f);
@@ -52,6 +52,14 @@ public:
             ImGui::Text("Press 's' to step simulation");
         }
         ImGui::End();
+    }
+
+    ~CorrectAwake()
+    {
+        if (options.pause)
+        {
+            options.pause = false;
+        }
     }
 
     static Demo* Create(Game& game)

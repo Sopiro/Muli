@@ -32,7 +32,7 @@ void Joint::SetParameters(float _frequency, float _dampingRatio, float _jointMas
     {
         frequency = _frequency;
         dampingRatio = Clamp<float>(_dampingRatio, 0.0f, 1.0f);
-        jointMass = Clamp<float>(_jointMass, 0.0f, max_value);
+        jointMass = Clamp<float>(_jointMass, epsilon, max_value);
     }
     else
     {

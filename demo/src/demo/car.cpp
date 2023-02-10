@@ -45,8 +45,8 @@ public:
         wheel1->SetCollisionFilter(filter);
         wheel2->SetCollisionFilter(filter);
 
-        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f });
-        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f });
+        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f, wheel1->GetMass());
+        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f, wheel2->GetMass());
 
         float motorMaxForce = 300.0f;
         float motorMaxTorque = 0.0f;
