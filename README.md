@@ -72,6 +72,7 @@ int main()
 
 ## Todo
 - Implement position solve step for joints  
+- Multithreading
 
 ## References
 Here are some great resources to learn how to build a physics engine!
