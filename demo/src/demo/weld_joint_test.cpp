@@ -46,7 +46,7 @@ public:
         b0->SetPosition(xStart + w / 2.0f, yStart);
         b0->SetCollisionFilter(filter);
 
-        world->CreateWeldJoint(wall, b0, b0->GetPosition(), freq, damp, b0->GetMass());
+        world->CreateWeldJoint(wall, b0, b0->GetPosition(), freq, damp, 1.0f);
 
         for (int32 i = 1; i < count; ++i)
         {
@@ -62,7 +62,7 @@ public:
 
             b1->SetPosition(xStart + w / 2.0f + w * i, yStart);
 
-            world->CreateWeldJoint(b0, b1, b0->GetPosition() + Vec2{ w / 2.0f, 0.0f }, freq, damp, b1->GetMass());
+            world->CreateWeldJoint(b0, b1, b0->GetPosition() + Vec2{ w / 2.0f, 0.0f }, freq, damp, 1.0f);
             b1->SetCollisionFilter(filter);
             b0 = b1;
         }

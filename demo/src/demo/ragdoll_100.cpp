@@ -138,9 +138,9 @@ public:
         Demo::Step();
 
         float t1 = game.GetTime();
-        if (count < 100 && t0 + 0.1f < t1)
+        if (count < 100 && t0 + 0.3f < t1)
         {
-            CreateRagdoll(LinearRand(-5.0f, 5.0f), LinearRand(10.0f, 20.0f), 0.3f);
+            CreateRagdoll(LinearRand(-5.0f, 5.0f), 8.0f, 0.2f);
             t0 = t1;
             ++count;
         }

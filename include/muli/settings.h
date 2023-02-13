@@ -10,9 +10,9 @@ constexpr int32 max_local_polygon_vertices = 8;
 
 constexpr float linear_slop = 0.002f; // meters
 constexpr float position_solver_threshold = linear_slop * 4.0f;
-constexpr float toi_position_solver_threshold = linear_slop * 1.8f;
+constexpr float toi_position_solver_threshold = linear_slop * 2.0f - linear_slop * 0.05f;
 constexpr float position_correction = 0.2f; // The baumgarte term (0.0 ~ 1.0)
-constexpr float toi_position_correction = 0.55f;
+constexpr float toi_position_correction = 0.3f;
 constexpr float max_position_correction = 0.2f; // meters
 
 // Collision detection settings

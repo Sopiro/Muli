@@ -19,14 +19,6 @@ public:
 
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
-        RigidBody* b = world->CreateCircle(1.5f);
-
-        Vec2 p = PolarToCart(DegToRad(angle), 120.0f);
-        b->SetPosition(p + Vec2{ 0.0f, 9.0f });
-        b->SetLinearVelocity(-p * 0.4f + Vec2{ 0.0f, 9.0f });
-        b->SetAngularVelocity(0.0f);
-        b->SetContinuous(true);
-
         int32 rows = 15;
         float boxSize = 0.4f;
         float xGap = 0.0625f * boxSize / 0.5f;
@@ -38,11 +30,14 @@ public:
         {
             for (int32 x = 0; x < rows - y; ++x)
             {
-                b = world->CreateBox(boxSize);
+                RigidBody* b = world->CreateBox(boxSize);
                 b->SetPosition(xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap));
                 b->SetContinuous(true);
             }
         }
+
+        count = rows * (rows - 1) / 2;
+        t = false;
     }
 
     void Step() override
@@ -63,8 +58,26 @@ public:
         }
     }
 
+    int32 count;
+    bool t;
+
     void UpdateUI() override
     {
+        if (!t && world->GetSleepingBodyCount() >= count)
+        {
+            t = true;
+
+            float r = 1.5f;
+            RigidBody* b = world->CreateCircle(r);
+            game.RegisterRenderBody(b);
+
+            Vec2 p = PolarToCart(DegToRad(angle), 12.0f);
+            b->SetPosition(p + Vec2{ 0.0f, r });
+            b->SetLinearVelocity(-p * 2.0 + Vec2{ 0.0f, r });
+            b->SetAngularVelocity(0.0f);
+            b->SetContinuous(true);
+        }
+
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
         if (ImGui::Begin("Sub-stepping", NULL, ImGuiWindowFlags_AlwaysAutoResize))
