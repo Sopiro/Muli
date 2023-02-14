@@ -12,7 +12,7 @@ Circle::Circle(float _radius, const Vec2& _center)
 
 Vec2 Circle::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
-    Vec2 position = transform * center;
+    Vec2 position = Mul(transform, center);
     Vec2 dir = (q - position);
 
     float distance = dir.Normalize();
@@ -28,7 +28,7 @@ Vec2 Circle::GetClosestPoint(const Transform& transform, const Vec2& q) const
 
 bool Circle::RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const
 {
-    Vec2 position = transform * center;
+    Vec2 position = Mul(transform, center);
 
     Vec2 d = input.to - input.from;
     Vec2 f = input.from - position;

@@ -59,11 +59,11 @@ struct SeparationFunction
             axis = Cross(localPointB1 - localPointB0, 1.0f);
             axis.Normalize();
 
-            Vec2 pointB = tfB * localPoint;
+            Vec2 pointB = Mul(tfB, localPoint);
             Vec2 pointA = featuresA[0].position;
 
             // world space face normal
-            Vec2 normal = tfB.rotation * axis;
+            Vec2 normal = Mul(tfB.rotation, axis);
             float separation = Dot(normal, pointA - pointB);
             if (separation < 0.0f)
             {
@@ -84,11 +84,11 @@ struct SeparationFunction
             axis = Cross(localPointA1 - localPointA0, 1.0f);
             axis.Normalize();
 
-            Vec2 pointA = tfA * localPoint;
+            Vec2 pointA = Mul(tfA, localPoint);
             Vec2 pointB = featuresB[0].position;
 
             // world space face normal
-            Vec2 normal = tfA.rotation * axis;
+            Vec2 normal = Mul(tfA.rotation, axis);
             float separation = Dot(normal, pointB - pointA);
             if (separation < 0.0f)
             {
@@ -117,8 +117,8 @@ struct SeparationFunction
             Vec2 localPointA = shapeA->GetVertex(*idA);
             Vec2 localPointB = shapeB->GetVertex(*idB);
 
-            Vec2 pointA = tfA * localPointA;
-            Vec2 pointB = tfB * localPointB;
+            Vec2 pointA = Mul(tfA, localPointA);
+            Vec2 pointB = Mul(tfB, localPointB);
 
             float separation = Dot(axis, pointB - pointA);
             return separation;
@@ -126,8 +126,8 @@ struct SeparationFunction
         case edgeA:
         {
             // world space face normal and refernce point
-            Vec2 normal = tfA.rotation * axis;
-            Vec2 pointA = tfA * localPoint;
+            Vec2 normal = Mul(tfA.rotation, axis);
+            Vec2 pointA = Mul(tfA, localPoint);
 
             Vec2 localAxisB = MulT(tfB.rotation, -normal);
 
@@ -135,7 +135,7 @@ struct SeparationFunction
             *idB = shapeB->GetSupport(localAxisB);
 
             Vec2 localPointB = shapeB->GetVertex(*idB);
-            Vec2 pointB = tfB * localPointB;
+            Vec2 pointB = Mul(tfB, localPointB);
 
             float separation = Dot(normal, pointB - pointA);
             return separation;
@@ -143,8 +143,8 @@ struct SeparationFunction
         case edgeB:
         {
             // world space face normal and refernce point
-            Vec2 normal = tfB.rotation * axis;
-            Vec2 pointB = tfB * localPoint;
+            Vec2 normal = Mul(tfB.rotation, axis);
+            Vec2 pointB = Mul(tfB, localPoint);
 
             Vec2 localAxisA = MulT(tfA.rotation, -normal);
 
@@ -152,7 +152,7 @@ struct SeparationFunction
             *idB = -1;
 
             Vec2 localPointA = shapeA->GetVertex(*idA);
-            Vec2 pointA = tfA * localPointA;
+            Vec2 pointA = Mul(tfA, localPointA);
 
             float separation = Dot(normal, pointA - pointB);
             return separation;
@@ -176,32 +176,32 @@ struct SeparationFunction
             Vec2 localPointA = shapeA->GetVertex(idA);
             Vec2 localPointB = shapeB->GetVertex(idB);
 
-            Vec2 pointA = tfA * localPointA;
-            Vec2 pointB = tfB * localPointB;
+            Vec2 pointA = Mul(tfA, localPointA);
+            Vec2 pointB = Mul(tfB, localPointB);
 
             float separation = Dot(axis, pointB - pointA);
             return separation;
         }
         case edgeA:
         {
-            Vec2 normal = tfA.rotation * axis;
+            Vec2 normal = Mul(tfA.rotation, axis);
 
-            Vec2 pointA = tfA * localPoint;
+            Vec2 pointA = Mul(tfA, localPoint);
 
             Vec2 localPointB = shapeB->GetVertex(idB);
-            Vec2 pointB = tfB * localPointB;
+            Vec2 pointB = Mul(tfB, localPointB);
 
             float separation = Dot(normal, pointB - pointA);
             return separation;
         }
         case edgeB:
         {
-            Vec2 normal = tfB.rotation * axis;
+            Vec2 normal = Mul(tfB.rotation, axis);
 
-            Vec2 pointB = tfB * localPoint;
+            Vec2 pointB = Mul(tfB, localPoint);
 
             Vec2 localPointA = shapeA->GetVertex(idA);
-            Vec2 pointA = tfA * localPointA;
+            Vec2 pointA = Mul(tfA, localPointA);
 
             float separation = Dot(normal, pointA - pointB);
             return separation;

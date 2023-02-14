@@ -82,9 +82,9 @@ bool ShapeCast(const Shape* a,
 
     // Get CSO support point in -r direction
     int32 idA = a->GetSupport(MulT(tfA.rotation, -r));
-    Vec2 pointA = tfA * a->GetVertex(idA);
+    Vec2 pointA = Mul(tfA, a->GetVertex(idA));
     int32 idB = b->GetSupport(MulT(tfB.rotation, r));
-    Vec2 pointB = tfB * b->GetVertex(idB);
+    Vec2 pointB = Mul(tfB, b->GetVertex(idB));
     Vec2 v = pointA - pointB;
 
     float target = Max(default_radius, r2 - toi_position_solver_threshold);
@@ -99,9 +99,9 @@ bool ShapeCast(const Shape* a,
 
         // Get CSO support point in -v direction
         idA = a->GetSupport(MulT(tfA.rotation, -v));
-        pointA = tfA * a->GetVertex(idA);
+        pointA = Mul(tfA, a->GetVertex(idA));
         idB = b->GetSupport(MulT(tfB.rotation, v));
-        pointB = tfB * b->GetVertex(idB);
+        pointB = Mul(tfB, b->GetVertex(idB));
         Vec2 p = pointA - pointB;
 
         // -v is a normal at hit point

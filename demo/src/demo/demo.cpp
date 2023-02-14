@@ -315,16 +315,16 @@ bool Demo::EnableAddForce()
         auto& pl = game.GetPointList();
         auto& ll = game.GetLineList();
 
-        pl.push_back(ft->GetTransform() * mStartLocal);
+        pl.push_back(Mul(ft->GetTransform(), mStartLocal));
         pl.push_back(cursorPos);
-        ll.push_back(ft->GetTransform() * mStartLocal);
+        ll.push_back(Mul(ft->GetTransform(), mStartLocal));
         ll.push_back(cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             if (ft->GetWorld())
             {
-                Vec2 mStartGlobal = ft->GetTransform() * mStartLocal;
+                Vec2 mStartGlobal = Mul(ft->GetTransform(), mStartLocal);
                 Vec2 f = mStartGlobal - cursorPos;
                 f *= settings.inv_dt * ft->GetMass() * 3.0f;
 

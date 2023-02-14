@@ -30,8 +30,8 @@ inline SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape
     SupportPoint supportPoint;
     supportPoint.pointA.id = a->GetSupport(MulT(tfA.rotation, dir));
     supportPoint.pointB.id = b->GetSupport(MulT(tfB.rotation, -dir));
-    supportPoint.pointA.position = tfA * a->GetVertex(supportPoint.pointA.id);
-    supportPoint.pointB.position = tfB * b->GetVertex(supportPoint.pointB.id);
+    supportPoint.pointA.position = Mul(tfA, a->GetVertex(supportPoint.pointA.id));
+    supportPoint.pointB.position = Mul(tfB, b->GetVertex(supportPoint.pointB.id));
     supportPoint.point = supportPoint.pointA.position - supportPoint.pointB.position;
 
     return supportPoint;
@@ -204,8 +204,8 @@ static void FindContactPoints(
 
 static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    Vec2 pa = tfA * a->GetCenter();
-    Vec2 pb = tfB * b->GetCenter();
+    Vec2 pa = Mul(tfA, a->GetCenter());
+    Vec2 pb = Mul(tfB, b->GetCenter());
 
     float d = Dist2(pa, pb);
     float r2 = a->GetRadius() + b->GetRadius();
@@ -238,7 +238,7 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
 
-    Vec2 pb = tfB * b->GetCenter();
+    Vec2 pb = Mul(tfB, b->GetCenter());
     Vec2 localP = MulT(tfA, pb);
 
     float u = Dot(localP - vb, va - vb);
@@ -279,8 +279,8 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         return false;
     }
 
-    normal = tfA.rotation * normal;
-    Vec2 point = tfA * (index ? vb : va);
+    normal = Mul(tfA.rotation, normal);
+    Vec2 point = Mul(tfA, (index ? vb : va));
 
     manifold->contactNormal = normal;
     manifold->contactTangent.Set(-normal.y, normal.x);
@@ -302,7 +302,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    Vec2 pb = tfB * b->GetCenter();
+    Vec2 pb = Mul(tfB, b->GetCenter());
     Vec2 localP = MulT(tfA, pb);
 
     float minSeparation = -max_value;
@@ -327,8 +327,8 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     // Circle center is inside the polygon
     if (minSeparation < 0.0f)
     {
-        Vec2 normal = tfA.rotation * normals[index];
-        Vec2 point = tfA * vertices[index];
+        Vec2 normal = Mul(tfA.rotation, normals[index]);
+        Vec2 point = Mul(tfA, vertices[index]);
 
         manifold->contactNormal = normal;
         manifold->contactTangent.Set(-normal.y, normal.x);
@@ -374,8 +374,8 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         return false;
     }
 
-    normal = tfA.rotation * normal;
-    Vec2 point = tfA * vertices[index];
+    normal = Mul(tfA.rotation, normal);
+    Vec2 point = Mul(tfA, vertices[index]);
 
     manifold->contactNormal = normal;
     manifold->contactTangent.Set(-normal.y, normal.x);

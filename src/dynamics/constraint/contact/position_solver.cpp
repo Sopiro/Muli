@@ -23,9 +23,9 @@ bool PositionSolver::Solve()
     Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
     Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
-    Vec2 planePoint = tfA * localPlainPoint;
-    Vec2 clipPoint = tfB * localClipPoint; // penetration point
-    Vec2 normal = tfA.rotation * localNormal;
+    Vec2 planePoint = Mul(tfA, localPlainPoint);
+    Vec2 clipPoint = Mul(tfB, localClipPoint); // penetration point
+    Vec2 normal = Mul(tfA.rotation, localNormal);
 
     float separation = Dot(clipPoint - planePoint, normal);
 
@@ -65,9 +65,9 @@ bool PositionSolver::SolveTOI()
     Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
     Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
-    Vec2 planePoint = tfA * localPlainPoint;
-    Vec2 clipPoint = tfB * localClipPoint; // penetration point
-    Vec2 normal = tfA.rotation * localNormal;
+    Vec2 planePoint = Mul(tfA, localPlainPoint);
+    Vec2 clipPoint = Mul(tfB, localClipPoint); // penetration point
+    Vec2 normal = Mul(tfA.rotation, localNormal);
 
     float separation = Dot(clipPoint - planePoint, normal);
 

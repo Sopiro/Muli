@@ -1249,11 +1249,6 @@ inline Vec2 Mul(const Rotation& r, const Vec2& v)
     return Vec2{ r.c * v.x - r.s * v.y, r.s * v.x + r.c * v.y };
 }
 
-inline Vec2 operator*(const Rotation& r, const Vec2& v)
-{
-    return Vec2{ r.c * v.x - r.s * v.y, r.s * v.x + r.c * v.y };
-}
-
 // Inverse rotate a vector
 inline Vec2 MulT(const Rotation& r, const Vec2& v)
 {
@@ -1262,14 +1257,6 @@ inline Vec2 MulT(const Rotation& r, const Vec2& v)
 
 // Transform a vector: simplified matrix multiplication
 inline Vec2 Mul(const Transform& t, const Vec2& v)
-{
-    float x = (t.rotation.c * v.x - t.rotation.s * v.y) + t.position.x;
-    float y = (t.rotation.s * v.x + t.rotation.c * v.y) + t.position.y;
-
-    return Vec2{ x, y };
-}
-
-inline Vec2 operator*(const Transform& t, const Vec2& v)
 {
     float x = (t.rotation.c * v.x - t.rotation.s * v.y) + t.position.x;
     float y = (t.rotation.s * v.x + t.rotation.c * v.y) + t.position.y;
@@ -1480,7 +1467,7 @@ inline void Sweep::GetTransform(float beta, Transform* transform) const
     transform->rotation = angle;
 
     // Shift to origin
-    transform->position -= transform->rotation * localCenter;
+    transform->position -= Mul(transform->rotation, localCenter);
 }
 
 inline void Sweep::Advance(float alpha)

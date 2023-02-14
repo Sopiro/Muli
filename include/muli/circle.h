@@ -37,7 +37,7 @@ inline Shape* Circle::Clone(Allocator* allocator) const
 
 inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
-    return Edge{ transform * center, transform * center };
+    return Edge{ Mul(transform, center), Mul(transform, center) };
 }
 
 inline Vec2 Circle::GetVertex(int32 id) const
@@ -66,7 +66,7 @@ inline void Circle::ComputeMass(float density, MassData* outMassData) const
 
 inline void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
-    Vec2 p = transform * center;
+    Vec2 p = Mul(transform, center);
 
     outAABB->min = Vec2{ p.x - radius, p.y - radius };
     outAABB->max = Vec2{ p.x + radius, p.y + radius };

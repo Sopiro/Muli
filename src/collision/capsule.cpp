@@ -89,7 +89,7 @@ Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
     else
     {
         closest += normal * radius;
-        return transform * closest;
+        return Mul(transform, closest);
     }
 }
 
@@ -135,7 +135,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = transform.rotation * (f + d * t).Normalized();
+            output->normal = Mul(transform.rotation, (f + d * t).Normalized());
             return true;
         }
         else
@@ -203,7 +203,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = transform.rotation * (f + d * t).Normalized();
+            output->normal = Mul(transform.rotation, (f + d * t).Normalized());
             return true;
         }
         else
@@ -234,7 +234,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = transform.rotation * (f + d * t).Normalized();
+            output->normal = Mul(transform.rotation, (f + d * t).Normalized());
             return true;
         }
         else
@@ -247,11 +247,11 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         output->fraction = t;
         if (numerator > 0.0f)
         {
-            output->normal = transform.rotation * -normal;
+            output->normal = Mul(transform.rotation, -normal);
         }
         else
         {
-            output->normal = transform.rotation * normal;
+            output->normal = Mul(transform.rotation, normal);
         }
 
         return true;

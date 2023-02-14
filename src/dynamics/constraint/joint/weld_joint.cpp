@@ -33,8 +33,8 @@ void WeldJoint::Prepare()
     // M = K^-1
 
     // Find k matrix here: https://dyn4j.org/2010/12/weld-constraint/
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->sweep.localCenter);
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->sweep.localCenter);
 
     Mat3 k;
 

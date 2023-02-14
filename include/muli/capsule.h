@@ -46,7 +46,7 @@ inline Shape* Capsule::Clone(Allocator* allocator) const
 
 inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
-    return Edge{ transform * va, transform * vb, 0, 1 };
+    return Edge{ Mul(transform, va), Mul(transform, vb), 0, 1 };
 }
 
 inline Vec2 Capsule::GetVertex(int32 id) const
@@ -93,8 +93,8 @@ inline void Capsule::ComputeMass(float density, MassData* outMassData) const
 
 inline void Capsule::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
-    Vec2 v1 = transform * va;
-    Vec2 v2 = transform * vb;
+    Vec2 v1 = Mul(transform, va);
+    Vec2 v2 = Mul(transform, vb);
 
     outAABB->min = Min(v1, v2) - Vec2{ radius, radius };
     outAABB->max = Max(v1, v2) + Vec2{ radius, radius };

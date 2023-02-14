@@ -29,8 +29,8 @@ void DistanceJoint::Prepare()
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 
-    ra = bodyA->GetRotation() * (localAnchorA - bodyA->sweep.localCenter);
-    rb = bodyB->GetRotation() * (localAnchorB - bodyB->sweep.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->sweep.localCenter);
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->sweep.localCenter);
 
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;

@@ -264,7 +264,7 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
     transform.position = _pos;
     transform.rotation = _angle;
 
-    sweep.c = transform * sweep.localCenter;
+    sweep.c = Mul(transform, sweep.localCenter);
     sweep.a = _angle;
 
     sweep.c0 = sweep.c;
@@ -286,7 +286,7 @@ inline void RigidBody::SetPosition(const Vec2& _pos)
 inline void RigidBody::SetPosition(float x, float y)
 {
     transform.position.Set(x, y);
-    sweep.c = transform * sweep.localCenter;
+    sweep.c = Mul(transform, sweep.localCenter);
     sweep.c0 = sweep.c;
 
     SynchronizeColliders();
@@ -329,7 +329,7 @@ inline void RigidBody::Translate(float dx, float dy)
 {
     transform.position.x += dx;
     transform.position.y += dy;
-    sweep.c = transform * sweep.localCenter;
+    sweep.c = Mul(transform, sweep.localCenter);
     sweep.c0 = sweep.c;
 
     SynchronizeColliders();
@@ -567,7 +567,7 @@ inline void RigidBody::SynchronizeTransform()
 {
     transform.rotation = sweep.a;
     // Shift to origin
-    transform.position = sweep.c - (transform.rotation * sweep.localCenter);
+    transform.position = sweep.c - Mul(transform.rotation, sweep.localCenter);
 }
 
 // Advance to the new safe time
@@ -580,7 +580,7 @@ inline void RigidBody::Advance(float alpha)
     sweep.a = sweep.a0;
 
     transform.rotation = sweep.a;
-    transform.position = sweep.c - transform.rotation * sweep.localCenter;
+    transform.position = sweep.c - Mul(transform.rotation, sweep.localCenter);
 }
 
 } // namespace muli

@@ -73,15 +73,15 @@ Polygon::Polygon(float width, float height, float _radius, const Vec2& position,
 
     Transform t{ position, angle };
 
-    vertices[0] = t * Vec2{ -hx, -hy };
-    vertices[1] = t * Vec2{ hx, -hy };
-    vertices[2] = t * Vec2{ hx, hy };
-    vertices[3] = t * Vec2{ -hx, hy };
+    vertices[0] = Mul(t, Vec2{ -hx, -hy });
+    vertices[1] = Mul(t, Vec2{ hx, -hy });
+    vertices[2] = Mul(t, Vec2{ hx, hy });
+    vertices[3] = Mul(t, Vec2{ -hx, hy });
 
-    normals[0] = t.rotation * Vec2{ 0.0f, -1.0f };
-    normals[1] = t.rotation * Vec2{ 1.0f, 0.0f };
-    normals[2] = t.rotation * Vec2{ 0.0f, 1.0f };
-    normals[3] = t.rotation * Vec2{ -1.0f, 0.0f };
+    normals[0] = Mul(t.rotation, Vec2{ 0.0f, -1.0f });
+    normals[1] = Mul(t.rotation, Vec2{ 1.0f, 0.0f });
+    normals[2] = Mul(t.rotation, Vec2{ 0.0f, 1.0f });
+    normals[3] = Mul(t.rotation, Vec2{ -1.0f, 0.0f });
 
     center = position;
     area = width * height;
@@ -136,7 +136,7 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
                 float distance = Dot(localQ - v0, normal);
                 if (distance > radius)
                 {
-                    return transform * (v0 + normal * radius);
+                    return Mul(transform, v0 + normal * radius);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
                 float distance = Dot(localQ - v1, normal);
                 if (distance > radius)
                 {
-                    return transform * (v1 + normal * radius);
+                    return Mul(transform, v1 + normal * radius);
                 }
                 else
                 {
@@ -175,7 +175,7 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
             if (distance > radius)
             {
                 Vec2 closest = localQ + normal * (radius - distance);
-                return transform * closest;
+                return Mul(transform, closest);
             }
 
             if (dir != 0)
@@ -211,11 +211,11 @@ Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 
     if (Dot(e1, localDir) <= Dot(e2, localDir))
     {
-        return Edge{ transform * prev, transform * curr, prevIndex, index };
+        return Edge{ Mul(transform, prev), Mul(transform, curr), prevIndex, index };
     }
     else
     {
-        return Edge{ transform * curr, transform * next, index, nextIndex };
+        return Edge{ Mul(transform, curr), Mul(transform, next), index, nextIndex };
     }
 }
 
@@ -317,12 +317,12 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
 
 void Polygon::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
-    Vec2 min = transform * vertices[0];
+    Vec2 min = Mul(transform, vertices[0]);
     Vec2 max = min;
 
     for (int32 i = 1; i < vertexCount; ++i)
     {
-        Vec2 v = transform * vertices[i];
+        Vec2 v = Mul(transform, vertices[i]);
 
         min = Min(min, v);
         max = Max(max, v);
@@ -453,7 +453,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (offset == 0.0f)
         {
             output->fraction = near;
-            output->normal = transform.rotation * n;
+            output->normal = Mul(transform.rotation, n);
             return true;
         }
 
@@ -487,7 +487,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = transform.rotation * (f + d * t).Normalized();
+                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
                 return true;
             }
             else
@@ -518,7 +518,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = transform.rotation * (f + d * t).Normalized();
+                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
                 return true;
             }
             else
@@ -529,7 +529,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         else
         {
             output->fraction = near;
-            output->normal = transform.rotation * n;
+            output->normal = Mul(transform.rotation, n);
             return true;
         }
     }

@@ -370,7 +370,7 @@ void RigidBody::ResetMassData()
 
     Vec2 oldPosition = sweep.c;
     sweep.localCenter = localCenter;
-    sweep.c = transform * sweep.localCenter;
+    sweep.c = Mul(transform, sweep.localCenter);
     sweep.c0 = sweep.c;
 
     linearVelocity += Cross(angularVelocity, sweep.c - oldPosition);
