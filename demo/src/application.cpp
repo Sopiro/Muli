@@ -3,8 +3,6 @@
 namespace muli
 {
 
-Application* Application::app = nullptr;
-
 Application::Application(int32 width, int32 height, std::string title)
     : window(width, height, std::move(title))
 {
@@ -47,10 +45,6 @@ void Application::Run()
 
             deltaTime = 0.0f;
             window.EndFrame();
-        }
-        else
-        {
-            // std::this_thread::yield();
         }
     }
 }

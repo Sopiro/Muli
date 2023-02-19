@@ -9,7 +9,7 @@ namespace muli
 class Application final
 {
 public:
-    static Application* Create(int32 width, int32 height, std::string title);
+    static std::unique_ptr<Application> Create(int32 width, int32 height, std::string title);
 
     ~Application() noexcept;
 
@@ -20,13 +20,12 @@ public:
     Application& operator=(Application&&) noexcept = delete;
 
     void SetFrameRate(int32 frameRate);
-
     void Run();
 
     Vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 1.0f };
 
 private:
-    static Application* app;
+    inline static Application* app = nullptr;
 
     Application(int32 width, int32 height, std::string title);
     void Update(float dt);
@@ -37,12 +36,12 @@ private:
     double frameTime;
 };
 
-inline Application* Application::Create(int32 width, int32 height, std::string title)
+inline std::unique_ptr<Application> Application::Create(int32 width, int32 height, std::string title)
 {
     muliAssert(app == nullptr);
 
     Application::app = new Application(width, height, title);
-    return Application::app;
+    return std::unique_ptr<Application>(app);
 }
 
 inline void Application::SetFrameRate(int32 frameRate)

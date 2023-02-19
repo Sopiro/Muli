@@ -1,3 +1,5 @@
+#pragma once
+
 #include "common.h"
 #include "mesh.h"
 
@@ -32,5 +34,27 @@ float hue2rgb(float p, float q, float t);
  * returns RGB in the set [0, 1].
  */
 Vec3 hsl2rgb(float h, float s, float l);
+
+inline void PrintSizes()
+{
+    std::cout << "Circle: " << sizeof(Circle) << '\n';
+    std::cout << "Capsule: " << sizeof(Capsule) << '\n';
+    std::cout << "Polygon: " << sizeof(Polygon) << '\n';
+    std::cout << "Collider: " << sizeof(Collider) << '\n';
+    std::cout << "RigidBody: " << sizeof(RigidBody) << '\n';
+    std::cout << "Contact: " << sizeof(Contact) << '\n';
+    std::cout << "Manifold: " << sizeof(ContactManifold) << '\n';
+    std::cout << '\n';
+
+    std::cout << "Angle joint: " << sizeof(AngleJoint) << '\n';
+    std::cout << "Distance joint: " << sizeof(DistanceJoint) << '\n';
+    std::cout << "Grab joint: " << sizeof(GrabJoint) << '\n';
+    std::cout << "Line joint: " << sizeof(LineJoint) << '\n';
+    std::cout << "Motor joint: " << sizeof(MotorJoint) << '\n';
+    std::cout << "Prismatic joint: " << sizeof(PrismaticJoint) << '\n';
+    std::cout << "Pulley joint: " << sizeof(PulleyJoint) << '\n';
+    std::cout << "Revolute joint: " << sizeof(RevoluteJoint) << '\n';
+    std::cout << "Weld joint: " << sizeof(WeldJoint) << '\n' << std::endl;
+}
 
 } // namespace muli

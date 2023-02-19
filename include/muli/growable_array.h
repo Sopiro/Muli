@@ -163,6 +163,13 @@ public:
         --count;
     }
 
+    // O(1)
+    void RemoveSwap(int32 index)
+    {
+        array[index] = array[count - 1];
+        --count;
+    }
+
     int32 Count() const
     {
         return count;

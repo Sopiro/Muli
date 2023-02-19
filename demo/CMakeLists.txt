@@ -1,7 +1,3 @@
-set(WINDOW_TITLE "Muli Engine Demo")
-set(WINDOW_WIDTH 1280)
-set(WINDOW_HEIGHT 720)
-
 set(DEMO_HEADER_FILES
     include/mesh.h
     include/renderer.h
@@ -93,12 +89,6 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SO
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "include" FILES ${DEMO_HEADER_FILES})
 
 add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
-
-target_compile_definitions(demo PUBLIC
-    WINDOW_TITLE="${WINDOW_TITLE}"
-    WINDOW_WIDTH=${WINDOW_WIDTH}
-    WINDOW_HEIGHT=${WINDOW_HEIGHT}
-)
 
 target_include_directories(demo PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
