@@ -7,7 +7,7 @@
 #include "growable_array.h"
 #include "settings.h"
 
-#define nullNode (-1)
+#define muliNullNode (-1)
 
 namespace muli
 {
@@ -29,7 +29,7 @@ struct Node
 {
     bool IsLeaf() const
     {
-        return child1 == nullNode;
+        return child1 == muliNullNode;
     }
 
     int32 id;
@@ -155,7 +155,7 @@ inline float AABBTree::ComputeTreeCost() const
 template <typename T>
 void AABBTree::Query(const Vec2& point, T* callback) const
 {
-    if (root == nullNode)
+    if (root == muliNullNode)
     {
         return;
     }
@@ -191,7 +191,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
 template <typename T>
 void AABBTree::Query(const AABB& aabb, T* callback) const
 {
-    if (root == nullNode)
+    if (root == muliNullNode)
     {
         return;
     }
@@ -249,7 +249,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
     while (stack.Count() > 0)
     {
         NodeProxy nodeID = stack.Pop();
-        if (nodeID == nullNode)
+        if (nodeID == muliNullNode)
         {
             continue;
         }
@@ -302,7 +302,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
 template <typename T>
 void AABBTree::Traverse(T* callback) const
 {
-    if (root == nullNode)
+    if (root == muliNullNode)
     {
         return;
     }

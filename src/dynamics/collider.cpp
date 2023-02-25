@@ -12,7 +12,7 @@ ContactListener defaultListener;
 
 Collider::Collider()
     : next{ nullptr }
-    , node{ nullNode }
+    , node{ muliNullNode }
     , OnDestroy{ nullptr }
     , ContactListener{ &defaultListener }
 {

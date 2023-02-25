@@ -1411,10 +1411,22 @@ inline float RadToDeg(float rad)
     return rad * 180.0f / pi;
 }
 
+inline float Lerp(float left, float right, float per)
+{
+    return left + (right - left) * per;
+}
+
 template <typename T>
 inline T Lerp(const T& a, const T& b, float t)
 {
     return a * (1.0f - t) + b * t;
+}
+
+inline float Map(float v, float left, float right, float min, float max)
+{
+    float per = (v - left) / (right - left);
+
+    return Lerp(min, max, per);
 }
 
 template <typename T>

@@ -9,9 +9,19 @@
 namespace muli
 {
 
-// Compute CCW Convex hull
-void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
-std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
+// default alloc/dealloc funcitons
+
+inline void* Alloc(int32 size)
+{
+    return std::malloc(size);
+}
+
+inline void Free(void* mem)
+{
+    std::free(mem);
+}
+
+// Randoms
 
 static std::random_device rd;
 static std::mt19937 g(rd());
@@ -35,17 +45,9 @@ inline Vec2 LinearRand(Vec2 _min, Vec2 _max)
     return Vec2{ LinearRand(_min.x, _max.x), LinearRand(_min.y, _max.y) };
 }
 
-inline float Lerp(float left, float right, float per)
-{
-    return left + (right - left) * per;
-}
-
-inline float Map(float v, float left, float right, float min, float max)
-{
-    float per = (v - left) / (right - left);
-
-    return Lerp(min, max, per);
-}
+// Compute CCW Convex hull
+void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
+std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
 
 struct UV
 {
@@ -85,6 +87,16 @@ inline float SignedDistanceToLineSegment(const Vec2& p, const Vec2& a, const Vec
 inline std::ostream& operator<<(std::ostream& out, const Vec2& v)
 {
     return out << v.x << ' ' << v.y << '\n';
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Vec3& v)
+{
+    return out << v.x << ' ' << v.y << ' ' << v.z << '\n';
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Vec4& v)
+{
+    return out << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << '\n';
 }
 
 } // namespace muli

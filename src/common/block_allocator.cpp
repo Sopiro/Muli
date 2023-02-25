@@ -30,11 +30,11 @@ void* BlockAllocator::Allocate(int32 size)
 #else
     if (size > max_block_size)
     {
-        return malloc(size);
+        return muli::Alloc(size);
     }
 #endif
 
-    assert(0 < size && size <= max_block_size);
+    muliAssert(0 < size && size <= max_block_size);
 
     int32 blockSize = size;
     int32 index = size / block_unit;
@@ -49,11 +49,11 @@ void* BlockAllocator::Allocate(int32 size)
     }
     int32 blockCapacity = chunk_size / blockSize;
 
-    assert(0 <= index && index <= blick_size_count);
+    muliAssert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)malloc(chunk_size);
+        Block* blocks = (Block*)muli::Alloc(chunk_size);
 
         // Build a linked list for the free list.
         for (int32 i = 0; i < blockCapacity - 1; ++i)
@@ -65,7 +65,7 @@ void* BlockAllocator::Allocate(int32 size)
         Block* last = (Block*)((int8*)blocks + blockSize * (blockCapacity - 1));
         last->next = nullptr;
 
-        Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+        Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -91,7 +91,7 @@ void BlockAllocator::Free(void* p, int32 size)
 
     if (size > max_block_size)
     {
-        free(p);
+        muli::Free(p);
         return;
     }
 
@@ -107,7 +107,7 @@ void BlockAllocator::Free(void* p, int32 size)
         --index;
     }
 
-    assert(0 <= index && index <= blick_size_count);
+    muliAssert(0 <= index && index <= block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -118,7 +118,7 @@ void BlockAllocator::Free(void* p, int32 size)
     {
         if (chunk->blockSize != blockSize)
         {
-            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
         }
         else
         {
@@ -132,7 +132,7 @@ void BlockAllocator::Free(void* p, int32 size)
         chunk = chunk->next;
     }
 
-    assert(found);
+    muliAssert(found);
 #endif
 
     Block* block = (Block*)p;
@@ -148,8 +148,8 @@ void BlockAllocator::Clear()
     {
         Chunk* c0 = chunk;
         chunk = c0->next;
-        free(c0->blocks);
-        free(c0);
+        muli::Free(c0->blocks);
+        muli::Free(c0);
     }
 
     blockCount = 0;

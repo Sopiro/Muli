@@ -134,7 +134,7 @@ inline void Simplex::GetWitnessPoint(Vec2* pointA, Vec2* pointB)
     }
 
     default:
-        assert(false);
+        muliAssert(false);
     }
 }
 

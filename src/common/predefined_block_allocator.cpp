@@ -94,15 +94,15 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     if (size > max_predefined_block_size)
     {
         muliAssert(false);
-        return malloc(size);
+        return muli::Alloc(size);
     }
 
     int32 index = size_map.values[size];
-    assert(0 <= index && index <= predefined_block_size_count);
+    muliAssert(0 <= index && index <= predefined_block_size_count);
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)malloc(chunk_size);
+        Block* blocks = (Block*)muli::Alloc(chunk_size);
         int32 blockSize = block_sizes[index];
         int32 blockCapacity = chunk_size / blockSize;
 
@@ -116,7 +116,7 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
         Block* last = (Block*)((int8*)blocks + blockSize * (blockCapacity - 1));
         last->next = nullptr;
 
-        Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+        Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -142,14 +142,14 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
 
     if (size > max_predefined_block_size)
     {
-        free(p);
+        muli::Free(p);
         return;
     }
 
-    assert(0 < size && size <= max_predefined_block_size);
+    muliAssert(0 < size && size <= max_predefined_block_size);
 
     int32 index = size_map.values[size];
-    assert(0 <= index && index <= predefined_block_size_count);
+    muliAssert(0 <= index && index <= predefined_block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -161,7 +161,7 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
     {
         if (chunk->blockSize != blockSize)
         {
-            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
         }
         else
         {
@@ -175,7 +175,7 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         chunk = chunk->next;
     }
 
-    assert(found);
+    muliAssert(found);
 #endif
 
     Block* block = (Block*)p;
@@ -191,8 +191,8 @@ void PredefinedBlockAllocator::Clear()
     {
         Chunk* c0 = chunk;
         chunk = c0->next;
-        free(c0->blocks);
-        free(c0);
+        muli::Free(c0->blocks);
+        muli::Free(c0);
     }
 
     blockCount = 0;

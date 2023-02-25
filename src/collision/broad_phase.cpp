@@ -12,12 +12,12 @@ BroadPhase::BroadPhase(World* _world, ContactManager* _contactManager)
     , moveCapacity{ 16 }
     , moveCount{ 0 }
 {
-    moveBuffer = (NodeProxy*)malloc(moveCapacity * sizeof(NodeProxy));
+    moveBuffer = (NodeProxy*)muli::Alloc(moveCapacity * sizeof(NodeProxy));
 }
 
 BroadPhase::~BroadPhase()
 {
-    free(moveBuffer);
+    muli::Free(moveBuffer);
 }
 
 void BroadPhase::BufferMove(NodeProxy node)
@@ -27,9 +27,9 @@ void BroadPhase::BufferMove(NodeProxy node)
     {
         NodeProxy* old = moveBuffer;
         moveCapacity *= 2;
-        moveBuffer = (NodeProxy*)malloc(moveCapacity * sizeof(NodeProxy));
+        moveBuffer = (NodeProxy*)muli::Alloc(moveCapacity * sizeof(NodeProxy));
         memcpy(moveBuffer, old, moveCount * sizeof(NodeProxy));
-        free(old);
+        muli::Free(old);
     }
 
     moveBuffer[moveCount] = node;
@@ -42,7 +42,7 @@ void BroadPhase::UnBufferMove(NodeProxy node)
     {
         if (moveBuffer[i] == node)
         {
-            moveBuffer[i] = nullNode;
+            moveBuffer[i] = muliNullNode;
         }
     }
 }
@@ -52,7 +52,7 @@ void BroadPhase::FindNewContacts()
     for (int32 i = 0; i < moveCount; ++i)
     {
         nodeA = moveBuffer[i];
-        if (nodeA == nullNode)
+        if (nodeA == muliNullNode)
         {
             continue;
         }
@@ -71,7 +71,7 @@ void BroadPhase::FindNewContacts()
     for (int32 i = 0; i < moveCount; ++i)
     {
         NodeProxy node = moveBuffer[i];
-        if (node != nullNode)
+        if (node != muliNullNode)
         {
             tree.ClearMoved(node);
         }

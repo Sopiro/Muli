@@ -40,23 +40,25 @@ public:
         float gap = 0.05f;
 
         RigidBody* b0 = world->CreateCapsule(length, radius, true);
+        b0->GetColliderList()->SetMass(10.0f);
         b0->SetPosition(xStart, yStart);
         b0->SetSurfaceSpeed(speed);
 
-        Joint* j = world->CreateRevoluteJoint(b0, bl, b0->GetPosition() - Vec2{ 0.2f, 0.0f }, 12.0f, 1.0f, 1.0f);
+        Joint* j = world->CreateRevoluteJoint(b0, bl, b0->GetPosition() - Vec2{ 0.2f, 0.0f }, 12.0f, 1.0f, b0->GetMass());
 
         for (int32 i = 1; i < 14; ++i)
         {
             RigidBody* b1 = world->CreateCapsule(length, radius, true);
+            b1->GetColliderList()->SetMass(10.0f);
             b1->SetSurfaceSpeed(speed);
             b1->SetPosition(xStart + (length + radius * 2.0f + gap) * i, yStart);
 
-            j = world->CreateRevoluteJoint(b0, b1, (b0->GetPosition() + b1->GetPosition()) * 0.5f, 12.0f, 1.0f, 1.0f);
+            j = world->CreateRevoluteJoint(b0, b1, (b0->GetPosition() + b1->GetPosition()) * 0.5f, 12.0f, 1.0f, b0->GetMass());
 
             b0 = b1;
         }
 
-        j = world->CreateRevoluteJoint(br, b0, b0->GetPosition() + Vec2{ 0.2f, 0.0f }, 12.0f, 1.0f, 1.0f);
+        j = world->CreateRevoluteJoint(br, b0, b0->GetPosition() + Vec2{ 0.2f, 0.0f }, 12.0f, 1.0f, b0->GetMass());
     }
 
     float lastTime = 0.0f;

@@ -25,7 +25,7 @@ void* StackAllocator::Allocate(int32 size)
 
     if (index + size > stack_size)
     {
-        entry->data = (int8*)malloc(size);
+        entry->data = (int8*)muli::Alloc(size);
         entry->mallocUsed = true;
     }
     else
@@ -53,7 +53,7 @@ void StackAllocator::Free(void* p, int32 size)
 
     if (entry->mallocUsed)
     {
-        free(p);
+        muli::Free(p);
     }
     else
     {

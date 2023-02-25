@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "util.h"
 
 namespace muli
 {
@@ -21,7 +22,7 @@ public:
     {
         if (array != stackArray)
         {
-            free(array);
+            muli::Free(array);
             array = nullptr;
         }
     }
@@ -41,7 +42,7 @@ public:
         }
         else
         {
-            array = (T*)malloc(other.capacity * sizeof(T));
+            array = (T*)muli::Alloc(other.capacity * sizeof(T));
             memcpy(array, other.array, other.count * sizeof(T));
         }
 
@@ -86,12 +87,12 @@ public:
             T* old = array;
             capacity *= 2;
 
-            array = (T*)malloc(capacity * sizeof(T));
+            array = (T*)muli::Alloc(capacity * sizeof(T));
             memcpy(array, old, count * sizeof(T));
 
             if (old != stackArray)
             {
-                free(old);
+                muli::Free(old);
             }
         }
 
@@ -110,7 +111,7 @@ public:
 
     T Pop()
     {
-        assert(count > 0);
+        muliAssert(count > 0);
         --count;
         return array[count];
     }
@@ -123,19 +124,19 @@ public:
     // O(n)
     void Insert(int32 index, const T& data)
     {
-        assert(index <= count);
+        muliAssert(index <= count);
 
         if (count == capacity)
         {
             T* old = array;
             capacity *= 2;
 
-            array = (T*)malloc(capacity * sizeof(T));
+            array = (T*)muli::Alloc(capacity * sizeof(T));
             memcpy(array, old, count * sizeof(T));
 
             if (old != stackArray)
             {
-                free(old);
+                muli::Free(old);
             }
         }
 
@@ -184,7 +185,7 @@ public:
     {
         if (array != stackArray)
         {
-            free(array);
+            muli::Free(array);
         }
         array = stackArray;
         count = 0;

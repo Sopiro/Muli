@@ -27,9 +27,9 @@ public:
     {
         if (freeList == nullptr)
         {
-            assert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
+            muliAssert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
 
-            Block* blocks = (Block*)malloc(blockCapacity * blockSize);
+            Block* blocks = (Block*)muli::Alloc(blockCapacity * blockSize);
             memset(blocks, 0, blockCapacity * blockSize);
 
             // Build a linked list for the free list.
@@ -42,7 +42,7 @@ public:
             Block* last = (Block*)((int8*)blocks + blockSize * (blockCapacity - 1));
             last->next = nullptr;
 
-            Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+            Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
             newChunk->blockSize = blockSize;
             newChunk->blocks = blocks;
             newChunk->next = chunks;
@@ -61,7 +61,7 @@ public:
 
     void Free(void* p)
     {
-        assert(0 < blockCount && 0 < chunkCount);
+        muliAssert(0 < blockCount && 0 < chunkCount);
 
 #if defined(_DEBUG)
         // Verify the memory address and size is valid.
@@ -78,7 +78,7 @@ public:
             chunk = chunk->next;
         }
 
-        assert(found);
+        muliAssert(found);
 #endif
 
         Block* block = (Block*)p;
@@ -94,8 +94,8 @@ public:
         {
             Chunk* c0 = chunk;
             chunk = c0->next;
-            free(c0->blocks);
-            free(c0);
+            muli::Free(c0->blocks);
+            muli::Free(c0);
         }
 
         chunks = nullptr;

@@ -9,8 +9,8 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
 {
     if (_vertexCount > max_local_polygon_vertices)
     {
-        vertices = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
-        normals = (Vec2*)malloc(_vertexCount * sizeof(Vec2));
+        vertices = (Vec2*)muli::Alloc(_vertexCount * sizeof(Vec2));
+        normals = (Vec2*)muli::Alloc(_vertexCount * sizeof(Vec2));
     }
     else
     {
@@ -96,8 +96,8 @@ Polygon::~Polygon()
 {
     if (vertices != localVertices)
     {
-        free(vertices);
-        free(normals);
+        muli::Free(vertices);
+        muli::Free(normals);
     }
 }
 
