@@ -16,8 +16,8 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     , colliderA{ _colliderA }
     , colliderB{ _colliderB }
     , flag{ 0 }
-    , toi{ 0.0f }
     , toiCount{ 0 }
+    , toi{ 0.0f }
 {
     muliAssert(colliderA->GetType() >= colliderB->GetType());
 

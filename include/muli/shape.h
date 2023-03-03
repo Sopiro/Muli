@@ -64,8 +64,8 @@ protected:
 
 inline Shape::Shape(Type _type, float _radius)
     : type{ _type }
-    , radius{ _radius }
     , center{ 0.0f }
+    , radius{ _radius }
 {
 #if 1
     // Radius must be greater than linear_slop * 2.0 for stable CCD

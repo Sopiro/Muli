@@ -11,10 +11,10 @@ namespace muli
 ContactListener defaultListener;
 
 Collider::Collider()
-    : next{ nullptr }
-    , node{ muliNullNode }
-    , OnDestroy{ nullptr }
+    : OnDestroy{ nullptr }
     , ContactListener{ &defaultListener }
+    , next{ nullptr }
+    , node{ muliNullNode }
 {
 }
 

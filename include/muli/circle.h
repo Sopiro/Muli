@@ -44,6 +44,7 @@ inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir)
 inline Vec2 Circle::GetVertex(int32 id) const
 {
     muliAssert(id == 0);
+    muliNotUsed(id);
     return center;
 }
 

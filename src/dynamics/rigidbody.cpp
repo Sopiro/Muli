@@ -9,32 +9,32 @@ namespace muli
 {
 
 RigidBody::RigidBody(RigidBody::Type _type)
-    : type{ _type }
-    , flag{ 0 }
-    , islandIndex{ 0 }
-    , world{ nullptr }
-    , islandID{ 0 }
-    , resting{ 0.0f }
-    , prev{ nullptr }
-    , next{ nullptr }
-    , colliderList{ nullptr }
-    , colliderCount{ 0 }
-    , contactList{ nullptr }
-    , jointList{ nullptr }
-    , mass{ 0.0f }
-    , invMass{ 0.0f }
-    , inertia{ 0.0f }
-    , invInertia{ 0.0f }
-    , linearDamping{ 0.0f }
-    , angularDamping{ 0.0f }
+    : OnDestroy{ nullptr }
+    , UserFlag{ 0 }
+    , type{ _type }
     , transform{ identity }
     , sweep{ identity }
     , force{ 0.0f }
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
     , angularVelocity{ 0.0f }
-    , UserFlag{ 0 }
-    , OnDestroy{ nullptr }
+    , mass{ 0.0f }
+    , invMass{ 0.0f }
+    , inertia{ 0.0f }
+    , invInertia{ 0.0f }
+    , linearDamping{ 0.0f }
+    , angularDamping{ 0.0f }
+    , colliderList{ nullptr }
+    , colliderCount{ 0 }
+    , flag{ 0 }
+    , islandIndex{ 0 }
+    , islandID{ 0 }
+    , world{ nullptr }
+    , contactList{ nullptr }
+    , jointList{ nullptr }
+    , resting{ 0.0f }
+    , prev{ nullptr }
+    , next{ nullptr }
 {
 }
 

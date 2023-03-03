@@ -12,8 +12,8 @@ Joint::Joint(Joint::Type _type,
              float _dampingRatio,
              float _jointMass)
     : Constraint(_bodyA, _bodyB, _settings)
-    , type{ _type }
     , OnDestroy{ nullptr }
+    , type{ _type }
 {
     SetParameters(_frequency, _dampingRatio, _jointMass);
 }

@@ -92,8 +92,8 @@ private:
     NodeProxy root;
 
     Node* nodes;
-    int32 nodeCount;
     int32 nodeCapacity;
+    int32 nodeCount;
 
     NodeProxy freeList;
 

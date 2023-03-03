@@ -45,6 +45,7 @@ void* StackAllocator::Allocate(int32 size)
 
 void StackAllocator::Free(void* p, int32 size)
 {
+    muliNotUsed(size);
     muliAssert(entryCount > 0);
 
     StackEntry* entry = entries + entryCount - 1;
