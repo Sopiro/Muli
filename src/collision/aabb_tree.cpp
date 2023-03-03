@@ -49,13 +49,20 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     NodeProxy bestSibling = root;
     float bestCost = SAH(Union(nodes[root].aabb, aabb));
 
-    GrowableArray<std::pair<NodeProxy, float>, 256> stack;
+    // Candidate node with inherited cost
+    struct Candidate
+    {
+        NodeProxy node;
+        float inheritedCost;
+    };
+
+    GrowableArray<Candidate, 256> stack;
     stack.Emplace(root, 0.0f);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Back().first;
-        float inheritedCost = stack.Back().second;
+        NodeProxy current = stack.Back().node;
+        float inheritedCost = stack.Back().inheritedCost;
         stack.Pop();
 
         AABB combined = Union(nodes[current].aabb, aabb);
