@@ -33,9 +33,24 @@ class ContactListener
 {
 public:
     virtual ~ContactListener() {}
-    virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) {}
-    virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) {}
-    virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) {}
+    virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact)
+    {
+        muliNotUsed(me);
+        muliNotUsed(other);
+        muliNotUsed(contact);
+    }
+    virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact)
+    {
+        muliNotUsed(me);
+        muliNotUsed(other);
+        muliNotUsed(contact);
+    }
+    virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact)
+    {
+        muliNotUsed(me);
+        muliNotUsed(other);
+        muliNotUsed(contact);
+    }
 };
 
 class WorldQueryCallback

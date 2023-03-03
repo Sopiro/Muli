@@ -24,7 +24,7 @@ struct AABB
         return (max.x - min.x) * (max.y - min.y);
     }
 
-    float GetPerimeter(const AABB& aabb)
+    float GetPerimeter()
     {
         Vec2 w = max - min;
         return 2.0f * (w.x + w.y);

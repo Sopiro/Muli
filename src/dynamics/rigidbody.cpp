@@ -135,6 +135,8 @@ Collider* RigidBody::CreateCapsuleCollider(
 
 bool RigidBody::TestPoint(const Vec2& p) const
 {
+    muliAssert(colliderCount > 0);
+
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
         if (collider->TestPoint(p))
@@ -148,18 +150,32 @@ bool RigidBody::TestPoint(const Vec2& p) const
 
 Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
 {
-    Vec2 closestPoint;
+    muliAssert(colliderCount > 0);
 
-    for (Collider* collider = colliderList; collider; collider = collider->next)
+    Vec2 cp0 = colliderList->GetClosestPoint(p);
+    if (cp0 == p)
     {
-        closestPoint = collider->GetClosestPoint(p);
-        if (closestPoint == p)
+        return cp0;
+    }
+
+    float d0 = Dist2(cp0, p);
+
+    for (Collider* collider = colliderList->next; collider; collider = collider->next)
+    {
+        Vec2 cp1 = collider->GetClosestPoint(p);
+        if (cp1 == p)
         {
-            return closestPoint;
+            return cp1;
+        }
+
+        float d1 = Dist2(cp1, p);
+        if (d1 < d0)
+        {
+            cp0 = cp1;
         }
     }
 
-    return closestPoint;
+    return cp0;
 }
 
 void RigidBody::RayCastAny(

@@ -115,6 +115,12 @@ target_include_directories(muli
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+if(MSVC)
+    target_compile_options(muli PRIVATE /W4 /WX)
+else()
+    target_compile_options(muli PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
 install(
     TARGETS muli
     EXPORT muliConfig

@@ -199,7 +199,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
         discriminant = Sqrt(discriminant);
 
-        float t = (-b - discriminant) / (2.0f * a);
+        t = (-b - discriminant) / (2.0f * a);
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
@@ -230,7 +230,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
         discriminant = Sqrt(discriminant);
 
-        float t = (-b - discriminant) / (2.0f * a);
+        t = (-b - discriminant) / (2.0f * a);
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;

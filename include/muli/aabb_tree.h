@@ -248,13 +248,13 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
 
     while (stack.Count() > 0)
     {
-        NodeProxy nodeID = stack.Pop();
-        if (nodeID == muliNullNode)
+        NodeProxy current = stack.Pop();
+        if (current == muliNullNode)
         {
             continue;
         }
 
-        const Node* node = nodes + nodeID;
+        const Node* node = nodes + current;
         if (node->aabb.TestOverlap(rayAABB) == false)
         {
             continue;

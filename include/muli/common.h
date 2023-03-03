@@ -22,3 +22,4 @@
 #include "types.h"
 
 #define muliAssert(A) assert(A)
+#define muliNotUsed(x) ((void)(x))

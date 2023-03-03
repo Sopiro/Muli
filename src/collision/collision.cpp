@@ -302,14 +302,14 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
+    float r2 = a->GetRadius() + b->GetRadius();
     Vec2 pb = Mul(tfB, b->GetCenter());
     Vec2 localP = MulT(tfA, pb);
 
-    float minSeparation = -max_value;
-    float r2 = a->GetRadius() + b->GetRadius();
+    int32 index = 0;
+    float minSeparation = Dot(normals[index], localP - vertices[index]);
 
-    int32 index;
-    for (int32 i = 0; i < vertexCount; ++i)
+    for (int32 i = 1; i < vertexCount; ++i)
     {
         float separation = Dot(normals[i], localP - vertices[i]);
         if (separation > r2)

@@ -37,6 +37,7 @@ inline Shape* Circle::Clone(Allocator* allocator) const
 
 inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
+    muliNotUsed(dir);
     return Edge{ Mul(transform, center), Mul(transform, center) };
 }
 
@@ -53,6 +54,7 @@ inline int32 Circle::GetVertexCount() const
 
 inline int32 Circle::GetSupport(const Vec2& localDir) const
 {
+    muliNotUsed(localDir);
     return 0;
 }
 

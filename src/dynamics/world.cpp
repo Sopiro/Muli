@@ -664,6 +664,8 @@ std::vector<Collider*> World::Query(const Vec2& point) const
     res.reserve(8);
 
     contactManager.broadPhase.tree.Query(point, [&](NodeProxy node, Collider* collider) -> bool {
+        muliNotUsed(node);
+
         if (collider->TestPoint(point))
         {
             res.push_back(collider);
@@ -685,6 +687,8 @@ std::vector<Collider*> World::Query(const AABB& aabb) const
     Transform t{ identity };
 
     contactManager.broadPhase.tree.Query(aabb, [&](NodeProxy node, Collider* collider) -> bool {
+        muliNotUsed(node);
+
         if (DetectCollision(collider->shape, collider->body->transform, &box, t))
         {
             res.push_back(collider);
@@ -705,6 +709,8 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
+            muliNotUsed(node);
+
             if (collider->TestPoint(point))
             {
                 return callback->OnQuery(collider);
@@ -738,6 +744,8 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
+            muliNotUsed(node);
+
             if (DetectCollision(collider->shape, collider->body->transform, &region, t))
             {
                 return callback->OnQuery(collider);
@@ -904,7 +912,7 @@ RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density
     RigidBody* b = CreateEmptyBody(type);
 
     Circle circle{ radius };
-    b->CreateCollider(&circle);
+    b->CreateCollider(&circle, density);
     return b;
 }
 
@@ -913,7 +921,7 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
     RigidBody* b = CreateEmptyBody(type);
 
     Capsule capsule{ length, radius, horizontal };
-    b->CreateCollider(&capsule);
+    b->CreateCollider(&capsule, density);
     return b;
 }
 
@@ -924,7 +932,7 @@ RigidBody* World::CreateCapsule(
 
     Vec2 center = (point1 + point2) * 0.5f;
     Capsule capsule{ point1, point2, radius, true };
-    b->CreateCollider(&capsule);
+    b->CreateCollider(&capsule, density);
 
     if (resetPosition == false)
     {
@@ -940,7 +948,7 @@ RigidBody* World::CreatePolygon(
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
-    b->CreateCollider(&polygon);
+    b->CreateCollider(&polygon, density);
 
     Vec2 center{ 0.0f };
     for (size_t i = 0; i < vertices.size(); ++i)
@@ -963,7 +971,7 @@ RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, flo
 
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     Polygon box{ vertices, 4, true, radius };
-    b->CreateCollider(&box);
+    b->CreateCollider(&box, density);
     return b;
 }
 
@@ -1000,7 +1008,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon);
+    b->CreateCollider(&polygon, density);
     return b;
 }
 
@@ -1031,7 +1039,7 @@ RigidBody* World::CreateRegularPolygon(
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon);
+    b->CreateCollider(&polygon, density);
     return b;
 }
 

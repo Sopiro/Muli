@@ -46,6 +46,7 @@ inline Shape* Capsule::Clone(Allocator* allocator) const
 
 inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
+    muliNotUsed(dir);
     return Edge{ Mul(transform, va), Mul(transform, vb), 0, 1 };
 }
 

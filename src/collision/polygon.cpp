@@ -292,8 +292,6 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
     i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
-        int32 i2 = (i1 + 1) % vertexCount;
-
         Vec2 n0 = normals[i0];
         Vec2 n1 = normals[i1];
         Vec2 v1 = vertices[i1] - center;
