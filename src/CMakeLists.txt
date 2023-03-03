@@ -115,6 +115,13 @@ target_include_directories(muli
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set_target_properties(muli PROPERTIES
+    CMAKE_COMPILE_WARNING_AS_ERROR ON
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
+
 if(MSVC)
     target_compile_options(muli PRIVATE /W4 /WX)
 else()
