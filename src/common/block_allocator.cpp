@@ -133,6 +133,8 @@ void BlockAllocator::Free(void* p, int32 size)
     }
 
     muliAssert(found);
+#else
+    muliNotUsed(blockSize);
 #endif
 
     Block* block = (Block*)p;

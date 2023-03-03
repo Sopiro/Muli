@@ -32,8 +32,8 @@ protected:
 
 private:
     NodeProxy* moveBuffer;
-    int32 moveCount;
     int32 moveCapacity;
+    int32 moveCount;
 
     NodeProxy nodeA;
     RigidBody* bodyA;

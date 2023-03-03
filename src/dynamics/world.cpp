@@ -13,8 +13,8 @@ World::World(const WorldSettings& _settings)
     , contactManager{ this }
     , bodyList{ nullptr }
     , bodyListTail{ nullptr }
-    , jointList{ nullptr }
     , bodyCount{ 0 }
+    , jointList{ nullptr }
     , jointCount{ 0 }
     , islandCount{ 0 }
     , sleepingBodyCount{ 0 }
