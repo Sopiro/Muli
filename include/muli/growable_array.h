@@ -96,7 +96,7 @@ public:
             }
         }
 
-        return *new (array + count++) T(std::forward<Args>(args)...);
+        return *new (array + count++) T{ std::forward<Args>(args)... };
     }
 
     void Push(const T& data)
