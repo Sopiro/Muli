@@ -3,11 +3,6 @@
 namespace muli
 {
 
-std::unique_ptr<DynamicShader> DynamicShader::Create()
-{
-    return std::unique_ptr<DynamicShader>(new DynamicShader);
-}
-
 DynamicShader::DynamicShader()
     : Shader(
           // Vertex shader

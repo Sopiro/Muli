@@ -323,6 +323,14 @@ struct Vec4
     {
     }
 
+    constexpr Vec4(const Vec3& _v, float _w)
+        : x{ _v.x }
+        , y{ _v.y }
+        , z{ _v.z }
+        , w{ _w }
+    {
+    }
+
     void SetZero()
     {
         x = 0.0f;
@@ -407,6 +415,7 @@ struct Vec4
         operator*=(1.0f / s);
     }
 };
+constexpr Vec4 zero_vec4{ 0.0f, 0.0f };
 
 struct Quat
 {

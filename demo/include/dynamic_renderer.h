@@ -63,8 +63,8 @@ inline void DynamicRenderer::SetLineWidth(float lineWidth) const
 
 inline void DynamicRenderer::Render()
 {
-    FlushPoints();
-    FlushLines();
+    if (pointCount > 0) FlushPoints();
+    if (lineCount > 0) FlushLines();
 }
 
 inline void DynamicRenderer::SetProjectionMatrix(const Mat4& _projMatrix)

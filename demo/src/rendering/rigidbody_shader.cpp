@@ -3,11 +3,6 @@
 namespace muli
 {
 
-std::unique_ptr<RigidBodyShader> RigidBodyShader::Create()
-{
-    return std::unique_ptr<RigidBodyShader>(new RigidBodyShader);
-}
-
 RigidBodyShader::RigidBodyShader()
     : Shader(
           // Vertex shader
@@ -39,13 +34,13 @@ RigidBodyShader::RigidBodyShader()
 
         in vec2 texCoord;
 
-        uniform vec3 color;
+        uniform vec4 color;
 
         void main()
         {
-            vec2 uv = texCoord; // barycentric coordinate
+            // vec2 uv = texCoord; // barycentric coordinate
             
-            fragColor = vec4(color, 1.0f);
+            fragColor = color;
         }
     )")
 {
