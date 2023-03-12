@@ -30,7 +30,7 @@ void RigidBodyRenderer::Render() const
         Mat4 t{ body->GetTransform() };
         shader->SetModelMatrix(t);
 
-        if ((options.draw_outline_only == false && body->IsSleeping() == false))
+        if (options.draw_body == true && body->IsSleeping() == false)
         {
             Vec3 color{ 1.0f };
             const CollisionFilter& cf = collider->GetFilter();
@@ -93,7 +93,7 @@ void RigidBodyRenderer::Render() const
             mesh->Draw(GL_TRIANGLES);
         }
 
-        if (!(body->UserFlag & UserFlag::remove_outline))
+        if (options.draw_outline == true && (body->UserFlag & UserFlag::remove_outline) != UserFlag::remove_outline)
         {
             glLineWidth(1.0f);
             shader->SetColor(zero_vec3);

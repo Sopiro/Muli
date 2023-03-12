@@ -14,7 +14,7 @@ public:
     Cloth(Game& game)
         : Demo(game)
     {
-        options.draw_outline_only = true;
+        options.draw_outline = false;
 
         const int32 rows = 24;
         const int32 cols = static_cast<int32>(rows * 1.4f);
@@ -90,7 +90,7 @@ public:
 
     ~Cloth()
     {
-        options.draw_outline_only = false;
+        options.draw_outline = true;
     }
 
     static Demo* Create(Game& game)

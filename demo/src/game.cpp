@@ -109,7 +109,8 @@ void Game::UpdateUI()
                 {
                     ImGui::Checkbox("Camera reset", &options.reset_camera);
                     ImGui::Checkbox("Colorize island", &options.colorize_island);
-                    ImGui::Checkbox("Draw outline only", &options.draw_outline_only);
+                    ImGui::Checkbox("Draw body", &options.draw_body);
+                    ImGui::Checkbox("Draw outline", &options.draw_outline);
                     ImGui::Checkbox("Show BVH", &options.show_bvh);
                     ImGui::Checkbox("Show AABB", &options.show_aabb);
                     ImGui::Checkbox("Show contact point", &options.show_contact_point);
@@ -199,8 +200,13 @@ void Game::UpdateUI()
 void Game::Render()
 {
     Camera& camera = demo->GetCamera();
-    rRenderer.SetViewMatrix(camera.GetCameraMatrix());
-    rRenderer.Render();
+    Mat4 cameraMatrix = camera.GetCameraMatrix();
+
+    if (options.draw_body || options.draw_outline)
+    {
+        rRenderer.SetViewMatrix(cameraMatrix);
+        rRenderer.Render();
+    }
 
     for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())
     {
@@ -223,7 +229,6 @@ void Game::Render()
         break;
         case Joint::Type::revolute_joint:
         {
-
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
             RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
@@ -388,17 +393,19 @@ void Game::Render()
         }
     }
 
-    dRenderer.SetViewMatrix(camera.GetCameraMatrix());
-
     demo->Render();
 
-    glPointSize(5.0f);
-    dRenderer.Draw(points, GL_POINTS);
-    glLineWidth(1.0f);
-    dRenderer.Draw(lines, GL_LINES);
+    // Batch rendering for points and lines
+    {
+        dRenderer.SetViewMatrix(cameraMatrix);
+        glPointSize(5.0f);
+        dRenderer.Draw(points, GL_POINTS);
+        glLineWidth(1.0f);
+        dRenderer.Draw(lines, GL_LINES);
 
-    points.clear();
-    lines.clear();
+        points.clear();
+        lines.clear();
+    }
 }
 
 void Game::UpdateProjectionMatrix()
