@@ -7,10 +7,11 @@ namespace muli
 
 Demo::Demo(Game& _game)
     : game{ _game }
+    , dRenderer{ _game.GetDynamicRenderer() }
     , options{ _game.GetDebugOptions() }
     , targetBody{ nullptr }
     , targetCollider{ nullptr }
-    , gj{ nullptr }
+    , cursorJoint{ nullptr }
 {
     dt = 1.0f / Window::Get().GetRefreshRate();
     // dt = 1.0f / 60.0f;
@@ -89,7 +90,7 @@ void Demo::EnableBodyCreate()
         }
     }
 
-    if (targetCollider && !gj && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    if (targetCollider && !cursorJoint && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
         targetBody->DestoryCollider(targetCollider);
         if (targetBody->GetColliderCount() == 0)
@@ -100,13 +101,9 @@ void Demo::EnableBodyCreate()
 
     if (create)
     {
-        auto& pl = game.GetPointList();
-        auto& ll = game.GetLineList();
-
-        pl.push_back(mStart);
-        pl.push_back(cursorPos);
-        ll.push_back(mStart);
-        ll.push_back(cursorPos);
+        dRenderer.DrawPoint(mStart);
+        dRenderer.DrawPoint(cursorPos);
+        dRenderer.DrawLine(mStart, cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
@@ -149,10 +146,10 @@ bool Demo::EnablePolygonCreate()
 
     if (creating)
     {
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-
-        pl = points;
+        for (Vec2& point : points)
+        {
+            dRenderer.DrawPoint(point);
+        }
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
@@ -162,16 +159,14 @@ bool Demo::EnablePolygonCreate()
 
         if (hull.size() < 3)
         {
-            ll.push_back(hull.back());
-            ll.push_back(cursorPos);
+            dRenderer.DrawLine(hull.back(), cursorPos);
         }
 
         for (size_t i = 0; i < hull.size(); ++i)
         {
             Vec2& v0 = hull[i];
             Vec2& v1 = hull[(i + 1) % hull.size()];
-            ll.push_back(v0);
-            ll.push_back(v1);
+            dRenderer.DrawLine(v0, v1);
         }
 
         auto create_body = [&](RigidBody::Type type) {
@@ -233,18 +228,15 @@ void Demo::EnableBodyRemove()
 
     if (draging)
     {
-        auto& ll = game.GetLineList();
-
         AABB aabb{ Min(mStart, cursorPos), Max(mStart, cursorPos) };
 
-        ll.push_back(aabb.min);
-        ll.push_back(Vec2{ aabb.min.x, aabb.max.y });
-        ll.push_back(Vec2{ aabb.min.x, aabb.max.y });
-        ll.push_back(aabb.max);
-        ll.push_back(aabb.max);
-        ll.push_back(Vec2{ aabb.max.x, aabb.min.y });
-        ll.push_back(Vec2{ aabb.max.x, aabb.min.y });
-        ll.push_back(aabb.min);
+        Vec2 br{ aabb.min.x, aabb.max.y };
+        Vec2 tl{ aabb.max.x, aabb.min.y };
+
+        dRenderer.DrawLine(aabb.min, br);
+        dRenderer.DrawLine(br, aabb.max);
+        dRenderer.DrawLine(aabb.max, tl);
+        dRenderer.DrawLine(tl, aabb.min);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
@@ -274,26 +266,26 @@ bool Demo::EnableBodyGrab()
         if (targetBody->GetType() == RigidBody::Type::dynamic_body)
         {
             targetBody->Awake();
-            gj = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
-            gj->OnDestroy = this;
+            cursorJoint = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
+            cursorJoint->OnDestroy = this;
         }
     }
 
-    if (gj)
+    if (cursorJoint)
     {
-        gj->SetTarget(cursorPos);
+        cursorJoint->SetTarget(cursorPos);
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
-            world->Destroy(gj);
-            gj = nullptr;
+            world->Destroy(cursorJoint);
+            cursorJoint = nullptr;
         }
         else if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
         {
-            gj = nullptr; // Stick to the air!
+            cursorJoint = nullptr; // Stick to the air!
         }
     }
 
-    return gj != nullptr;
+    return cursorJoint != nullptr;
 }
 
 bool Demo::EnableAddForce()
@@ -312,20 +304,17 @@ bool Demo::EnableAddForce()
 
     if (ft)
     {
-        auto& pl = game.GetPointList();
-        auto& ll = game.GetLineList();
+        Vec2 tl = Mul(ft->GetTransform(), mStartLocal);
 
-        pl.push_back(Mul(ft->GetTransform(), mStartLocal));
-        pl.push_back(cursorPos);
-        ll.push_back(Mul(ft->GetTransform(), mStartLocal));
-        ll.push_back(cursorPos);
+        dRenderer.DrawPoint(tl);
+        dRenderer.DrawPoint(cursorPos);
+        dRenderer.DrawLine(tl, cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             if (ft->GetWorld())
             {
-                Vec2 mStartGlobal = Mul(ft->GetTransform(), mStartLocal);
-                Vec2 f = mStartGlobal - cursorPos;
+                Vec2 f = tl - cursorPos;
                 f *= settings.inv_dt * ft->GetMass() * 3.0f;
 
                 ft->AddForce(mStartLocal, f);

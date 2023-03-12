@@ -17,7 +17,7 @@ class RigidBodyRenderer final : public Renderer
 public:
     RigidBodyRenderer(Game& game);
 
-    virtual void Render() const override;
+    virtual void Render() override;
     void Render(Collider* c, const Transform& t) const;
 
     void SetProjectionMatrix(const Mat4& projMatrix);

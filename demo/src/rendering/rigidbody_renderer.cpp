@@ -14,7 +14,7 @@ RigidBodyRenderer::RigidBodyRenderer(Game& _game)
     shader->Use();
 }
 
-void RigidBodyRenderer::Render() const
+void RigidBodyRenderer::Render()
 {
     shader->Use();
 

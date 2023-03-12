@@ -48,34 +48,29 @@ public:
             Transform thA = tfA;
             Transform thB = tfB;
 
-            const RigidBodyRenderer& rr = game.GetRigidBodyRenderer();
-            std::vector<Vec2>& pl = game.GetPointList();
-            std::vector<Vec2>& ll = game.GetLineList();
+            const RigidBodyRenderer& rRenderer = game.GetRigidBodyRenderer();
 
             hit = ShapeCast(sa, tfA, sb, tfB, translationA, translationB, &output);
             if (hit)
             {
                 thA.position += translationA * output.t;
-                rr.Render(ca, thA);
+                rRenderer.Render(ca, thA);
                 thB.position += translationB * output.t;
-                rr.Render(cb, thB);
+                rRenderer.Render(cb, thB);
 
-                pl.push_back(output.point);
-                ll.push_back(output.point);
-                ll.push_back(output.point + output.normal * 0.2f);
+                dRenderer.DrawPoint(output.point);
+                dRenderer.DrawLine(output.point, output.point + output.normal * 0.2f);
             }
             else
             {
                 thA.position += translationA;
-                rr.Render(ca, thA);
+                rRenderer.Render(ca, thA);
                 thB.position += translationB;
-                rr.Render(cb, thB);
+                rRenderer.Render(cb, thB);
             }
 
-            ll.push_back(tfA.position);
-            ll.push_back(thA.position);
-            ll.push_back(tfB.position);
-            ll.push_back(thB.position);
+            dRenderer.DrawLine(tfA.position, thA.position);
+            dRenderer.DrawLine(tfB.position, thB.position);
         }
     }
 

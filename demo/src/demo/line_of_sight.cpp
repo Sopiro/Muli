@@ -59,23 +59,18 @@ public:
     {
         Demo::Step();
 
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-
         float angleDelta = pi * 2.0f / count;
         for (float angle = 0.0f; angle < pi * 2.0f; angle += angleDelta)
         {
             Vec2 to = cursorPos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
 
-            ll.push_back(cursorPos);
-
             if (!world->RayCastClosest(cursorPos, to,
                                        [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
-                                           pl.push_back(point);
-                                           ll.push_back(point);
+                                           dRenderer.DrawPoint(point);
+                                           dRenderer.DrawLine(cursorPos, point);
                                        }))
             {
-                ll.push_back(to);
+                dRenderer.DrawLine(cursorPos, to);
             }
         }
     }

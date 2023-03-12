@@ -4,18 +4,26 @@ namespace muli
 {
 
 DynamicRenderer::DynamicRenderer()
+    : pointCount{ 0 }
+    , lineCount{ 0 }
 {
     shader = DynamicShader::Create();
 
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &pVBO);
+    glGenBuffers(1, &cVBO);
 
     glBindVertexArray(VAO);
     {
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * maxVertexCount, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, pVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * max_vertex_count, nullptr, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), 0);
         glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, cVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec4) * max_vertex_count, nullptr, GL_DYNAMIC_DRAW);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vec4), 0);
+        glEnableVertexAttribArray(1);
     }
     glBindVertexArray(0);
 }
@@ -23,39 +31,66 @@ DynamicRenderer::DynamicRenderer()
 DynamicRenderer::~DynamicRenderer()
 {
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &pVBO);
+    glDeleteBuffers(1, &cVBO);
 }
 
-// Batch rendering: batch size = maxVertexCount
-void DynamicRenderer::Draw(const std::vector<Vec2>& vertices, GLenum drawMode, Vec3 color)
+void DynamicRenderer::DrawShape(const Shape* shape, const Transform& tf)
 {
-    bool exceed = vertices.size() > maxVertexCount;
+    Shape::Type type = shape->GetType();
+    muliNotUsed(tf);
 
+    switch (type)
+    {
+    case Shape::Type::circle:
+        break;
+    case Shape::Type::capsule:
+        break;
+    case Shape::Type::polygon:
+        break;
+
+    default:
+        muliAssert(false);
+        break;
+    }
+}
+
+void DynamicRenderer::FlushPoints()
+{
     shader->Use();
-    shader->SetColor(color);
-    shader->SetModelMatrix(Mat4{ 1.0f });
 
     glBindVertexArray(VAO);
     {
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, pVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * pointCount, points.data());
 
-        if (exceed)
-        {
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * maxVertexCount, vertices.data());
-            glDrawArrays(drawMode, 0, static_cast<GLsizei>(maxVertexCount));
-        }
-        else
-        {
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * vertices.size(), vertices.data());
-            glDrawArrays(drawMode, 0, static_cast<GLsizei>(vertices.size()));
-        }
+        glBindBuffer(GL_ARRAY_BUFFER, cVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec4) * pointCount, pointColors.data());
+
+        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(pointCount));
     }
     glBindVertexArray(static_cast<GLsizei>(0));
 
-    if (exceed)
+    pointCount = 0;
+}
+
+void DynamicRenderer::FlushLines()
+{
+    shader->Use();
+
+    glBindVertexArray(VAO);
     {
-        Draw(std::vector<Vec2>(vertices.begin() + maxVertexCount, vertices.end()), drawMode, color);
+        glBindBuffer(GL_ARRAY_BUFFER, pVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * lineCount, lines.data());
+
+        glBindBuffer(GL_ARRAY_BUFFER, cVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec4) * lineCount, lineColors.data());
+
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineCount));
     }
+    glBindVertexArray(static_cast<GLsizei>(0));
+
+    lineCount = 0;
 }
 
 } // namespace muli

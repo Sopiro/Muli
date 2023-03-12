@@ -9,6 +9,7 @@ namespace muli
 {
 
 class Game;
+class DynamicRenderer;
 struct DebugOptions;
 
 class Demo : public JointDestoryCallback
@@ -25,7 +26,7 @@ public:
     // from JointDestoryCallback
     virtual void OnDestroy(Joint* me) override
     {
-        gj = nullptr;
+        cursorJoint = nullptr;
     }
 
     World& GetWorld()
@@ -64,6 +65,7 @@ protected:
     void EnableCameraControl();
 
     Game& game;
+    DynamicRenderer& dRenderer;
     DebugOptions& options;
 
     Camera camera;
@@ -76,7 +78,7 @@ protected:
 
     RigidBody* targetBody;
     Collider* targetCollider;
-    GrabJoint* gj;
+    GrabJoint* cursorJoint;
 };
 
 typedef Demo* DemoCreateFunction(Game& game);

@@ -62,17 +62,9 @@ public:
 
     void Render() override
     {
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-
-        // pl.push_back(b->GetPosition());
-        // ll.push_back(b->GetPosition());
-        // ll.push_back(mpos);
-
-        pl.push_back(closest);
-        pl.push_back(cursorPos);
-        ll.push_back(closest);
-        ll.push_back(cursorPos);
+        dRenderer.DrawPoint(closest);
+        dRenderer.DrawPoint(cursorPos);
+        dRenderer.DrawLine(closest, cursorPos);
     }
 
     void UpdateUI() override

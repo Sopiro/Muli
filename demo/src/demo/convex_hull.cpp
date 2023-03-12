@@ -51,17 +51,16 @@ public:
 
     void Render() override
     {
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-
-        pl = vertices;
+        for (Vec2& vertex : vertices)
+        {
+            dRenderer.DrawPoint(vertex);
+        }
 
         for (size_t i = 0; i < convexHull.size(); ++i)
         {
             Vec2& v0 = convexHull[i];
             Vec2& v1 = convexHull[(i + 1) % convexHull.size()];
-            ll.push_back(v0);
-            ll.push_back(v1);
+            dRenderer.DrawLine(v0, v1);
         }
     }
 

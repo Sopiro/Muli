@@ -37,10 +37,7 @@ public:
 
         Vec2 to = cursorPos;
 
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-        ll.push_back(from);
-        ll.push_back(to);
+        dRenderer.DrawLine(from, to);
 
         bool hit = false;
         Vec2 closestPoint;
@@ -52,9 +49,8 @@ public:
 
             if (closest == false)
             {
-                pl.push_back(point);
-                ll.push_back(point);
-                ll.push_back(point + normal * 0.2f);
+                dRenderer.DrawPoint(point);
+                dRenderer.DrawLine(point, point + normal * 0.2f);
 
                 return 1.0f;
             }
@@ -70,9 +66,8 @@ public:
 
         if (closest && hit)
         {
-            pl.push_back(closestPoint);
-            ll.push_back(closestPoint);
-            ll.push_back(closestPoint + closestNormal * 0.2f);
+            dRenderer.DrawPoint(closestPoint);
+            dRenderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
         }
     }
 

@@ -33,9 +33,6 @@ public:
 
     void Render() override
     {
-        std::vector<Vec2>& pl = game.GetPointList();
-        std::vector<Vec2>& ll = game.GetLineList();
-
         if (drawTrajectory)
         {
             Transform t = target->GetTransform();

@@ -220,11 +220,10 @@ void Game::Render()
             GrabJoint* gj = static_cast<GrabJoint*>(j);
 
             const Vec2& anchor = Mul(b->GetTransform(), gj->GetLocalAnchor());
-            points.emplace_back(anchor);
-            points.emplace_back(gj->GetTarget());
+            dRenderer.DrawPoint(anchor);
+            dRenderer.DrawPoint(gj->GetTarget());
 
-            lines.emplace_back(anchor);
-            lines.emplace_back(gj->GetTarget());
+            dRenderer.DrawLine(anchor, gj->GetTarget());
         }
         break;
         case Joint::Type::revolute_joint:
@@ -236,13 +235,11 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), rj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), rj->GetLocalAnchorB());
 
-            points.emplace_back(anchorA);
-            points.emplace_back(anchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(anchorB);
 
-            lines.emplace_back(anchorA);
-            lines.emplace_back(ba->GetPosition());
-            lines.emplace_back(anchorB);
-            lines.emplace_back(bb->GetPosition());
+            dRenderer.DrawLine(anchorA, ba->GetPosition());
+            dRenderer.DrawLine(anchorB, bb->GetPosition());
         }
         break;
         case Joint::Type::distance_joint:
@@ -254,11 +251,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), dj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), dj->GetLocalAnchorB());
 
-            points.emplace_back(anchorA);
-            points.emplace_back(anchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(anchorB);
 
-            lines.emplace_back(anchorA);
-            lines.emplace_back(anchorB);
+            dRenderer.DrawLine(anchorA, anchorB);
         }
         break;
         case Joint::Type::line_joint:
@@ -270,11 +266,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), lj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), lj->GetLocalAnchorB());
 
-            points.emplace_back(anchorA);
-            points.emplace_back(anchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(anchorB);
 
-            lines.emplace_back(anchorA);
-            lines.emplace_back(anchorB);
+            dRenderer.DrawLine(anchorA, anchorB);
         }
         case Joint::Type::prismatic_joint:
         {
@@ -285,11 +280,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
 
-            points.emplace_back(anchorA);
-            points.emplace_back(anchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(anchorB);
 
-            lines.emplace_back(anchorA);
-            lines.emplace_back(anchorB);
+            dRenderer.DrawLine(anchorA, anchorB);
         }
         break;
         case Joint::Type::pulley_joint:
@@ -303,17 +297,14 @@ void Game::Render()
             const Vec2& groundAnchorA = pj->GetGroundAnchorA();
             const Vec2& groundAnchorB = pj->GetGroundAnchorB();
 
-            points.emplace_back(anchorA);
-            points.emplace_back(groundAnchorA);
-            points.emplace_back(anchorB);
-            points.emplace_back(groundAnchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(groundAnchorA);
+            dRenderer.DrawPoint(anchorB);
+            dRenderer.DrawPoint(groundAnchorB);
 
-            lines.emplace_back(anchorA);
-            lines.emplace_back(groundAnchorA);
-            lines.emplace_back(anchorB);
-            lines.emplace_back(groundAnchorB);
-            lines.emplace_back(groundAnchorA);
-            lines.emplace_back(groundAnchorB);
+            dRenderer.DrawLine(anchorA, groundAnchorA);
+            dRenderer.DrawLine(anchorB, groundAnchorB);
+            dRenderer.DrawLine(groundAnchorA, groundAnchorB);
         }
         break;
         case Joint::Type::motor_joint:
@@ -325,8 +316,8 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
 
-            points.emplace_back(anchorA);
-            points.emplace_back(anchorB);
+            dRenderer.DrawPoint(anchorA);
+            dRenderer.DrawPoint(anchorB);
         }
         break;
         default:
@@ -343,14 +334,12 @@ void Game::Render()
                 return;
             }
 
-            lines.emplace_back(n->aabb.min);
-            lines.emplace_back(n->aabb.max.x, n->aabb.min.y);
-            lines.emplace_back(n->aabb.max.x, n->aabb.min.y);
-            lines.emplace_back(n->aabb.max);
-            lines.emplace_back(n->aabb.max);
-            lines.emplace_back(n->aabb.min.x, n->aabb.max.y);
-            lines.emplace_back(n->aabb.min.x, n->aabb.max.y);
-            lines.emplace_back(n->aabb.min);
+            Vec2 br{ n->aabb.max.x, n->aabb.min.y };
+            Vec2 tl{ n->aabb.min.x, n->aabb.max.y };
+            dRenderer.DrawLine(n->aabb.min, br);
+            dRenderer.DrawLine(br, n->aabb.max);
+            dRenderer.DrawLine(n->aabb.max, tl);
+            dRenderer.DrawLine(tl, n->aabb.min);
         });
     }
 
@@ -374,18 +363,13 @@ void Game::Render()
 
                 if (options.show_contact_point)
                 {
-                    points.emplace_back(cp);
+                    dRenderer.DrawPoint(cp);
                 }
                 if (options.show_contact_normal)
                 {
-                    lines.emplace_back(cp);
-                    lines.emplace_back(cp + m.contactNormal * 0.15f);
-
-                    lines.emplace_back(cp + m.contactNormal * 0.15f);
-                    lines.emplace_back(cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
-
-                    lines.emplace_back(cp + m.contactNormal * 0.15f);
-                    lines.emplace_back(cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
+                    dRenderer.DrawLine(cp, cp + m.contactNormal * 0.15f);
+                    dRenderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
+                    dRenderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
                 }
             }
 
@@ -398,13 +382,11 @@ void Game::Render()
     // Batch rendering for points and lines
     {
         dRenderer.SetViewMatrix(cameraMatrix);
-        glPointSize(5.0f);
-        dRenderer.Draw(points, GL_POINTS);
-        glLineWidth(1.0f);
-        dRenderer.Draw(lines, GL_LINES);
+        dRenderer.SetPointSize(5.0f);
+        dRenderer.SetLineWidth(1.0f);
 
-        points.clear();
-        lines.clear();
+        // Flush all buffered geometries
+        dRenderer.Render();
     }
 }
 

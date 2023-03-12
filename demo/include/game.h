@@ -32,8 +32,8 @@ public:
     DebugOptions& GetDebugOptions();
     void RegisterRenderBody(RigidBody* b);
     const RigidBodyRenderer& GetRigidBodyRenderer() const;
-    std::vector<Vec2>& GetPointList();
-    std::vector<Vec2>& GetLineList();
+    DynamicRenderer& GetDynamicRenderer();
+
     float GetTime() const;
     void RestartDemo();
     void NextDemo();
@@ -42,8 +42,6 @@ public:
 private:
     Application& app;
 
-    std::vector<Vec2> points;
-    std::vector<Vec2> lines;
     RigidBodyRenderer rRenderer;
     DynamicRenderer dRenderer;
 
@@ -65,16 +63,6 @@ private:
 inline DebugOptions& Game::GetDebugOptions()
 {
     return options;
-}
-
-inline std::vector<Vec2>& Game::GetPointList()
-{
-    return points;
-}
-
-inline std::vector<Vec2>& Game::GetLineList()
-{
-    return lines;
 }
 
 inline void Game::RegisterRenderBody(RigidBody* b)
@@ -117,6 +105,11 @@ inline void Game::PrevDemo()
 inline const RigidBodyRenderer& Game::GetRigidBodyRenderer() const
 {
     return rRenderer;
+}
+
+inline DynamicRenderer& Game::GetDynamicRenderer()
+{
+    return dRenderer;
 }
 
 inline void Game::OnDestroy(Collider* me)

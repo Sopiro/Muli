@@ -15,28 +15,32 @@ DynamicShader::DynamicShader()
         #version 330 core
 
         layout (location = 0) in vec2 pos;
+        layout (location = 1) in vec4 color;
+
+        out vec4 f_color;
 
         uniform mat4 view;
         uniform mat4 proj;
-        uniform mat4 model;
 
         void main()
         {
-           mat4 mvp = proj * view * model;
-           gl_Position = mvp * vec4(pos, 0.0, 1.0);
+           mat4 mvp = proj * view;
+
+           f_color = color;
+           gl_Position = mvp * vec4(pos, 0.0f, 1.0f);
         }
     )",
           // Fragment shader
           R"(
         #version 330 core
         
-        out vec4 fragColor;
+        in vec4 f_color;
 
-        uniform vec3 color;
+        out vec4 fragColor;
 
         void main()
         {
-            fragColor = vec4(color, 1.0f);
+            fragColor = f_color;
         }
     )")
 {
