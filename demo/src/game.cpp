@@ -117,12 +117,17 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Show contact normal", &options.show_contact_normal);
                 }
 
+                World& world = demo->GetWorld();
+                WorldSettings& settings = demo->GetWorldSettings();
+
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Simulation settings"))
                 {
-                    WorldSettings& settings = demo->GetWorldSettings();
+                    if (ImGui::Checkbox("Apply gravity", &settings.apply_gravity))
+                    {
+                        world.Awake();
+                    }
 
-                    if (ImGui::Checkbox("Apply gravity", &settings.apply_gravity)) demo->GetWorld().Awake();
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
@@ -141,8 +146,6 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Continuous", &settings.continuous);
                     ImGui::Checkbox("Sub-stepping", &settings.sub_stepping);
                 }
-
-                World& world = demo->GetWorld();
 
                 ImGui::Separator();
                 ImGui::Text("%s", demos[demoIndex].name);
@@ -205,10 +208,22 @@ void Game::Render()
     if (options.draw_body || options.draw_outline)
     {
         rRenderer.SetViewMatrix(cameraMatrix);
-        rRenderer.Render();
+        // rRenderer.Render();
     }
 
-    for (Joint* j = demo->GetWorld().GetJoints(); j; j = j->GetNext())
+    World& world = demo->GetWorld();
+    for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
+    {
+        const Transform& tf = b->GetTransform();
+
+        for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+        {
+            dRenderer.DrawShape(c->GetShape(), tf);
+        }
+    }
+
+    // Draw joints
+    for (Joint* j = world.GetJoints(); j; j = j->GetNext())
     {
         Joint::Type type = j->GetType();
 
@@ -217,7 +232,7 @@ void Game::Render()
         case Joint::Type::grab_joint:
         {
             RigidBody* b = j->GetBodyA();
-            GrabJoint* gj = static_cast<GrabJoint*>(j);
+            const GrabJoint* gj = static_cast<const GrabJoint*>(j);
 
             const Vec2& anchor = Mul(b->GetTransform(), gj->GetLocalAnchor());
             dRenderer.DrawPoint(anchor);
@@ -230,7 +245,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            RevoluteJoint* rj = static_cast<RevoluteJoint*>(j);
+            const RevoluteJoint* rj = static_cast<const RevoluteJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), rj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), rj->GetLocalAnchorB());
@@ -246,7 +261,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            DistanceJoint* dj = static_cast<DistanceJoint*>(j);
+            const DistanceJoint* dj = static_cast<const DistanceJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), dj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), dj->GetLocalAnchorB());
@@ -261,7 +276,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            LineJoint* lj = static_cast<LineJoint*>(j);
+            const LineJoint* lj = static_cast<const LineJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), lj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), lj->GetLocalAnchorB());
@@ -275,7 +290,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            PrismaticJoint* pj = static_cast<PrismaticJoint*>(j);
+            const PrismaticJoint* pj = static_cast<const PrismaticJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
@@ -290,7 +305,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            PulleyJoint* pj = static_cast<PulleyJoint*>(j);
+            const PulleyJoint* pj = static_cast<const PulleyJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
@@ -311,7 +326,7 @@ void Game::Render()
         {
             RigidBody* ba = j->GetBodyA();
             RigidBody* bb = j->GetBodyB();
-            MotorJoint* pj = static_cast<MotorJoint*>(j);
+            const MotorJoint* pj = static_cast<const MotorJoint*>(j);
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
@@ -321,13 +336,14 @@ void Game::Render()
         }
         break;
         default:
+            muliAssert(false);
             break;
         }
     }
 
     if (options.show_bvh || options.show_aabb)
     {
-        const AABBTree& tree = demo->GetWorld().GetDynamicTree();
+        const AABBTree& tree = world.GetDynamicTree();
         tree.Traverse([&](const Node* n) -> void {
             if (options.show_bvh == false && n->IsLeaf() == false)
             {
@@ -345,7 +361,7 @@ void Game::Render()
 
     if (options.show_contact_point || options.show_contact_normal)
     {
-        const Contact* c = demo->GetWorld().GetContacts();
+        const Contact* c = world.GetContacts();
 
         while (c)
         {

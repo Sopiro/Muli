@@ -157,8 +157,8 @@ struct Vec2
         return Vec2{ -y, x };
     }
 };
-
 constexpr Vec2 zero_vec2{ 0.0f };
+
 struct Vec3
 {
     float x, y, z;
@@ -299,8 +299,8 @@ struct Vec3
         return Vec3{ x * invLength, y * invLength, z * invLength };
     }
 };
-
 constexpr Vec3 zero_vec3{ 0.0f };
+
 struct Vec4
 {
     float x, y, z, w;

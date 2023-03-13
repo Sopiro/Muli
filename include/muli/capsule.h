@@ -24,6 +24,7 @@ public:
     virtual Vec2 GetClosestPoint(const Transform& transform, const Vec2& q) const override;
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
 
+    float GetLength() const;
     const Vec2& GetVertexA() const;
     const Vec2& GetVertexB() const;
 
@@ -106,6 +107,11 @@ inline bool Capsule::TestPoint(const Transform& transform, const Vec2& q) const
     Vec2 localQ = MulT(transform, q);
 
     return SignedDistanceToLineSegment(localQ, va, vb, radius) < 0.0f;
+}
+
+inline float Capsule::GetLength() const
+{
+    return length;
 }
 
 inline const Vec2& Capsule::GetVertexA() const
