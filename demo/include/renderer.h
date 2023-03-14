@@ -53,8 +53,8 @@ public:
     void DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3);
     void DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color = default_color);
 
-    void DrawShapeOutlined(const Shape* shape, const Transform& tf);
-    void DrawShapeSolid(const Shape* shape, const Transform& tf, int32 colorIndex);
+    void DrawShapeOutlined(const Shape* shape, const Transform& tf, bool rounded = false);
+    void DrawShapeSolid(const Shape* shape, const Transform& tf, int32 colorIndex, bool rounded = false);
 
     void FlushAll();
     void FlushPoints();

@@ -62,7 +62,6 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
         for (int32 i0 = 0; i0 < vertexCount; ++i0)
         {
             int32 i1 = (i0 + 1) % vertexCount;
-            int32 i2 = (i0 + 2) % vertexCount;
 
             const Vec2& v0 = vertices[i0];
 
@@ -74,7 +73,6 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
             }
 
             const Vec2& v1 = vertices[i1];
-            const Vec2& v2 = vertices[i2];
 
             Vec2 n0 = normals[i0];
             Vec2 n1 = normals[i1];

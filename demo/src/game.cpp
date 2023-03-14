@@ -209,24 +209,42 @@ void Game::Render()
     renderer.SetPointSize(5.0f);
     renderer.SetLineWidth(1.0f);
 
+    // Draw bodies
     if (options.draw_body)
     {
-        for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
+        if (options.draw_outlined)
         {
-            const Transform& tf = b->GetTransform();
-
-            if (b->IsSleeping() || options.draw_outlined)
+            for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
+                const Transform& tf = b->GetTransform();
+                bool drawRounded = b->UserFlag & UserFlag::render_polygon_radius;
+
                 for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                 {
-                    renderer.DrawShapeOutlined(c->GetShape(), tf);
+                    renderer.DrawShapeOutlined(c->GetShape(), tf, drawRounded);
                 }
             }
-            else
+        }
+        else
+        {
+            for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
-                for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+                const Transform& tf = b->GetTransform();
+                bool drawRounded = b->UserFlag & UserFlag::render_polygon_radius;
+
+                if (b->IsSleeping())
                 {
-                    renderer.DrawShapeSolid(c->GetShape(), tf, b->GetIslandID() - 1);
+                    for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+                    {
+                        renderer.DrawShapeOutlined(c->GetShape(), tf, drawRounded);
+                    }
+                }
+                else
+                {
+                    for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+                    {
+                        renderer.DrawShapeSolid(c->GetShape(), tf, b->GetIslandID() - 1, drawRounded);
+                    }
                 }
             }
         }
