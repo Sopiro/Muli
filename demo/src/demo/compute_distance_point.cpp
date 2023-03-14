@@ -62,9 +62,9 @@ public:
 
     void Render() override
     {
-        dRenderer.DrawPoint(closest);
-        dRenderer.DrawPoint(cursorPos);
-        dRenderer.DrawLine(closest, cursorPos);
+        renderer.DrawPoint(closest);
+        renderer.DrawPoint(cursorPos);
+        renderer.DrawLine(closest, cursorPos);
     }
 
     void UpdateUI() override

@@ -20,7 +20,6 @@ public:
         float headRadius = 0.3f * scale;
 
         RigidBody* head = world->CreateCircle(headRadius);
-        game.RegisterRenderBody(head);
         head->SetPosition(headX, headY);
 
         float bodyWidth = 0.8f * scale;
@@ -28,7 +27,6 @@ public:
         float neckGap = 0.05f * scale;
 
         RigidBody* body = world->CreateBox(bodyWidth, bodyHeight);
-        game.RegisterRenderBody(body);
         body->SetPosition(headX, headY - headRadius - bodyHeight / 2.0f - neckGap);
 
         {
@@ -57,11 +55,6 @@ public:
             RigidBody* leftLowerArm =
                 world->CreateCapsule(Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
                                      Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius);
-
-            game.RegisterRenderBody(rightUpperArm);
-            game.RegisterRenderBody(rightLowerArm);
-            game.RegisterRenderBody(leftUpperArm);
-            game.RegisterRenderBody(leftLowerArm);
 
             {
                 float armMotorTorque = rightUpperArm->GetMass() * 2.0f * Sqrt(scale);
@@ -104,11 +97,6 @@ public:
             RigidBody* leftLowerLeg =
                 world->CreateCapsule(Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
                                      Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius);
-
-            game.RegisterRenderBody(rightUpperLeg);
-            game.RegisterRenderBody(rightLowerLeg);
-            game.RegisterRenderBody(leftUpperLeg);
-            game.RegisterRenderBody(leftLowerLeg);
 
             {
                 float legMotorTorque = rightUpperLeg->GetMass() * 3.0f * Sqrt(scale);

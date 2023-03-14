@@ -69,7 +69,6 @@ public:
 
             float r = 1.5f;
             RigidBody* b = world->CreateCircle(r);
-            game.RegisterRenderBody(b);
 
             Vec2 p = PolarToCart(DegToRad(angle), 12.0f);
             b->SetPosition(p + Vec2{ 0.0f, r });

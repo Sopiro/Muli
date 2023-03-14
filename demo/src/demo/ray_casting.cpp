@@ -37,7 +37,7 @@ public:
 
         Vec2 to = cursorPos;
 
-        dRenderer.DrawLine(from, to);
+        renderer.DrawLine(from, to);
 
         bool hit = false;
         Vec2 closestPoint;
@@ -49,8 +49,8 @@ public:
 
             if (closest == false)
             {
-                dRenderer.DrawPoint(point);
-                dRenderer.DrawLine(point, point + normal * 0.2f);
+                renderer.DrawPoint(point);
+                renderer.DrawLine(point, point + normal * 0.2f);
 
                 return 1.0f;
             }
@@ -66,8 +66,8 @@ public:
 
         if (closest && hit)
         {
-            dRenderer.DrawPoint(closestPoint);
-            dRenderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
+            renderer.DrawPoint(closestPoint);
+            renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
         }
     }
 

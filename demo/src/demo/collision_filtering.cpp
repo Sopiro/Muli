@@ -63,7 +63,6 @@ public:
         {
             RigidBody* c = world->CreateCircle(0.15f);
             c->SetPosition(-4.0f, 6.0f);
-            game.RegisterRenderBody(c);
 
             float r = LinearRand(0.0f, 3.0f);
 

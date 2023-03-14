@@ -6,7 +6,6 @@ namespace muli
 
 Game::Game(Application& _app)
     : app{ _app }
-    , rRenderer{ *this }
 {
     UpdateProjectionMatrix();
     Window::Get().SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
@@ -205,15 +204,13 @@ void Game::Render()
     Camera& camera = demo->GetCamera();
     Mat4 cameraMatrix = camera.GetCameraMatrix();
 
-    rRenderer.SetViewMatrix(cameraMatrix);
-    dRenderer.SetViewMatrix(cameraMatrix);
+    renderer.SetViewMatrix(cameraMatrix);
 
-    dRenderer.SetPointSize(5.0f);
-    dRenderer.SetLineWidth(1.0f);
+    renderer.SetPointSize(5.0f);
+    renderer.SetLineWidth(1.0f);
 
     if (options.draw_body || options.draw_outline)
     {
-        // rRenderer.Render();
     }
 
     World& world = demo->GetWorld();
@@ -223,11 +220,9 @@ void Game::Render()
 
         for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
         {
-            dRenderer.DrawShape(c->GetShape(), tf, b->GetIslandID() - 1);
+            renderer.DrawShape(c->GetShape(), tf, b->GetIslandID() - 1);
         }
     }
-
-    dRenderer.Render();
 
     // Draw joints
     for (Joint* j = world.GetJoints(); j; j = j->GetNext())
@@ -242,10 +237,10 @@ void Game::Render()
             const GrabJoint* gj = static_cast<const GrabJoint*>(j);
 
             const Vec2& anchor = Mul(b->GetTransform(), gj->GetLocalAnchor());
-            dRenderer.DrawPoint(anchor);
-            dRenderer.DrawPoint(gj->GetTarget());
+            renderer.DrawPoint(anchor);
+            renderer.DrawPoint(gj->GetTarget());
 
-            dRenderer.DrawLine(anchor, gj->GetTarget());
+            renderer.DrawLine(anchor, gj->GetTarget());
         }
         break;
         case Joint::Type::revolute_joint:
@@ -257,11 +252,11 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), rj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), rj->GetLocalAnchorB());
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(anchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(anchorB);
 
-            dRenderer.DrawLine(anchorA, ba->GetPosition());
-            dRenderer.DrawLine(anchorB, bb->GetPosition());
+            renderer.DrawLine(anchorA, ba->GetPosition());
+            renderer.DrawLine(anchorB, bb->GetPosition());
         }
         break;
         case Joint::Type::distance_joint:
@@ -273,10 +268,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), dj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), dj->GetLocalAnchorB());
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(anchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(anchorB);
 
-            dRenderer.DrawLine(anchorA, anchorB);
+            renderer.DrawLine(anchorA, anchorB);
         }
         break;
         case Joint::Type::line_joint:
@@ -288,10 +283,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), lj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), lj->GetLocalAnchorB());
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(anchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(anchorB);
 
-            dRenderer.DrawLine(anchorA, anchorB);
+            renderer.DrawLine(anchorA, anchorB);
         }
         case Joint::Type::prismatic_joint:
         {
@@ -302,10 +297,10 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(anchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(anchorB);
 
-            dRenderer.DrawLine(anchorA, anchorB);
+            renderer.DrawLine(anchorA, anchorB);
         }
         break;
         case Joint::Type::pulley_joint:
@@ -319,14 +314,14 @@ void Game::Render()
             const Vec2& groundAnchorA = pj->GetGroundAnchorA();
             const Vec2& groundAnchorB = pj->GetGroundAnchorB();
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(groundAnchorA);
-            dRenderer.DrawPoint(anchorB);
-            dRenderer.DrawPoint(groundAnchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(groundAnchorA);
+            renderer.DrawPoint(anchorB);
+            renderer.DrawPoint(groundAnchorB);
 
-            dRenderer.DrawLine(anchorA, groundAnchorA);
-            dRenderer.DrawLine(anchorB, groundAnchorB);
-            dRenderer.DrawLine(groundAnchorA, groundAnchorB);
+            renderer.DrawLine(anchorA, groundAnchorA);
+            renderer.DrawLine(anchorB, groundAnchorB);
+            renderer.DrawLine(groundAnchorA, groundAnchorB);
         }
         break;
         case Joint::Type::motor_joint:
@@ -338,8 +333,8 @@ void Game::Render()
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
             const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
 
-            dRenderer.DrawPoint(anchorA);
-            dRenderer.DrawPoint(anchorB);
+            renderer.DrawPoint(anchorA);
+            renderer.DrawPoint(anchorB);
         }
         break;
         default:
@@ -359,10 +354,10 @@ void Game::Render()
 
             Vec2 br{ n->aabb.max.x, n->aabb.min.y };
             Vec2 tl{ n->aabb.min.x, n->aabb.max.y };
-            dRenderer.DrawLine(n->aabb.min, br);
-            dRenderer.DrawLine(br, n->aabb.max);
-            dRenderer.DrawLine(n->aabb.max, tl);
-            dRenderer.DrawLine(tl, n->aabb.min);
+            renderer.DrawLine(n->aabb.min, br);
+            renderer.DrawLine(br, n->aabb.max);
+            renderer.DrawLine(n->aabb.max, tl);
+            renderer.DrawLine(tl, n->aabb.min);
         });
     }
 
@@ -386,13 +381,13 @@ void Game::Render()
 
                 if (options.show_contact_point)
                 {
-                    dRenderer.DrawPoint(cp);
+                    renderer.DrawPoint(cp);
                 }
                 if (options.show_contact_normal)
                 {
-                    dRenderer.DrawLine(cp, cp + m.contactNormal * 0.15f);
-                    dRenderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
-                    dRenderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
+                    renderer.DrawLine(cp, cp + m.contactNormal * 0.15f);
+                    renderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
+                    renderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
                 }
             }
 
@@ -402,7 +397,7 @@ void Game::Render()
 
     demo->Render();
 
-    dRenderer.Render();
+    renderer.FlushAll();
 }
 
 void Game::UpdateProjectionMatrix()
@@ -411,8 +406,7 @@ void Game::UpdateProjectionMatrix()
     windowSize /= 100.0f;
 
     Mat4 projMatrix = Orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
-    rRenderer.SetProjectionMatrix(projMatrix);
-    dRenderer.SetProjectionMatrix(projMatrix);
+    renderer.SetProjectionMatrix(projMatrix);
 }
 
 void Game::InitDemo(int32 index)
@@ -440,7 +434,6 @@ void Game::InitDemo(int32 index)
     }
 
     time = 0;
-    rRenderer.Reset();
 
     demoIndex = index;
     demo = demos[demoIndex].createFunction(*this);
@@ -453,11 +446,6 @@ void Game::InitDemo(int32 index)
     if (restoreCameraPosition)
     {
         demo->GetCamera() = prevCamera;
-    }
-
-    for (RigidBody* b = demo->GetWorld().GetBodyList(); b; b = b->GetNext())
-    {
-        RegisterRenderBody(b);
     }
 }
 

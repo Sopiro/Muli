@@ -71,8 +71,6 @@ public:
             RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
             c->SetPosition(LinearRand(-5.5f, -3.0f), 7.0f);
 
-            game.RegisterRenderBody(c);
-
             lastTime = currentTime;
         }
 

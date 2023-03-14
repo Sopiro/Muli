@@ -66,11 +66,11 @@ public:
 
             if (!world->RayCastClosest(cursorPos, to,
                                        [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
-                                           dRenderer.DrawPoint(point);
-                                           dRenderer.DrawLine(cursorPos, point);
+                                           renderer.DrawPoint(point);
+                                           renderer.DrawLine(cursorPos, point);
                                        }))
             {
-                dRenderer.DrawLine(cursorPos, to);
+                renderer.DrawLine(cursorPos, to);
             }
         }
     }

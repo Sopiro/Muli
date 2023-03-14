@@ -53,14 +53,14 @@ public:
     {
         for (Vec2& vertex : vertices)
         {
-            dRenderer.DrawPoint(vertex);
+            renderer.DrawPoint(vertex);
         }
 
         for (size_t i = 0; i < convexHull.size(); ++i)
         {
             Vec2& v0 = convexHull[i];
             Vec2& v1 = convexHull[(i + 1) % convexHull.size()];
-            dRenderer.DrawLine(v0, v1);
+            renderer.DrawLine(v0, v1);
         }
     }
 

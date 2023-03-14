@@ -48,29 +48,29 @@ public:
             Transform thA = tfA;
             Transform thB = tfB;
 
-            const RigidBodyRenderer& rRenderer = game.GetRigidBodyRenderer();
+            Renderer& renderer = game.GetRenderer();
 
             hit = ShapeCast(sa, tfA, sb, tfB, translationA, translationB, &output);
             if (hit)
             {
                 thA.position += translationA * output.t;
-                rRenderer.Render(ca, thA);
+                renderer.DrawShape(ca->GetShape(), thA);
                 thB.position += translationB * output.t;
-                rRenderer.Render(cb, thB);
+                renderer.DrawShape(cb->GetShape(), thB);
 
-                dRenderer.DrawPoint(output.point);
-                dRenderer.DrawLine(output.point, output.point + output.normal * 0.2f);
+                renderer.DrawPoint(output.point);
+                renderer.DrawLine(output.point, output.point + output.normal * 0.2f);
             }
             else
             {
                 thA.position += translationA;
-                rRenderer.Render(ca, thA);
+                renderer.DrawShape(ca->GetShape(), thA);
                 thB.position += translationB;
-                rRenderer.Render(cb, thB);
+                renderer.DrawShape(cb->GetShape(), thB);
             }
 
-            dRenderer.DrawLine(tfA.position, thA.position);
-            dRenderer.DrawLine(tfB.position, thB.position);
+            renderer.DrawLine(tfA.position, thA.position);
+            renderer.DrawLine(tfB.position, thB.position);
         }
     }
 

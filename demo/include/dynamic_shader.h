@@ -17,7 +17,7 @@ public:
     void SetProjectionMatrix(const Mat4& projMatrix);
 
 private:
-    friend class DynamicRenderer;
+    friend class Renderer;
 
     DynamicShader();
 

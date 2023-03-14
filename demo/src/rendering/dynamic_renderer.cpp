@@ -1,4 +1,4 @@
-#include "dynamic_renderer.h"
+#include "renderer.h"
 #include "util.h"
 
 namespace muli
@@ -12,7 +12,7 @@ static std::array<Vec2, circle_count> unit_circle;
 static constexpr int32 color_count = 10;
 static std::array<Vec4, color_count> colors;
 
-DynamicRenderer::DynamicRenderer()
+Renderer::Renderer()
     : pointCount{ 0 }
     , lineCount{ 0 }
 {
@@ -60,14 +60,14 @@ DynamicRenderer::DynamicRenderer()
     }
 }
 
-DynamicRenderer::~DynamicRenderer()
+Renderer::~Renderer()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &pVBO);
     glDeleteBuffers(1, &cVBO);
 }
 
-void DynamicRenderer::DrawShape(const Shape* shape, const Transform& tf, int32 colorIndex)
+void Renderer::DrawShape(const Shape* shape, const Transform& tf, int32 colorIndex)
 {
     Vec4& color = colors[colorIndex % color_count];
 
@@ -198,7 +198,7 @@ void DynamicRenderer::DrawShape(const Shape* shape, const Transform& tf, int32 c
     }
 }
 
-void DynamicRenderer::FlushPoints()
+void Renderer::FlushPoints()
 {
     shader->Use();
 
@@ -217,7 +217,7 @@ void DynamicRenderer::FlushPoints()
     pointCount = 0;
 }
 
-void DynamicRenderer::FlushLines()
+void Renderer::FlushLines()
 {
     shader->Use();
 
@@ -236,7 +236,7 @@ void DynamicRenderer::FlushLines()
     lineCount = 0;
 }
 
-void DynamicRenderer::FlushTriangles()
+void Renderer::FlushTriangles()
 {
     shader->Use();
 

@@ -64,9 +64,6 @@ public:
 
         world->BufferDestroy(b);
 
-        game.RegisterRenderBody(b1);
-        game.RegisterRenderBody(b2);
-
         broke = true;
     }
 

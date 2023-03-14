@@ -41,7 +41,6 @@ public:
             b->SetContinuous(true);
 
             b->SetLinearVelocity(-200.0f, 0.0f);
-            game.RegisterRenderBody(b);
             options.pause = true;
         }
 

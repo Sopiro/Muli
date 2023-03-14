@@ -3,10 +3,9 @@
 #include "camera.h"
 #include "common.h"
 #include "demo.h"
-#include "dynamic_renderer.h"
 #include "input.h"
 #include "options.h"
-#include "rigidbody_renderer.h"
+#include "renderer.h"
 
 namespace muli
 {
@@ -30,9 +29,7 @@ public:
 
     Vec2 GetWorldCursorPosition() const;
     DebugOptions& GetDebugOptions();
-    void RegisterRenderBody(RigidBody* b);
-    const RigidBodyRenderer& GetRigidBodyRenderer() const;
-    DynamicRenderer& GetDynamicRenderer();
+    Renderer& GetRenderer();
 
     float GetTime() const;
     void RestartDemo();
@@ -42,8 +39,7 @@ public:
 private:
     Application& app;
 
-    RigidBodyRenderer rRenderer;
-    DynamicRenderer dRenderer;
+    Renderer renderer;
 
     float time = 0.0f;
 
@@ -65,18 +61,9 @@ inline DebugOptions& Game::GetDebugOptions()
     return options;
 }
 
-inline void Game::RegisterRenderBody(RigidBody* b)
-{
-    for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
-    {
-        rRenderer.Register(c);
-        c->OnDestroy = this;
-    }
-}
-
 inline Vec2 Game::GetWorldCursorPosition() const
 {
-    return rRenderer.Pick(Input::GetMousePosition());
+    return renderer.Pick(Input::GetMousePosition());
 }
 
 inline float Game::GetTime() const
@@ -102,19 +89,14 @@ inline void Game::PrevDemo()
     restart = true;
 }
 
-inline const RigidBodyRenderer& Game::GetRigidBodyRenderer() const
+inline Renderer& Game::GetRenderer()
 {
-    return rRenderer;
-}
-
-inline DynamicRenderer& Game::GetDynamicRenderer()
-{
-    return dRenderer;
+    return renderer;
 }
 
 inline void Game::OnDestroy(Collider* me)
 {
-    rRenderer.Unregister(me);
+    muliNotUsed(me);
 }
 
 } // namespace muli

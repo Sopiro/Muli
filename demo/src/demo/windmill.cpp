@@ -50,7 +50,6 @@ public:
             {
                 RigidBody* c = world->CreateRegularPolygon(0.18f, LinearRand(3, 8));
                 c->SetPosition(LinearRand(Vec2{ -2.0f, 6.0f }, Vec2{ 2.0f, 6.0f }));
-                game.RegisterRenderBody(c);
             }
 
             t = game.GetTime();

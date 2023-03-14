@@ -7,7 +7,7 @@ namespace muli
 
 Demo::Demo(Game& _game)
     : game{ _game }
-    , dRenderer{ _game.GetDynamicRenderer() }
+    , renderer{ _game.GetRenderer() }
     , options{ _game.GetDebugOptions() }
     , targetBody{ nullptr }
     , targetCollider{ nullptr }
@@ -78,7 +78,6 @@ void Demo::EnableBodyCreate()
     {
         RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(cursorPos);
-        game.RegisterRenderBody(b);
     }
 
     if (!targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -93,7 +92,6 @@ void Demo::EnableBodyCreate()
         {
             RigidBody* b = world->CreateBox(0.5f);
             b->SetPosition(cursorPos);
-            game.RegisterRenderBody(b);
         }
     }
 
@@ -108,9 +106,9 @@ void Demo::EnableBodyCreate()
 
     if (create)
     {
-        dRenderer.DrawPoint(mStart);
-        dRenderer.DrawPoint(cursorPos);
-        dRenderer.DrawLine(mStart, cursorPos);
+        renderer.DrawPoint(mStart);
+        renderer.DrawPoint(cursorPos);
+        renderer.DrawLine(mStart, cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
@@ -122,7 +120,6 @@ void Demo::EnableBodyCreate()
             f *= settings.inv_dt * b->GetMass() * 7.0f;
             b->SetForce(f);
             create = false;
-            game.RegisterRenderBody(b);
         }
     }
 }
@@ -155,7 +152,7 @@ bool Demo::EnablePolygonCreate()
     {
         for (Vec2& point : points)
         {
-            dRenderer.DrawPoint(point);
+            renderer.DrawPoint(point);
         }
 
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -166,14 +163,14 @@ bool Demo::EnablePolygonCreate()
 
         if (hull.size() < 3)
         {
-            dRenderer.DrawLine(hull.back(), cursorPos);
+            renderer.DrawLine(hull.back(), cursorPos);
         }
 
         for (size_t i = 0; i < hull.size(); ++i)
         {
             Vec2& v0 = hull[i];
             Vec2& v1 = hull[(i + 1) % hull.size()];
-            dRenderer.DrawLine(v0, v1);
+            renderer.DrawLine(v0, v1);
         }
 
         auto create_body = [&](RigidBody::Type type) {
@@ -203,7 +200,6 @@ bool Demo::EnablePolygonCreate()
 
             b->SetContinuous(settings.continuous);
 
-            game.RegisterRenderBody(b);
             creating = false;
             points.clear();
             hull.clear();
@@ -240,10 +236,10 @@ void Demo::EnableBodyRemove()
         Vec2 br{ aabb.min.x, aabb.max.y };
         Vec2 tl{ aabb.max.x, aabb.min.y };
 
-        dRenderer.DrawLine(aabb.min, br);
-        dRenderer.DrawLine(br, aabb.max);
-        dRenderer.DrawLine(aabb.max, tl);
-        dRenderer.DrawLine(tl, aabb.min);
+        renderer.DrawLine(aabb.min, br);
+        renderer.DrawLine(br, aabb.max);
+        renderer.DrawLine(aabb.max, tl);
+        renderer.DrawLine(tl, aabb.min);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
@@ -313,9 +309,9 @@ bool Demo::EnableAddForce()
     {
         Vec2 tl = Mul(ft->GetTransform(), mStartLocal);
 
-        dRenderer.DrawPoint(tl);
-        dRenderer.DrawPoint(cursorPos);
-        dRenderer.DrawLine(tl, cursorPos);
+        renderer.DrawPoint(tl);
+        renderer.DrawPoint(cursorPos);
+        renderer.DrawLine(tl, cursorPos);
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {

@@ -9,7 +9,7 @@ namespace muli
 {
 
 class Game;
-class DynamicRenderer;
+class Renderer;
 struct DebugOptions;
 
 class Demo : public JointDestoryCallback
@@ -65,7 +65,7 @@ protected:
     void EnableCameraControl();
 
     Game& game;
-    DynamicRenderer& dRenderer;
+    Renderer& renderer;
     DebugOptions& options;
 
     Camera camera;
