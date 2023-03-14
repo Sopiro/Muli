@@ -205,9 +205,14 @@ void Game::Render()
     Camera& camera = demo->GetCamera();
     Mat4 cameraMatrix = camera.GetCameraMatrix();
 
+    rRenderer.SetViewMatrix(cameraMatrix);
+    dRenderer.SetViewMatrix(cameraMatrix);
+
+    dRenderer.SetPointSize(5.0f);
+    dRenderer.SetLineWidth(1.0f);
+
     if (options.draw_body || options.draw_outline)
     {
-        rRenderer.SetViewMatrix(cameraMatrix);
         // rRenderer.Render();
     }
 
@@ -218,9 +223,11 @@ void Game::Render()
 
         for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
         {
-            dRenderer.DrawShape(c->GetShape(), tf);
+            dRenderer.DrawShape(c->GetShape(), tf, b->GetIslandID() - 1);
         }
     }
+
+    dRenderer.Render();
 
     // Draw joints
     for (Joint* j = world.GetJoints(); j; j = j->GetNext())
@@ -395,15 +402,7 @@ void Game::Render()
 
     demo->Render();
 
-    // Batch rendering for points and lines
-    {
-        dRenderer.SetViewMatrix(cameraMatrix);
-        dRenderer.SetPointSize(5.0f);
-        dRenderer.SetLineWidth(1.0f);
-
-        // Flush all buffered geometries
-        dRenderer.Render();
-    }
+    dRenderer.Render();
 }
 
 void Game::UpdateProjectionMatrix()
