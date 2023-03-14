@@ -11,7 +11,6 @@ public:
     CollisionDetection(Game& game)
         : Demo(game)
     {
-        options.draw_outline = false;
         options.show_contact_normal = true;
         options.show_contact_point = true;
         settings.apply_gravity = false;
@@ -59,7 +58,6 @@ public:
 
     ~CollisionDetection()
     {
-        options.draw_outline = true;
         options.show_contact_normal = false;
         options.show_contact_point = false;
     }

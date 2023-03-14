@@ -109,7 +109,7 @@ void Game::UpdateUI()
                     ImGui::Checkbox("Camera reset", &options.reset_camera);
                     ImGui::Checkbox("Colorize island", &options.colorize_island);
                     ImGui::Checkbox("Draw body", &options.draw_body);
-                    ImGui::Checkbox("Draw outline", &options.draw_outline);
+                    ImGui::Checkbox("Draw outlined", &options.draw_outlined);
                     ImGui::Checkbox("Show BVH", &options.show_bvh);
                     ImGui::Checkbox("Show AABB", &options.show_aabb);
                     ImGui::Checkbox("Show contact point", &options.show_contact_point);
@@ -201,26 +201,34 @@ void Game::UpdateUI()
 
 void Game::Render()
 {
+    World& world = demo->GetWorld();
     Camera& camera = demo->GetCamera();
     Mat4 cameraMatrix = camera.GetCameraMatrix();
 
     renderer.SetViewMatrix(cameraMatrix);
-
     renderer.SetPointSize(5.0f);
     renderer.SetLineWidth(1.0f);
 
-    if (options.draw_body || options.draw_outline)
+    if (options.draw_body)
     {
-    }
-
-    World& world = demo->GetWorld();
-    for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
-    {
-        const Transform& tf = b->GetTransform();
-
-        for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+        for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
         {
-            renderer.DrawShape(c->GetShape(), tf, b->GetIslandID() - 1);
+            const Transform& tf = b->GetTransform();
+
+            if (b->IsSleeping() || options.draw_outlined)
+            {
+                for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+                {
+                    renderer.DrawShapeOutlined(c->GetShape(), tf);
+                }
+            }
+            else
+            {
+                for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
+                {
+                    renderer.DrawShapeSolid(c->GetShape(), tf, b->GetIslandID() - 1);
+                }
+            }
         }
     }
 

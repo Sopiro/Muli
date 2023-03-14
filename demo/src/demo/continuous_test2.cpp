@@ -66,7 +66,7 @@ public:
             t.rotation = t.rotation.GetAngle() + target->GetAngularVelocity() * settings.dt;
             t.position += target->GetLinearVelocity() * settings.dt;
 
-            game.GetRenderer().DrawShape(target->GetColliderList()->GetShape(), t);
+            game.GetRenderer().DrawShapeOutlined(target->GetColliderList()->GetShape(), t);
         }
     }
 

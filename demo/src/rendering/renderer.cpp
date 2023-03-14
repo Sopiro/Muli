@@ -4,17 +4,10 @@
 namespace muli
 {
 
-static bool initialized = false;
-static constexpr int32 circle_count = 12;
-static constexpr int32 quater_count = circle_count / 4;
-static std::array<Vec2, circle_count> unit_circle;
-
-static constexpr int32 color_count = 10;
-static std::array<Vec4, color_count> colors;
-
 Renderer::Renderer()
     : pointCount{ 0 }
     , lineCount{ 0 }
+    , triangleCount{ 0 }
 {
     shader = DynamicShader::Create();
 
@@ -67,9 +60,128 @@ Renderer::~Renderer()
     glDeleteBuffers(1, &cVBO);
 }
 
-void Renderer::DrawShape(const Shape* shape, const Transform& tf, int32 colorIndex)
+void Renderer::DrawShapeOutlined(const Shape* shape, const Transform& tf)
 {
-    Vec4& color = colors[colorIndex % color_count];
+    switch (shape->GetType())
+    {
+    case Shape::Type::circle:
+    {
+        const Circle* c = static_cast<const Circle*>(shape);
+
+        float radius = c->GetRadius();
+        Vec2 localCenter = c->GetCenter();
+        Vec2 center = Mul(tf, localCenter);
+
+        int32 i0 = circle_count - 1;
+        int32 i1 = 0;
+        Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
+        Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+
+        DrawLine(center, v1);
+        DrawLine(v0, v1);
+
+        i0 = i1;
+        v0 = v1;
+
+        for (i1 = 1; i1 < circle_count; ++i1)
+        {
+            v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+        }
+    }
+    break;
+    case Shape::Type::capsule:
+    {
+        const Capsule* c = static_cast<const Capsule*>(shape);
+
+        Vec2 va = c->GetVertexA();
+        Vec2 vb = c->GetVertexB();
+        Vec2 normal = Cross(1.0f, vb - va).Normalized();
+
+        Vec2 gva = Mul(tf, va);
+        Vec2 gvb = Mul(tf, vb);
+
+        Vec2 dir = vb - va;
+        float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
+
+        Rotation rot{ angleOffset };
+
+        float radius = c->GetRadius();
+
+        int32 i0 = 0;
+        Vec2 v0 = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
+        Vec2 v1;
+
+        for (int32 i1 = 1; i0 < quater_count; ++i1)
+        {
+            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+        }
+
+        for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
+        {
+            v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
+
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+        }
+
+        for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
+        {
+            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+        }
+
+        v0 = Mul(tf, vb + Mul(rot, unit_circle[0] * radius));
+
+        DrawLine(v1, v0);
+    }
+    break;
+    case Shape::Type::polygon:
+    {
+        const Polygon* p = static_cast<const Polygon*>(shape);
+
+        float radius = p->GetRadius();
+        const Vec2* vertices = p->GetVertices();
+        int32 vertexCount = p->GetVertexCount();
+
+        Vec2 center = Mul(tf, p->GetCenter());
+
+        int32 i0 = vertexCount - 1;
+        Vec2 v0 = Mul(tf, vertices[i0]);
+        for (int32 i1 = 0; i1 < vertexCount; ++i1)
+        {
+            Vec2 v1 = Mul(tf, vertices[i1]);
+
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+        }
+    }
+    break;
+    default:
+        muliAssert(false);
+        break;
+    }
+}
+
+void Renderer::DrawShapeSolid(const Shape* shape, const Transform& tf, int32 colorIndex)
+{
+    const Vec4& color = colorIndex < 0 ? color_white : colors[colorIndex % color_count];
 
     switch (shape->GetType())
     {
@@ -184,7 +296,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, int32 colorInd
         {
             Vec2 v1 = Mul(tf, vertices[i1]);
 
-            DrawTriangle(center, v0, v1, colors[colorIndex % color_count]);
+            DrawTriangle(center, v0, v1, color);
             DrawLine(v0, v1);
 
             i0 = i1;

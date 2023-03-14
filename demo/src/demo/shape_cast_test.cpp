@@ -54,9 +54,9 @@ public:
             if (hit)
             {
                 thA.position += translationA * output.t;
-                renderer.DrawShape(ca->GetShape(), thA);
+                renderer.DrawShapeOutlined(ca->GetShape(), thA);
                 thB.position += translationB * output.t;
-                renderer.DrawShape(cb->GetShape(), thB);
+                renderer.DrawShapeOutlined(cb->GetShape(), thB);
 
                 renderer.DrawPoint(output.point);
                 renderer.DrawLine(output.point, output.point + output.normal * 0.2f);
@@ -64,9 +64,9 @@ public:
             else
             {
                 thA.position += translationA;
-                renderer.DrawShape(ca->GetShape(), thA);
+                renderer.DrawShapeOutlined(ca->GetShape(), thA);
                 thB.position += translationB;
-                renderer.DrawShape(cb->GetShape(), thB);
+                renderer.DrawShapeOutlined(cb->GetShape(), thB);
             }
 
             renderer.DrawLine(tfA.position, thA.position);

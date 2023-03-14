@@ -25,7 +25,7 @@ set(DEMO_SOURCE_FILES
     src/rendering/shader.cpp
     src/rendering/mesh.cpp
     src/rendering/dynamic_shader.cpp
-    src/rendering/dynamic_renderer.cpp
+    src/rendering/renderer.cpp
 
     src/demo/demo.cpp
     src/demo/single_box.cpp

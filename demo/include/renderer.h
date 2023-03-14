@@ -6,8 +6,26 @@
 namespace muli
 {
 
-static constexpr int32 max_vertex_count = 1024 * 3;
+static bool initialized = false;
+
+static constexpr int32 circle_count = 12;
+static constexpr int32 quater_count = circle_count / 4;
+static std::array<Vec2, circle_count> unit_circle;
+
+static constexpr int32 color_count = 10;
+static std::array<Vec4, color_count> colors;
+
+static constexpr Vec4 color_transparent{ 0.0f, 0.0f, 0.0f, 0.0f };
+static constexpr Vec4 color_white{ 1.0f, 1.0f, 1.0f, 0.8f };
 static constexpr Vec4 default_color{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+static constexpr int32 max_vertex_count = 1024 * 3;
+
+struct Vertex
+{
+    Vec2 point;
+    Vec4 color;
+};
 
 // Batch renderer
 class Renderer final
@@ -28,19 +46,22 @@ public:
     void SetProjectionMatrix(const Mat4& projMatrix);
     void SetViewMatrix(const Mat4& viewMatrix);
 
-    void DrawPoint(const Vec2& point, const Vec4& color = default_color);
-    void DrawLine(const Vec2& point1, const Vec2& point2, const Vec4& color1 = default_color, const Vec4& color2 = default_color);
-    void DrawTriangle(
-        const Vec2& point1, const Vec2& point2, const Vec2& point3, const Vec4& color1, const Vec4& color2, const Vec4& color3);
-    void DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec2& point3, const Vec4& color);
-    void DrawShape(const Shape* shape, const Transform& tf, int32 colorIndex = 0);
+    void DrawPoint(const Vertex& v);
+    void DrawPoint(const Vec2& p, const Vec4& color = default_color);
+    void DrawLine(const Vertex& v1, const Vertex& v2);
+    void DrawLine(const Vec2& p1, const Vec2& p2, const Vec4& color = default_color);
+    void DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3);
+    void DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color = default_color);
 
-    Vec2 Pick(Vec2 screenPos) const;
+    void DrawShapeOutlined(const Shape* shape, const Transform& tf);
+    void DrawShapeSolid(const Shape* shape, const Transform& tf, int32 colorIndex);
 
     void FlushAll();
     void FlushPoints();
     void FlushLines();
     void FlushTriangles();
+
+    Vec2 Pick(Vec2 screenPos) const;
 
 private:
     friend class DynamicShader;
@@ -93,55 +114,94 @@ inline void Renderer::SetViewMatrix(const Mat4& _viewMatrix)
     shader->SetViewMatrix(_viewMatrix);
 }
 
-inline void Renderer::DrawPoint(const Vec2& point, const Vec4& color)
+inline void Renderer::DrawPoint(const Vertex& v)
 {
     if (pointCount == max_vertex_count)
     {
         FlushAll();
     }
 
-    points[pointCount] = point;
+    points[pointCount] = v.point;
+    pointColors[pointCount] = v.color;
+    ++pointCount;
+}
+
+inline void Renderer::DrawPoint(const Vec2& p, const Vec4& color)
+{
+    if (pointCount == max_vertex_count)
+    {
+        FlushAll();
+    }
+
+    points[pointCount] = p;
     pointColors[pointCount] = color;
     ++pointCount;
 }
 
-inline void Renderer::DrawLine(const Vec2& point1, const Vec2& point2, const Vec4& color1, const Vec4& color2)
+inline void Renderer::DrawLine(const Vertex& v1, const Vertex& v2)
 {
     if (lineCount == max_vertex_count)
     {
         FlushAll();
     }
 
-    lines[lineCount] = point1;
-    lineColors[lineCount] = color1;
+    lines[lineCount] = v1.point;
+    lineColors[lineCount] = v1.color;
     ++lineCount;
-    lines[lineCount] = point2;
-    lineColors[lineCount] = color2;
+    lines[lineCount] = v2.point;
+    lineColors[lineCount] = v2.color;
     ++lineCount;
 }
 
-inline void Renderer::DrawTriangle(
-    const Vec2& point1, const Vec2& point2, const Vec2& point3, const Vec4& color1, const Vec4& color2, const Vec4& color3)
+inline void Renderer::DrawLine(const Vec2& p1, const Vec2& p2, const Vec4& color)
+{
+    if (lineCount == max_vertex_count)
+    {
+        FlushAll();
+    }
+
+    lines[lineCount] = p1;
+    lineColors[lineCount] = color;
+    ++lineCount;
+    lines[lineCount] = p2;
+    lineColors[lineCount] = color;
+    ++lineCount;
+}
+
+inline void Renderer::DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 {
     if (triangleCount == max_vertex_count)
     {
         FlushAll();
     }
 
-    triangles[triangleCount] = point1;
-    triangleColors[triangleCount] = color1;
+    triangles[triangleCount] = v1.point;
+    triangleColors[triangleCount] = v1.color;
     ++triangleCount;
-    triangles[triangleCount] = point2;
-    triangleColors[triangleCount] = color2;
+    triangles[triangleCount] = v2.point;
+    triangleColors[triangleCount] = v2.color;
     ++triangleCount;
-    triangles[triangleCount] = point3;
-    triangleColors[triangleCount] = color3;
+    triangles[triangleCount] = v3.point;
+    triangleColors[triangleCount] = v3.color;
     ++triangleCount;
 }
 
-inline void Renderer::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec2& point3, const Vec4& color)
+inline void Renderer::DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color)
 {
-    DrawTriangle(point1, point2, point3, color, color, color);
+    if (triangleCount == max_vertex_count)
+    {
+        FlushAll();
+    }
+
+    triangles[triangleCount] = p1;
+    triangleColors[triangleCount] = color;
+    ++triangleCount;
+    triangles[triangleCount] = p2;
+    triangleColors[triangleCount] = color;
+    ++triangleCount;
+    triangles[triangleCount] = p3;
+    triangleColors[triangleCount] = color;
+    ++triangleCount;
 }
 
 // Viewport space -> NDC -> world spcae

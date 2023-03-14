@@ -45,6 +45,8 @@ void Island::Solve()
         // All bodies on this island are resting more than sleep time, but flags are not set
         if (sleeping)
         {
+            b->islandID = 0;
+            b->islandIndex = 0;
             b->linearVelocity.SetZero();
             b->angularVelocity = 0.0f;
             b->flag |= RigidBody::flag_sleeping;

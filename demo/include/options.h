@@ -9,8 +9,8 @@ struct DebugOptions
 {
     bool pause = false;
     bool step = false;
-    bool draw_outline = true;
     bool draw_body = true;
+    bool draw_outlined = false;
     bool show_bvh = false;
     bool show_aabb = false;
     bool show_contact_point = false;

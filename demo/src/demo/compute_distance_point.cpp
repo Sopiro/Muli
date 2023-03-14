@@ -15,7 +15,7 @@ public:
     ComputeDistancePoint(Game& game)
         : Demo(game)
     {
-        options.draw_outline = false;
+        options.draw_outlined = true;
         options.show_contact_normal = true;
         options.show_contact_point = true;
         settings.apply_gravity = false;
@@ -79,7 +79,7 @@ public:
 
     ~ComputeDistancePoint()
     {
-        options.draw_outline = true;
+        options.draw_outlined = false;
         options.show_contact_normal = false;
         options.show_contact_point = false;
     }

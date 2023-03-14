@@ -92,6 +92,7 @@ public:
     bool IsContinuous() const;
 
     int32 GetIslandID() const;
+    int32 GetIslandIndex() const;
 
     RigidBody* GetPrev();
     const RigidBody* GetPrev() const;
@@ -516,6 +517,11 @@ inline bool RigidBody::IsContinuous() const
 inline int32 RigidBody::GetIslandID() const
 {
     return islandID;
+}
+
+inline int32 RigidBody::GetIslandIndex() const
+{
+    return islandIndex;
 }
 
 inline RigidBody* RigidBody::GetPrev()
