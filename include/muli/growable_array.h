@@ -29,12 +29,30 @@ public:
 
     GrowableArray(const GrowableArray& other) noexcept
     {
-        operator=(other);
+        if (other.array == other.stackArray)
+        {
+            array = stackArray;
+            memcpy(stackArray, other.stackArray, other.count * sizeof(T));
+        }
+        else
+        {
+            array = (T*)muli::Alloc(other.capacity * sizeof(T));
+            memcpy(array, other.array, other.count * sizeof(T));
+        }
+
+        capacity = other.capacity;
+        count = other.count;
     }
 
     GrowableArray& operator=(const GrowableArray& other) noexcept
     {
         muliAssert(this != &other);
+
+        if (array != stackArray)
+        {
+            muli::Free(array);
+        }
+
         if (other.array == other.stackArray)
         {
             array = stackArray;
@@ -54,12 +72,6 @@ public:
 
     GrowableArray(GrowableArray&& other) noexcept
     {
-        operator=(std::move(other));
-    }
-
-    GrowableArray& operator=(GrowableArray&& other) noexcept
-    {
-        muliAssert(this != &other);
         if (other.array == other.stackArray)
         {
             array = stackArray;
@@ -68,13 +80,41 @@ public:
         else
         {
             array = other.array;
-            other.array = other.stackArray;
-            other.count = 0;
-            other.capacity = N;
         }
 
         capacity = other.capacity;
         count = other.count;
+
+        other.array = other.stackArray;
+        other.count = 0;
+        other.capacity = N;
+    }
+
+    GrowableArray& operator=(GrowableArray&& other) noexcept
+    {
+        muliAssert(this != &other);
+
+        if (array != stackArray)
+        {
+            muli::Free(array);
+        }
+
+        if (other.array == other.stackArray)
+        {
+            array = stackArray;
+            memcpy(stackArray, other.stackArray, other.count * sizeof(T));
+        }
+        else
+        {
+            array = other.array;
+        }
+
+        capacity = other.capacity;
+        count = other.count;
+
+        other.array = other.stackArray;
+        other.count = 0;
+        other.capacity = N;
 
         return *this;
     }

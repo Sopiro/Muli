@@ -74,9 +74,19 @@ void Demo::EnableBodyCreate()
     static bool create_circle;
     static Vec2 mStart;
 
-    if (Input::IsKeyDown(GLFW_KEY_GRAVE_ACCENT))
+    if (Input::IsKeyDown(GLFW_KEY_1))
     {
         RigidBody* b = world->CreateBox(0.5f);
+        b->SetPosition(cursorPos);
+    }
+    if (Input::IsKeyDown(GLFW_KEY_2))
+    {
+        RigidBody* b = world->CreateCircle(0.25f);
+        b->SetPosition(cursorPos);
+    }
+    if (Input::IsKeyDown(GLFW_KEY_3))
+    {
+        RigidBody* b = world->CreateCapsule(0.5f, 0.25f);
         b->SetPosition(cursorPos);
     }
 
