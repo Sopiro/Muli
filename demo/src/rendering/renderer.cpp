@@ -60,290 +60,36 @@ Renderer::~Renderer()
     glDeleteBuffers(1, &cVBO);
 }
 
-void Renderer::DrawShapeOutlined(const Shape* shape, const Transform& tf, bool rounded)
+void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode& mode)
 {
-    switch (shape->GetType())
+    const Vec4& color = mode.colorIndex < 0 ? color_white : colors[mode.colorIndex % color_count];
+
+    if (mode.fill && mode.outline)
     {
-    case Shape::Type::circle:
-    {
-        const Circle* c = static_cast<const Circle*>(shape);
-
-        float radius = c->GetRadius();
-        Vec2 localCenter = c->GetCenter();
-        Vec2 center = Mul(tf, localCenter);
-
-        int32 i0 = circle_count - 1;
-        int32 i1 = 0;
-        Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
-        Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-
-        DrawLine(center, v1);
-        DrawLine(v0, v1);
-
-        i0 = i1;
-        v0 = v1;
-
-        for (i1 = 1; i1 < circle_count; ++i1)
+        switch (shape->GetType())
         {
-            v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-    }
-    break;
-    case Shape::Type::capsule:
-    {
-        const Capsule* c = static_cast<const Capsule*>(shape);
-
-        Vec2 va = c->GetVertexA();
-        Vec2 vb = c->GetVertexB();
-        Vec2 normal = Cross(1.0f, vb - va).Normalized();
-
-        Vec2 gva = Mul(tf, va);
-        Vec2 gvb = Mul(tf, vb);
-
-        Vec2 dir = vb - va;
-        float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
-
-        Rotation rot{ angleOffset };
-
-        float radius = c->GetRadius();
-
-        int32 i0 = 0;
-        Vec2 v0 = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
-        Vec2 v1;
-
-        for (int32 i1 = 1; i0 < quater_count; ++i1)
+        case Shape::Type::circle:
         {
-            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+            const Circle* c = static_cast<const Circle*>(shape);
+            Vec2 localCenter = c->GetCenter();
+            Vec2 center = Mul(tf, localCenter);
+            float radius = c->GetRadius();
 
-            DrawLine(v0, v1);
+            int32 i0 = circle_count - 1;
+            int32 i1 = 0;
+            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
+            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
 
-            i0 = i1;
-            v0 = v1;
-        }
-
-        for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
-        {
-            v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
-
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-
-        for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
-        {
-            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-
-        v0 = Mul(tf, vb + Mul(rot, unit_circle[0] * radius));
-
-        DrawLine(v1, v0);
-    }
-    break;
-    case Shape::Type::polygon:
-    {
-        if (rounded == false)
-        {
-            const Polygon* p = static_cast<const Polygon*>(shape);
-            float radius = p->GetRadius();
-
-            const Vec2* vertices = p->GetVertices();
-            int32 vertexCount = p->GetVertexCount();
-
-            int32 i0 = vertexCount - 1;
-            Vec2 v0 = Mul(tf, vertices[i0]);
-            for (int32 i1 = 0; i1 < vertexCount; ++i1)
-            {
-                Vec2 v1 = Mul(tf, vertices[i1]);
-
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-        }
-        else
-        {
-            const Polygon* p = static_cast<const Polygon*>(shape);
-            float radius = p->GetRadius();
-
-            const Vec2* vertices = p->GetVertices();
-            const Vec2* normals = p->GetNormals();
-            int32 vertexCount = p->GetVertexCount();
-
-            int32 i0 = vertexCount - 1;
-            Vec2 v0 = vertices[i0];
-            Vec2 n0 = normals[i0];
-            Vec2 vn0 = v0 + n0 * radius;
-            Vec2 gv0 = Mul(tf, vn0);
-
-            for (int32 i1 = 0; i1 < vertexCount; ++i1)
-            {
-                Vec2 v1 = vertices[i1];
-                Vec2 n1 = normals[i1];
-                Vec2 vn1 = v1 + n1 * radius;
-
-                float theta = AngleBetween(n0, n1);
-                float cCount = circle_count * theta / (2.0f * pi);
-
-                Vec2 gv1;
-                for (int32 j = 0; j < cCount; ++j)
-                {
-                    float per = j / cCount;
-                    Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
-
-                    gv1 = Mul(tf, cv);
-                    DrawLine(gv0, gv1);
-                    gv0 = gv1;
-                }
-
-                gv1 = Mul(tf, vn1);
-
-                DrawLine(gv0, gv1);
-
-                i0 = i1;
-                v0 = v1;
-                n0 = n1;
-                vn0 = vn1;
-                gv0 = gv1;
-            }
-        }
-    }
-    break;
-    default:
-        muliAssert(false);
-        break;
-    }
-}
-
-void Renderer::DrawShapeSolid(const Shape* shape, const Transform& tf, int32 colorIndex, bool rounded)
-{
-    const Vec4& color = colorIndex < 0 ? color_white : colors[colorIndex % color_count];
-
-    switch (shape->GetType())
-    {
-    case Shape::Type::circle:
-    {
-        const Circle* c = static_cast<const Circle*>(shape);
-        Vec2 localCenter = c->GetCenter();
-        Vec2 center = Mul(tf, localCenter);
-        float radius = c->GetRadius();
-
-        int32 i0 = circle_count - 1;
-        int32 i1 = 0;
-        Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
-        Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-
-        DrawTriangle(center, v0, v1, color);
-        DrawLine(center, v1);
-        DrawLine(v0, v1);
-
-        i0 = i1;
-        v0 = v1;
-
-        for (i1 = 1; i1 < circle_count; ++i1)
-        {
-            v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
             DrawTriangle(center, v0, v1, color);
+            DrawLine(center, v1);
             DrawLine(v0, v1);
 
             i0 = i1;
             v0 = v1;
-        }
-    }
-    break;
-    case Shape::Type::capsule:
-    {
-        const Capsule* c = static_cast<const Capsule*>(shape);
 
-        Vec2 va = c->GetVertexA();
-        Vec2 vb = c->GetVertexB();
-        Vec2 normal = Cross(1.0f, vb - va).Normalized();
-
-        Vec2 gva = Mul(tf, va);
-        Vec2 gvb = Mul(tf, vb);
-
-        Vec2 dir = vb - va;
-        float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
-
-        Rotation rot{ angleOffset };
-
-        float radius = c->GetRadius();
-
-        int32 i0 = 0;
-        Vec2 vf = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
-        Vec2 v0 = vf;
-        Vec2 v1;
-
-        for (int32 i1 = 1; i0 < quater_count; ++i1)
-        {
-            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-            DrawTriangle(gvb, v0, v1, color);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-
-        DrawTriangle(gvb, v0, gva, color);
-
-        for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
-        {
-            v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
-
-            DrawTriangle(gva, v0, v1, color);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-
-        DrawTriangle(gva, v0, gvb, color);
-
-        for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
-        {
-            v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-            DrawTriangle(gvb, v0, v1, color);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-        }
-
-        DrawTriangle(gvb, v1, vf, color);
-        DrawLine(v1, vf);
-    }
-    break;
-    case Shape::Type::polygon:
-    {
-        if (rounded == false)
-        {
-            const Polygon* p = static_cast<const Polygon*>(shape);
-            float radius = p->GetRadius();
-
-            const Vec2* vertices = p->GetVertices();
-            int32 vertexCount = p->GetVertexCount();
-
-            Vec2 center = Mul(tf, p->GetCenter());
-
-            int32 i0 = vertexCount - 1;
-            Vec2 v0 = Mul(tf, vertices[i0]);
-            for (int32 i1 = 0; i1 < vertexCount; ++i1)
+            for (i1 = 1; i1 < circle_count; ++i1)
             {
-                Vec2 v1 = Mul(tf, vertices[i1]);
-
+                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
                 DrawTriangle(center, v0, v1, color);
                 DrawLine(v0, v1);
 
@@ -351,61 +97,487 @@ void Renderer::DrawShapeSolid(const Shape* shape, const Transform& tf, int32 col
                 v0 = v1;
             }
         }
-        else
+        break;
+        case Shape::Type::capsule:
         {
-            const Polygon* p = static_cast<const Polygon*>(shape);
-            float radius = p->GetRadius();
+            const Capsule* c = static_cast<const Capsule*>(shape);
 
-            const Vec2* vertices = p->GetVertices();
-            const Vec2* normals = p->GetNormals();
-            int32 vertexCount = p->GetVertexCount();
+            Vec2 va = c->GetVertexA();
+            Vec2 vb = c->GetVertexB();
+            Vec2 normal = Cross(1.0f, vb - va).Normalized();
 
-            Vec2 center = Mul(tf, p->GetCenter());
+            Vec2 gva = Mul(tf, va);
+            Vec2 gvb = Mul(tf, vb);
 
-            int32 i0 = vertexCount - 1;
-            Vec2 v0 = vertices[i0];
-            Vec2 n0 = normals[i0];
-            Vec2 vn0 = v0 + n0 * radius;
-            Vec2 gv0 = Mul(tf, vn0);
+            Vec2 dir = vb - va;
+            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
 
-            for (int32 i1 = 0; i1 < vertexCount; ++i1)
+            Rotation rot{ angleOffset };
+
+            float radius = c->GetRadius();
+
+            int32 i0 = 0;
+            Vec2 vf = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
+            Vec2 v0 = vf;
+            Vec2 v1;
+
+            for (int32 i1 = 1; i0 < quater_count; ++i1)
             {
-                Vec2 v1 = vertices[i1];
-                Vec2 n1 = normals[i1];
-                Vec2 vn1 = v1 + n1 * radius;
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
 
-                float theta = AngleBetween(n0, n1);
-                float cCount = circle_count * theta / (2.0f * pi);
-
-                Vec2 gv1;
-                for (int32 j = 0; j < cCount; ++j)
-                {
-                    float per = j / cCount;
-                    Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
-
-                    gv1 = Mul(tf, cv);
-                    DrawTriangle(center, gv0, gv1, color);
-                    DrawLine(gv0, gv1);
-                    gv0 = gv1;
-                }
-
-                gv1 = Mul(tf, vn1);
-
-                DrawTriangle(center, gv0, gv1, color);
-                DrawLine(gv0, gv1);
+                DrawTriangle(gvb, v0, v1, color);
+                DrawLine(v0, v1);
 
                 i0 = i1;
                 v0 = v1;
-                n0 = n1;
-                vn0 = vn1;
-                gv0 = gv1;
+            }
+
+            DrawTriangle(gvb, v0, gva, color);
+
+            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
+            {
+                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
+
+                DrawTriangle(gva, v0, v1, color);
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            DrawTriangle(gva, v0, gvb, color);
+
+            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
+            {
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+                DrawTriangle(gvb, v0, v1, color);
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            DrawTriangle(gvb, v1, vf, color);
+            DrawLine(v1, vf);
+        }
+        break;
+        case Shape::Type::polygon:
+        {
+            if (mode.rounded == false)
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                int32 vertexCount = p->GetVertexCount();
+
+                Vec2 center = Mul(tf, p->GetCenter());
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = Mul(tf, vertices[i0]);
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = Mul(tf, vertices[i1]);
+
+                    DrawTriangle(center, v0, v1, color);
+                    DrawLine(v0, v1);
+
+                    i0 = i1;
+                    v0 = v1;
+                }
+            }
+            else
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                const Vec2* normals = p->GetNormals();
+                int32 vertexCount = p->GetVertexCount();
+
+                Vec2 center = Mul(tf, p->GetCenter());
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = vertices[i0];
+                Vec2 n0 = normals[i0];
+                Vec2 vn0 = v0 + n0 * radius;
+                Vec2 gv0 = Mul(tf, vn0);
+
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = vertices[i1];
+                    Vec2 n1 = normals[i1];
+                    Vec2 vn1 = v1 + n1 * radius;
+
+                    float theta = AngleBetween(n0, n1);
+                    float cCount = circle_count * theta / (2.0f * pi);
+
+                    Vec2 gv1;
+                    for (int32 j = 0; j < cCount; ++j)
+                    {
+                        float per = j / cCount;
+                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
+
+                        gv1 = Mul(tf, cv);
+                        DrawTriangle(center, gv0, gv1, color);
+                        DrawLine(gv0, gv1);
+                        gv0 = gv1;
+                    }
+
+                    gv1 = Mul(tf, vn1);
+
+                    DrawTriangle(center, gv0, gv1, color);
+                    DrawLine(gv0, gv1);
+
+                    i0 = i1;
+                    v0 = v1;
+                    n0 = n1;
+                    vn0 = vn1;
+                    gv0 = gv1;
+                }
             }
         }
-    }
-    break;
-    default:
-        muliAssert(false);
         break;
+        default:
+            muliAssert(false);
+            break;
+        }
+    }
+    else if (mode.fill)
+    {
+        switch (shape->GetType())
+        {
+        case Shape::Type::circle:
+        {
+            const Circle* c = static_cast<const Circle*>(shape);
+            Vec2 localCenter = c->GetCenter();
+            Vec2 center = Mul(tf, localCenter);
+            float radius = c->GetRadius();
+
+            int32 i0 = circle_count - 1;
+            int32 i1 = 0;
+            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
+            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+
+            DrawTriangle(center, v0, v1, color);
+
+            i0 = i1;
+            v0 = v1;
+
+            for (i1 = 1; i1 < circle_count; ++i1)
+            {
+                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+                DrawTriangle(center, v0, v1, color);
+
+                i0 = i1;
+                v0 = v1;
+            }
+        }
+        break;
+        case Shape::Type::capsule:
+        {
+            const Capsule* c = static_cast<const Capsule*>(shape);
+
+            Vec2 va = c->GetVertexA();
+            Vec2 vb = c->GetVertexB();
+            Vec2 normal = Cross(1.0f, vb - va).Normalized();
+
+            Vec2 gva = Mul(tf, va);
+            Vec2 gvb = Mul(tf, vb);
+
+            Vec2 dir = vb - va;
+            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
+
+            Rotation rot{ angleOffset };
+
+            float radius = c->GetRadius();
+
+            int32 i0 = 0;
+            Vec2 vf = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
+            Vec2 v0 = vf;
+            Vec2 v1;
+
+            for (int32 i1 = 1; i0 < quater_count; ++i1)
+            {
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+                DrawTriangle(gvb, v0, v1, color);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            DrawTriangle(gvb, v0, gva, color);
+
+            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
+            {
+                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
+
+                DrawTriangle(gva, v0, v1, color);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            DrawTriangle(gva, v0, gvb, color);
+
+            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
+            {
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+                DrawTriangle(gvb, v0, v1, color);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            DrawTriangle(gvb, v1, vf, color);
+        }
+        break;
+        case Shape::Type::polygon:
+        {
+            if (mode.rounded == false)
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                int32 vertexCount = p->GetVertexCount();
+
+                Vec2 center = Mul(tf, p->GetCenter());
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = Mul(tf, vertices[i0]);
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = Mul(tf, vertices[i1]);
+
+                    DrawTriangle(center, v0, v1, color);
+
+                    i0 = i1;
+                    v0 = v1;
+                }
+            }
+            else
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                const Vec2* normals = p->GetNormals();
+                int32 vertexCount = p->GetVertexCount();
+
+                Vec2 center = Mul(tf, p->GetCenter());
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = vertices[i0];
+                Vec2 n0 = normals[i0];
+                Vec2 vn0 = v0 + n0 * radius;
+                Vec2 gv0 = Mul(tf, vn0);
+
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = vertices[i1];
+                    Vec2 n1 = normals[i1];
+                    Vec2 vn1 = v1 + n1 * radius;
+
+                    float theta = AngleBetween(n0, n1);
+                    float cCount = circle_count * theta / (2.0f * pi);
+
+                    Vec2 gv1;
+                    for (int32 j = 0; j < cCount; ++j)
+                    {
+                        float per = j / cCount;
+                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
+
+                        gv1 = Mul(tf, cv);
+                        DrawTriangle(center, gv0, gv1, color);
+                        gv0 = gv1;
+                    }
+
+                    gv1 = Mul(tf, vn1);
+
+                    DrawTriangle(center, gv0, gv1, color);
+
+                    i0 = i1;
+                    v0 = v1;
+                    n0 = n1;
+                    vn0 = vn1;
+                    gv0 = gv1;
+                }
+            }
+        }
+        break;
+        default:
+            muliAssert(false);
+            break;
+        }
+    }
+    else if (mode.outline)
+    {
+        switch (shape->GetType())
+        {
+        case Shape::Type::circle:
+        {
+            const Circle* c = static_cast<const Circle*>(shape);
+
+            float radius = c->GetRadius();
+            Vec2 localCenter = c->GetCenter();
+            Vec2 center = Mul(tf, localCenter);
+
+            int32 i0 = circle_count - 1;
+            int32 i1 = 0;
+            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
+            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+
+            DrawLine(center, v1);
+            DrawLine(v0, v1);
+
+            i0 = i1;
+            v0 = v1;
+
+            for (i1 = 1; i1 < circle_count; ++i1)
+            {
+                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+        }
+        break;
+        case Shape::Type::capsule:
+        {
+            const Capsule* c = static_cast<const Capsule*>(shape);
+
+            Vec2 va = c->GetVertexA();
+            Vec2 vb = c->GetVertexB();
+            Vec2 normal = Cross(1.0f, vb - va).Normalized();
+
+            Vec2 gva = Mul(tf, va);
+            Vec2 gvb = Mul(tf, vb);
+
+            Vec2 dir = vb - va;
+            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
+
+            Rotation rot{ angleOffset };
+
+            float radius = c->GetRadius();
+
+            int32 i0 = 0;
+            Vec2 v0 = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
+            Vec2 v1;
+
+            for (int32 i1 = 1; i0 < quater_count; ++i1)
+            {
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
+            {
+                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
+
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
+            {
+                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
+
+                DrawLine(v0, v1);
+
+                i0 = i1;
+                v0 = v1;
+            }
+
+            v0 = Mul(tf, vb + Mul(rot, unit_circle[0] * radius));
+
+            DrawLine(v1, v0);
+        }
+        break;
+        case Shape::Type::polygon:
+        {
+            if (mode.rounded == false)
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                int32 vertexCount = p->GetVertexCount();
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = Mul(tf, vertices[i0]);
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = Mul(tf, vertices[i1]);
+
+                    DrawLine(v0, v1);
+
+                    i0 = i1;
+                    v0 = v1;
+                }
+            }
+            else
+            {
+                const Polygon* p = static_cast<const Polygon*>(shape);
+                float radius = p->GetRadius();
+
+                const Vec2* vertices = p->GetVertices();
+                const Vec2* normals = p->GetNormals();
+                int32 vertexCount = p->GetVertexCount();
+
+                int32 i0 = vertexCount - 1;
+                Vec2 v0 = vertices[i0];
+                Vec2 n0 = normals[i0];
+                Vec2 vn0 = v0 + n0 * radius;
+                Vec2 gv0 = Mul(tf, vn0);
+
+                for (int32 i1 = 0; i1 < vertexCount; ++i1)
+                {
+                    Vec2 v1 = vertices[i1];
+                    Vec2 n1 = normals[i1];
+                    Vec2 vn1 = v1 + n1 * radius;
+
+                    float theta = AngleBetween(n0, n1);
+                    float cCount = circle_count * theta / (2.0f * pi);
+
+                    Vec2 gv1;
+                    for (int32 j = 0; j < cCount; ++j)
+                    {
+                        float per = j / cCount;
+                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
+
+                        gv1 = Mul(tf, cv);
+                        DrawLine(gv0, gv1);
+                        gv0 = gv1;
+                    }
+
+                    gv1 = Mul(tf, vn1);
+
+                    DrawLine(gv0, gv1);
+
+                    i0 = i1;
+                    v0 = v1;
+                    n0 = n1;
+                    vn0 = vn1;
+                    gv0 = gv1;
+                }
+            }
+        }
+        break;
+        default:
+            muliAssert(false);
+            break;
+        }
     }
 }
 

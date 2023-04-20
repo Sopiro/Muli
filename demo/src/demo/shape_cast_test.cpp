@@ -50,13 +50,17 @@ public:
 
             Renderer& renderer = game.GetRenderer();
 
+            Renderer::DrawMode drawMode;
+            drawMode.fill = false;
+            drawMode.outline = true;
+
             hit = ShapeCast(sa, tfA, sb, tfB, translationA, translationB, &output);
             if (hit)
             {
                 thA.position += translationA * output.t;
-                renderer.DrawShapeOutlined(ca->GetShape(), thA);
+                renderer.DrawShape(ca->GetShape(), thA, drawMode);
                 thB.position += translationB * output.t;
-                renderer.DrawShapeOutlined(cb->GetShape(), thB);
+                renderer.DrawShape(cb->GetShape(), thB, drawMode);
 
                 renderer.DrawPoint(output.point);
                 renderer.DrawLine(output.point, output.point + output.normal * 0.2f);
@@ -64,9 +68,9 @@ public:
             else
             {
                 thA.position += translationA;
-                renderer.DrawShapeOutlined(ca->GetShape(), thA);
+                renderer.DrawShape(ca->GetShape(), thA, drawMode);
                 thB.position += translationB;
-                renderer.DrawShapeOutlined(cb->GetShape(), thB);
+                renderer.DrawShape(cb->GetShape(), thB, drawMode);
             }
 
             renderer.DrawLine(tfA.position, thA.position);

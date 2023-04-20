@@ -13,6 +13,10 @@ public:
     uint32 filter2 = 1 << 2;
     uint32 filter3 = 1 << 3;
 
+    RigidBody* a;
+    RigidBody* b;
+    RigidBody* c;
+
     CollisionFiltering(Game& game)
         : Demo(game)
     {
@@ -37,16 +41,15 @@ public:
         RigidBody* v5 = world->CreateCapsule(Vec2{ 1.5f, f(1.5f) }, Vec2{ 1.5f, 1.0f }, 0.05f, RigidBody::Type::static_body);
         RigidBody* v6 = world->CreateCapsule(Vec2{ 2.5f, f(2.5f) }, Vec2{ 2.5f, 1.0f }, 0.05f, RigidBody::Type::static_body);
 
-        RigidBody* a =
-            world->CreateCapsule(Vec2{ -2.5f, f(-2.5f) }, Vec2{ -1.5f, f(-1.5f) }, 0.05f, RigidBody::Type::static_body);
+        a = world->CreateCapsule(Vec2{ -2.5f, f(-2.5f) }, Vec2{ -1.5f, f(-1.5f) }, 0.05f, RigidBody::Type::static_body);
         CollisionFilter f1 = CollisionFilter{ group, filter1, filter0 | filter2 | filter3 };
         a->SetCollisionFilter(f1);
 
-        RigidBody* b = world->CreateCapsule(Vec2{ -0.5f, f(-0.5f) }, Vec2{ 0.5f, f(0.5f) }, 0.05f, RigidBody::Type::static_body);
+        b = world->CreateCapsule(Vec2{ -0.5f, f(-0.5f) }, Vec2{ 0.5f, f(0.5f) }, 0.05f, RigidBody::Type::static_body);
         CollisionFilter f2 = CollisionFilter{ group, filter2, filter0 | filter1 | filter3 };
         b->SetCollisionFilter(f2);
 
-        RigidBody* c = world->CreateCapsule(Vec2{ 1.5f, f(1.5f) }, Vec2{ 2.5f, f(2.5f) }, 0.05f, RigidBody::Type::static_body);
+        c = world->CreateCapsule(Vec2{ 1.5f, f(1.5f) }, Vec2{ 2.5f, f(2.5f) }, 0.05f, RigidBody::Type::static_body);
         CollisionFilter f3 = CollisionFilter{ group, filter3, filter0 | filter1 | filter2 };
         c->SetCollisionFilter(f3);
 
@@ -81,6 +84,19 @@ public:
 
             t = game.GetTime();
         }
+    }
+
+    void Render() override
+    {
+        Renderer::DrawMode drawMode;
+        drawMode.colorIndex = 0;
+        renderer.DrawShape(a->GetColliderList()->GetShape(), a->GetTransform(), drawMode);
+
+        drawMode.colorIndex = 1;
+        renderer.DrawShape(b->GetColliderList()->GetShape(), b->GetTransform(), drawMode);
+
+        drawMode.colorIndex = 2;
+        renderer.DrawShape(c->GetColliderList()->GetShape(), c->GetTransform(), drawMode);
     }
 
     static Demo* Create(Game& game)

@@ -39,7 +39,11 @@ public:
             t.rotation = t.rotation.GetAngle() + target->GetAngularVelocity() * settings.dt;
             t.position += target->GetLinearVelocity() * settings.dt;
 
-            game.GetRenderer().DrawShapeOutlined(target->GetColliderList()->GetShape(), t);
+            Renderer::DrawMode drawMode;
+            drawMode.fill = false;
+            drawMode.outline = true;
+
+            game.GetRenderer().DrawShape(target->GetColliderList()->GetShape(), t, drawMode);
         }
     }
 

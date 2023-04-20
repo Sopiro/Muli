@@ -6,6 +6,7 @@ namespace muli
 
 Game::Game(Application& _app)
     : app{ _app }
+    , demoIndex{ demo_count }
 {
     UpdateProjectionMatrix();
     Window::Get().SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
@@ -13,8 +14,8 @@ Game::Game(Application& _app)
         UpdateProjectionMatrix();
     });
 
-    InitDemo(demo_count - 1);
-    // InitDemo(0);
+    InitDemo(0);
+    // InitDemo(demo_count - 1);
     // InitDemo(42); // Logo
 }
 
@@ -212,16 +213,20 @@ void Game::Render()
     // Draw bodies
     if (options.draw_body)
     {
+        Renderer::DrawMode drawMode;
+
         if (options.draw_outlined)
         {
+            drawMode.fill = false;
+
             for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
-                bool drawRounded = b->UserFlag & UserFlag::render_polygon_radius;
+                drawMode.rounded = b->UserFlag & UserFlag::render_polygon_radius;
 
                 for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                 {
-                    renderer.DrawShapeOutlined(c->GetShape(), tf, drawRounded);
+                    renderer.DrawShape(c->GetShape(), tf, drawMode);
                 }
             }
         }
@@ -230,20 +235,27 @@ void Game::Render()
             for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
-                bool drawRounded = b->UserFlag & UserFlag::render_polygon_radius;
+                drawMode.rounded = b->UserFlag & UserFlag::render_polygon_radius;
 
                 if (b->IsSleeping())
                 {
+                    drawMode.fill = false;
+                    drawMode.outline = true;
+
                     for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                     {
-                        renderer.DrawShapeOutlined(c->GetShape(), tf, drawRounded);
+                        renderer.DrawShape(c->GetShape(), tf, drawMode);
                     }
                 }
                 else
                 {
+                    drawMode.colorIndex = b->GetIslandID() - 1;
+                    drawMode.fill = true;
+                    drawMode.outline = !(b->UserFlag & UserFlag::remove_outline);
+
                     for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                     {
-                        renderer.DrawShapeSolid(c->GetShape(), tf, b->GetIslandID() - 1, drawRounded);
+                        renderer.DrawShape(c->GetShape(), tf, drawMode);
                     }
                 }
             }
@@ -364,7 +376,6 @@ void Game::Render()
         }
         break;
         default:
-            muliAssert(false);
             break;
         }
     }
