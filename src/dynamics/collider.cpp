@@ -22,7 +22,7 @@ Collider::~Collider()
 {
     if (OnDestroy)
     {
-        OnDestroy->OnDestroy(this);
+        OnDestroy->OnColliderDestroy(this);
     }
 
     body = nullptr;

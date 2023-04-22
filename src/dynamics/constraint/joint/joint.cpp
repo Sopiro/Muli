@@ -22,7 +22,7 @@ Joint::~Joint() noexcept
 {
     if (OnDestroy)
     {
-        OnDestroy->OnDestroy(this);
+        OnDestroy->OnJointDestroy(this);
     }
 }
 

@@ -24,7 +24,7 @@ public:
     virtual void Render() {}
 
     // from JointDestoryCallback
-    virtual void OnDestroy(Joint* me) override
+    virtual void OnJointDestroy(Joint* me) override
     {
         cursorJoint = nullptr;
     }

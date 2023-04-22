@@ -53,7 +53,7 @@ private:
     void UpdateUI();
     void UpdateInput();
     void InitDemo(int32 demo);
-    virtual void OnDestroy(Collider* me) override;
+    virtual void OnColliderDestroy(Collider* me) override;
 };
 
 inline DebugOptions& Game::GetDebugOptions()
@@ -94,7 +94,7 @@ inline Renderer& Game::GetRenderer()
     return renderer;
 }
 
-inline void Game::OnDestroy(Collider* me)
+inline void Game::OnColliderDestroy(Collider* me)
 {
     muliNotUsed(me);
 }

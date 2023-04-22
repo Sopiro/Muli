@@ -837,7 +837,7 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* cal
                 float fraction = output.fraction;
                 Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-                return callback->OnHit(collider, point, output.normal, fraction);
+                return callback->OnHitAny(collider, point, output.normal, fraction);
             }
 
             return input.maxFraction;
@@ -859,7 +859,7 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
         Vec2 closestNormal;
         float closestFraction;
 
-        float OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
         {
             hit = true;
             closestCollider = collider;
@@ -875,8 +875,8 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
 
     if (tempCallback.hit)
     {
-        callback->OnHit(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
-                        tempCallback.closestFraction);
+        callback->OnHitClosest(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                               tempCallback.closestFraction);
         return true;
     }
 

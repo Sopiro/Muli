@@ -43,7 +43,10 @@ public:
             drawMode.fill = false;
             drawMode.outline = true;
 
-            game.GetRenderer().DrawShape(target->GetColliderList()->GetShape(), t, drawMode);
+            if (target->GetWorld())
+            {
+                game.GetRenderer().DrawShape(target->GetColliderList()->GetShape(), t, drawMode);
+            }
         }
     }
 

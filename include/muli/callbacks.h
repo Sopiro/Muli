@@ -12,21 +12,21 @@ class ColliderDestoryCallback
 {
 public:
     virtual ~ColliderDestoryCallback() {}
-    virtual void OnDestroy(Collider* me) = 0;
+    virtual void OnColliderDestroy(Collider* me) = 0;
 };
 
 class BodyDestoryCallback
 {
 public:
     virtual ~BodyDestoryCallback() {}
-    virtual void OnDestroy(RigidBody* me) = 0;
+    virtual void OnBodyDestroy(RigidBody* me) = 0;
 };
 
 class JointDestoryCallback
 {
 public:
     virtual ~JointDestoryCallback() {}
-    virtual void OnDestroy(Joint* me) = 0;
+    virtual void OnJointDestroy(Joint* me) = 0;
 };
 
 class ContactListener
@@ -64,14 +64,14 @@ class RayCastAnyCallback
 {
 public:
     virtual ~RayCastAnyCallback() {}
-    virtual float OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
+    virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
 };
 
 class RayCastClosestCallback
 {
 public:
     virtual ~RayCastClosestCallback() {}
-    virtual void OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
+    virtual void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
 };
 
 } // namespace muli

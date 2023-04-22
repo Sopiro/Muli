@@ -42,7 +42,7 @@ RigidBody::~RigidBody() noexcept
 {
     if (OnDestroy)
     {
-        OnDestroy->OnDestroy(this);
+        OnDestroy->OnBodyDestroy(this);
     }
 
     world = nullptr;
@@ -255,7 +255,7 @@ void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback*
             float fraction = output.fraction;
             Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-            input.maxFraction = callback->OnHit(collider, point, output.normal, fraction);
+            input.maxFraction = callback->OnHitAny(collider, point, output.normal, fraction);
         }
 
         if (input.maxFraction <= 0)
@@ -275,7 +275,7 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
         Vec2 closestNormal;
         float closestFraction;
 
-        float OnHit(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
         {
             hit = true;
             closestCollider = collider;
@@ -291,8 +291,8 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
 
     if (tempCallback.hit)
     {
-        callback->OnHit(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
-                        tempCallback.closestFraction);
+        callback->OnHitClosest(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                               tempCallback.closestFraction);
         return true;
     }
 
