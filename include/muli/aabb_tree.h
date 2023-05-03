@@ -12,7 +12,7 @@
 namespace muli
 {
 
-// You can use Area() or Perimeter() as a surface area heuristic(SAH) function
+// You can use either Area() or Perimeter() as a surface area heuristic(SAH) function
 inline float SAH(const AABB& aabb)
 {
 #if 1

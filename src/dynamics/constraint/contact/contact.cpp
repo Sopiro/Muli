@@ -9,7 +9,7 @@ namespace muli
 {
 
 bool block_solve = true;
-extern DetectionFunction* DetectionFunctionMap[Shape::Type::shape_count][Shape::Type::shape_count];
+extern DetectionFunction* detection_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
 
 Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings& _settings)
     : Constraint(_colliderA->body, _colliderB->body, _settings)
@@ -28,7 +28,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings
     restitutionThreshold = MixRestitutionTreshold(colliderA->GetRestitutionTreshold(), colliderB->GetRestitutionTreshold());
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
 
-    collisionDetectionFunction = DetectionFunctionMap[colliderA->GetType()][colliderB->GetType()];
+    collisionDetectionFunction = detection_function_map[colliderA->GetType()][colliderB->GetType()];
     muliAssert(collisionDetectionFunction != nullptr);
 }
 

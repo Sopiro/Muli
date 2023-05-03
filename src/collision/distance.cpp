@@ -104,7 +104,7 @@ bool ShapeCast(const Shape* a,
         pointB = Mul(tfB, b->GetVertex(idB));
         Vec2 p = pointA - pointB;
 
-        // -v is a normal at hit point
+        // -v is the normal at hit point
         v.Normalize();
 
         // Find intersection with support plane

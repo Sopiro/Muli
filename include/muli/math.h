@@ -788,6 +788,7 @@ struct Mat4
     Mat4 Translate(const Vec3& v);
 };
 
+// Describes 2d orientation
 struct Rotation
 {
     // sine, cosine
