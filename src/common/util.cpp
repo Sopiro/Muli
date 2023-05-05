@@ -196,11 +196,11 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
 }
 
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
-float RayCastCircle(const Vec2& position, float radius, const RayCastInput& input, RayCastOutput* output)
+bool RayCastCircle(const Vec2& p, float r, const RayCastInput& input, RayCastOutput* output)
 {
     Vec2 d = input.to - input.from;
-    Vec2 f = input.from - position;
-    float r2 = radius * radius;
+    Vec2 f = input.from - p;
+    float r2 = r * r;
 
     float a = Dot(d, d);
     float b = 2.0f * Dot(f, d);
@@ -254,8 +254,8 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& inpu
     // Point on the v1-v2 line
     Vec2 q = input.from + t * d;
 
-    float u = Dot(q - v1, e) / Dot(e, e);
-    if (u < 0.0f || 1.0f < u)
+    float u = Dot(q - v1, e);
+    if (u < 0.0f || Dot(e, e) < u)
     {
         return false;
     }

@@ -71,8 +71,8 @@ inline Vec2 LerpVector(const Vec2& a, const Vec2& b, const UV& uv)
     return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
 }
 
-float RayCastCircle(const Vec2& position, float radius, const RayCastInput& input, RayCastOutput* output);
-bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& input, RayCastOutput* output);
+bool RayCastCircle(const Vec2& center, float radius, const RayCastInput& input, RayCastOutput* output);
+bool RayCastLineSegment(const Vec2& vertex1, const Vec2& vertex2, const RayCastInput& input, RayCastOutput* output);
 
 // https://iquilezles.org/articles/distfunctions/
 inline float SignedDistanceToLineSegment(const Vec2& p, const Vec2& a, const Vec2& b, float r)
