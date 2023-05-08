@@ -24,9 +24,9 @@ struct Polytope
 
 inline Polytope::Polytope(const Simplex& simplex)
 {
-    vertices.Emplace(simplex.vertices[0].point);
-    vertices.Emplace(simplex.vertices[1].point);
-    vertices.Emplace(simplex.vertices[2].point);
+    vertices.EmplaceBack(simplex.vertices[0].point);
+    vertices.EmplaceBack(simplex.vertices[1].point);
+    vertices.EmplaceBack(simplex.vertices[2].point);
 }
 
 } // namespace muli

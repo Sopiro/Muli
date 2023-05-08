@@ -27,7 +27,7 @@ public:
         }
     }
 
-    GrowableArray(const GrowableArray& other) noexcept
+    GrowableArray(const GrowableArray& other)
     {
         if (other.array == other.stackArray)
         {
@@ -44,7 +44,7 @@ public:
         count = other.count;
     }
 
-    GrowableArray& operator=(const GrowableArray& other) noexcept
+    GrowableArray& operator=(const GrowableArray& other)
     {
         muliAssert(this != &other);
 
@@ -120,7 +120,7 @@ public:
     }
 
     template <typename... Args>
-    T& Emplace(Args&&... args)
+    T& EmplaceBack(Args&&... args)
     {
         if (count == capacity)
         {
@@ -139,17 +139,17 @@ public:
         return *new (array + count++) T{ std::forward<Args>(args)... };
     }
 
-    void Push(const T& data)
+    void PushBack(const T& data)
     {
-        Emplace(data);
+        EmplaceBack(data);
     }
 
-    void Push(T&& data)
+    void PushBack(T&& data)
     {
-        Emplace(std::move(data));
+        EmplaceBack(std::move(data));
     }
 
-    T Pop()
+    T PopBack()
     {
         muliAssert(count > 0);
         --count;
@@ -234,11 +234,6 @@ public:
     int32 Capacity() const
     {
         return capacity;
-    }
-
-    T& At(int32 index) const
-    {
-        return array[index];
     }
 
     T& operator[](int32 index) const

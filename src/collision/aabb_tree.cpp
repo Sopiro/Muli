@@ -30,6 +30,54 @@ AABBTree::~AABBTree() noexcept
     nodeCount = 0;
 }
 
+AABBTree::AABBTree(AABBTree&& other) noexcept
+{
+    nodeID = other.nodeID;
+    root = other.root;
+
+    nodes = other.nodes;
+    nodeCount = other.nodeCount;
+    nodeCapacity = other.nodeCapacity;
+
+    freeList = other.freeList;
+
+    other.nodeID = 0;
+    other.root = muliNullNode;
+
+    other.nodes = nullptr;
+    other.nodeCount = 0;
+    other.nodeCapacity = 0;
+
+    other.freeList = muliNullNode;
+}
+
+AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
+{
+    muliAssert(this != &other);
+
+    muli::Free(nodes);
+
+    nodeID = other.nodeID;
+    root = other.root;
+
+    nodes = other.nodes;
+    nodeCount = other.nodeCount;
+    nodeCapacity = other.nodeCapacity;
+
+    freeList = other.freeList;
+
+    other.nodeID = 0;
+    other.root = muliNullNode;
+
+    other.nodes = nullptr;
+    other.nodeCount = 0;
+    other.nodeCapacity = 0;
+
+    other.freeList = muliNullNode;
+
+    return *this;
+}
+
 NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 {
     muliAssert(0 <= leaf && leaf < nodeCapacity);
@@ -57,13 +105,13 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     };
 
     GrowableArray<Candidate, 256> stack;
-    stack.Emplace(root, 0.0f);
+    stack.EmplaceBack(root, 0.0f);
 
     while (stack.Count() != 0)
     {
         NodeProxy current = stack.Back().node;
         float inheritedCost = stack.Back().inheritedCost;
-        stack.Pop();
+        stack.PopBack();
 
         AABB combined = Union(nodes[current].aabb, aabb);
         float directCost = SAH(combined);
@@ -82,8 +130,8 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         {
             if (nodes[current].IsLeaf() == false)
             {
-                stack.Emplace(nodes[current].child1, inheritedCost);
-                stack.Emplace(nodes[current].child2, inheritedCost);
+                stack.EmplaceBack(nodes[current].child1, inheritedCost);
+                stack.EmplaceBack(nodes[current].child2, inheritedCost);
             }
         }
     }
@@ -461,11 +509,11 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].aabb.TestPoint(point) == false)
         {
@@ -482,8 +530,8 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data
         }
         else
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
     }
 }
@@ -496,11 +544,11 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
@@ -517,8 +565,8 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*
         }
         else
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
     }
 }
@@ -531,16 +579,16 @@ void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].IsLeaf() == false)
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
 
         const Node* node = nodes + current;
@@ -567,11 +615,11 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     rayAABB.max = Max(p1, end);
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() > 0)
     {
-        NodeProxy nodeIndex = stack.Pop();
+        NodeProxy nodeIndex = stack.PopBack();
         if (nodeIndex == muliNullNode)
         {
             continue;
@@ -616,8 +664,8 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
         }
         else
         {
-            stack.Emplace(node->child1);
-            stack.Emplace(node->child2);
+            stack.EmplaceBack(node->child1);
+            stack.EmplaceBack(node->child2);
         }
     }
 }

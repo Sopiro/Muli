@@ -51,11 +51,11 @@ public:
     AABBTree();
     ~AABBTree() noexcept;
 
-    AABBTree(const AABBTree&) noexcept = delete;
-    AABBTree& operator=(const AABBTree&) noexcept = delete;
+    AABBTree(const AABBTree&) = delete;
+    AABBTree& operator=(const AABBTree&) = delete;
 
-    AABBTree(AABBTree&&) noexcept = delete;
-    AABBTree& operator=(AABBTree&&) noexcept = delete;
+    AABBTree(AABBTree&&) noexcept;
+    AABBTree& operator=(AABBTree&&) noexcept;
 
     void Reset();
 
@@ -161,11 +161,11 @@ void AABBTree::Query(const Vec2& point, T* callback) const
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].aabb.TestPoint(point) == false)
         {
@@ -182,8 +182,8 @@ void AABBTree::Query(const Vec2& point, T* callback) const
         }
         else
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
     }
 }
@@ -197,11 +197,11 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
@@ -218,8 +218,8 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
         }
         else
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
     }
 }
@@ -244,11 +244,11 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
     rayAABB.max = Max(p1, end);
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() > 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
         if (current == muliNullNode)
         {
             continue;
@@ -293,8 +293,8 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
         }
         else
         {
-            stack.Emplace(node->child1);
-            stack.Emplace(node->child2);
+            stack.EmplaceBack(node->child1);
+            stack.EmplaceBack(node->child2);
         }
     }
 }
@@ -308,16 +308,16 @@ void AABBTree::Traverse(T* callback) const
     }
 
     GrowableArray<NodeProxy, 256> stack;
-    stack.Emplace(root);
+    stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Pop();
+        NodeProxy current = stack.PopBack();
 
         if (nodes[current].IsLeaf() == false)
         {
-            stack.Emplace(nodes[current].child1);
-            stack.Emplace(nodes[current].child2);
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
         }
 
         const Node* node = nodes + current;
