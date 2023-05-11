@@ -1,12 +1,10 @@
-add_library(imgui
-    imgui_draw.cpp
-    imgui_tables.cpp
-    imgui_widgets.cpp
-    imgui.cpp
-    imgui_impl_glfw.cpp
-    imgui_impl_opengl3.cpp
-    imgui_demo.cpp
-)
+file(GLOB_RECURSE IMGUI_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE IMGUI_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "include" FILES ${IMGUI_HEADER_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "src" FILES ${IMGUI_SOURCE_FILES})
+
+add_library(imgui ${IMGUI_HEADER_FILES} ${IMGUI_SOURCE_FILES})
 
 target_include_directories(imgui
     PUBLIC
