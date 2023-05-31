@@ -56,7 +56,7 @@ void Island::Solve()
             b->flag &= ~RigidBody::flag_sleeping;
         }
 
-        if (((b->angularVelocity * b->angularVelocity < world->settings.reset_angular_tolerance) &&
+        if (((b->angularVelocity * b->angularVelocity < world->settings.rest_angular_tolerance) &&
              (Dot(b->linearVelocity, b->linearVelocity) < world->settings.rest_linear_tolerance)) &&
             (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
         {
