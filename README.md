@@ -44,11 +44,11 @@ using namespace muli;
 
 int main()
 {
-    WorldSettings settings; // Define simulation settings
-    World world(settings); // Create a physics world
+    WorldSettings settings;
+    World world(settings);
   
-    RigidBody* box = world.CreateBox(1.0f); // Create a box
-    box->SetPosition(0.0f, 5.0f); // Set the position of the box
+    RigidBody* box = world.CreateBox(1.0f);
+    box->SetPosition(0.0f, 5.0f);
   
     // Run simulation for one second
     float dt = 1.0f / 60.0f;
