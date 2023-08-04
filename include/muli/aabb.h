@@ -8,6 +8,11 @@ namespace muli
 struct AABB
 {
     AABB() = default;
+    AABB(const Vec2& _min, const Vec2& _max)
+        : min(_min)
+        , max(_max){
+
+        };
 
     Vec2 GetCenter() const
     {
