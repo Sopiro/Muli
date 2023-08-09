@@ -66,7 +66,7 @@ public:
             if (ImGui::Button("Random generate"))
             {
                 std::string newSeed = std::to_string((int32)LinearRand(0, INT32_MAX));
-                strcpy(seed, newSeed.c_str());
+                strcpy_s(seed, newSeed.c_str());
 
                 game.RestartDemo();
             }
