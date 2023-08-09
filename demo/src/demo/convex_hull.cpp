@@ -70,7 +70,7 @@ public:
         ImGui::Begin("Convex hull", NULL,
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Removed vertices: %lld", vertices.size() - convexHull.size());
+        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Removed vertices: %zu", vertices.size() - convexHull.size());
         ImGui::End();
     }
 
