@@ -1,6 +1,6 @@
-# Muli
-
 ![logo](.github/logo.gif)
+
+# Muli
 
 [![CMake Build](https://github.com/Sopiro/Muli/actions/workflows/cmake_build.yml/badge.svg)](https://github.com/Sopiro/Muli/actions/workflows/cmake_build.yml)
 
@@ -69,6 +69,26 @@ int main()
   - Visual Studio: Run `build.bat`
   - Otherwise: Run `build.sh`
 - You can find the executable demo in the `build/bin`
+
+## Installation
+
+You can install the library using this commands
+
+```cmake
+mkdir build
+cd build
+cmake -DMULI_BUILD_DEMO=OFF ..
+cmake --build . --config Release
+cmake --install . --prefix "installation-path"
+```
+
+Assuming you've added "installation-path" to your system `PATH`, you can now integrate the library into your project
+
+``` cmake
+find_package(muli REQUIRED)
+
+target_link_libraries(your-project PUBLIC muli::muli)
+```
 
 ## Todo
 - Implement position solve step for joints  
