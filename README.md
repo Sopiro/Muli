@@ -25,9 +25,9 @@
   - Constraint islanding and sleeping
   - Stable stacking with 2-contact LCP solver (Block solver)
   - Decoupled position correction iteration
-  - Contact callbacks: begin, touching, end, destory
+  - Contact callbacks: begin, touching, end and destory event
   - Physics material: friction, restitution and surface speed
-  - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, weld
+  - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute and weld
   
 ### ETC
   - 50+ Demos
@@ -37,7 +37,8 @@
   - Utilizes specialized memory allocators
   
 ## Example
-```c++
+
+``` c++
 #include "muli/muli.h"
 
 using namespace muli;
@@ -74,7 +75,7 @@ int main()
 
 You can install the library using this commands
 
-```cmake
+``` bat
 mkdir build
 cd build
 cmake -DMULI_BUILD_DEMO=OFF ..
