@@ -1048,7 +1048,7 @@ GrabJoint* World::CreateGrabJoint(
 {
     if (body->world != this)
     {
-        throw std::runtime_error("You should register the rigid bodies before registering the joint");
+        return nullptr;
     }
 
     void* mem = blockAllocator.Allocate(sizeof(GrabJoint));
@@ -1063,7 +1063,7 @@ RevoluteJoint* World::CreateRevoluteJoint(
 {
     if (bodyA->world != this || bodyB->world != this)
     {
-        throw std::runtime_error("You should register the rigid bodies before registering the joint");
+        return nullptr;
     }
 
     void* mem = blockAllocator.Allocate(sizeof(RevoluteJoint));
@@ -1084,7 +1084,7 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
 {
     if (bodyA->world != this || bodyB->world != this)
     {
-        throw std::runtime_error("You should register the rigid bodies before registering the joint");
+        return nullptr;
     }
 
     void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
@@ -1104,6 +1104,11 @@ DistanceJoint* World::CreateDistanceJoint(
 
 AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
     AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, settings, frequency, dampingRatio, jointMass);
 
@@ -1114,6 +1119,11 @@ AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float fr
 WeldJoint* World::CreateWeldJoint(
     RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(WeldJoint));
     WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, anchor, settings, frequency, dampingRatio, jointMass);
 
@@ -1124,6 +1134,11 @@ WeldJoint* World::CreateWeldJoint(
 LineJoint* World::CreateLineJoint(
     RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(LineJoint));
     LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
@@ -1140,6 +1155,11 @@ LineJoint* World::CreateLineJoint(RigidBody* bodyA, RigidBody* bodyB, float freq
 PrismaticJoint* World::CreatePrismaticJoint(
     RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(PrismaticJoint));
     PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, settings, frequency, dampingRatio, jointMass);
 
@@ -1165,6 +1185,11 @@ PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
                                       float dampingRatio,
                                       float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(PulleyJoint));
     PulleyJoint* pj = new (mem) PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, settings, ratio,
                                             frequency, dampingRatio, jointMass);
@@ -1182,6 +1207,11 @@ MotorJoint* World::CreateMotorJoint(RigidBody* bodyA,
                                     float dampingRatio,
                                     float jointMass)
 {
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
     void* mem = blockAllocator.Allocate(sizeof(MotorJoint));
     MotorJoint* mj =
         new (mem) MotorJoint(bodyA, bodyB, anchor, settings, maxForce, maxTorque, frequency, dampingRatio, jointMass);

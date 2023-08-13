@@ -52,7 +52,7 @@ public:
     void BufferDestroy(Joint* joint);
     void BufferDestroy(const std::vector<Joint*>& joints);
 
-    // Factory functions
+    // Factory functions for bodies
 
     RigidBody* CreateEmptyBody(RigidBody::Type type = RigidBody::Type::dynamic_body);
     RigidBody* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = default_density);
@@ -92,6 +92,10 @@ public:
                                     RigidBody::Type type = RigidBody::Type::dynamic_body,
                                     float radius = default_radius,
                                     float density = default_density);
+
+    // Factory functions for joints
+    // You should register the bodies to the world before registering the joints
+    // Otherwise the functions will return nullptr
 
     GrabJoint* CreateGrabJoint(RigidBody* body,
                                const Vec2& anchor,
