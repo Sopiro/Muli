@@ -11,7 +11,7 @@ namespace muli
 struct ClosestResult
 {
     Vec2 point;
-    int16 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices that contributed to calculating the closest point
+    int16 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices contributed to calculating the closest point
     int16 count;
 };
 

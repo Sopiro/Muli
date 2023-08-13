@@ -105,7 +105,7 @@ void Island::Solve()
         joints[i]->Prepare();
     }
 
-    // Iteratively solve the violated velocity constraint
+    // Iteratively solve the violated velocity constraints
     // Solving contacts backward converge fast
     for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
     {

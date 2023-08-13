@@ -174,7 +174,7 @@ void BlockSolver::Solve()
     }
 
 // How did you reach here?! something went wrong!
-// Sometimes it can get here, because of floating point errors
+// You can sometimes reach here because of floating point errors :(
 #if 0
         muliAssert(false);
 #endif

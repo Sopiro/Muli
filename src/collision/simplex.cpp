@@ -87,7 +87,7 @@ void Simplex::Advance(const Vec2& q)
             return;
         }
 
-        // If area == 0, 3 vertices are in the collinear position
+        // 3 vertices are in the collinear position if area == 0
         float area = Cross(b - a, c - a);
 
         float u = Cross(b - q, c - q);
@@ -122,8 +122,8 @@ void Simplex::Advance(const Vec2& q)
         if (wca.u > 0.0f && wca.v > 0.0f && v * area <= 0.0f)
         {
             count = 2;
-            vertices[1] = vertices[0];
             vertices[0] = vertices[2];
+            vertices[1] = vertices[0];
             vertices[0].weight = wca.u;
             vertices[1].weight = wca.v;
             Vec2 e = a - c;

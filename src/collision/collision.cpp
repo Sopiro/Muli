@@ -221,7 +221,7 @@ static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b,
         manifold->contactNormal = (pb - pa).Normalized();
         manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
         manifold->contactPoints[0].id = 0;
-        manifold->contactPoints[0].position = pb + (-manifold->contactNormal * b->GetRadius());
+        manifold->contactPoints[0].position = pb + (manifold->contactNormal * -b->GetRadius());
         manifold->referencePoint.id = 0;
         manifold->referencePoint.position = pa + (manifold->contactNormal * a->GetRadius());
         manifold->contactCount = 1;
