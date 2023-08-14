@@ -8,24 +8,24 @@
 namespace muli
 {
 
-class ColliderDestoryCallback
+class ColliderDestroyCallback
 {
 public:
-    virtual ~ColliderDestoryCallback() {}
+    virtual ~ColliderDestroyCallback() {}
     virtual void OnColliderDestroy(Collider* me) = 0;
 };
 
-class BodyDestoryCallback
+class BodyDestroyCallback
 {
 public:
-    virtual ~BodyDestoryCallback() {}
+    virtual ~BodyDestroyCallback() {}
     virtual void OnBodyDestroy(RigidBody* me) = 0;
 };
 
-class JointDestoryCallback
+class JointDestroyCallback
 {
 public:
-    virtual ~JointDestoryCallback() {}
+    virtual ~JointDestroyCallback() {}
     virtual void OnJointDestroy(Joint* me) = 0;
 };
 

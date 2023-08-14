@@ -19,7 +19,7 @@ struct ContactEdge;
 struct JointEdge;
 class RayCastAnyCallback;
 class RayCastClosestCallback;
-class BodyDestoryCallback;
+class BodyDestroyCallback;
 
 class RigidBody final
 {
@@ -124,7 +124,7 @@ public:
     // Collider factory functions
 
     Collider* CreateCollider(Shape* shape, float density = default_density, const Material& material = default_material);
-    void DestoryCollider(Collider* collider);
+    void DestroyCollider(Collider* collider);
 
     int32 GetColliderCount() const;
     Collider* GetColliderList();
@@ -158,7 +158,7 @@ public:
                                     const Material& material = default_material);
 
     // Callbacks
-    BodyDestoryCallback* OnDestroy;
+    BodyDestroyCallback* OnDestroy;
     uint32 UserFlag;
 
 protected:
@@ -197,18 +197,18 @@ protected:
 
     Type type;
 
-    Transform transform; // transform relative to the body origin
-    Sweep sweep;         // swept motion of rigid body used for CCD
+    Transform transform;   // transform relative to the body origin
+    Sweep sweep;           // swept motion of rigid body used for CCD
 
-    Vec2 force;   // N
-    float torque; // N⋅m
+    Vec2 force;            // N
+    float torque;          // N⋅m
 
     Vec2 linearVelocity;   // m/s
     float angularVelocity; // rad/s
 
-    float mass; // kg
+    float mass;            // kg
     float invMass;
-    float inertia; // kg⋅m²
+    float inertia;         // kg⋅m²
     float invInertia;
 
     float linearDamping;

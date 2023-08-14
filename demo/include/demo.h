@@ -12,7 +12,7 @@ class Game;
 class Renderer;
 struct DebugOptions;
 
-class Demo : public JointDestoryCallback
+class Demo : public JointDestroyCallback
 {
 public:
     Demo(Game& game);
@@ -23,7 +23,7 @@ public:
     virtual void UpdateUI() {}
     virtual void Render() {}
 
-    // from JointDestoryCallback
+    // from JointDestroyCallback
     virtual void OnJointDestroy(Joint* me) override
     {
         cursorJoint = nullptr;

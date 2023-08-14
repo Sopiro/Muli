@@ -10,7 +10,7 @@
 namespace muli
 {
 
-class ColliderDestoryCallback;
+class ColliderDestroyCallback;
 class ContactListener;
 typedef int32 NodeProxy;
 
@@ -53,7 +53,7 @@ public:
     Collider* GetNext();
     const Collider* GetNext() const;
 
-    ColliderDestoryCallback* OnDestroy;
+    ColliderDestroyCallback* OnDestroy;
     muli::ContactListener* ContactListener;
 
 private:

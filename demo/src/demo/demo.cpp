@@ -107,7 +107,7 @@ void Demo::EnableBodyCreate()
 
     if (targetCollider && !cursorJoint && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
-        targetBody->DestoryCollider(targetCollider);
+        targetBody->DestroyCollider(targetCollider);
         if (targetBody->GetColliderCount() == 0)
         {
             world->Destroy(targetBody);
@@ -259,7 +259,7 @@ void Demo::EnableBodyRemove()
             {
                 Collider* c = qr[i];
                 RigidBody* b = c->GetBody();
-                b->DestoryCollider(c);
+                b->DestroyCollider(c);
 
                 if (b->GetColliderCount() == 0)
                 {

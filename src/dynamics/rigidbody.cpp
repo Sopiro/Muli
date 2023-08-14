@@ -69,7 +69,7 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
     return collider;
 }
 
-void RigidBody::DestoryCollider(Collider* collider)
+void RigidBody::DestroyCollider(Collider* collider)
 {
     if (collider == nullptr)
     {

@@ -8,7 +8,7 @@ namespace muli
 
 struct WorldSettings;
 class Joint;
-class JointDestoryCallback;
+class JointDestroyCallback;
 
 struct JointEdge
 {
@@ -96,7 +96,7 @@ public:
     Joint* GetPrev() const;
     Joint* GetNext() const;
 
-    JointDestoryCallback* OnDestroy;
+    JointDestroyCallback* OnDestroy;
 
 protected:
     Joint::Type type;

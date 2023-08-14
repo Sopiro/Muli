@@ -551,7 +551,7 @@ void World::Destroy(RigidBody* body)
     {
         Collider* c0 = c;
         c = c->next;
-        body->DestoryCollider(c0);
+        body->DestroyCollider(c0);
     }
 
     JointEdge* je = body->jointList;
