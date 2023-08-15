@@ -6,7 +6,7 @@ namespace muli
 {
 
 constexpr int32 stack_size = 100 * 1024;
-constexpr int32 max_stack_entries = 32;
+constexpr int32 max_stack_entries = 64;
 
 struct StackEntry
 {

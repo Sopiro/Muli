@@ -37,7 +37,7 @@ void Contact::Update()
     flag |= flag_enabled;
 
     ContactManifold oldManifold = manifold;
-    for (int32 i = 0; i < max_contact_points; ++i)
+    for (int32 i = 0; i < max_contact_point_count; ++i)
     {
         normalSolvers[i].impulseSave = normalSolvers[i].impulse;
         tangentSolvers[i].impulseSave = tangentSolvers[i].impulse;

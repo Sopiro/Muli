@@ -20,7 +20,7 @@ struct SeparationFunction
                     const Sweep& _sweepB,
                     float t1)
     {
-        muliAssert(0 < closestFeatures.count && closestFeatures.count < MAX_SIMPLEX_VERTEX_COUNT);
+        muliAssert(0 < closestFeatures.count && closestFeatures.count < max_simplex_vertex_count);
 
         shapeA = _shapeA;
         shapeB = _shapeB;

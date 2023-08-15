@@ -112,9 +112,9 @@ private:
     ContactManifold manifold;
 
     // TODO: Integrate decoupled solvers into SolveVelocityConstraints() and SolvePositionConstraints() for optimization
-    ContactSolver normalSolvers[max_contact_points];
-    ContactSolver tangentSolvers[max_contact_points];
-    PositionSolver positionSolvers[max_contact_points];
+    ContactSolver normalSolvers[max_contact_point_count];
+    ContactSolver tangentSolvers[max_contact_point_count];
+    PositionSolver positionSolvers[max_contact_point_count];
     BlockSolver blockSolver;
 
     // Impulse buffer for position correction

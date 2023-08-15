@@ -18,13 +18,15 @@
 namespace muli
 {
 
+constexpr int32 max_contact_point_count = 2;
+
 class RigidBody;
 class Shape;
 
 // 64byte
 struct ContactManifold
 {
-    ContactPoint contactPoints[max_contact_points];
+    ContactPoint contactPoints[max_contact_point_count];
     ContactPoint referencePoint;
     Vec2 contactNormal; // Contact normal is always pointing from bodyA to bodyB
     Vec2 contactTangent;

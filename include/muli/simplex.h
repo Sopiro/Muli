@@ -3,15 +3,15 @@
 #include "common.h"
 #include "contact_point.h"
 
-#define MAX_SIMPLEX_VERTEX_COUNT 3
-
 namespace muli
 {
+
+constexpr int32 max_simplex_vertex_count = 3;
 
 struct ClosestResult
 {
     Vec2 point;
-    int16 contributors[MAX_SIMPLEX_VERTEX_COUNT]; // Vertex indices contributed to calculating the closest point
+    int16 contributors[max_simplex_vertex_count]; // Vertex indices contributed to calculating the closest point
     int16 count;
 };
 
@@ -35,14 +35,14 @@ struct Simplex
     void GetWitnessPoint(Vec2* pointA, Vec2* pointB);
 
     int32 count = 0;
-    SupportPoint vertices[MAX_SIMPLEX_VERTEX_COUNT];
+    SupportPoint vertices[max_simplex_vertex_count];
 
     float divisor;
 };
 
 inline void Simplex::AddVertex(const SupportPoint& vertex)
 {
-    muliAssert(count != MAX_SIMPLEX_VERTEX_COUNT);
+    muliAssert(count != max_simplex_vertex_count);
 
     vertices[count++] = vertex;
 }

@@ -46,7 +46,7 @@ bool GJK(const Shape* a, const Transform& tfA, const Shape* b, const Transform& 
     SupportPoint support = CSOSupport(a, tfA, b, tfB, direction);
     simplex.AddVertex(support);
 
-    Vec2 save[MAX_SIMPLEX_VERTEX_COUNT];
+    Vec2 save[max_simplex_vertex_count];
     int32 saveCount;
 
     for (int32 k = 0; k < gjk_max_iteration; ++k)

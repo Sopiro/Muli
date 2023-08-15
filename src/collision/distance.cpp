@@ -18,7 +18,7 @@ float GetClosestFeatures(const Shape* a, const Transform& tfA, const Shape* b, c
     }
 
     Simplex& simplex = gjkResult.simplex;
-    muliAssert(simplex.count < MAX_SIMPLEX_VERTEX_COUNT);
+    muliAssert(simplex.count < max_simplex_vertex_count);
 
     features->count = simplex.count;
     for (int32 i = 0; i < features->count; ++i)
@@ -48,7 +48,7 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
 
     Simplex& simplex = gjkResult.simplex;
 
-    muliAssert(simplex.count < MAX_SIMPLEX_VERTEX_COUNT);
+    muliAssert(simplex.count < max_simplex_vertex_count);
 
     simplex.GetWitnessPoint(pointA, pointB);
 
