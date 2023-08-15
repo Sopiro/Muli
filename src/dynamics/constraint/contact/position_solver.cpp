@@ -86,7 +86,7 @@ bool PositionSolver::SolveTOI()
     // clang-format on
 
     // Constraint (bias)
-    float c = Clamp(toi_position_correction * (separation + linear_slop), -max_position_correction, 0.0f);
+    float c = Clamp(toi_position_correction * (separation + linear_slop), -max_toi_position_correction, 0.0f);
 
     // Compute normal impulse
     float lambda = k > 0.0f ? -c / k : 0.0f;
