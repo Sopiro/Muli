@@ -56,16 +56,16 @@ void Island::Solve()
             b->flag &= ~RigidBody::flag_sleeping;
         }
 
-        if (((b->angularVelocity * b->angularVelocity < world->settings.rest_angular_tolerance) &&
-             (Dot(b->linearVelocity, b->linearVelocity) < world->settings.rest_linear_tolerance)) &&
-            (b->torque * b->torque == 0 && Dot(b->force, b->force) == 0))
-        {
-            b->resting += dt;
-        }
-        else
+        if ((b->angularVelocity * b->angularVelocity > world->settings.rest_angular_tolerance) ||
+            (Dot(b->linearVelocity, b->linearVelocity) > world->settings.rest_linear_tolerance) ||
+            (b->torque * b->torque > 0.0f) || (Dot(b->force, b->force) > 0.0f))
         {
             muliAssert(sleeping == false);
             awakeIsland = true;
+        }
+        else
+        {
+            b->resting += dt;
         }
 
         if (b->type == RigidBody::Type::dynamic_body)
@@ -156,6 +156,7 @@ void Island::Solve()
         }
     }
 
+    // Solve position constraints
     for (int32 i = 0; i < world->settings.position_iterations; ++i)
     {
         bool contactSolved = true;
@@ -165,7 +166,16 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = contactCount; j > 0; j--)
         {
-            contactSolved &= contacts[j - 1]->SolvePositionConstraints();
+            Contact* c = contacts[j - 1];
+
+            bool solved = c->SolvePositionConstraints();
+            if (solved == false)
+            {
+                c->b1->Awake();
+                c->b2->Awake();
+            }
+
+            contactSolved &= solved;
         }
 #endif
         for (int32 j = jointCount; j > 0; j--)
@@ -176,7 +186,16 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contactSolved &= contacts[j]->SolvePositionConstraints();
+            Contact* c = contacts[j];
+
+            bool solved = c->SolvePositionConstraints();
+            if (solved == false)
+            {
+                c->b1->Awake();
+                c->b2->Awake();
+            }
+
+            contactSolved &= solved;
         }
 #endif
         for (int32 j = 0; j < jointCount; ++j)
