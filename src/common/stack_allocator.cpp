@@ -30,13 +30,16 @@ void* StackAllocator::Allocate(int32 size)
     }
     else
     {
-        entry->data = (int8*)stack + index;
+        entry->data = stack + index;
         entry->mallocUsed = false;
         index += size;
     }
 
     allocation += size;
-    maxAllocation = Max(maxAllocation, allocation);
+    if (allocation > maxAllocation)
+    {
+        maxAllocation = allocation;
+    }
 
     ++entryCount;
 
@@ -63,8 +66,6 @@ void StackAllocator::Free(void* p, int32 size)
 
     allocation -= entry->size;
     --entryCount;
-
-    p = nullptr;
 }
 
 void StackAllocator::Clear()
