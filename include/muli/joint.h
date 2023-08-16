@@ -114,6 +114,8 @@ private:
 
     JointEdge nodeA;
     JointEdge nodeB;
+
+    bool flagIsland;
 };
 
 inline float Joint::GetFrequency() const

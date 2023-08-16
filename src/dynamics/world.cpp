@@ -69,11 +69,6 @@ void World::Solve()
     // After building island, each island can be solved in parallel because they are independent of each other
     for (RigidBody* b = bodyList; b; b = b->next)
     {
-        if (b->type == RigidBody::Type::static_body)
-        {
-            continue;
-        }
-
         if (b->flag & RigidBody::flag_island)
         {
             continue;
@@ -85,33 +80,28 @@ void World::Solve()
             continue;
         }
 
+        if (b->type == RigidBody::Type::static_body)
+        {
+            continue;
+        }
+
         stackPointer = 0;
         stack[stackPointer++] = b;
+        b->flag |= RigidBody::flag_island;
 
         ++islandID;
         while (stackPointer > 0)
         {
             RigidBody* t = stack[--stackPointer];
 
-            if (t->type == RigidBody::Type::static_body)
-            {
-                continue;
-            }
-
-            if (t->flag & RigidBody::flag_island)
-            {
-                continue;
-            }
-
-            t->flag |= RigidBody::flag_island;
-            t->islandID = islandID;
             island.Add(t);
+            t->islandID = islandID;
 
             for (ContactEdge* ce = t->contactList; ce; ce = ce->next)
             {
                 Contact* c = ce->contact;
 
-                if ((c->flag & Contact::flag_enabled) == 0)
+                if (c->flag & Contact::flag_island)
                 {
                     continue;
                 }
@@ -121,32 +111,58 @@ void World::Solve()
                     continue;
                 }
 
-                if (ce->other->flag & RigidBody::flag_island)
+                if ((c->flag & Contact::flag_enabled) == 0)
                 {
                     continue;
                 }
 
                 island.Add(c);
-                stack[stackPointer++] = ce->other;
+                c->flag |= Contact::flag_island;
+
+                RigidBody* other = ce->other;
+
+                if (other->flag & RigidBody::flag_island)
+                {
+                    continue;
+                }
+
+                if (other->type == RigidBody::Type::static_body)
+                {
+                    continue;
+                }
+
+                muliAssert(stackPointer < bodyCount);
+                stack[stackPointer++] = other;
+                other->flag |= RigidBody::flag_island;
             }
 
             for (JointEdge* je = t->jointList; je; je = je->next)
             {
                 Joint* j = je->joint;
 
-                if (je->other == t)
-                {
-                    island.Add(j);
-                    t->Awake();
-                }
-
-                if (je->other->flag & RigidBody::flag_island)
+                if (j->flagIsland)
                 {
                     continue;
                 }
 
                 island.Add(j);
-                stack[stackPointer++] = je->other;
+                j->flagIsland = true;
+
+                RigidBody* other = je->other;
+
+                if (other->flag & RigidBody::flag_island)
+                {
+                    continue;
+                }
+
+                if (other->type == RigidBody::Type::static_body)
+                {
+                    continue;
+                }
+
+                muliAssert(stackPointer < bodyCount);
+                stack[stackPointer++] = other;
+                other->flag |= RigidBody::flag_island;
             }
 
             if (t->resting > settings.sleeping_treshold)
@@ -182,6 +198,16 @@ void World::Solve()
         // Synchronize transform and broad-phase collider node
         body->SynchronizeTransform();
         body->SynchronizeColliders();
+    }
+
+    for (Contact* contact = contactManager.contactList; contact; contact = contact->next)
+    {
+        contact->flag &= ~Contact::flag_island;
+    }
+
+    for (Joint* joint = jointList; joint; joint = joint->next)
+    {
+        joint->flagIsland = false;
     }
 }
 

@@ -14,6 +14,7 @@ Joint::Joint(Joint::Type _type,
     : Constraint(_bodyA, _bodyB, _settings)
     , OnDestroy{ nullptr }
     , type{ _type }
+    , flagIsland{ false }
 {
     SetParameters(_frequency, _dampingRatio, _jointMass);
 }
