@@ -8,12 +8,12 @@ namespace muli
 // Contact solver settings
 constexpr float linear_slop = 0.004f; // meters
 
-constexpr float position_solver_threshold = linear_slop * 3.0f;
-constexpr float toi_position_solver_threshold = linear_slop * 2.0f - linear_slop * 0.05f;
+constexpr float position_solver_threshold = linear_slop * 2.5f;
+constexpr float toi_position_solver_threshold = linear_slop * 2.0f - linear_slop * 0.1f;
 
 // The baumgarte terms (0.0 ~ 1.0)
 constexpr float position_correction = 0.2f;
-constexpr float toi_position_correction = 0.3f;
+constexpr float toi_position_correction = 0.55f;
 
 constexpr float max_position_correction = 0.1f;     // meters
 constexpr float max_toi_position_correction = 0.1f; // meters
@@ -43,8 +43,8 @@ constexpr float aabb_multiplier = 4.0f;
 // While minimum_radius is the minimum radius required for stable CCD,
 // it's not recommended to use it as the minimum value.
 // Instead, it is advisable to use the default_radius as the minimum radius.
-constexpr float minimum_radius = linear_slop * 2.0f + linear_slop * 0.05f;
-constexpr float default_radius = linear_slop * 3.0f;
+constexpr float minimum_radius = linear_slop * 2.0f;
+constexpr float default_radius = linear_slop * 2.5f;
 constexpr float default_density = 12.5f;
 constexpr float default_friction = 0.5f;
 constexpr float default_restitution = 0.0f;
