@@ -37,7 +37,7 @@ public:
         {
             t = true;
             RigidBody* b = world->CreateBox(0.4f);
-            b->SetPosition(6.0f, 3.25f);
+            b->SetPosition(6.0f, 3.4f);
             b->SetContinuous(true);
 
             b->SetLinearVelocity(-200.0f, 0.0f);

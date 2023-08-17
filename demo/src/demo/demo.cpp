@@ -58,7 +58,7 @@ void Demo::FindTargetBody()
     qr = world->Query(cursorPos); // Query result
     if (qr.size() > 0)
     {
-        targetCollider = qr[0]; // Mouseovered body
+        targetCollider = qr[0];   // Mouseovered body
         targetBody = targetCollider->GetBody();
     }
     else
