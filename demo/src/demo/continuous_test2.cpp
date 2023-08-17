@@ -36,7 +36,7 @@ public:
             break;
         case 3:
             target = world->CreateRandomConvexPolygon(0.28f, 6, RigidBody::Type::dynamic_body, 0.05f);
-            target->UserFlag |= UserFlag::render_polygon_radius;
+            target->UserData = (void*)((size_t)target->UserData | UserFlag::render_polygon_radius);
             break;
         case 4:
             target = world->CreateRandomConvexPolygon(0.28f, LinearRand(6, 8));
@@ -72,7 +72,7 @@ public:
 
             if (target->GetWorld())
             {
-                if (target->UserFlag & UserFlag::render_polygon_radius)
+                if (((uint64)target->UserData) & UserFlag::render_polygon_radius)
                 {
                     drawMode.rounded = true;
                     game.GetRenderer().DrawShape(target->GetColliderList()->GetShape(), t, drawMode);

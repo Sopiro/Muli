@@ -222,7 +222,7 @@ void Game::Render()
             for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
-                drawMode.rounded = b->UserFlag & UserFlag::render_polygon_radius;
+                drawMode.rounded = (size_t)b->UserData & UserFlag::render_polygon_radius;
 
                 for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                 {
@@ -235,7 +235,7 @@ void Game::Render()
             for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
-                drawMode.rounded = b->UserFlag & UserFlag::render_polygon_radius;
+                drawMode.rounded = (size_t)b->UserData & UserFlag::render_polygon_radius;
 
                 if (b->IsSleeping())
                 {
@@ -251,7 +251,7 @@ void Game::Render()
                 {
                     drawMode.colorIndex = b->GetIslandID() - 1;
                     drawMode.fill = true;
-                    drawMode.outline = !(b->UserFlag & UserFlag::remove_outline);
+                    drawMode.outline = !((size_t)b->UserData & UserFlag::remove_outline);
 
                     for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
                     {

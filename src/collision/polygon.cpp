@@ -412,7 +412,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         float numerator = Dot(normal, v - p1);
         float denominator = Dot(normal, d);
 
-        if (denominator == 0.0f) // Parallel
+        if (denominator == 0.0f)  // Parallel
         {
             if (numerator < 0.0f) // Non-collinear
             {

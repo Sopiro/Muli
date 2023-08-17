@@ -97,6 +97,7 @@ public:
     Joint* GetNext() const;
 
     JointDestroyCallback* OnDestroy;
+    void* UserData;
 
 protected:
     Joint::Type type;

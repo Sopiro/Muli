@@ -34,7 +34,7 @@ public:
         else if (r < 2.0f)
         {
             b = world->CreateRandomConvexPolygon(size / 2.0f, 10, RigidBody::Type::dynamic_body, r / 10.0f + minimum_radius);
-            b->UserFlag |= UserFlag::render_polygon_radius;
+            b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
         }
         else if (r < 3.0f)
         {

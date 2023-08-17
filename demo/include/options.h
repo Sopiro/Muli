@@ -19,7 +19,7 @@ struct DebugOptions
     bool colorize_island = true;
 };
 
-enum UserFlag : uint32
+enum UserFlag : size_t
 {
     remove_outline = 1 << 1,
     render_polygon_radius = 1 << 2,

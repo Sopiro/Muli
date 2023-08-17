@@ -40,7 +40,7 @@ private:
     Jacobian j;
 
     float bias;
-    float m; // effective mass
+    float m;              // effective mass
 
     float impulse = 0.0f; // impluse sum
     float impulseSave = 0.0f;

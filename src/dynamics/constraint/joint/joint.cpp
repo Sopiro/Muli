@@ -13,6 +13,7 @@ Joint::Joint(Joint::Type _type,
              float _jointMass)
     : Constraint(_bodyA, _bodyB, _settings)
     , OnDestroy{ nullptr }
+    , UserData{ nullptr }
     , type{ _type }
     , flagIsland{ false }
 {

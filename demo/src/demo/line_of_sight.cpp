@@ -42,7 +42,7 @@ public:
                 else
                 {
                     b = world->CreateRandomConvexPolygon(0.15f, 0, RigidBody::Type::dynamic_body, 0.05f);
-                    b->UserFlag = UserFlag::render_polygon_radius;
+                    b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
                 }
 
                 float y = (i - count / 2.0f) / count * size + size / 2.0f + 0.5f;

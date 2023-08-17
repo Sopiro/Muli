@@ -159,7 +159,7 @@ public:
 
     // Callbacks
     BodyDestroyCallback* OnDestroy;
-    uint32 UserFlag;
+    void* UserData;
 
 protected:
     friend class World;

@@ -10,7 +10,7 @@ namespace muli
 
 RigidBody::RigidBody(RigidBody::Type _type)
     : OnDestroy{ nullptr }
-    , UserFlag{ 0 }
+    , UserData{ nullptr }
     , type{ _type }
     , transform{ identity }
     , sweep{ identity }
