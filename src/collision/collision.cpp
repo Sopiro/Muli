@@ -202,47 +202,53 @@ static void FindContactPoints(
     manifold->referencePoint = ref->p1;
 }
 
-static bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     Vec2 pa = Mul(tfA, a->GetCenter());
     Vec2 pb = Mul(tfB, b->GetCenter());
+    Vec2 d = pb - pa;
 
-    float d = Dist2(pa, pb);
-    float r2 = a->GetRadius() + b->GetRadius();
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
 
-    if (d > r2 * r2)
+    float distance2 = d.Length2();
+    if (distance2 > radii * radii || distance2 == 0.0f)
     {
         return false;
     }
-    else
-    {
-        d = Sqrt(d);
 
-        manifold->contactNormal = (pb - pa).Normalized();
-        manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
-        manifold->contactPoints[0].id = 0;
-        manifold->contactPoints[0].position = pb + (manifold->contactNormal * -b->GetRadius());
-        manifold->referencePoint.id = 0;
-        manifold->referencePoint.position = pa + (manifold->contactNormal * a->GetRadius());
-        manifold->contactCount = 1;
-        manifold->penetrationDepth = r2 - d;
-        manifold->featureFlipped = false;
+    float distance = Sqrt(distance2);
+    Vec2 normal = d / distance;
 
-        return true;
-    }
+    manifold->contactNormal = normal;
+    manifold->contactTangent.Set(-normal.y, normal.x);
+    manifold->contactPoints[0].id = 0;
+    manifold->contactPoints[0].position = pb - normal * rb;
+    manifold->referencePoint.id = 0;
+    manifold->referencePoint.position = pa + normal * ra;
+    manifold->contactCount = 1;
+    manifold->penetrationDepth = radii - distance;
+    manifold->featureFlipped = false;
+
+    return true;
 }
 
-static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     const Capsule* c = static_cast<const Capsule*>(a);
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
+    Vec2 l = vb - va;
 
     Vec2 pb = Mul(tfB, b->GetCenter());
     Vec2 localP = MulT(tfA, pb);
 
-    float u = Dot(localP - vb, va - vb);
-    float v = Dot(localP - va, vb - va);
+    Vec2 bp = localP - vb;
+    Vec2 ap = localP - va;
+
+    float u = Dot(bp, -l);
+    float v = Dot(ap, l);
 
     // Find closest point depending on the Voronoi region
     Vec2 normal;
@@ -251,20 +257,20 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
     if (v <= 0.0f) // Region A
     {
-        normal = localP - va;
+        normal = ap;
         distance = normal.Normalize();
         index = 0;
     }
     else if (u <= 0.0f) // Region B
     {
-        normal = localP - vb;
+        normal = bp;
         distance = normal.Normalize();
         index = 1;
     }
     else // Region AB
     {
-        normal = Cross(1.0f, vb - va).Normalized();
-        distance = Dot(localP - va, normal);
+        normal = Cross(1.0f, l).Normalized();
+        distance = Dot(ap, normal);
         if (distance < 0.0f)
         {
             normal = -normal;
@@ -273,8 +279,11 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
         index = 0;
     }
 
-    float r2 = a->GetRadius() + b->GetRadius();
-    if (distance > r2)
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
+
+    if (distance > radii)
     {
         return false;
     }
@@ -284,25 +293,28 @@ static bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
     manifold->contactNormal = normal;
     manifold->contactTangent.Set(-normal.y, normal.x);
-    manifold->penetrationDepth = r2 - distance;
+    manifold->penetrationDepth = radii - distance;
     manifold->contactPoints[0].id = 0;
-    manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
+    manifold->contactPoints[0].position = pb - normal * rb;
     manifold->referencePoint.id = index;
-    manifold->referencePoint.position = point + normal * a->GetRadius();
+    manifold->referencePoint.position = point + normal * ra;
     manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
     return true;
 }
 
-static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     const Polygon* p = static_cast<const Polygon*>(a);
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();
 
-    float r2 = a->GetRadius() + b->GetRadius();
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
+
     Vec2 pb = Mul(tfB, b->GetCenter());
     Vec2 localP = MulT(tfA, pb);
 
@@ -312,7 +324,7 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     for (int32 i = 1; i < vertexCount; ++i)
     {
         float separation = Dot(normals[i], localP - vertices[i]);
-        if (separation > r2)
+        if (separation > radii)
         {
             return false;
         }
@@ -332,11 +344,11 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
         manifold->contactNormal = normal;
         manifold->contactTangent.Set(-normal.y, normal.x);
-        manifold->penetrationDepth = r2 - minSeparation;
+        manifold->penetrationDepth = radii - minSeparation;
         manifold->contactPoints[0].id = 0;
-        manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
+        manifold->contactPoints[0].position = pb - normal * rb;
         manifold->referencePoint.id = index;
-        manifold->referencePoint.position = point + normal * a->GetRadius();
+        manifold->referencePoint.position = point + normal * ra;
         manifold->contactCount = 1;
         manifold->featureFlipped = false;
 
@@ -346,30 +358,33 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
     Vec2 v0 = vertices[index];
     Vec2 v1 = vertices[(index + 1) % vertexCount];
 
-    float u = Dot(localP - v1, v0 - v1);
-    float v = Dot(localP - v0, v1 - v0);
+    Vec2 v0p = localP - v0;
+    Vec2 v1p = localP - v1;
+
+    float u = Dot(v1p, v0 - v1);
+    float v = Dot(v0p, v1 - v0);
 
     Vec2 normal;
     float distance;
 
     if (v <= 0.0f) // Region v0
     {
-        normal = localP - v0;
+        normal = v0p;
         distance = normal.Normalize();
     }
     else if (u <= 0.0f) // Region v1
     {
-        normal = localP - v1;
+        normal = v1p;
         distance = normal.Normalize();
         index = (index + 1) % vertexCount;
     }
     else // Inside the region
     {
         normal = normals[index];
-        distance = Dot(normal, localP - v0);
+        distance = Dot(normal, v0p);
     }
 
-    if (distance > r2)
+    if (distance > radii)
     {
         return false;
     }
@@ -379,11 +394,11 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 
     manifold->contactNormal = normal;
     manifold->contactTangent.Set(-normal.y, normal.x);
-    manifold->penetrationDepth = r2 - distance;
+    manifold->penetrationDepth = radii - distance;
     manifold->contactPoints[0].id = 0;
-    manifold->contactPoints[0].position = pb + normal * -b->GetRadius();
+    manifold->contactPoints[0].position = pb - normal * rb;
     manifold->referencePoint.id = index;
-    manifold->referencePoint.position = point + normal * a->GetRadius();
+    manifold->referencePoint.position = point + normal * ra;
     manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
@@ -391,34 +406,37 @@ static bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b
 }
 
 // This works for all possible shape pairs
-static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     GJKResult gjkResult;
     bool collide = GJK(a, tfA, b, tfB, &gjkResult);
 
     Simplex& simplex = gjkResult.simplex;
-    float r2 = a->GetRadius() + b->GetRadius();
+
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
 
     if (collide == false)
     {
         switch (simplex.count)
         {
         case 1: // vertex vs. vertex collision
-            if (gjkResult.distance < r2)
+            if (gjkResult.distance < radii)
             {
                 Vec2 normal = (origin - simplex.vertices[0].point).Normalized();
 
                 ContactPoint supportA = simplex.vertices[0].pointA;
                 ContactPoint supportB = simplex.vertices[0].pointB;
-                supportA.position += normal * a->GetRadius();
-                supportB.position -= normal * b->GetRadius();
+                supportA.position += normal * ra;
+                supportB.position -= normal * rb;
 
                 manifold->contactNormal = normal;
                 manifold->contactTangent.Set(-normal.y, normal.x);
                 manifold->contactPoints[0] = supportB;
                 manifold->contactCount = 1;
                 manifold->referencePoint = supportA;
-                manifold->penetrationDepth = r2 - gjkResult.distance;
+                manifold->penetrationDepth = radii - gjkResult.distance;
                 manifold->featureFlipped = false;
 
                 return true;
@@ -428,7 +446,7 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
                 return false;
             }
         case 2: // vertex vs. edge collision
-            if (gjkResult.distance < r2)
+            if (gjkResult.distance < radii)
             {
                 Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
                 Vec2 k = origin - simplex.vertices[0].point;
@@ -438,7 +456,7 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
                 }
 
                 manifold->contactNormal = normal;
-                manifold->penetrationDepth = r2 - gjkResult.distance;
+                manifold->penetrationDepth = radii - gjkResult.distance;
             }
             else
             {
@@ -448,7 +466,7 @@ static bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b,
     }
     else
     {
-        // If the gjk termination simplex has vertices less than 3, expand to full simplex
+        // Expand to a full simplex if the gjk termination simplex has vertices less than 3
         // We need a full n-simplex to start EPA (actually it's rare case)
         switch (simplex.count)
         {
@@ -509,6 +527,7 @@ bool DetectCollision(const Shape* a, const Transform& tfA, const Shape* b, const
 
     Shape::Type shapeA = a->GetType();
     Shape::Type shapeB = b->GetType();
+
     if (shapeB > shapeA)
     {
         muliAssert(detection_function_map[shapeB][shapeA] != nullptr);

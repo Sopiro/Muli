@@ -206,8 +206,8 @@ Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
     Vec2 prev = vertices[prevIndex];
     Vec2 next = vertices[nextIndex];
 
-    Vec2 e1 = (curr - prev).Normalized();
-    Vec2 e2 = (curr - next).Normalized();
+    Vec2 e1 = curr - prev;
+    Vec2 e2 = curr - next;
 
     if (Dot(e1, localDir) <= Dot(e2, localDir))
     {
