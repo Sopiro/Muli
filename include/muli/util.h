@@ -76,54 +76,9 @@ inline Vec4 RandVec4(Vec4 min, Vec4 max)
 void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
 std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices);
 
-struct UV
-{
-    float u;
-    float v;
-};
-
-// Project point P to line segment AB to compute barycentric weights
-inline UV ComputeWeights(const Vec2& a, const Vec2& b, const Vec2& p)
-{
-    Vec2 e = b - a;
-    float len = e.Normalize();
-    float region = Dot(e, p - a) / len;
-
-    return UV{ 1.0f - region, region };
-}
-
-// Linearly combine(interpolate) the vector using weights u, v
-inline Vec2 LerpVector(const Vec2& a, const Vec2& b, const UV& uv)
-{
-    return Vec2{ a.x * uv.u + b.x * uv.v, a.y * uv.u + b.y * uv.v };
-}
-
+// Raycast functions
 bool RayCastCircle(const Vec2& center, float radius, const RayCastInput& input, RayCastOutput* output);
 bool RayCastLineSegment(const Vec2& vertex1, const Vec2& vertex2, const RayCastInput& input, RayCastOutput* output);
-
-// https://iquilezles.org/articles/distfunctions/
-inline float SignedDistanceToLineSegment(const Vec2& p, const Vec2& a, const Vec2& b, float r)
-{
-    Vec2 pa = p - a;
-    Vec2 ba = b - a;
-    float h = Clamp(Dot(pa, ba) / Dot(ba, ba), 0.0f, 1.0f);
-
-    return Length(pa - ba * h) - r;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const Vec2& v)
-{
-    return out << v.x << ' ' << v.y << '\n';
-}
-
-inline std::ostream& operator<<(std::ostream& out, const Vec3& v)
-{
-    return out << v.x << ' ' << v.y << ' ' << v.z << '\n';
-}
-
-inline std::ostream& operator<<(std::ostream& out, const Vec4& v)
-{
-    return out << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << '\n';
-}
+bool RayCastCapsule(const Vec2& vertex1, const Vec2& vertex2, float radius, const RayCastInput& input, RayCastOutput* output);
 
 } // namespace muli

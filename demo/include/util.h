@@ -57,4 +57,19 @@ inline void PrintSizes()
     std::cout << "Weld joint: " << sizeof(WeldJoint) << '\n' << std::endl;
 }
 
+inline std::ostream& operator<<(std::ostream& out, const Vec2& v)
+{
+    return out << v.x << ' ' << v.y << '\n';
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Vec3& v)
+{
+    return out << v.x << ' ' << v.y << ' ' << v.z << '\n';
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Vec4& v)
+{
+    return out << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << '\n';
+}
+
 } // namespace muli

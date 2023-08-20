@@ -106,7 +106,14 @@ inline bool Capsule::TestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
 
-    return SignedDistanceToLineSegment(localQ, va, vb, radius) < 0.0f;
+    Vec2 d = localQ - va;
+    Vec2 e = vb - va;
+
+    float w = Clamp(Dot(d, e) / Dot(e, e), 0.0f, 1.0f);
+
+    Vec2 closest = va + w * e;
+
+    return Dist2(localQ, closest) < radius * radius;
 }
 
 inline float Capsule::GetLength() const

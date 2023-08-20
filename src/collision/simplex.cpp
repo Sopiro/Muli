@@ -17,10 +17,10 @@ void Simplex::Advance(const Vec2& q)
     {
         Vec2 a = vertices[0].point;
         Vec2 b = vertices[1].point;
-        UV w{ Dot(q - b, a - b), Dot(q - a, b - a) };
+        Vec2 w{ Dot(q - b, a - b), Dot(q - a, b - a) };
 
         // Region A
-        if (w.v <= 0.0f)
+        if (w.y <= 0.0f)
         {
             count = 1;
             vertices[0].weight = 1.0f;
@@ -29,7 +29,7 @@ void Simplex::Advance(const Vec2& q)
         }
 
         // Region B
-        if (w.u <= 0.0f)
+        if (w.x <= 0.0f)
         {
             count = 1;
             vertices[0] = vertices[1];
@@ -41,8 +41,8 @@ void Simplex::Advance(const Vec2& q)
         // Region AB
 
         count = 2;
-        vertices[0].weight = w.u;
-        vertices[1].weight = w.v;
+        vertices[0].weight = w.x;
+        vertices[1].weight = w.y;
         Vec2 e = b - a;
         divisor = Dot(e, e);
         return;
@@ -53,13 +53,12 @@ void Simplex::Advance(const Vec2& q)
         Vec2 b = vertices[1].point;
         Vec2 c = vertices[2].point;
 
-        // UV wab = ComputeWeights(a, b, q);
-        UV wab{ Dot(q - b, a - b), Dot(q - a, b - a) };
-        UV wbc{ Dot(q - c, b - c), Dot(q - b, c - b) };
-        UV wca{ Dot(q - a, c - a), Dot(q - c, a - c) };
+        Vec2 wab{ Dot(q - b, a - b), Dot(q - a, b - a) };
+        Vec2 wbc{ Dot(q - c, b - c), Dot(q - b, c - b) };
+        Vec2 wca{ Dot(q - a, c - a), Dot(q - c, a - c) };
 
         // Region A
-        if (wca.u <= 0.0f && wab.v <= 0.0f)
+        if (wca.x <= 0.0f && wab.y <= 0.0f)
         {
             count = 1;
             vertices[0].weight = 1.0f;
@@ -68,7 +67,7 @@ void Simplex::Advance(const Vec2& q)
         }
 
         // Region B
-        if (wab.u <= 0.0f && wbc.v <= 0.0f)
+        if (wab.x <= 0.0f && wbc.y <= 0.0f)
         {
             count = 1;
             vertices[0] = vertices[1];
@@ -78,7 +77,7 @@ void Simplex::Advance(const Vec2& q)
         }
 
         // Region C
-        if (wbc.u <= 0.0f && wca.v <= 0.0f)
+        if (wbc.x <= 0.0f && wca.y <= 0.0f)
         {
             count = 1;
             vertices[0] = vertices[2];
@@ -95,37 +94,37 @@ void Simplex::Advance(const Vec2& q)
         float w = Cross(a - q, b - q);
 
         // Region AB
-        if (wab.u > 0.0f && wab.v > 0.0f && w * area <= 0.0f)
+        if (wab.x > 0.0f && wab.y > 0.0f && w * area <= 0.0f)
         {
             count = 2;
-            vertices[0].weight = wab.u;
-            vertices[1].weight = wab.v;
+            vertices[0].weight = wab.x;
+            vertices[1].weight = wab.y;
             Vec2 e = b - a;
             divisor = Dot(e, e);
             return;
         }
 
         // Region BC
-        if (wbc.u > 0.0f && wbc.v > 0.0f && u * area <= 0.0f)
+        if (wbc.x > 0.0f && wbc.y > 0.0f && u * area <= 0.0f)
         {
             count = 2;
             vertices[0] = vertices[1];
             vertices[1] = vertices[2];
-            vertices[0].weight = wbc.u;
-            vertices[1].weight = wbc.v;
+            vertices[0].weight = wbc.x;
+            vertices[1].weight = wbc.y;
             Vec2 e = c - b;
             divisor = Dot(e, e);
             return;
         }
 
         // Region CA
-        if (wca.u > 0.0f && wca.v > 0.0f && v * area <= 0.0f)
+        if (wca.x > 0.0f && wca.y > 0.0f && v * area <= 0.0f)
         {
             count = 2;
             vertices[1] = vertices[0];
             vertices[0] = vertices[2];
-            vertices[0].weight = wca.u;
-            vertices[1].weight = wca.v;
+            vertices[0].weight = wca.x;
+            vertices[1].weight = wca.y;
             Vec2 e = a - c;
             divisor = Dot(e, e);
             return;

@@ -39,9 +39,9 @@ struct Vec2
 
     Vec2() = default;
 
-    constexpr explicit Vec2(float _v)
-        : x{ _v }
-        , y{ _v }
+    constexpr explicit Vec2(float s)
+        : x{ s }
+        , y{ s }
     {
     }
 
@@ -165,10 +165,10 @@ struct Vec3
 
     Vec3() = default;
 
-    constexpr explicit Vec3(float _v)
-        : x{ _v }
-        , y{ _v }
-        , z{ _v }
+    constexpr explicit Vec3(float s)
+        : x{ s }
+        , y{ s }
+        , z{ s }
     {
     }
 
@@ -179,9 +179,9 @@ struct Vec3
     {
     }
 
-    Vec3(const Vec2& _v)
-        : x{ _v.x }
-        , y{ _v.y }
+    Vec3(const Vec2& v)
+        : x{ v.x }
+        , y{ v.y }
         , z{ 0.0f }
     {
     }
