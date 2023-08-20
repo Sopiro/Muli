@@ -207,7 +207,7 @@ void Game::Render()
     Mat4 cameraMatrix = camera.GetCameraMatrix();
 
     renderer.SetViewMatrix(cameraMatrix);
-    renderer.SetPointSize(5.0f);
+    renderer.SetPointSize(4.0f);
     renderer.SetLineWidth(1.0f);
 
     // Draw bodies
@@ -414,17 +414,22 @@ void Game::Render()
 
             for (int32 j = 0; j < m.contactCount; ++j)
             {
-                const Vec2& cp = m.contactPoints[j].position;
+                Vec2 p1 = m.contactPoints[j].position;
 
                 if (options.show_contact_point)
                 {
-                    renderer.DrawPoint(cp);
+                    renderer.DrawPoint(p1);
                 }
                 if (options.show_contact_normal)
                 {
-                    renderer.DrawLine(cp, cp + m.contactNormal * 0.15f);
-                    renderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f + m.contactTangent * 0.02f);
-                    renderer.DrawLine(cp + m.contactNormal * 0.15f, cp + m.contactNormal * 0.13f - m.contactTangent * 0.02f);
+                    Vec2 p2 = p1 + m.contactNormal * 0.15f;
+                    Vec2 t0 = p2 - m.contactNormal * 0.035f;
+                    Vec2 t1 = t0 + m.contactTangent * 0.02f;
+                    Vec2 t2 = t0 - m.contactTangent * 0.02f;
+
+                    renderer.DrawLine(p1, p2);
+                    renderer.DrawLine(p2, t1);
+                    renderer.DrawLine(p2, t2);
                 }
             }
 
