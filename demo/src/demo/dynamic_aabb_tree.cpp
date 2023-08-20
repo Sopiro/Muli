@@ -5,11 +5,11 @@
 namespace muli
 {
 
-static char seed[20] = "wakgood";
-
 class DynamicAABBTree : public Demo
 {
 public:
+    char seed[20] = "wakgood";
+
     DynamicAABBTree(Game& game)
         : Demo(game)
     {
@@ -65,7 +65,7 @@ public:
             }
             if (ImGui::Button("Random generate"))
             {
-                std::string newSeed = std::to_string((int32)LinearRand(0, INT32_MAX));
+                std::string newSeed = std::to_string((int32)RandRange(0, INT32_MAX));
                 memcpy(seed, newSeed.c_str(), sizeof(char) * Min(newSeed.size(), size_t(20)));
 
                 game.RestartDemo();

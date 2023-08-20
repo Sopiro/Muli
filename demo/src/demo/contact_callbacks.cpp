@@ -29,7 +29,7 @@ public:
             {
                 RigidBody* b = world->CreateRandomConvexPolygon(size, 6);
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
-                b->SetLinearVelocity(b->GetPosition() * LinearRand(0.5f, 0.7f));
+                b->SetLinearVelocity(b->GetPosition() * RandRange(0.5f, 0.7f));
             }
         }
 

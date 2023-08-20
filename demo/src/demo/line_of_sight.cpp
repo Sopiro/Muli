@@ -24,7 +24,7 @@ public:
         {
             for (int32 j = 0; j < count; ++j)
             {
-                float r = LinearRand(0.0f, 3.0f);
+                float r = RandRange(0.0f, 3.0f);
                 if (r < 0.5f)
                 {
                     b = world->CreateCircle(0.2f);
@@ -32,7 +32,7 @@ public:
                 else if (r < 1.0f)
                 {
                     b = world->CreateCapsule(0.2f, 0.1f);
-                    b->SetRotation(LinearRand(0.0f, pi));
+                    b->SetRotation(RandRange(0.0f, pi));
                 }
                 else if (r < 2.0f)
                 {

@@ -23,7 +23,7 @@ public:
         for (int32 i = 0; i < count; ++i)
         {
             RigidBody* b = world->CreateBox(size);
-            b->SetPosition(LinearRand(-error, error), start + i * (size + gap));
+            b->SetPosition(RandRange(-error, error), start + i * (size + gap));
         }
 
         t = false;

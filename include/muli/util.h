@@ -4,8 +4,6 @@
 #include "rigidbody.h"
 #include "settings.h"
 
-#include <random>
-
 namespace muli
 {
 
@@ -23,26 +21,55 @@ inline void Free(void* mem)
 
 // Randoms
 
-static std::random_device rd;
-static std::mt19937 g(rd());
-
-inline int32 LinearRand(int32 _min, int32 _max)
+// https://www.pcg-random.org/
+inline uint32 PCGHash(uint32 rngState)
 {
-    std::uniform_int_distribution<int32> ud(_min, _max);
-
-    return ud(g);
+    uint32 state = rngState * 747796405u + 2891336453u;
+    uint32 word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
 }
 
-inline float LinearRand(float _min, float _max)
+inline uint32 Rand(uint32& seed)
 {
-    std::uniform_real_distribution<float> ud(_min, _max);
-
-    return ud(g);
+    seed = PCGHash(seed);
+    return seed;
 }
 
-inline Vec2 LinearRand(Vec2 _min, Vec2 _max)
+inline thread_local uint32 seed = 1234;
+
+inline float Rand()
 {
-    return Vec2{ LinearRand(_min.x, _max.x), LinearRand(_min.y, _max.y) };
+    return Rand(seed) / float(UINT32_MAX);
+}
+
+inline void Srand(uint32 newSeed)
+{
+    seed = newSeed;
+}
+
+inline int32 RandRange(int32 min, int32 max)
+{
+    return min + (max - min) * Rand(seed);
+}
+
+inline float RandRange(float min, float max)
+{
+    return min + (max - min) * Rand();
+}
+
+inline Vec2 RandVec2(Vec2 min, Vec2 max)
+{
+    return Vec2{ RandRange(min.x, max.x), RandRange(min.y, max.y) };
+}
+
+inline Vec3 RandVec3(Vec3 min, Vec3 max)
+{
+    return Vec3{ RandRange(min.x, max.x), RandRange(min.y, max.y), RandRange(min.z, max.z) };
+}
+
+inline Vec4 RandVec4(Vec4 min, Vec4 max)
+{
+    return Vec4{ RandRange(min.x, max.x), RandRange(min.y, max.y), RandRange(min.z, max.z), RandRange(min.w, max.w) };
 }
 
 // Compute CCW Convex hull

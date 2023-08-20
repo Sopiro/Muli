@@ -20,7 +20,7 @@ public:
         int32 count = 10;
         for (int32 i = 0; i < count; ++i)
         {
-            vertices.push_back(LinearRand(Vec2{ -range }, Vec2{ range }));
+            vertices.push_back(RandVec2(Vec2{ -range }, Vec2{ range }));
         }
 
         camera.position.SetZero();

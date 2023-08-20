@@ -23,9 +23,9 @@ public:
         for (int32 i = 0; i < 500; ++i)
         {
             RigidBody* b = world->CreateCircle(r);
-            b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            b->SetRotation(LinearRand(0.0f, pi * 2.0f));
+            b->SetPosition(RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                           RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            b->SetRotation(RandRange(0.0f, pi * 2.0f));
         }
 
         RigidBody* k = world->CreateCapsule(size * 0.9f, 0.15f, true, RigidBody::Type::kinematic_body);

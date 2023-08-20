@@ -67,7 +67,7 @@ public:
             RigidBody* c = world->CreateCircle(0.15f);
             c->SetPosition(-4.0f, 6.0f);
 
-            float r = LinearRand(0.0f, 3.0f);
+            float r = RandRange(0.0f, 3.0f);
 
             if (r < 1.0f)
             {

@@ -128,7 +128,7 @@ public:
         float t1 = game.GetTime();
         if (count < 100 && t0 + 0.3f < t1)
         {
-            CreateRagdoll(LinearRand(-5.0f, 5.0f), 8.0f, 0.2f);
+            CreateRagdoll(RandRange(-5.0f, 5.0f), 8.0f, 0.2f);
             t0 = t1;
             ++count;
         }

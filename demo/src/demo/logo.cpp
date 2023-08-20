@@ -42,13 +42,13 @@ public:
 
         for (int32 i = 0; i < 100; ++i)
         {
-            float size = LinearRand(0.1f, 0.3f);
-            float r = LinearRand(default_radius, 0.06f);
+            float size = RandRange(0.1f, 0.3f);
+            float r = RandRange(default_radius, 0.06f);
 
-            Vec2 pos = LinearRand(Vec2{ -5.0f }, Vec2{ 5.0f });
+            Vec2 pos = RandVec2(Vec2{ -5.0f }, Vec2{ 5.0f });
             pos.y += 30.0f;
 
-            float angle = LinearRand(0.0f, pi);
+            float angle = RandRange(0.0f, pi);
 
             b = world->CreateRandomConvexPolygon(size, 6, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);

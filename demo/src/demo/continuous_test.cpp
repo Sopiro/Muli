@@ -21,9 +21,9 @@ public:
         world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, RigidBody::Type::static_body);
 
         target = world->CreateCapsule(2.8f, 0.05f, true);
-        target->SetPosition(LinearRand(-0.5f, 0.5f), 7.2f);
+        target->SetPosition(RandRange(-0.5f, 0.5f), 7.2f);
         target->SetLinearVelocity(0.0f, -100.0f);
-        target->SetAngularVelocity(LinearRand(-20.0f, 20.0f));
+        target->SetAngularVelocity(RandRange(-20.0f, 20.0f));
         target->SetContinuous(true);
 
         stick = (Capsule*)target->GetColliderList()->GetShape();

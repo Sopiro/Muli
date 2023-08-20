@@ -28,7 +28,7 @@ public:
         c2->ContactListener = this;
 
         b->SetPosition(0.0f, 5.0f);
-        b->SetAngularVelocity(LinearRand(-10.0f, 10.0f));
+        b->SetAngularVelocity(RandRange(-10.0f, 10.0f));
     }
 
     static Demo* Create(Game& game)

@@ -13,7 +13,7 @@ public:
 
         RigidBody* box = world->CreateBox(0.4f);
         box->SetPosition(0.0f, 5.0f);
-        box->SetAngularVelocity(LinearRand(-12.0f, 12.0f));
+        box->SetAngularVelocity(RandRange(-12.0f, 12.0f));
     }
 
     static Demo* Create(Game& game)

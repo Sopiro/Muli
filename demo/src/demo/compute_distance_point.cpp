@@ -25,7 +25,7 @@ public:
         float size = 1.0f;
         float range = size * 0.7f;
 
-        float r = LinearRand(0.0f, 4.0f);
+        float r = RandRange(0.0f, 4.0f);
 
         if (r < 1.0f)
         {
@@ -45,7 +45,7 @@ public:
             b = world->CreateCapsule(size, size / 2.0f);
         }
 
-        b->SetRotation(LinearRand(0.0f, pi));
+        b->SetRotation(RandRange(0.0f, pi));
 
         camera.position.SetZero();
         camera.scale.Set(0.5f);

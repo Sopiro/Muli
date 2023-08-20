@@ -39,7 +39,7 @@ public:
             target->UserData = (void*)((size_t)target->UserData | UserFlag::render_polygon_radius);
             break;
         case 4:
-            target = world->CreateRandomConvexPolygon(0.28f, LinearRand(6, 8));
+            target = world->CreateRandomConvexPolygon(0.28f, RandRange(6, 8));
             break;
 
         default:
@@ -47,7 +47,7 @@ public:
             break;
         }
 
-        target->SetRotation(LinearRand(-pi / 2.0f, pi / 2.0f));
+        target->SetRotation(RandRange(-pi / 2.0f, pi / 2.0f));
         target->SetPosition(-1.0f, 3.0f);
         target->SetContinuous(true);
         target->SetLinearVelocity(100.0f, 0.0f);

@@ -24,7 +24,7 @@ public:
         RigidBody* b;
         for (int32 i = 0; i < 1000; ++i)
         {
-            float random = LinearRand(0.0f, 3.0f);
+            float random = RandRange(0.0f, 3.0f);
             if (random < 1.0f)
             {
                 b = world->CreateRandomConvexPolygon(r, 7);
@@ -38,8 +38,8 @@ public:
                 b = world->CreateCapsule(r * 1.2f, r * 1.2f / 2.0f);
             }
 
-            b->SetPosition(LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           LinearRand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            b->SetPosition(RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                           RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
         }
 
         camera.position = { 0.0f, 0.0f };

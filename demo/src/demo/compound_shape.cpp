@@ -42,14 +42,14 @@ public:
 
         for (int32 i = 0; i < 100; ++i)
         {
-            float w = LinearRand(0.1f, 0.4f);
-            float h = LinearRand(0.1f, 0.4f);
-            float r = LinearRand(0.02f, 0.08f);
+            float w = RandRange(0.1f, 0.4f);
+            float h = RandRange(0.1f, 0.4f);
+            float r = RandRange(0.02f, 0.08f);
 
-            Vec2 pos = LinearRand(Vec2{ -5.0f }, Vec2{ 5.0f });
+            Vec2 pos = RandVec2(Vec2{ -5.0f }, Vec2{ 5.0f });
             pos.y += 15.0f;
 
-            float angle = LinearRand(0.0f, pi);
+            float angle = RandRange(0.0f, pi);
 
             b = world->CreateBox(w, h, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);

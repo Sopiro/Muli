@@ -14,6 +14,8 @@ Game::Game(Application& _app)
         UpdateProjectionMatrix();
     });
 
+    Srand(uint32(std::time(nullptr)));
+
     InitDemo(0);
     // InitDemo(demo_count - 1);
     // InitDemo(42); // Logo

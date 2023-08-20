@@ -29,7 +29,7 @@ public:
 
         Joint* j = world->CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
 
-        bool t = LinearRand(0.0f, 1.0f) > 0.5;
+        bool t = RandRange(0.0f, 1.0f) > 0.5;
 
         int32 count = 12;
         for (int32 i = 1; i < count; ++i)

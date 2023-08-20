@@ -69,7 +69,7 @@ public:
         if (!options.pause && currentTime - lastTime > 0.5f)
         {
             RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
-            c->SetPosition(LinearRand(-5.5f, -3.0f), 7.0f);
+            c->SetPosition(RandRange(-5.5f, -3.0f), 7.0f);
 
             lastTime = currentTime;
         }
