@@ -694,10 +694,10 @@ NodeProxy AABBTree::AllocateNode()
 
         // Grow the node pool
         Node* oldNodes = nodes;
-        nodeCapacity *= 2;
+        nodeCapacity += nodeCapacity / 2;
         nodes = (Node*)muli::Alloc(nodeCapacity * sizeof(Node));
         memcpy(nodes, oldNodes, nodeCount * sizeof(Node));
-        memset(nodes + nodeCount, 0, nodeCount * sizeof(Node));
+        memset(nodes + nodeCount, 0, (nodeCapacity - nodeCount) * sizeof(Node));
         muli::Free(oldNodes);
 
         // Build a linked list for the free list.

@@ -126,9 +126,8 @@ void Demo::EnableBodyCreate()
             b->SetPosition(mStart);
             b->SetContinuous(true);
 
-            Vec2 f = mStart - cursorPos;
-            f *= settings.inv_dt * b->GetMass() * 7.0f;
-            b->SetForce(f);
+            Vec2 v = mStart - cursorPos;
+            b->SetLinearVelocity(v * 7.0f);
             create = false;
         }
     }
