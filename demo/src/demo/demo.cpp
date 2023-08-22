@@ -286,7 +286,9 @@ bool Demo::EnableBodyGrab()
 
     if (cursorJoint)
     {
+        cursorJoint->GetBodyA()->Awake();
         cursorJoint->SetTarget(cursorPos);
+
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
             world->Destroy(cursorJoint);
@@ -327,10 +329,10 @@ bool Demo::EnableAddForce()
         {
             if (ft->GetWorld())
             {
-                Vec2 f = tl - cursorPos;
-                f *= settings.inv_dt * ft->GetMass() * 3.0f;
+                Vec2 i = tl - cursorPos;
+                i *= ft->GetMass() * 3.0f;
 
-                ft->AddForce(mStartLocal, f);
+                ft->ApplyLinearImpulseLocal(mStartLocal, i, true);
             }
 
             ft = nullptr;

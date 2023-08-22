@@ -108,6 +108,15 @@ void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displa
     }
 }
 
+void BroadPhase::Refresh(Collider* collider)
+{
+    NodeProxy node = collider->node;
+    AABB aabb = collider->GetAABB();
+
+    tree.MoveNode(node, aabb, zero_vec2, true);
+    BufferMove(node);
+}
+
 bool BroadPhase::QueryCallback(NodeProxy nodeB, Collider* colliderB)
 {
     if (nodeA == nodeB)

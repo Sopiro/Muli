@@ -74,13 +74,18 @@ void World::Solve()
             continue;
         }
 
-        if (b->flag & RigidBody::flag_sleeping)
+        if (b->IsSleeping() == true)
         {
             ++sleepingBodyCount;
             continue;
         }
 
         if (b->type == RigidBody::Type::static_body)
+        {
+            continue;
+        }
+
+        if (b->IsEnabled() == false)
         {
             continue;
         }
@@ -140,15 +145,20 @@ void World::Solve()
             {
                 Joint* j = je->joint;
 
-                if (j->flagIsland)
+                if (j->flagIsland == true)
+                {
+                    continue;
+                }
+
+                RigidBody* other = je->other;
+
+                if (other->IsEnabled() == false)
                 {
                     continue;
                 }
 
                 island.Add(j);
                 j->flagIsland = true;
-
-                RigidBody* other = je->other;
 
                 if (other->flag & RigidBody::flag_island)
                 {

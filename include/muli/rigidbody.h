@@ -59,8 +59,13 @@ public:
     void Translate(float dx, float dy);
     void Rotate(float a);
 
-    void AddForce(const Vec2& localPosition, const Vec2& force);
-    void Awake();
+    void ApplyForce(const Vec2& worldPoint, const Vec2& force, bool awake);
+    void ApplyForceLocal(const Vec2& localPoint, const Vec2& force, bool awake);
+    void ApplyTorque(float torque, bool awake);
+
+    void ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& linearImpulse, bool awake);
+    void ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec2& linearImpulse, bool awake);
+    void ApplyAngularImpulse(float angularImpulse, bool awake);
 
     float GetMass() const;
     float GetInertia() const;
@@ -83,13 +88,20 @@ public:
     void SetAngularDamping(float angularDamping);
 
     Type GetType() const;
-    bool IsSleeping() const;
+    void SetType(Type type);
 
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
 
     void SetContinuous(bool continuous);
     bool IsContinuous() const;
+
+    void Awake();
+    void Sleep();
+    bool IsSleeping() const;
+
+    void SetEnabled(bool enabled);
+    bool IsEnabled() const;
 
     int32 GetIslandID() const;
     int32 GetIslandIndex() const;
@@ -134,7 +146,6 @@ public:
                                    const Vec2& position = zero_vec2,
                                    float density = default_density,
                                    const Material& material = default_material);
-
     Collider* CreateBoxCollider(float width,
                                 float height,
                                 float radius = default_radius,
@@ -142,14 +153,12 @@ public:
                                 float angle = 0.0f,
                                 float density = default_density,
                                 const Material& material = default_material);
-
     Collider* CreateCapsuleCollider(float length,
                                     float radius,
                                     bool horizontal = false,
                                     const Vec2& position = zero_vec2,
                                     float density = default_density,
                                     const Material& material = default_material);
-
     Collider* CreateCapsuleCollider(const Vec2& p1,
                                     const Vec2& p2,
                                     float radius,
@@ -193,6 +202,7 @@ protected:
         flag_sleeping = 1 << 1,
         flag_fixed_rotation = 1 << 2,
         flag_continuous = 1 << 3,
+        flag_enabled = 1 << 4,
     };
 
     Type type;
@@ -217,10 +227,10 @@ protected:
     Collider* colliderList;
     int32 colliderCount;
 
-    uint16 flag;
-
     int32 islandIndex;
     int32 islandID;
+
+    uint16 flag;
 
     void ResetMassData();
     void SynchronizeTransform();
@@ -360,27 +370,116 @@ inline float RigidBody::GetInertiaLocalOrigin() const
     return inertia + mass * Length2(sweep.localCenter);
 }
 
-inline void RigidBody::Awake()
-{
-    if (type == Type::static_body)
-    {
-        return;
-    }
-
-    resting = 0.0f;
-    flag &= ~flag_sleeping;
-}
-
-inline void RigidBody::AddForce(const Vec2& localPoint, const Vec2& _force)
+inline void RigidBody::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, bool awake)
 {
     if (type != Type::dynamic_body)
     {
         return;
     }
 
-    force += _force;
-    torque += Cross(localPoint - sweep.localCenter, _force);
-    Awake();
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        force += inForce;
+        torque += Cross(worldPoint - sweep.c, inForce);
+    }
+}
+
+inline void RigidBody::ApplyForceLocal(const Vec2& localPoint, const Vec2& inForce, bool awake)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        force += inForce;
+        torque += Cross(localPoint - sweep.localCenter, inForce);
+    }
+}
+
+inline void RigidBody::ApplyTorque(float inTorque, bool awake)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        torque += inTorque;
+    }
+}
+
+inline void RigidBody::ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& impulse, bool awake)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        linearVelocity += invMass * impulse;
+        angularVelocity += invInertia * Cross(worldPoint - sweep.c, impulse);
+    }
+}
+
+inline void RigidBody::ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec2& impulse, bool awake)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        linearVelocity += invMass * impulse;
+        angularVelocity += invInertia * Cross(localPoint - sweep.localCenter, impulse);
+    }
+}
+
+inline void RigidBody::ApplyAngularImpulse(float impulse, bool awake)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    if (awake && IsSleeping())
+    {
+        Awake();
+    }
+
+    if (IsSleeping() == false)
+    {
+        angularVelocity += invInertia * impulse;
+    }
 }
 
 inline const Vec2& RigidBody::GetLinearVelocity() const
@@ -473,11 +572,6 @@ inline RigidBody::Type RigidBody::GetType() const
     return type;
 }
 
-inline bool RigidBody::IsSleeping() const
-{
-    return (flag & flag_sleeping) == flag_sleeping;
-}
-
 inline void RigidBody::SetFixedRotation(bool fixed)
 {
     if (fixed)
@@ -512,6 +606,42 @@ inline void RigidBody::SetContinuous(bool continuous)
 inline bool RigidBody::IsContinuous() const
 {
     return (flag & flag_continuous) == flag_continuous;
+}
+
+inline void RigidBody::Awake()
+{
+    if (type == Type::static_body)
+    {
+        return;
+    }
+
+    resting = 0.0f;
+    flag &= ~flag_sleeping;
+}
+
+inline void RigidBody::Sleep()
+{
+    if (type == Type::static_body)
+    {
+        return;
+    }
+
+    resting = 0.0f;
+    force.SetZero();
+    torque = 0.0f;
+    linearVelocity.SetZero();
+    angularVelocity = 0.0f;
+    flag &= ~flag_sleeping;
+}
+
+inline bool RigidBody::IsSleeping() const
+{
+    return (flag & flag_sleeping) == flag_sleeping;
+}
+
+inline bool RigidBody::IsEnabled() const
+{
+    return (flag & flag_enabled) == flag_enabled;
 }
 
 inline int32 RigidBody::GetIslandID() const

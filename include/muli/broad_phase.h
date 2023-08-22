@@ -20,6 +20,7 @@ public:
     void Add(Collider* collider, const AABB& aabb);
     void Remove(Collider* collider);
     void Update(Collider* collider, const AABB& aabb, const Vec2& displacement);
+    void Refresh(Collider* collider);
 
     bool QueryCallback(NodeProxy node, Collider* collider);
 

@@ -26,9 +26,9 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , angularDamping{ 0.0f }
     , colliderList{ nullptr }
     , colliderCount{ 0 }
-    , flag{ 0 }
     , islandIndex{ 0 }
     , islandID{ 0 }
+    , flag{ flag_enabled }
     , world{ nullptr }
     , contactList{ nullptr }
     , jointList{ nullptr }
@@ -297,6 +297,88 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
     }
 
     return false;
+}
+
+void RigidBody::SetType(Type newType)
+{
+    if (type == newType)
+    {
+        return;
+    }
+
+    type = newType;
+
+    ResetMassData();
+
+    force.SetZero();
+    torque = 0.0f;
+    if (type == Type::static_body)
+    {
+        linearVelocity.SetZero();
+        angularVelocity = 0.0f;
+        sweep.c0 = sweep.c;
+        sweep.a0 = sweep.a;
+        SynchronizeColliders();
+    }
+
+    Awake();
+
+    // Refresh the broad phase contacts
+    ContactEdge* ce = contactList;
+    while (ce)
+    {
+        ContactEdge* ce0 = ce;
+        ce = ce->next;
+        world->contactManager.Destroy(ce0->contact);
+    }
+    contactList = nullptr;
+
+    for (Collider* c = colliderList; c; c = c->next)
+    {
+        world->contactManager.broadPhase.Refresh(c);
+    }
+
+    islandID = 0;
+    islandIndex = 0;
+}
+
+void RigidBody::SetEnabled(bool enabled)
+{
+    if (enabled == IsEnabled())
+    {
+        return;
+    }
+
+    if (enabled)
+    {
+        flag |= flag_enabled;
+
+        for (Collider* c = colliderList; c; c = c->next)
+        {
+            world->contactManager.broadPhase.Add(c, c->GetAABB());
+        }
+    }
+    else
+    {
+        flag &= ~flag_enabled;
+
+        ContactEdge* ce = contactList;
+        while (ce)
+        {
+            ContactEdge* ce0 = ce;
+            ce = ce->next;
+            world->contactManager.Destroy(ce0->contact);
+        }
+        contactList = nullptr;
+
+        for (Collider* c = colliderList; c; c = c->next)
+        {
+            world->contactManager.broadPhase.Remove(c);
+        }
+
+        islandID = 0;
+        islandIndex = 0;
+    }
 }
 
 void RigidBody::SetCollisionFilter(const CollisionFilter& filter) const

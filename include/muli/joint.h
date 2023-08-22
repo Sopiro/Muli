@@ -93,8 +93,12 @@ public:
     bool IsSolid() const;
     Joint::Type GetType() const;
 
-    Joint* GetPrev() const;
-    Joint* GetNext() const;
+    Joint* GetPrev();
+    const Joint* GetPrev() const;
+    Joint* GetNext();
+    const Joint* GetNext() const;
+
+    bool IsEnabled() const;
 
     JointDestroyCallback* OnDestroy;
     void* UserData;
@@ -159,14 +163,29 @@ inline Joint::Type Joint::GetType() const
     return type;
 }
 
-inline Joint* Joint::GetPrev() const
+inline Joint* Joint::GetPrev()
 {
     return prev;
 }
 
-inline Joint* Joint::GetNext() const
+inline const Joint* Joint::GetPrev() const
+{
+    return prev;
+}
+
+inline Joint* Joint::GetNext()
 {
     return next;
+}
+
+inline const Joint* Joint::GetNext() const
+{
+    return next;
+}
+
+inline bool Joint::IsEnabled() const
+{
+    return bodyA->IsEnabled() || bodyB->IsEnabled();
 }
 
 } // namespace muli
