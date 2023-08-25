@@ -14,19 +14,19 @@ class ColliderDestroyCallback;
 class ContactListener;
 typedef int32 NodeProxy;
 
-class Collider final
+class Collider
 {
 public:
     RigidBody* GetBody();
     const RigidBody* GetBody() const;
 
+    Collider* GetNext();
+    const Collider* GetNext() const;
+
     Shape::Type GetType() const;
 
     Shape* GetShape();
     const Shape* GetShape() const;
-
-    const CollisionFilter& GetFilter() const;
-    void SetFilter(const CollisionFilter& filter);
 
     float GetMass() const;
     void SetMass(float mass);
@@ -44,14 +44,18 @@ public:
     float GetSurfaceSpeed() const;
     void SetSurfaceSpeed(float surfaceSpeed);
 
+    const CollisionFilter& GetFilter() const;
+    void SetFilter(const CollisionFilter& filter);
+
+    bool IsEnabled() const;
+    void SetEnabled(bool enabled);
+
     AABB GetAABB() const;
     MassData GetMassData() const;
+
     bool TestPoint(const Vec2& q) const;
     Vec2 GetClosestPoint(const Vec2& q) const;
     bool RayCast(const RayCastInput& input, RayCastOutput* output) const;
-
-    Collider* GetNext();
-    const Collider* GetNext() const;
 
     ColliderDestroyCallback* OnDestroy;
     muli::ContactListener* ContactListener;
@@ -71,15 +75,19 @@ private:
     void Create(Allocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
     void Destroy(Allocator* allocator);
 
+    RigidBody* body;
+    Collider* next;
+
+    Shape* shape;
+
     float density;
 
     Material material;
+    CollisionFilter filter;
 
-    RigidBody* body;
-    Shape* shape;
-
-    Collider* next;
     NodeProxy node;
+
+    bool enabled;
 };
 
 inline RigidBody* Collider::GetBody()
@@ -90,6 +98,16 @@ inline RigidBody* Collider::GetBody()
 inline const RigidBody* Collider::GetBody() const
 {
     return body;
+}
+
+inline Collider* Collider::GetNext()
+{
+    return next;
+}
+
+inline const Collider* Collider::GetNext() const
+{
+    return next;
 }
 
 inline Shape::Type Collider::GetType() const
@@ -181,12 +199,22 @@ inline void Collider::SetSurfaceSpeed(float _surfaceSpeed)
 
 inline const CollisionFilter& Collider::GetFilter() const
 {
-    return material.filter;
+    return filter;
 }
 
 inline void Collider::SetFilter(const CollisionFilter& _filter)
 {
-    material.filter = _filter;
+    filter = _filter;
+}
+
+inline bool Collider::IsEnabled() const
+{
+    return enabled;
+}
+
+inline void Collider::SetEnabled(bool _enabled)
+{
+    enabled = _enabled;
 }
 
 inline AABB Collider::GetAABB() const
@@ -216,16 +244,6 @@ inline Vec2 Collider::GetClosestPoint(const Vec2& q) const
 inline bool Collider::RayCast(const RayCastInput& input, RayCastOutput* output) const
 {
     return shape->RayCast(body->transform, input, output);
-}
-
-inline Collider* Collider::GetNext()
-{
-    return next;
-}
-
-inline const Collider* Collider::GetNext() const
-{
-    return next;
 }
 
 } // namespace muli

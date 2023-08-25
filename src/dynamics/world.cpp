@@ -175,7 +175,7 @@ void World::Solve()
                 other->flag |= RigidBody::flag_island;
             }
 
-            if (t->resting > settings.sleeping_treshold)
+            if (t->resting > settings.sleeping_time)
             {
                 restingBodies++;
             }
@@ -257,6 +257,11 @@ float World::SolveTOI()
             {
                 Collider* colliderA = c->colliderA;
                 Collider* colliderB = c->colliderB;
+
+                if (colliderA->IsEnabled() == false || colliderB->IsEnabled() == false)
+                {
+                    continue;
+                }
 
                 RigidBody* bodyA = colliderA->body;
                 RigidBody* bodyB = colliderB->body;

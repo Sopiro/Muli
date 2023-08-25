@@ -12,7 +12,6 @@ struct Material
     float restitution = default_restitution;
     float restitutionTreshold = default_restitution_treshold;
     float surfaceSpeed = default_surface_speed;
-    CollisionFilter filter{};
 };
 
 constexpr Material default_material{};

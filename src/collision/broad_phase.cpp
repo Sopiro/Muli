@@ -99,7 +99,7 @@ void BroadPhase::Remove(Collider* collider)
 void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
 {
     NodeProxy node = collider->node;
-    bool rested = collider->body->resting > world->settings.sleeping_treshold;
+    bool rested = collider->body->resting > world->settings.sleeping_time;
 
     bool nodeMoved = tree.MoveNode(node, aabb, displacement, rested);
     if (nodeMoved)

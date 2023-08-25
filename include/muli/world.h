@@ -26,7 +26,7 @@
 namespace muli
 {
 
-class World final
+class World
 {
 public:
     World(const WorldSettings& settings);

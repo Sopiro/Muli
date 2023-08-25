@@ -21,7 +21,7 @@ class RayCastAnyCallback;
 class RayCastClosestCallback;
 class BodyDestroyCallback;
 
-class RigidBody final
+class RigidBody
 {
 public:
     enum Type
@@ -198,11 +198,11 @@ protected:
 
     enum
     {
-        flag_island = 1 << 0,
-        flag_sleeping = 1 << 1,
-        flag_fixed_rotation = 1 << 2,
+        flag_enabled = 1 << 0,
+        flag_island = 1 << 1,
+        flag_sleeping = 1 << 2,
         flag_continuous = 1 << 3,
-        flag_enabled = 1 << 4,
+        flag_fixed_rotation = 1 << 4,
     };
 
     Type type;
@@ -224,9 +224,6 @@ protected:
     float linearDamping;
     float angularDamping;
 
-    Collider* colliderList;
-    int32 colliderCount;
-
     int32 islandIndex;
     int32 islandID;
 
@@ -241,13 +238,16 @@ protected:
 private:
     World* world;
 
+    RigidBody* prev;
+    RigidBody* next;
+
+    Collider* colliderList;
+    int32 colliderCount;
+
     ContactEdge* contactList;
     JointEdge* jointList;
 
     float resting;
-
-    RigidBody* prev;
-    RigidBody* next;
 };
 
 inline const Sweep& RigidBody::GetSweep() const

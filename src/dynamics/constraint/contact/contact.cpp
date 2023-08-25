@@ -108,6 +108,11 @@ void Contact::Update()
         if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
         if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
     }
+
+    if (colliderA->IsEnabled() == false || colliderB->IsEnabled() == false)
+    {
+        flag &= ~flag_enabled;
+    }
 }
 
 void Contact::Prepare()

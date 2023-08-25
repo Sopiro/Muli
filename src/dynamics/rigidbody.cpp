@@ -24,17 +24,17 @@ RigidBody::RigidBody(RigidBody::Type _type)
     , invInertia{ 0.0f }
     , linearDamping{ 0.0f }
     , angularDamping{ 0.0f }
-    , colliderList{ nullptr }
-    , colliderCount{ 0 }
     , islandIndex{ 0 }
     , islandID{ 0 }
     , flag{ flag_enabled }
     , world{ nullptr }
+    , prev{ nullptr }
+    , next{ nullptr }
+    , colliderList{ nullptr }
+    , colliderCount{ 0 }
     , contactList{ nullptr }
     , jointList{ nullptr }
     , resting{ 0.0f }
-    , prev{ nullptr }
-    , next{ nullptr }
 {
 }
 

@@ -15,6 +15,7 @@ Collider::Collider()
     , ContactListener{ &defaultListener }
     , next{ nullptr }
     , node{ muliNullNode }
+    , enabled{ true }
 {
 }
 
