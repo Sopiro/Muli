@@ -52,7 +52,7 @@ void Contact::Update()
                                                &manifold);
     // clang-format on
 
-    if (touching)
+    if (touching == true)
     {
         flag |= flag_touching;
     }
@@ -97,16 +97,21 @@ void Contact::Update()
         }
     }
 
-    if (wasTouching == false && touching == true)
+    if (touching == true)
     {
-        if (colliderA->ContactListener) colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
-        if (colliderB->ContactListener) colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
-    }
+        if (wasTouching == false)
+        {
+            if (colliderA->ContactListener) colliderA->ContactListener->OnContactBegin(colliderA, colliderB, this);
+            if (colliderB->ContactListener) colliderB->ContactListener->OnContactBegin(colliderB, colliderA, this);
+        }
+        else
+        {
+            if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
+            if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
+        }
 
-    if (wasTouching == true && touching == true)
-    {
-        if (colliderA->ContactListener) colliderA->ContactListener->OnContactTouching(colliderA, colliderB, this);
-        if (colliderB->ContactListener) colliderB->ContactListener->OnContactTouching(colliderB, colliderA, this);
+        if (colliderA->ContactListener) colliderA->ContactListener->OnPreSolve(colliderA, colliderB, this);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnPreSolve(colliderB, colliderA, this);
     }
 
     if (colliderA->IsEnabled() == false || colliderB->IsEnabled() == false)

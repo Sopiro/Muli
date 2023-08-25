@@ -49,6 +49,8 @@ public:
     const Contact* GetNext() const;
     const Contact* GetPrev() const;
 
+    bool IsTouching() const;
+
     const ContactManifold& GetContactManifold() const;
     int32 GetContactCount() const;
     float GetNormalImpulse(int32 index) const;
@@ -58,7 +60,6 @@ public:
     float GetRestitution() const;
     float GetRestitutionTreshold() const;
     float GetSurfaceSpeed() const;
-    bool IsTouching() const;
 
     void SetEnabled(bool enabled);
     bool IsEnabled() const;
@@ -157,6 +158,11 @@ inline const Contact* Contact::GetNext() const
     return next;
 }
 
+inline bool Contact::IsTouching() const
+{
+    return (flag & flag_touching) == flag_touching;
+}
+
 inline const ContactManifold& Contact::GetContactManifold() const
 {
     return manifold;
@@ -197,11 +203,6 @@ inline float Contact::GetRestitutionTreshold() const
 inline float Contact::GetSurfaceSpeed() const
 {
     return surfaceSpeed;
-}
-
-inline bool Contact::IsTouching() const
-{
-    return (flag & flag_touching) == flag_touching;
 }
 
 inline void Contact::SetEnabled(bool enabled)

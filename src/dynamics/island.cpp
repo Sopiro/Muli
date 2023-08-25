@@ -208,6 +208,17 @@ void Island::Solve()
             break;
         }
     }
+
+    for (int32 i = 0; i < contactCount; ++i)
+    {
+        Contact* contact = contacts[i];
+
+        Collider* colliderA = contact->colliderA;
+        Collider* colliderB = contact->colliderB;
+
+        if (colliderA->ContactListener) colliderA->ContactListener->OnPostSolve(colliderA, colliderB, contact);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnPostSolve(colliderB, colliderA, contact);
+    }
 }
 
 constexpr int32 toi_postion_iteration = 20;
@@ -271,8 +282,16 @@ void Island::SolveTOI(float dt)
 
     for (int32 i = 0; i < contactCount; ++i)
     {
+        Contact* contact = contacts[i];
+
+        Collider* colliderA = contact->colliderA;
+        Collider* colliderB = contact->colliderB;
+
+        if (colliderA->ContactListener) colliderA->ContactListener->OnPostSolve(colliderA, colliderB, contact);
+        if (colliderB->ContactListener) colliderB->ContactListener->OnPostSolve(colliderB, colliderA, contact);
+
         // Restore the impulses of the discrete solver
-        contacts[i]->RestoreImpulses();
+        contact->RestoreImpulses();
     }
 
     for (int32 i = 0; i < bodyCount; ++i)

@@ -51,8 +51,31 @@ public:
     }
 
     virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) override {}
-
     virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) override {}
+    virtual void OnPreSolve(Collider* me, Collider* other, Contact* contact) override {}
+
+    struct ContactRecord
+    {
+        Vec2 pos = { max_value, max_value };
+        Vec2 normal = zero_vec2;
+        float impulse = 0.0f;
+    };
+    ContactRecord rec[100];
+    int32 p = 0;
+
+    virtual void OnPostSolve(Collider* me, Collider* other, Contact* contact) override
+    {
+        const ContactManifold& m = contact->GetContactManifold();
+        for (int32 i = 0; i < m.contactCount; ++i)
+        {
+            ContactRecord r;
+            r.pos = m.contactPoints[i].position;
+            r.normal = m.contactNormal;
+            r.impulse = contact->GetNormalImpulse(i);
+            rec[p++] = r;
+            p = p % 100;
+        }
+    }
 
     void UpdateUI() override
     {
@@ -66,6 +89,24 @@ public:
             }
         }
         ImGui::End();
+
+        for (int32 i = 0; i < 100; ++i)
+        {
+            ContactRecord& r = rec[i];
+
+            Vec2 t = Cross(1.0f, r.normal);
+
+            Vec2 p1 = r.pos;
+            Vec2 p2 = p1 + r.normal * r.impulse * 0.03f;
+            Vec2 t0 = p2 - r.normal * 0.035f;
+            Vec2 t1 = t0 + t * 0.02f;
+            Vec2 t2 = t0 - t * 0.02f;
+
+            renderer.DrawPoint(p1);
+            renderer.DrawLine(p1, p2);
+            renderer.DrawLine(p2, t1);
+            renderer.DrawLine(p2, t2);
+        }
     }
 
     static Demo* Create(Game& game)
