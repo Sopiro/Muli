@@ -25,7 +25,7 @@
   - Constraint islanding and sleeping
   - Stable stacking with 2-contact LCP solver (Block solver)
   - Decoupled position correction iteration
-  - Contact callbacks: begin, touching, end and destroy event
+  - Contact callbacks: begin, touching, end, pre-solve, post-solve and destroy event
   - Physics material: friction, restitution and surface speed
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute and weld
   
