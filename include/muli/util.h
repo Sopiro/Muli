@@ -49,7 +49,7 @@ inline void Srand(uint32 newSeed)
 
 inline int32 RandRange(int32 min, int32 max)
 {
-    return min + (max - min) * Rand();
+    return min + int32((max - min) * Rand());
 }
 
 inline float RandRange(float min, float max)
