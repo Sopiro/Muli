@@ -280,6 +280,17 @@ void Island::SolveTOI(float dt)
     // We don't need position correction
     // Because we solved velocity constraints in a position that is already safe
 
+    for (int32 i = 0; i < bodyCount; ++i)
+    {
+        RigidBody* b = bodies[i];
+
+        b->sweep.c += b->linearVelocity * dt;
+        b->sweep.a += b->angularVelocity * dt;
+        b->SynchronizeTransform();
+    }
+
+    world->settings.warm_starting = warmStartingEnabled;
+
     for (int32 i = 0; i < contactCount; ++i)
     {
         Contact* contact = contacts[i];
@@ -293,17 +304,6 @@ void Island::SolveTOI(float dt)
         // Restore the impulses of the discrete solver
         contact->RestoreImpulses();
     }
-
-    for (int32 i = 0; i < bodyCount; ++i)
-    {
-        RigidBody* b = bodies[i];
-
-        b->sweep.c += b->linearVelocity * dt;
-        b->sweep.a += b->angularVelocity * dt;
-        b->SynchronizeTransform();
-    }
-
-    world->settings.warm_starting = warmStartingEnabled;
 }
 
 } // namespace muli
