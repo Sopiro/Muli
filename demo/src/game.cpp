@@ -60,6 +60,10 @@ void Game::UpdateUI()
     ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
     ImGui::SetNextWindowSize({ 240, 535 }, ImGuiCond_Once);
 
+    static bool collapsed = false;
+    if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT)) collapsed = !collapsed;
+    ImGui::SetNextWindowCollapsed(collapsed, ImGuiCond_None);
+
     if (ImGui::Begin("Muli Engine", NULL))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;
@@ -197,6 +201,10 @@ void Game::UpdateUI()
             ImGui::EndTabBar();
         }
     }
+
+    if (!collapsed && ImGui::IsWindowCollapsed()) collapsed = true;
+    if (collapsed && !ImGui::IsWindowCollapsed()) collapsed = false;
+
     ImGui::End();
 
     demo->UpdateUI();
@@ -251,7 +259,7 @@ void Game::Render()
                 }
                 else
                 {
-                    drawMode.colorIndex = b->GetIslandID() - 1;
+                    drawMode.colorIndex = options.colorize_island ? (b->GetIslandID() - 1) : (b->GetType() - 2);
                     drawMode.fill = true;
                     drawMode.outline = !((size_t)b->UserData & UserFlag::remove_outline);
 
