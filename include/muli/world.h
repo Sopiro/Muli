@@ -54,6 +54,8 @@ public:
 
     // Factory functions for bodies
 
+    RigidBody* DuplicateBody(RigidBody* body);
+
     RigidBody* CreateEmptyBody(RigidBody::Type type = RigidBody::Type::dynamic_body);
     RigidBody* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = default_density);
     RigidBody* CreateCapsule(float length,

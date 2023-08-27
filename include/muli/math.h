@@ -889,7 +889,7 @@ struct Sweep
 
     Vec2 localCenter; // Center of mass relative to the local origin
     Vec2 c0, c;       // World space position relative to the center of mass
-    float a0, a;
+    float a0, a;      // World space rotation
 
     float alpha0;
 };

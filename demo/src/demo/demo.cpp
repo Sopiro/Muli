@@ -89,6 +89,14 @@ void Demo::EnableBodyCreate()
         RigidBody* b = world->CreateCapsule(0.5f, 0.25f);
         b->SetPosition(cursorPos);
     }
+    if (Input::IsKeyDown(GLFW_KEY_4) && targetBody)
+    {
+        RigidBody* b = world->DuplicateBody(targetBody);
+    }
+    if (Input::IsKeyDown(GLFW_KEY_5) && targetBody)
+    {
+        targetBody->Sleep();
+    }
 
     if (!targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {

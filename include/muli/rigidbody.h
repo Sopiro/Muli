@@ -40,24 +40,41 @@ public:
     RigidBody(RigidBody&&) noexcept = delete;
     RigidBody& operator=(RigidBody&&) = delete;
 
-    const Vec2& GetLocalCenter() const;
     const Transform& GetTransform() const;
     void SetTransform(const Transform& transform);
     void SetTransform(const Vec2& pos, float angle);
 
-    const Vec2& GetPosition() const;
-    void SetPosition(const Vec2& pos);
-    void SetPosition(float x, float y);
     const Sweep& GetSweep() const;
+    const Vec2& GetLocalCenter() const;
+
+    const Vec2& GetPosition() const;
+    void SetPosition(const Vec2& position);
+    void SetPosition(float x, float y);
 
     const Rotation& GetRotation() const;
     float GetAngle() const;
     void SetRotation(const Rotation& rotation);
     void SetRotation(float angle);
 
-    void Translate(const Vec2& d);
-    void Translate(float dx, float dy);
-    void Rotate(float a);
+    float GetMass() const;
+    float GetInertia() const;
+    float GetInertiaLocalOrigin() const;
+
+    float GetLinearDamping() const;
+    void SetLinearDamping(float linearDamping);
+    float GetAngularDamping() const;
+    void SetAngularDamping(float angularDamping);
+
+    const Vec2& GetForce() const;
+    void SetForce(const Vec2& force);
+    float GetTorque() const;
+    void SetTorque(float torque);
+
+    const Vec2& GetLinearVelocity() const;
+    void SetLinearVelocity(const Vec2& linearVelocity);
+    void SetLinearVelocity(float vx, float vy);
+    float GetAngularVelocity() const;
+    void SetAngularVelocity(float angularVelocity);
 
     void ApplyForce(const Vec2& worldPoint, const Vec2& force, bool awake);
     void ApplyForceLocal(const Vec2& localPoint, const Vec2& force, bool awake);
@@ -67,25 +84,9 @@ public:
     void ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec2& linearImpulse, bool awake);
     void ApplyAngularImpulse(float angularImpulse, bool awake);
 
-    float GetMass() const;
-    float GetInertia() const;
-    float GetInertiaLocalOrigin() const;
-
-    const Vec2& GetLinearVelocity() const;
-    void SetLinearVelocity(const Vec2& linearVelocity);
-    void SetLinearVelocity(float vx, float vy);
-    float GetAngularVelocity() const;
-    void SetAngularVelocity(float angularVelocity);
-
-    const Vec2& GetForce() const;
-    void SetForce(const Vec2& force);
-    float GetTorque() const;
-    void SetTorque(float torque);
-
-    float GetLinearDamping() const;
-    void SetLinearDamping(float linearDamping);
-    float GetAngularDamping() const;
-    void SetAngularDamping(float angularDamping);
+    void Translate(const Vec2& d);
+    void Translate(float dx, float dy);
+    void Rotate(float a);
 
     Type GetType() const;
     void SetType(Type type);
@@ -96,9 +97,10 @@ public:
     void SetContinuous(bool continuous);
     bool IsContinuous() const;
 
+    void SetSleeping(bool sleeping);
+    bool IsSleeping() const;
     void Awake();
     void Sleep();
-    bool IsSleeping() const;
 
     void SetEnabled(bool enabled);
     bool IsEnabled() const;
@@ -250,16 +252,6 @@ private:
     float resting;
 };
 
-inline const Sweep& RigidBody::GetSweep() const
-{
-    return sweep;
-}
-
-inline const Vec2& RigidBody::GetLocalCenter() const
-{
-    return sweep.localCenter;
-}
-
 inline const Transform& RigidBody::GetTransform() const
 {
     return transform;
@@ -284,14 +276,24 @@ inline void RigidBody::SetTransform(const Vec2& _pos, float _angle)
     SynchronizeColliders();
 }
 
+inline const Sweep& RigidBody::GetSweep() const
+{
+    return sweep;
+}
+
+inline const Vec2& RigidBody::GetLocalCenter() const
+{
+    return sweep.localCenter;
+}
+
 inline const Vec2& RigidBody::GetPosition() const
 {
     return transform.position;
 }
 
-inline void RigidBody::SetPosition(const Vec2& _pos)
+inline void RigidBody::SetPosition(const Vec2& pos)
 {
-    SetPosition(_pos.x, _pos.y);
+    SetPosition(pos.x, pos.y);
 }
 
 inline void RigidBody::SetPosition(float x, float y)
@@ -331,30 +333,6 @@ inline float RigidBody::GetAngle() const
     return sweep.a;
 }
 
-inline void RigidBody::Translate(const Vec2& d)
-{
-    Translate(d.x, d.y);
-}
-
-inline void RigidBody::Translate(float dx, float dy)
-{
-    transform.position.x += dx;
-    transform.position.y += dy;
-    sweep.c = Mul(transform, sweep.localCenter);
-    sweep.c0 = sweep.c;
-
-    SynchronizeColliders();
-}
-
-inline void RigidBody::Rotate(float a)
-{
-    sweep.a += a;
-    sweep.a0 = sweep.a;
-    transform.rotation = sweep.a;
-
-    SynchronizeColliders();
-}
-
 inline float RigidBody::GetMass() const
 {
     return mass;
@@ -368,6 +346,91 @@ inline float RigidBody::GetInertia() const
 inline float RigidBody::GetInertiaLocalOrigin() const
 {
     return inertia + mass * Length2(sweep.localCenter);
+}
+
+inline float RigidBody::GetLinearDamping() const
+{
+    return linearDamping;
+}
+
+inline void RigidBody::SetLinearDamping(float _linearDamping)
+{
+    linearDamping = _linearDamping;
+}
+
+inline float RigidBody::GetAngularDamping() const
+{
+    return angularDamping;
+}
+
+inline void RigidBody::SetAngularDamping(float _angularDamping)
+{
+    angularDamping = _angularDamping;
+}
+
+inline const Vec2& RigidBody::GetForce() const
+{
+    return force;
+}
+
+inline void RigidBody::SetForce(const Vec2& _force)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    force = _force;
+}
+
+inline float RigidBody::GetTorque() const
+{
+    return torque;
+}
+
+inline void RigidBody::SetTorque(float _torque)
+{
+    if (type != Type::dynamic_body)
+    {
+        return;
+    }
+
+    torque = _torque;
+}
+
+inline const Vec2& RigidBody::GetLinearVelocity() const
+{
+    return linearVelocity;
+}
+
+inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
+{
+    SetLinearVelocity(_linearVelocity.x, _linearVelocity.y);
+}
+
+inline void RigidBody::SetLinearVelocity(float vx, float vy)
+{
+    if (type == Type::static_body)
+    {
+        return;
+    }
+
+    linearVelocity.Set(vx, vy);
+}
+
+inline float RigidBody::GetAngularVelocity() const
+{
+    return angularVelocity;
+}
+
+inline void RigidBody::SetAngularVelocity(float _angularVelocity)
+{
+    if (type == Type::static_body)
+    {
+        return;
+    }
+
+    angularVelocity = _angularVelocity;
 }
 
 inline void RigidBody::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, bool awake)
@@ -482,89 +545,28 @@ inline void RigidBody::ApplyAngularImpulse(float impulse, bool awake)
     }
 }
 
-inline const Vec2& RigidBody::GetLinearVelocity() const
+inline void RigidBody::Translate(const Vec2& d)
 {
-    return linearVelocity;
+    Translate(d.x, d.y);
 }
 
-inline void RigidBody::SetLinearVelocity(const Vec2& _linearVelocity)
+inline void RigidBody::Translate(float dx, float dy)
 {
-    SetLinearVelocity(_linearVelocity.x, _linearVelocity.y);
+    transform.position.x += dx;
+    transform.position.y += dy;
+    sweep.c = Mul(transform, sweep.localCenter);
+    sweep.c0 = sweep.c;
+
+    SynchronizeColliders();
 }
 
-inline void RigidBody::SetLinearVelocity(float vx, float vy)
+inline void RigidBody::Rotate(float a)
 {
-    if (type == Type::static_body)
-    {
-        return;
-    }
+    sweep.a += a;
+    sweep.a0 = sweep.a;
+    transform.rotation = sweep.a;
 
-    linearVelocity.Set(vx, vy);
-}
-
-inline float RigidBody::GetAngularVelocity() const
-{
-    return angularVelocity;
-}
-
-inline void RigidBody::SetAngularVelocity(float _angularVelocity)
-{
-    if (type == Type::static_body)
-    {
-        return;
-    }
-
-    angularVelocity = _angularVelocity;
-}
-
-inline const Vec2& RigidBody::GetForce() const
-{
-    return force;
-}
-
-inline void RigidBody::SetForce(const Vec2& _force)
-{
-    if (type != Type::dynamic_body)
-    {
-        return;
-    }
-
-    force = _force;
-}
-
-inline float RigidBody::GetTorque() const
-{
-    return torque;
-}
-
-inline void RigidBody::SetTorque(float _torque)
-{
-    if (type != Type::dynamic_body)
-    {
-        return;
-    }
-
-    torque = _torque;
-}
-
-inline float RigidBody::GetLinearDamping() const
-{
-    return angularDamping;
-}
-
-inline void RigidBody::SetLinearDamping(float _linearDamping)
-{
-    linearDamping = _linearDamping;
-}
-
-inline float RigidBody::GetAngularDamping() const
-{
-    return angularDamping;
-}
-
-inline void RigidBody::SetAngularDamping(float _angularDamping)
-{
-    angularDamping = _angularDamping;
+    SynchronizeColliders();
 }
 
 inline RigidBody::Type RigidBody::GetType() const
@@ -608,6 +610,23 @@ inline bool RigidBody::IsContinuous() const
     return (flag & flag_continuous) == flag_continuous;
 }
 
+inline void RigidBody::SetSleeping(bool sleeping)
+{
+    if (sleeping)
+    {
+        Sleep();
+    }
+    else
+    {
+        Awake();
+    }
+}
+
+inline bool RigidBody::IsSleeping() const
+{
+    return (flag & flag_sleeping) == flag_sleeping;
+}
+
 inline void RigidBody::Awake()
 {
     if (type == Type::static_body)
@@ -626,17 +645,12 @@ inline void RigidBody::Sleep()
         return;
     }
 
-    resting = 0.0f;
+    resting = max_value;
     force.SetZero();
     torque = 0.0f;
     linearVelocity.SetZero();
     angularVelocity = 0.0f;
     flag &= ~flag_sleeping;
-}
-
-inline bool RigidBody::IsSleeping() const
-{
-    return (flag & flag_sleeping) == flag_sleeping;
 }
 
 inline bool RigidBody::IsEnabled() const

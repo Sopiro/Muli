@@ -51,6 +51,10 @@ RigidBody::~RigidBody() noexcept
 Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Material& _material)
 {
     muliAssert(world != nullptr);
+    if (world == nullptr)
+    {
+        return nullptr;
+    }
 
     Allocator* allocator = &world->blockAllocator;
     void* mem = allocator->Allocate(sizeof(Collider));

@@ -924,6 +924,51 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
     return false;
 }
 
+RigidBody* World::DuplicateBody(RigidBody* body)
+{
+    muliAssert(body->world == this);
+    if (body->world != this)
+    {
+        return nullptr;
+    }
+
+    RigidBody* b = CreateEmptyBody(body->GetType());
+
+    for (Collider* collider = body->colliderList; collider; collider = collider->next)
+    {
+        Collider* c = b->CreateCollider(collider->GetShape(), collider->GetDensity(), collider->GetMaterial());
+
+        c->SetFilter(collider->GetFilter());
+        c->SetEnabled(collider->IsEnabled());
+
+        c->OnDestroy = collider->OnDestroy;
+        c->ContactListener = collider->ContactListener;
+    }
+
+    b->SetTransform(body->transform);
+
+    b->SetLinearVelocity(body->linearVelocity);
+    b->SetAngularDamping(body->angularVelocity);
+
+    b->SetForce(body->force);
+    b->SetTorque(body->torque);
+
+    b->SetLinearDamping(body->linearDamping);
+    b->SetAngularDamping(body->angularDamping);
+
+    b->SetFixedRotation(body->IsRotationFixed());
+    b->SetContinuous(body->IsContinuous());
+    b->SetSleeping(body->IsSleeping());
+    b->resting = body->resting;
+
+    b->SetEnabled(body->IsEnabled());
+
+    b->OnDestroy = body->OnDestroy;
+    b->UserData = body->UserData;
+
+    return b;
+}
+
 RigidBody* World::CreateEmptyBody(RigidBody::Type type)
 {
     void* mem = blockAllocator.Allocate(sizeof(RigidBody));
@@ -954,6 +999,7 @@ RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density
 
     Circle circle{ radius };
     b->CreateCollider(&circle, density);
+
     return b;
 }
 
@@ -963,6 +1009,7 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
 
     Capsule capsule{ length, radius, horizontal };
     b->CreateCollider(&capsule, density);
+
     return b;
 }
 
@@ -1013,6 +1060,7 @@ RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, flo
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     Polygon box{ vertices, 4, true, radius };
     b->CreateCollider(&box, density);
+
     return b;
 }
 
@@ -1050,6 +1098,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, density);
+
     return b;
 }
 
@@ -1081,6 +1130,7 @@ RigidBody* World::CreateRegularPolygon(
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, density);
+
     return b;
 }
 
