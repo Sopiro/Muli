@@ -40,7 +40,7 @@ inline std::unique_ptr<Application> Application::Create(int32 width, int32 heigh
 {
     muliAssert(app == nullptr);
 
-    Application::app = new Application(width, height, title);
+    Application::app = new Application(width, height, std::move(title));
     return std::unique_ptr<Application>(app);
 }
 

@@ -1239,8 +1239,8 @@ LineJoint* World::CreateLineJoint(
 
 LineJoint* World::CreateLineJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    return CreateLineJoint(bodyA, bodyB, bodyA->GetPosition(), (bodyB->GetPosition() - bodyA->GetPosition()).Normalized(),
-                           frequency, dampingRatio, jointMass);
+    return CreateLineJoint(bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency,
+                           dampingRatio, jointMass);
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
@@ -1261,7 +1261,7 @@ PrismaticJoint* World::CreatePrismaticJoint(
 PrismaticJoint* World::CreatePrismaticJoint(
     RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    return CreatePrismaticJoint(bodyA, bodyB, bodyB->GetPosition(), (bodyB->GetPosition() - bodyA->GetPosition()).Normalized(),
+    return CreatePrismaticJoint(bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()),
                                 frequency, dampingRatio, jointMass);
 }
 

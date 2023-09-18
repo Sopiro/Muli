@@ -20,12 +20,12 @@ LineJoint::LineJoint(RigidBody* _bodyA,
 
     if (_dir.Length2() < epsilon)
     {
-        Vec2 d = MulT(bodyA->GetRotation(), (_bodyB->GetPosition() - _bodyA->GetPosition()).Normalized());
+        Vec2 d = MulT(bodyA->GetRotation(), Normalize(_bodyB->GetPosition() - _bodyA->GetPosition()));
         localYAxis = Cross(1.0f, d);
     }
     else
     {
-        localYAxis = MulT(bodyA->GetRotation(), Cross(1.0f, _dir.Normalized()));
+        localYAxis = MulT(bodyA->GetRotation(), Cross(1.0f, Normalize(_dir)));
     }
 }
 

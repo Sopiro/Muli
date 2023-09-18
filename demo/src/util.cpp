@@ -105,7 +105,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
 
         Vec2 v1 = c->GetVertexA();
         Vec2 v2 = c->GetVertexB();
-        Vec2 normal = Cross(1.0f, v2 - v1).Normalized();
+        Vec2 normal = Normalize(Cross(1.0f, v2 - v1));
         float r = c->GetRadius();
 
         float angleOffset = AngleBetween(Vec2{ 0.0f, 1.0f }, normal);

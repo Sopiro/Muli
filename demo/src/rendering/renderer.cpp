@@ -104,7 +104,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
-            Vec2 normal = Cross(1.0f, vb - va).Normalized();
+            Vec2 normal = Normalize(Cross(1.0f, vb - va));
 
             Vec2 gva = Mul(tf, va);
             Vec2 gvb = Mul(tf, vb);
@@ -281,7 +281,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
-            Vec2 normal = Cross(1.0f, vb - va).Normalized();
+            Vec2 normal = Normalize(Cross(1.0f, vb - va));
 
             Vec2 gva = Mul(tf, va);
             Vec2 gvb = Mul(tf, vb);
@@ -453,7 +453,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
-            Vec2 normal = Cross(1.0f, vb - va).Normalized();
+            Vec2 normal = Normalize(Cross(1.0f, vb - va));
 
             Vec2 gva = Mul(tf, va);
             Vec2 gvb = Mul(tf, vb);

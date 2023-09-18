@@ -220,7 +220,7 @@ bool RayCastCircle(const Vec2& p, float r, const RayCastInput& input, RayCastOut
     if (0.0f <= t && t <= input.maxFraction)
     {
         output->fraction = t;
-        output->normal = (f + d * t).Normalized();
+        output->normal = Normalize(f + d * t);
 
         return true;
     }
@@ -320,7 +320,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = (f + d * t).Normalized();
+                output->normal = Normalize(f + d * t);
                 return true;
             }
             else
@@ -353,7 +353,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = (f + d * t).Normalized();
+                output->normal = Normalize(f + d * t);
                 return true;
             }
             else
@@ -425,7 +425,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = (f + d * t).Normalized();
+            output->normal = Normalize(f + d * t);
             return true;
         }
         else
@@ -457,7 +457,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = (f + d * t).Normalized();
+            output->normal = Normalize(f + d * t);
             return true;
         }
         else

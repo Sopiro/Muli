@@ -24,7 +24,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
     {
         center += vertices[i0];
-        normals[i0] = Cross(vertices[i1] - vertices[i0], 1.0f).Normalized();
+        normals[i0] = Normalize(Cross(vertices[i1] - vertices[i0], 1.0f));
 
         i0 = i1;
     }
@@ -132,7 +132,7 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
         {
             if (dir > 0)
             {
-                normal = (localQ - v0).Normalized();
+                normal = Normalize(localQ - v0);
                 float distance = Dot(localQ - v0, normal);
                 if (distance > radius)
                 {
@@ -152,7 +152,7 @@ Vec2 Polygon::GetClosestPoint(const Transform& transform, const Vec2& q) const
         {
             if (dir < 0)
             {
-                normal = (localQ - v1).Normalized();
+                normal = Normalize(localQ - v1);
                 float distance = Dot(localQ - v1, normal);
                 if (distance > radius)
                 {
@@ -485,7 +485,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+                output->normal = Mul(transform.rotation, Normalize(f + d * t));
                 return true;
             }
             else
@@ -516,7 +516,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+                output->normal = Mul(transform.rotation, Normalize(f + d * t));
                 return true;
             }
             else

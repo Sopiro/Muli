@@ -70,7 +70,7 @@ Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
     }
     else // Region AB
     {
-        normal = Cross(1.0f, vb - va).Normalized();
+        normal = Normalize(Cross(1.0f, vb - va));
         distance = Dot(localQ - va, normal);
 
         if (Dot(normal, localQ - va) < 0.0f)
@@ -140,7 +140,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+                output->normal = Mul(transform.rotation, Normalize(f + d * t));
                 return true;
             }
             else
@@ -173,7 +173,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
             if (0.0f <= t && t <= input.maxFraction)
             {
                 output->fraction = t;
-                output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+                output->normal = Mul(transform.rotation, Normalize(f + d * t));
                 return true;
             }
             else
@@ -245,7 +245,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+            output->normal = Mul(transform.rotation, Normalize(f + d * t));
             return true;
         }
         else
@@ -277,7 +277,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         if (0.0f <= t && t <= input.maxFraction)
         {
             output->fraction = t;
-            output->normal = Mul(transform.rotation, (f + d * t).Normalized());
+            output->normal = Mul(transform.rotation, Normalize(f + d * t));
             return true;
         }
         else

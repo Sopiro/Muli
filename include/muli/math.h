@@ -142,14 +142,6 @@ struct Vec2
         return length;
     }
 
-    // Optimized to not check length == 0
-    Vec2 Normalized() const
-    {
-        float invLength = 1.0f / Length();
-
-        return Vec2{ x * invLength, y * invLength };
-    }
-
     // Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
     // return cross(1, *this);
     Vec2 Skew() const
@@ -272,31 +264,17 @@ struct Vec3
         return x * x + y * y + z * z;
     }
 
-    void Normalize()
+    float Normalize()
     {
         float length = Length();
-        if (length < epsilon)
-        {
-            return;
-        }
+        assert(length > 0.0f);
 
         float invLength = 1.0f / length;
         x *= invLength;
         y *= invLength;
         z *= invLength;
-    }
 
-    Vec3 Normalized() const
-    {
-        float length = Length();
-        if (length < epsilon)
-        {
-            return Vec3{ 0.0f, 0.0f, 0.0f };
-        }
-
-        float invLength = 1.0f / length;
-
-        return Vec3{ x * invLength, y * invLength, z * invLength };
+        return length;
     }
 };
 constexpr Vec3 zero_vec3{ 0.0f };
@@ -487,6 +465,8 @@ struct Quat
     float Normalize()
     {
         float length = Length();
+        assert(length > 0.0f);
+
         float invLength = 1.0f / length;
         x *= invLength;
         y *= invLength;
@@ -494,19 +474,6 @@ struct Quat
         w *= invLength;
 
         return length;
-    }
-
-    Quat Normalized() const
-    {
-        float length = Length();
-        if (length < epsilon)
-        {
-            return Quat{ 0.0f, 0.0f, 0.0f, 0.0f };
-        }
-
-        float invLength = 1.0f / length;
-
-        return Quat{ x * invLength, y * invLength, z * invLength, w * invLength };
     }
 
     Quat GetConjugate() const
@@ -971,11 +938,6 @@ inline float Length2(const Vec2& v)
     return v.Length2();
 }
 
-inline Vec2 Normalize(const Vec2& v)
-{
-    return v.Normalized();
-}
-
 // Vec2 functions end
 
 // Vec3 functions begin
@@ -1080,6 +1042,13 @@ inline Vec4 operator/(const Vec4& v, float s)
 }
 
 // Vec4 functions end
+
+template <typename T>
+inline T Normalize(const T& v)
+{
+    float invLength = 1.0f / v.Length();
+    return v * invLength;
+}
 
 // Mat2 functions begin
 

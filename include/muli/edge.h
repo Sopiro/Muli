@@ -45,7 +45,7 @@ inline void Edge::ComputeProperty()
     }
     else
     {
-        dir = (p2.position - p1.position).Normalized();
+        dir = Normalize(p2.position - p1.position);
     }
 
     normal = Cross(1.0f, dir);

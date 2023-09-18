@@ -39,8 +39,11 @@ Quat::Quat(const Vec3& dir, const Vec3& up)
     Mat3 rotation;
 
     rotation.ez = -dir;
-    rotation.ex = Cross(up, rotation.ez).Normalized();
+    rotation.ex = Cross(up, rotation.ez);
+    rotation.ex.Normalize();
     rotation.ey = Cross(rotation.ez, rotation.ex);
+
+    *this = Quat{ rotation };
 }
 
 Mat3 Mat3::Scale(float x, float y)

@@ -17,7 +17,7 @@ PolytopeEdge Polytope::GetClosestEdge() const
         Vec2& v1 = vertices[i1];
         Vec2 edge = v1 - v0;
 
-        Vec2 normal = Cross(edge, 1.0f).Normalized();
+        Vec2 normal = Normalize(Cross(edge, 1.0f));
         float distance = Dot(normal, v0);
 
         if (distance < 0)

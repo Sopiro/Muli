@@ -52,7 +52,7 @@ bool Circle::RayCast(const Transform& transform, const RayCastInput& input, RayC
     if (0.0f <= t && t <= input.maxFraction)
     {
         output->fraction = t;
-        output->normal = (f + d * t).Normalized();
+        output->normal = Normalize(f + d * t);
 
         return true;
     }

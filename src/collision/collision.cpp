@@ -86,7 +86,7 @@ end:
     float distance = Length(closest);
 
     result->simplex = simplex;
-    result->direction = direction.Normalized();
+    result->direction = Normalize(direction);
     result->distance = distance;
 
     return distance < gjk_tolerance;
@@ -269,7 +269,7 @@ bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
     }
     else // Region AB
     {
-        normal = Cross(1.0f, l).Normalized();
+        normal = Normalize(Cross(1.0f, l));
         distance = Dot(ap, normal);
         if (distance < 0.0f)
         {
@@ -424,7 +424,7 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
         case 1: // vertex vs. vertex collision
             if (gjkResult.distance < radii)
             {
-                Vec2 normal = (origin - simplex.vertices[0].point).Normalized();
+                Vec2 normal = Normalize(origin - simplex.vertices[0].point);
 
                 ContactPoint supportA = simplex.vertices[0].pointA;
                 ContactPoint supportB = simplex.vertices[0].pointB;
@@ -448,7 +448,7 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
         case 2: // vertex vs. edge collision
             if (gjkResult.distance < radii)
             {
-                Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+                Vec2 normal = Normalize(Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point));
                 Vec2 k = origin - simplex.vertices[0].point;
                 if (Dot(normal, k) < 0)
                 {
@@ -485,7 +485,7 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
 
         case 2:
         {
-            Vec2 normal = Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point).Normalized();
+            Vec2 normal = Normalize(Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point));
             SupportPoint support = CSOSupport(a, tfA, b, tfB, normal);
 
             if (simplex.vertices[0].point == support.point || simplex.vertices[1].point == support.point)
