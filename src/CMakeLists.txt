@@ -57,6 +57,7 @@ set(HEADER_FILES
     ../include/muli/muli.h
     ../include/muli/math.h
     ../include/muli/types.h
+    ../include/muli/random.h
 )
 
 set(SOURCE_FILES
@@ -72,6 +73,7 @@ set(SOURCE_FILES
     collision/distance.cpp
     collision/time_of_impact.cpp
 
+    collision/aabb.cpp
     collision/aabb_tree.cpp
     collision/broad_phase.cpp
 

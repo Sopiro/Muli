@@ -1,7 +1,6 @@
 #pragma once
 
 #include "collision_filter.h"
-#include "common.h"
 #include "material.h"
 #include "predefined_block_allocator.h"
 #include "rigidbody.h"

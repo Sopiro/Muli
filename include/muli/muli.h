@@ -2,8 +2,6 @@
 
 // clang-format off
 
-#include "common.h"
-
 #include "world.h"
 #include "rigidbody.h"
 #include "collider.h"

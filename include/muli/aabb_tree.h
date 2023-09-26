@@ -3,7 +3,6 @@
 #include "aabb.h"
 #include "collider.h"
 #include "collision.h"
-#include "common.h"
 #include "growable_array.h"
 #include "settings.h"
 
@@ -25,29 +24,29 @@ inline float SAH(const AABB& aabb)
 typedef int32 NodeProxy;
 typedef Collider Data;
 
-struct Node
-{
-    bool IsLeaf() const
-    {
-        return child1 == muliNullNode;
-    }
-
-    int32 id;
-    AABB aabb;
-
-    NodeProxy parent;
-    NodeProxy child1;
-    NodeProxy child2;
-
-    NodeProxy next;
-    bool moved;
-
-    Data* data; // user data
-};
-
 class AABBTree
 {
 public:
+    struct Node
+    {
+        bool IsLeaf() const
+        {
+            return child1 == muliNullNode;
+        }
+
+        int32 id;
+        AABB aabb;
+
+        NodeProxy parent;
+        NodeProxy child1;
+        NodeProxy child2;
+
+        NodeProxy next;
+        bool moved;
+
+        Data* data; // user data
+    };
+
     AABBTree();
     ~AABBTree() noexcept;
 

@@ -393,7 +393,7 @@ void Game::Render()
     if (options.show_bvh || options.show_aabb)
     {
         const AABBTree& tree = world.GetDynamicTree();
-        tree.Traverse([&](const Node* n) -> void {
+        tree.Traverse([&](const AABBTree::Node* n) -> void {
             if (options.show_bvh == false && n->IsLeaf() == false)
             {
                 return;

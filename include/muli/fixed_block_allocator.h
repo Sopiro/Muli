@@ -1,6 +1,6 @@
 #pragma once
 
-#include "block_allocator.h"
+#include "allocator.h"
 #include "common.h"
 
 namespace muli

@@ -5,24 +5,12 @@
 namespace muli
 {
 
-struct Block
-{
-    Block* next;
-};
-
-struct Chunk
-{
-    int32 blockSize;
-    Block* blocks;
-    Chunk* next;
-};
-
-constexpr int32 max_block_size = 1024;
-constexpr int32 block_unit = 8;
-constexpr int32 block_size_count = max_block_size / block_unit;
-
 class BlockAllocator : public Allocator
 {
+    inline static constexpr int32 max_block_size = 1024;
+    inline static constexpr int32 block_unit = 8;
+    inline static constexpr int32 block_size_count = max_block_size / block_unit;
+
 public:
     BlockAllocator();
     ~BlockAllocator();

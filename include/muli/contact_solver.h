@@ -7,17 +7,17 @@ namespace muli
 
 class Contact;
 
-struct Jacobian
-{
-    Vec2 va;  // -normal
-    float wa; // -ra × normal
-    Vec2 vb;  //  normal
-    float wb; //  rb × normal
-};
-
 class ContactSolver
 {
 public:
+    struct Jacobian
+    {
+        Vec2 va;  // -normal
+        float wa; // -ra × normal
+        Vec2 vb;  //  normal
+        float wb; //  rb × normal
+    };
+
     enum Type
     {
         normal,

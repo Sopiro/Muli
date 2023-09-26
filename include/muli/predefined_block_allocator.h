@@ -5,9 +5,6 @@
 namespace muli
 {
 
-struct Chunk;
-struct Block;
-
 constexpr int32 predefined_block_size_count = 16;
 
 class PredefinedBlockAllocator : public Allocator

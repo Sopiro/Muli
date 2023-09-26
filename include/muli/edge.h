@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "contact_point.h"
 
 namespace muli

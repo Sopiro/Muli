@@ -95,7 +95,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 
 #if 1
     NodeProxy bestSibling = root;
-    float bestCost = SAH(Union(nodes[root].aabb, aabb));
+    float bestCost = SAH(AABB::Union(nodes[root].aabb, aabb));
 
     // Candidate node with inherited cost
     struct Candidate
@@ -113,7 +113,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         float inheritedCost = stack.Back().inheritedCost;
         stack.PopBack();
 
-        AABB combined = Union(nodes[current].aabb, aabb);
+        AABB combined = AABB::Union(nodes[current].aabb, aabb);
         float directCost = SAH(combined);
 
         float cost = directCost + inheritedCost;
@@ -145,7 +145,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         NodeProxy child2 = nodes[bestSibling].child2;
 
         float area = SAH(nodes[bestSibling].aabb);
-        AABB combined = Union(nodes[bestSibling].aabb, aabb);
+        AABB combined = AABB::Union(nodes[bestSibling].aabb, aabb);
         float combinedArea = SAH(combined);
 
         float cost = combinedArea;
@@ -154,11 +154,11 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         float cost1;
         if (nodes[child1].IsLeaf())
         {
-            cost1 = SAH(Union(nodes[child1].aabb, aabb)) + inheritanceCost;
+            cost1 = SAH(AABB::Union(nodes[child1].aabb, aabb)) + inheritanceCost;
         }
         else
         {
-            float newArea = SAH(Union(nodes[child1].aabb, aabb));
+            float newArea = SAH(AABB::Union(nodes[child1].aabb, aabb));
             float oldArea = SAH(nodes[child1].aabb);
             cost1 = (newArea - oldArea) + inheritanceCost; // Lower bound cost required when descending down to child1
         }
@@ -166,11 +166,11 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         float cost2;
         if (nodes[child2].IsLeaf())
         {
-            cost2 = SAH(Union(nodes[child2].aabb, aabb)) + inheritanceCost;
+            cost2 = SAH(AABB::Union(nodes[child2].aabb, aabb)) + inheritanceCost;
         }
         else
         {
-            float newArea = SAH(Union(nodes[child2].aabb, aabb));
+            float newArea = SAH(AABB::Union(nodes[child2].aabb, aabb));
             float oldArea = SAH(nodes[child2].aabb);
             cost2 = (newArea - oldArea) + inheritanceCost; // Lower bound cost required when descending down to child2
         }
@@ -194,7 +194,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     // Create a new parent
     NodeProxy oldParent = nodes[bestSibling].parent;
     NodeProxy newParent = AllocateNode();
-    nodes[newParent].aabb = Union(aabb, nodes[bestSibling].aabb);
+    nodes[newParent].aabb = AABB::Union(aabb, nodes[bestSibling].aabb);
     nodes[newParent].data = nullptr;
     nodes[newParent].parent = oldParent;
 
@@ -230,7 +230,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         NodeProxy child1 = nodes[ancestor].child1;
         NodeProxy child2 = nodes[ancestor].child2;
 
-        nodes[ancestor].aabb = Union(nodes[child1].aabb, nodes[child2].aabb);
+        nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
 
         Rotate(ancestor);
 
@@ -280,7 +280,7 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
             NodeProxy child1 = nodes[ancestor].child1;
             NodeProxy child2 = nodes[ancestor].child2;
 
-            nodes[ancestor].aabb = Union(nodes[child1].aabb, nodes[child2].aabb);
+            nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
 
             ancestor = nodes[ancestor].parent;
         }
@@ -392,14 +392,14 @@ void AABBTree::Rotate(NodeProxy node)
     float costDiffs[4];
     float nodeArea = SAH(nodes[node].aabb);
 
-    costDiffs[0] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb)) - nodeArea;
-    costDiffs[1] = SAH(Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb)) - nodeArea;
+    costDiffs[0] = SAH(AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb)) - nodeArea;
+    costDiffs[1] = SAH(AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb)) - nodeArea;
 
     if (nodes[sibling].IsLeaf() == false)
     {
         float siblingArea = SAH(nodes[sibling].aabb);
-        costDiffs[2] = SAH(Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb)) - siblingArea;
-        costDiffs[3] = SAH(Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb)) - siblingArea;
+        costDiffs[2] = SAH(AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb)) - siblingArea;
+        costDiffs[3] = SAH(AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb)) - siblingArea;
 
         count += 2;
     }
@@ -431,7 +431,7 @@ void AABBTree::Rotate(NodeProxy node)
             nodes[node].child2 = sibling;
             nodes[sibling].parent = node;
 
-            nodes[node].aabb = Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb);
+            nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb);
             break;
         case 1: // Swap(sibling, node->child1);
             if (nodes[parent].child1 == sibling)
@@ -444,7 +444,7 @@ void AABBTree::Rotate(NodeProxy node)
             nodes[node].child1 = sibling;
             nodes[sibling].parent = node;
 
-            nodes[node].aabb = Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb);
+            nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb);
             break;
         case 2: // Swap(node, sibling->child2);
             if (nodes[parent].child1 == node)
@@ -457,7 +457,7 @@ void AABBTree::Rotate(NodeProxy node)
             nodes[sibling].child2 = node;
             nodes[node].parent = sibling;
 
-            nodes[sibling].aabb = Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb);
+            nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb);
             break;
         case 3: // Swap(node, sibling->child1);
             if (nodes[parent].child1 == node)
@@ -470,7 +470,7 @@ void AABBTree::Rotate(NodeProxy node)
             nodes[sibling].child1 = node;
             nodes[node].parent = sibling;
 
-            nodes[sibling].aabb = Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb);
+            nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb);
             break;
         }
     }
@@ -777,7 +777,7 @@ void AABBTree::Rebuild()
             {
                 AABB aabbJ = nodes[leaves[j]].aabb;
 
-                AABB combined = Union(aabbI, aabbJ);
+                AABB combined = AABB::Union(aabbI, aabbJ);
                 float cost = SAH(combined);
 
                 if (cost < minCost)
@@ -800,7 +800,7 @@ void AABBTree::Rebuild()
 
         parent->child1 = index1;
         parent->child2 = index2;
-        parent->aabb = Union(child1->aabb, child2->aabb);
+        parent->aabb = AABB::Union(child1->aabb, child2->aabb);
         parent->parent = muliNullNode;
 
         child1->parent = parentIndex;

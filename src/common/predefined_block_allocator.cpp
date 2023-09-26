@@ -1,5 +1,4 @@
 #include "muli/predefined_block_allocator.h"
-#include "muli/block_allocator.h"
 
 namespace muli
 {

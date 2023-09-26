@@ -6,6 +6,18 @@
 namespace muli
 {
 
+struct Block
+{
+    Block* next;
+};
+
+struct Chunk
+{
+    int32 blockSize;
+    Block* blocks;
+    Chunk* next;
+};
+
 class Allocator
 {
 public:

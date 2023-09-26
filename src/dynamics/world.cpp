@@ -3,6 +3,7 @@
 #include "muli/circle.h"
 #include "muli/island.h"
 #include "muli/polygon.h"
+#include "muli/random.h"
 #include "muli/time_of_impact.h"
 
 namespace muli

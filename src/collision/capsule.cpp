@@ -45,6 +45,54 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
     }
 }
 
+void Capsule::ComputeMass(float density, MassData* outMassData) const
+{
+    outMassData->mass = density * area;
+
+    float height = radius * 2.0f;
+    float invArea = 1.0f / area;
+
+    float inertia;
+
+    float rectArea = length * height;
+    float rectInertia = (length * length + height * height) / 12.0f;
+
+    inertia = rectInertia * rectArea * invArea;
+
+    float circleArea = pi * radius * radius;
+    float halfCircleInertia = ((pi / 4.0f) - 8.0f / (9.0f * pi)) * radius * radius * radius * radius;
+    float dist2 = length * 0.5f + (4.0f * radius) / (pi * 3.0f);
+    dist2 *= dist2;
+
+    inertia += (halfCircleInertia + (circleArea * 0.5f) * dist2) * 2.0f * invArea;
+
+    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
+    outMassData->centerOfMass = center;
+}
+
+void Capsule::ComputeAABB(const Transform& transform, AABB* outAABB) const
+{
+    Vec2 v1 = Mul(transform, va);
+    Vec2 v2 = Mul(transform, vb);
+
+    outAABB->min = Min(v1, v2) - Vec2{ radius, radius };
+    outAABB->max = Max(v1, v2) + Vec2{ radius, radius };
+}
+
+bool Capsule::TestPoint(const Transform& transform, const Vec2& q) const
+{
+    Vec2 localQ = MulT(transform, q);
+
+    Vec2 d = localQ - va;
+    Vec2 e = vb - va;
+
+    float w = Clamp(Dot(d, e) / Dot(e, e), 0.0f, 1.0f);
+
+    Vec2 closest = va + w * e;
+
+    return Dist2(localQ, closest) < radius * radius;
+}
+
 Vec2 Capsule::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);

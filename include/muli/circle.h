@@ -59,28 +59,4 @@ inline int32 Circle::GetSupport(const Vec2& localDir) const
     return 0;
 }
 
-inline void Circle::ComputeMass(float density, MassData* outMassData) const
-{
-    outMassData->mass = density * area;
-    float inertia = 0.5f * radius * radius;
-    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
-    outMassData->centerOfMass = center;
-}
-
-inline void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
-{
-    Vec2 p = Mul(transform, center);
-
-    outAABB->min = Vec2{ p.x - radius, p.y - radius };
-    outAABB->max = Vec2{ p.x + radius, p.y + radius };
-}
-
-inline bool Circle::TestPoint(const Transform& transform, const Vec2& q) const
-{
-    Vec2 localQ = MulT(transform, q);
-    Vec2 d = center - localQ;
-
-    return Dot(d, d) <= radius * radius;
-}
-
 } // namespace muli

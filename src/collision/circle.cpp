@@ -10,6 +10,30 @@ Circle::Circle(float _radius, const Vec2& _center)
     center = _center;
 }
 
+inline void Circle::ComputeMass(float density, MassData* outMassData) const
+{
+    outMassData->mass = density * area;
+    float inertia = 0.5f * radius * radius;
+    outMassData->inertia = outMassData->mass * (inertia + Length2(center));
+    outMassData->centerOfMass = center;
+}
+
+inline void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
+{
+    Vec2 p = Mul(transform, center);
+
+    outAABB->min = Vec2{ p.x - radius, p.y - radius };
+    outAABB->max = Vec2{ p.x + radius, p.y + radius };
+}
+
+inline bool Circle::TestPoint(const Transform& transform, const Vec2& q) const
+{
+    Vec2 localQ = MulT(transform, q);
+    Vec2 d = center - localQ;
+
+    return Dot(d, d) <= radius * radius;
+}
+
 Vec2 Circle::GetClosestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 position = Mul(transform, center);

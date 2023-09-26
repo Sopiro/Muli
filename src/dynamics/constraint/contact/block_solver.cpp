@@ -14,8 +14,8 @@ void BlockSolver::Prepare(Contact* contact)
 
     c = contact;
 
-    Jacobian j1 = c->normalSolvers[0].j;
-    Jacobian j2 = c->normalSolvers[1].j;
+    ContactSolver::Jacobian j1 = c->normalSolvers[0].j;
+    ContactSolver::Jacobian j2 = c->normalSolvers[1].j;
 
     float imA = c->b1->invMass;
     float imB = c->b2->invMass;
@@ -84,8 +84,8 @@ void BlockSolver::Solve()
     ContactSolver* nc1 = &c->normalSolvers[0];
     ContactSolver* nc2 = &c->normalSolvers[1];
 
-    Jacobian j1 = nc1->j;
-    Jacobian j2 = nc2->j;
+    ContactSolver::Jacobian j1 = nc1->j;
+    ContactSolver::Jacobian j2 = nc2->j;
 
     Vec2 a{ nc1->impulse, nc2->impulse }; // old total impulse
     muliAssert(a.x >= 0.0f && a.y >= 0.0f);

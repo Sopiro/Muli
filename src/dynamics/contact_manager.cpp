@@ -217,7 +217,7 @@ void ContactManager::UpdateCollider(Collider* collider, const Transform& tf0, co
     aabb1.min += prediction;
     aabb1.max += prediction;
 
-    broadPhase.Update(collider, Union(aabb0, aabb1), prediction);
+    broadPhase.Update(collider, AABB::Union(aabb0, aabb1), prediction);
 }
 
 } // namespace muli
