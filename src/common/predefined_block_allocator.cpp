@@ -23,7 +23,7 @@ namespace muli
 // Weld joint       : 240
 
 // Predefined block sizes
-static constexpr int32 block_sizes[predefined_block_size_count] = {
+static constexpr int32 block_sizes[PredefinedBlockAllocator::block_size_count] = {
     16,  // 0
     32,  // 1
     64,  // 2
@@ -44,7 +44,7 @@ static constexpr int32 block_sizes[predefined_block_size_count] = {
 };
 
 static constexpr int32 chunk_size = 16 * 1024;
-static constexpr int32 max_predefined_block_size = block_sizes[predefined_block_size_count - 1];
+static constexpr int32 max_block_size = block_sizes[PredefinedBlockAllocator::block_size_count - 1];
 
 struct SizeMap
 {
@@ -52,7 +52,7 @@ struct SizeMap
     {
         int32 j = 0;
         values[0] = 0;
-        for (int32 i = 1; i <= max_predefined_block_size; ++i)
+        for (int32 i = 1; i <= max_block_size; ++i)
         {
             if (i <= block_sizes[j])
             {
@@ -66,7 +66,7 @@ struct SizeMap
         }
     }
 
-    int32 values[max_predefined_block_size + 1];
+    int32 values[max_block_size + 1];
 };
 
 static const SizeMap size_map;
@@ -90,14 +90,14 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     {
         return nullptr;
     }
-    if (size > max_predefined_block_size)
+    if (size > max_block_size)
     {
         muliAssert(false);
         return muli::Alloc(size);
     }
 
     int32 index = size_map.values[size];
-    muliAssert(0 <= index && index <= predefined_block_size_count);
+    muliAssert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
@@ -139,16 +139,16 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         return;
     }
 
-    if (size > max_predefined_block_size)
+    if (size > max_block_size)
     {
         muli::Free(p);
         return;
     }
 
-    muliAssert(0 < size && size <= max_predefined_block_size);
+    muliAssert(0 < size && size <= max_block_size);
 
     int32 index = size_map.values[size];
-    muliAssert(0 <= index && index <= predefined_block_size_count);
+    muliAssert(0 <= index && index <= block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.

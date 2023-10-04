@@ -22,10 +22,10 @@ public:
     void SetFrameRate(int32 frameRate);
     void Run();
 
-    Vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 1.0f };
+    Vec4 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f, 255.0f / 255.0f };
 
 private:
-    inline static Application* app = nullptr;
+    static inline Application* app = nullptr;
 
     Application(int32 width, int32 height, std::string title);
     void Update(float dt);
@@ -40,7 +40,7 @@ inline std::unique_ptr<Application> Application::Create(int32 width, int32 heigh
 {
     muliAssert(app == nullptr);
 
-    Application::app = new Application(width, height, std::move(title));
+    app = new Application(width, height, std::move(title));
     return std::unique_ptr<Application>(app);
 }
 

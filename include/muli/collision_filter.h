@@ -12,7 +12,7 @@ struct CollisionFilter
     uint32 mask = 0xffffffff;
 };
 
-constexpr CollisionFilter default_collision_filter;
+constexpr CollisionFilter default_collision_filter{};
 
 inline bool EvaluateFilter(const CollisionFilter& filterA, const CollisionFilter& filterB)
 {

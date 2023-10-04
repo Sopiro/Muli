@@ -49,7 +49,7 @@ private:
     static void OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos);
     static void OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset);
 
-    inline static Window* window;
+    static inline Window* window = nullptr;
 };
 
 inline Window& Window::Get()
@@ -77,10 +77,11 @@ inline void Window::OnKeyEvent(GLFWwindow* glfwWindow, int32 key, int32 scancode
     switch (action)
     {
     case GLFW_PRESS:
-        Input::currKeys[key] = true;
+        Input::curr_keys[key] = true;
         break;
     case GLFW_RELEASE:
-        Input::currKeys[key] = false;
+        Input::curr_keys[key] = false;
+        break;
     }
 }
 
@@ -93,10 +94,11 @@ inline void Window::OnMouseButton(GLFWwindow* glfwWindow, int32 button, int32 ac
     switch (action)
     {
     case GLFW_PRESS:
-        Input::currBtns[button] = true;
+        Input::curr_btns[button] = true;
         break;
     case GLFW_RELEASE:
-        Input::currBtns[button] = false;
+        Input::curr_btns[button] = false;
+        break;
     }
 }
 
@@ -109,16 +111,16 @@ inline void Window::OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos
 {
     ImGui_ImplGlfw_CursorPosCallback(glfwWindow, xpos, ypos);
 
-    Input::currMousePos.x = static_cast<float>(xpos);
-    Input::currMousePos.y = static_cast<float>(ypos);
+    Input::curr_mouse_pos.x = static_cast<float>(xpos);
+    Input::curr_mouse_pos.y = static_cast<float>(ypos);
 }
 
 inline void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_ScrollCallback(glfwWindow, xoffset, yoffset);
 
-    Input::mouseScroll.x = static_cast<float>(xoffset);
-    Input::mouseScroll.y = static_cast<float>(yoffset);
+    Input::mouse_scroll.x = static_cast<float>(xoffset);
+    Input::mouse_scroll.y = static_cast<float>(yoffset);
 }
 
 inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback)

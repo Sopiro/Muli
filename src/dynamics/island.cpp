@@ -221,9 +221,9 @@ void Island::Solve()
     }
 }
 
-constexpr int32 toi_postion_iteration = 20;
-constexpr int32 toi_index_1 = 0;
-constexpr int32 toi_index_2 = 1;
+static constexpr int32 toi_postion_iteration = 20;
+static constexpr int32 toi_index_1 = 0;
+static constexpr int32 toi_index_2 = 1;
 
 void Island::SolveTOI(float dt)
 {

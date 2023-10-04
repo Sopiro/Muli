@@ -5,11 +5,11 @@
 namespace muli
 {
 
-constexpr int32 predefined_block_size_count = 16;
-
 class PredefinedBlockAllocator : public Allocator
 {
 public:
+    static constexpr inline int32 block_size_count = 16;
+
     PredefinedBlockAllocator();
     ~PredefinedBlockAllocator();
 
@@ -25,7 +25,7 @@ private:
     int32 chunkCount;
 
     Chunk* chunks;
-    Block* freeList[predefined_block_size_count];
+    Block* freeList[block_size_count];
 };
 
 inline int32 PredefinedBlockAllocator::GetBlockCount() const

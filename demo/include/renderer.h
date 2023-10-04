@@ -6,21 +6,6 @@
 namespace muli
 {
 
-static bool initialized = false;
-
-static constexpr int32 circle_count = 12;
-static constexpr int32 quater_count = circle_count / 4;
-static std::array<Vec2, circle_count> unit_circle;
-
-static constexpr int32 color_count = 10;
-static std::array<Vec4, color_count> colors;
-
-static constexpr Vec4 color_transparent{ 0.0f, 0.0f, 0.0f, 0.0f };
-static constexpr Vec4 color_white{ 1.0f, 1.0f, 1.0f, 0.8f };
-static constexpr Vec4 default_color{ 0.0f, 0.0f, 0.0f, 1.0f };
-
-static constexpr int32 max_vertex_count = 1024 * 3;
-
 struct Vertex
 {
     Vec2 point;
@@ -30,6 +15,21 @@ struct Vertex
 // Batch renderer
 class Renderer final
 {
+    static inline bool initialized = false;
+
+    static constexpr inline int32 circle_count = 12;
+    static constexpr inline int32 quater_count = circle_count / 4;
+    static inline std::array<Vec2, circle_count> unit_circle;
+
+    static constexpr inline int32 color_count = 10;
+    static inline std::array<Vec4, color_count> colors;
+
+    static constexpr inline int32 max_vertex_count = 1024 * 3;
+
+    static constexpr inline Vec4 color_transparent{ 0.0f, 0.0f, 0.0f, 0.0f };
+    static constexpr inline Vec4 color_white{ 1.0f, 1.0f, 1.0f, 0.8f };
+    static constexpr inline Vec4 default_color{ 0.0f, 0.0f, 0.0f, 1.0f };
+
 public:
     Renderer();
     virtual ~Renderer();

@@ -3,8 +3,6 @@
 namespace muli
 {
 
-static constexpr int32 chunk_size = 16 * 1024;
-
 BlockAllocator::BlockAllocator()
     : blockCount{ 0 }
     , chunkCount{ 0 }

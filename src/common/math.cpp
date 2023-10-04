@@ -127,12 +127,12 @@ Mat3 Mat3::GetInverse() const
 
 Mat4::Mat4(const Transform& t)
 {
-    float angle = t.rotation.GetAngle();
-
     constexpr float sinX = 0.0f;
     constexpr float cosX = 1.0f;
     constexpr float sinY = 0.0f;
     constexpr float cosY = 1.0f;
+
+    float angle = t.rotation.GetAngle();
     float sinZ = sinf(angle);
     float cosZ = cosf(angle);
 

@@ -20,17 +20,17 @@ public:
     void Draw(GLenum drawMode = GL_TRIANGLES) const;
 
 private:
-    bool moved = false;
-
     std::vector<Vec3> vertices;
     std::vector<Vec2> texCoords;
     std::vector<int32> indices;
 
+    GLuint VAO;
     GLuint VBOv;
     GLuint VBOt;
-    GLuint VAO;
     GLuint EBOt;
     GLuint EBOl;
+
+    bool moved = false;
 };
 
 } // namespace muli

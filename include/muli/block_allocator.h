@@ -7,9 +7,11 @@ namespace muli
 
 class BlockAllocator : public Allocator
 {
-    inline static constexpr int32 max_block_size = 1024;
-    inline static constexpr int32 block_unit = 8;
-    inline static constexpr int32 block_size_count = max_block_size / block_unit;
+    static constexpr inline int32 chunk_size = 16 * 1024; // 16kb
+
+    static constexpr inline int32 max_block_size = 1024;
+    static constexpr inline int32 block_unit = 8;
+    static constexpr inline int32 block_size_count = max_block_size / block_unit;
 
 public:
     BlockAllocator();

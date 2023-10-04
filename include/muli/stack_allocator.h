@@ -5,9 +5,6 @@
 namespace muli
 {
 
-constexpr int32 stack_size = 100 * 1024;
-constexpr int32 max_stack_entries = 32;
-
 struct StackEntry
 {
     int8* data;
@@ -19,6 +16,9 @@ struct StackEntry
 // You muse nest allocate/free pairs
 class StackAllocator : public Allocator
 {
+    static constexpr inline int32 stack_size = 100 * 1024;
+    static constexpr inline int32 max_stack_entries = 32;
+
 public:
     StackAllocator();
     ~StackAllocator();

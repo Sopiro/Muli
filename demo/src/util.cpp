@@ -156,7 +156,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     }
 }
 
-inline static int32 GetNext(std::unordered_set<int32>& done, int32 i, int32 count, int32 step = 1)
+static inline int32 GetNext(std::unordered_set<int32>& done, int32 i, int32 count, int32 step = 1)
 {
     int32 i1 = (i + step) % count;
 

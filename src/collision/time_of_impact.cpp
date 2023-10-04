@@ -221,7 +221,7 @@ struct SeparationFunction
     Vec2 axis;
 };
 
-constexpr int32 max_iteration = 20;
+static constexpr int32 max_iteration = 20;
 
 void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB, Sweep sweepB, float tMax, TOIOutput* output)
 {

@@ -27,82 +27,82 @@ public:
 private:
     friend class Window;
 
-    inline static std::array<bool, GLFW_KEY_LAST + 1> lastKeys;
-    inline static std::array<bool, GLFW_KEY_LAST + 1> currKeys;
+    static inline std::array<bool, GLFW_KEY_LAST + 1> last_keys;
+    static inline std::array<bool, GLFW_KEY_LAST + 1> curr_keys;
 
-    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> lastBtns;
-    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currBtns;
+    static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> last_btns;
+    static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> curr_btns;
 
-    inline static Vec2 currMousePos{ 0.0f };
-    inline static Vec2 lastMousePos{ 0.0f };
-    inline static Vec2 mouseAcceleration{ 0.0f };
+    static inline Vec2 curr_mouse_pos{ 0.0f };
+    static inline Vec2 last_mouse_pos{ 0.0f };
+    static inline Vec2 mouse_acceleration{ 0.0f };
 
-    inline static Vec2 mouseScroll{ 0.0f };
+    static inline Vec2 mouse_scroll{ 0.0f };
 };
 
 inline void Input::Init()
 {
-    lastKeys.fill(false);
-    currKeys.fill(false);
+    last_keys.fill(false);
+    curr_keys.fill(false);
 
-    lastBtns.fill(false);
-    currBtns.fill(false);
+    last_btns.fill(false);
+    curr_btns.fill(false);
 }
 
 inline void Input::Update()
 {
-    lastKeys = currKeys;
-    lastBtns = currBtns;
+    last_keys = curr_keys;
+    last_btns = curr_btns;
 
-    mouseAcceleration = currMousePos - lastMousePos;
-    lastMousePos = currMousePos;
+    mouse_acceleration = curr_mouse_pos - last_mouse_pos;
+    last_mouse_pos = curr_mouse_pos;
 
-    mouseScroll.SetZero();
+    mouse_scroll.SetZero();
 }
 
 inline bool Input::IsKeyDown(int32 key)
 {
-    return currKeys[key];
+    return curr_keys[key];
 }
 
 inline bool Input::IsKeyPressed(int32 key)
 {
-    return currKeys[key] && !lastKeys[key];
+    return curr_keys[key] && !last_keys[key];
 }
 
 inline bool Input::IsKeyReleased(int32 key)
 {
-    return !currKeys[key] && lastKeys[key];
+    return !curr_keys[key] && last_keys[key];
 }
 
 inline bool Input::IsMouseDown(int32 button)
 {
-    return currBtns[button];
+    return curr_btns[button];
 }
 
 inline bool Input::IsMousePressed(int32 button)
 {
-    return currBtns[button] && !lastBtns[button];
+    return curr_btns[button] && !last_btns[button];
 }
 
 inline bool Input::IsMouseReleased(int32 button)
 {
-    return !currBtns[button] && lastBtns[button];
+    return !curr_btns[button] && last_btns[button];
 }
 
 inline Vec2 Input::GetMousePosition()
 {
-    return currMousePos;
+    return curr_mouse_pos;
 }
 
 inline Vec2 Input::GetMouseAcceleration()
 {
-    return mouseAcceleration;
+    return mouse_acceleration;
 }
 
 inline Vec2 Input::GetMouseScroll()
 {
-    return mouseScroll;
+    return mouse_scroll;
 }
 
 } // namespace muli
