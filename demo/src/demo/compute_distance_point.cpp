@@ -19,8 +19,8 @@ public:
         options.show_contact_normal = true;
         options.show_contact_point = true;
         settings.apply_gravity = false;
-        settings.velocity_iterations = 0;
-        settings.position_iterations = 0;
+        settings.step.velocity_iterations = 0;
+        settings.step.position_iterations = 0;
 
         float size = 1.0f;
         float range = size * 0.7f;

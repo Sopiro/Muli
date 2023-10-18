@@ -54,7 +54,7 @@ void MotorJoint::Prepare()
     m0 = k0.GetInverse();
     m1 = 1.0f / k1;
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
@@ -62,10 +62,10 @@ void MotorJoint::Prepare()
     bias0 = pb - pa + linearOffset;
     bias1 = bodyB->sweep.a - bodyA->sweep.a - angleOffset - angularOffset;
 
-    bias0 *= beta * settings.inv_dt;
-    bias1 *= beta * settings.inv_dt;
+    bias0 *= beta * step.inv_dt;
+    bias1 *= beta * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(linearImpulseSum, angularImpulseSum);
     }
@@ -77,7 +77,7 @@ void MotorJoint::SolveVelocityConstraints()
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     Vec2 jv0 =
         (bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra));
@@ -88,7 +88,7 @@ void MotorJoint::SolveVelocityConstraints()
 
     // Clamp linear impulse
     {
-        float maxLinearImpulse = maxForce * settings.dt;
+        float maxLinearImpulse = maxForce * step.dt;
         Vec2 oldLinearImpulse = linearImpulseSum;
         linearImpulseSum += lambda0;
 
@@ -103,7 +103,7 @@ void MotorJoint::SolveVelocityConstraints()
 
     // Clamp angular impulse
     {
-        float maxAngularImpulse = maxTorque * settings.dt;
+        float maxAngularImpulse = maxTorque * step.dt;
         float oldAngularImpulse = angularImpulseSum;
         angularImpulseSum += lambda1;
 

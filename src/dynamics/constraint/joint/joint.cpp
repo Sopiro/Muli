@@ -49,12 +49,12 @@ void Joint::ComputeBetaAndGamma()
     }
     else
     {
-        const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+        const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
         float omega = 2.0f * pi * frequency;
         float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
         float k = jointMass * omega * omega;               // Spring constant
-        float h = settings.dt;
+        float h = step.dt;
 
         beta = h * k / (d + h * k);
         gamma = 1.0f / ((d + h * k) * h);

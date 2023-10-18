@@ -6,7 +6,6 @@
 namespace muli
 {
 
-struct WorldSettings;
 class Joint;
 class JointDestroyCallback;
 

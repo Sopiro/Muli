@@ -6,8 +6,6 @@
 namespace muli
 {
 
-struct WorldSettings;
-
 class RevoluteJoint : public Joint
 {
 public:

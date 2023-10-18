@@ -64,15 +64,15 @@ void PrismaticJoint::Prepare()
 
     m = k.GetInverse();
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     float error0 = Dot(d, t);
     float error1 = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
 
     bias.Set(error0, error1);
-    bias *= beta * settings.inv_dt;
+    bias *= beta * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

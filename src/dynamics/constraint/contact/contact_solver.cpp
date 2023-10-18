@@ -43,7 +43,7 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
 #endif
 
         // Position correction by velocity steering
-        // bias += -position_correction * settings.inv_dt * Max(c->manifold.penetrationDepth - linear_slop, 0.0f);
+        // bias += -position_correction * settings.step.inv_dt * Max(c->manifold.penetrationDepth - linear_slop, 0.0f);
     }
     else
     {
@@ -59,7 +59,7 @@ void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type
 
     m = k > 0.0f ? 1.0f / k : 0.0f;
 
-    if (settings.warm_starting)
+    if (settings.step.warm_starting)
     {
         // Warm start
         c->b1->linearVelocity += j.va * (c->b1->invMass * impulse);

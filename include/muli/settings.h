@@ -60,14 +60,21 @@ constexpr float default_joint_mass = 1.0f;
 // Exceeding this limit allocates polygon vertices on the heap.
 constexpr int32 max_local_polygon_vertices = 8;
 
+struct Timestep
+{
+    int32 velocity_iterations = 8;
+    int32 position_iterations = 3;
+
+    bool warm_starting = true;
+    float dt;
+    float inv_dt;
+};
+
 // Simulation settings
 struct WorldSettings
 {
     bool apply_gravity = true;
     Vec2 gravity{ 0.0f, -10.0f };
-
-    int32 velocity_iterations = 8;
-    int32 position_iterations = 3;
 
     bool sleeping = true;
     float sleeping_time = 0.5f;                                                 // second
@@ -79,9 +86,7 @@ struct WorldSettings
 
     AABB world_bounds{ Vec2{ -max_value, -max_value }, Vec2{ max_value, max_value } };
 
-    mutable bool warm_starting = true;
-    mutable float dt;
-    mutable float inv_dt;
+    mutable Timestep step;
 };
 
 } // namespace muli

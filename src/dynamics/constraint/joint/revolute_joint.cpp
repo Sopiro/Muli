@@ -38,15 +38,15 @@ void RevoluteJoint::Prepare()
 
     m = k.GetInverse();
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 
     Vec2 error = pb - pa;
-    bias = error * beta * settings.inv_dt;
+    bias = error * beta * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

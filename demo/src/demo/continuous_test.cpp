@@ -36,8 +36,8 @@ public:
         if (drawTrajectory)
         {
             Transform t = target->GetTransform();
-            t.rotation = t.rotation.GetAngle() + target->GetAngularVelocity() * settings.dt;
-            t.position += target->GetLinearVelocity() * settings.dt;
+            t.rotation = t.rotation.GetAngle() + target->GetAngularVelocity() * settings.step.dt;
+            t.position += target->GetLinearVelocity() * settings.step.dt;
 
             Renderer::DrawMode drawMode;
             drawMode.fill = false;

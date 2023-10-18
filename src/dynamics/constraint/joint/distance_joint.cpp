@@ -49,12 +49,12 @@ void DistanceJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     float error = currentLength - length;
-    bias = error * settings.inv_dt;
+    bias = error * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

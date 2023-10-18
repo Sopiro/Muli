@@ -493,7 +493,7 @@ float World::SolveTOI()
         }
 
         // step the rest time
-        float dt = (1.0f - minAlpha) * settings.dt;
+        float dt = (1.0f - minAlpha) * settings.step.dt;
         island.SolveTOI(dt);
 
         // Reset island flags and synchronize broad-phase collider node
@@ -544,10 +544,10 @@ float World::SolveTOI()
 
 float World::Step(float dt)
 {
-    settings.dt = dt;
-    settings.inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
+    settings.step.dt = dt;
+    settings.step.inv_dt = dt > 0.0f ? 1.0f / dt : 0.0f;
 
-    if (settings.inv_dt == 0.0f)
+    if (settings.step.inv_dt == 0.0f)
     {
         return 0.0f;
     }

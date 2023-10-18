@@ -31,7 +31,9 @@ Island::~Island()
 void Island::Solve()
 {
     bool awakeIsland = false;
-    float dt = world->settings.dt;
+
+    const WorldSettings& settings = world->settings;
+    const Timestep& step = settings.step;
 
     // Integrate velocities, yield tentative velocities that possibly violate the constraint
     for (int32 i = 0; i < bodyCount; ++i)
@@ -56,23 +58,23 @@ void Island::Solve()
             b->flag &= ~RigidBody::flag_sleeping;
         }
 
-        if ((b->angularVelocity * b->angularVelocity > world->settings.rest_angular_tolerance) ||
-            (Dot(b->linearVelocity, b->linearVelocity) > world->settings.rest_linear_tolerance) ||
-            (b->torque * b->torque > 0.0f) || (Dot(b->force, b->force) > 0.0f))
+        if ((b->angularVelocity * b->angularVelocity > settings.rest_angular_tolerance) ||
+            (Dot(b->linearVelocity, b->linearVelocity) > settings.rest_linear_tolerance) || (b->torque * b->torque > 0.0f) ||
+            (Dot(b->force, b->force) > 0.0f))
         {
             muliAssert(sleeping == false);
             awakeIsland = true;
         }
         else
         {
-            b->resting += dt;
+            b->resting += step.dt;
         }
 
         if (b->type == RigidBody::Type::dynamic_body)
         {
             // Integrate velocites
-            b->linearVelocity += b->invMass * dt * (b->force + world->settings.apply_gravity * world->settings.gravity * b->mass);
-            b->angularVelocity += b->invInertia * dt * b->torque;
+            b->linearVelocity += b->invMass * step.dt * (b->force + settings.apply_gravity * settings.gravity * b->mass);
+            b->angularVelocity += b->invInertia * step.dt * b->torque;
 
             /*
                Apply damping (found in box2d)
@@ -90,8 +92,8 @@ void Island::Solve()
                Pade approximation:
                v2 = v1 * 1 / (1 + c * dt)
             */
-            b->linearVelocity *= 1.0f / (1.0f + b->linearDamping * dt);
-            b->angularVelocity *= 1.0f / (1.0f + b->angularDamping * dt);
+            b->linearVelocity *= 1.0f / (1.0f + b->linearDamping * step.dt);
+            b->angularVelocity *= 1.0f / (1.0f + b->angularDamping * step.dt);
         }
     }
 
@@ -107,7 +109,7 @@ void Island::Solve()
 
     // Iteratively solve the violated velocity constraints
     // Solving contacts backward converge fast
-    for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
+    for (int32 i = 0; i < step.velocity_iterations; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -147,8 +149,8 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->sweep.c += b->linearVelocity * world->settings.dt;
-        b->sweep.a += b->angularVelocity * world->settings.dt;
+        b->sweep.c += b->linearVelocity * step.dt;
+        b->sweep.a += b->angularVelocity * step.dt;
 
         if (world->settings.world_bounds.TestPoint(b->GetPosition()) == false)
         {
@@ -157,7 +159,7 @@ void Island::Solve()
     }
 
     // Solve position constraints
-    for (int32 i = 0; i < world->settings.position_iterations; ++i)
+    for (int32 i = 0; i < world->settings.step.position_iterations; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;
@@ -227,8 +229,8 @@ static constexpr int32 toi_index_2 = 1;
 
 void Island::SolveTOI(float dt)
 {
-    bool warmStartingEnabled = world->settings.warm_starting;
-    world->settings.warm_starting = false;
+    bool warmStartingEnabled = world->settings.step.warm_starting;
+    world->settings.step.warm_starting = false;
 
     for (int32 i = 0; i < contactCount; ++i)
     {
@@ -258,7 +260,7 @@ void Island::SolveTOI(float dt)
     bodies[toi_index_2]->sweep.c0 = bodies[toi_index_2]->sweep.c;
     bodies[toi_index_2]->sweep.a0 = bodies[toi_index_2]->sweep.a;
 
-    for (int32 i = 0; i < world->settings.velocity_iterations; ++i)
+    for (int32 i = 0; i < world->settings.step.velocity_iterations; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
@@ -289,7 +291,7 @@ void Island::SolveTOI(float dt)
         b->SynchronizeTransform();
     }
 
-    world->settings.warm_starting = warmStartingEnabled;
+    world->settings.step.warm_starting = warmStartingEnabled;
 
     for (int32 i = 0; i < contactCount; ++i)
     {

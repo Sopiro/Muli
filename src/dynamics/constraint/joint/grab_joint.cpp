@@ -36,12 +36,12 @@ void GrabJoint::Prepare()
 
     m = k.GetInverse();
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     Vec2 error = p - target;
-    bias = error * beta * settings.inv_dt;
+    bias = error * beta * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

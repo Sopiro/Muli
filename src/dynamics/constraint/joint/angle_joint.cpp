@@ -26,12 +26,12 @@ void AngleJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
-    bias = error * beta * settings.inv_dt;
+    bias = error * beta * step.inv_dt;
 
-    if (settings.warm_starting)
+    if (step.warm_starting)
     {
         ApplyImpulse(impulseSum);
     }

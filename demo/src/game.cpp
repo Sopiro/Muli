@@ -137,17 +137,13 @@ void Game::UpdateUI()
                     ImGui::Text("Constraint solve iterations");
                     {
                         ImGui::SetNextItemWidth(120);
-                        int32 velIterations = settings.velocity_iterations;
-                        ImGui::SliderInt("Velocity", &velIterations, 0, 50);
-                        settings.velocity_iterations = velIterations;
+                        ImGui::SliderInt("Velocity", &settings.step.velocity_iterations, 0, 50);
 
                         ImGui::SetNextItemWidth(120);
-                        int32 posIterations = settings.position_iterations;
-                        ImGui::SliderInt("Position", &posIterations, 0, 50);
-                        settings.position_iterations = posIterations;
+                        ImGui::SliderInt("Position", &settings.step.position_iterations, 0, 50);
                     }
                     ImGui::Checkbox("Contact block solve", &block_solve);
-                    ImGui::Checkbox("Warm starting", &settings.warm_starting);
+                    ImGui::Checkbox("Warm starting", &settings.step.warm_starting);
                     ImGui::Checkbox("Sleeping", &settings.sleeping);
                     ImGui::Checkbox("Continuous", &settings.continuous);
                     ImGui::Checkbox("Sub-stepping", &settings.sub_stepping);
