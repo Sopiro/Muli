@@ -54,6 +54,8 @@ void MotorJoint::Prepare()
     m0 = k0.GetInverse();
     m1 = 1.0f / k1;
 
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 
@@ -74,6 +76,8 @@ void MotorJoint::SolveVelocityConstraints()
     // Compute corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
+
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
 
     Vec2 jv0 =
         (bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra));

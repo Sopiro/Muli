@@ -36,8 +36,9 @@ void GrabJoint::Prepare()
 
     m = k.GetInverse();
 
-    Vec2 error = p - target;
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
 
+    Vec2 error = p - target;
     bias = error * beta * settings.inv_dt;
 
     if (settings.warm_starting)

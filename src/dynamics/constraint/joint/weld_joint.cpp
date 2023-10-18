@@ -52,6 +52,8 @@ void WeldJoint::Prepare()
 
     m = k.GetInverse();
 
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 

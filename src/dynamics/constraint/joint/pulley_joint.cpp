@@ -77,8 +77,10 @@ void PulleyJoint::Prepare()
         m = 1.0f / k;
     }
 
-    bias = length - (lengthA + lengthB);
-    bias *= beta * settings.inv_dt;
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
+    float error = length - (lengthA + lengthB);
+    bias = error * settings.inv_dt;
 
     if (settings.warm_starting)
     {

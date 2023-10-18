@@ -56,7 +56,6 @@ public:
 protected:
     RigidBody* bodyA;
     RigidBody* bodyB;
-    const WorldSettings& settings;
 
     float beta;
     float gamma;

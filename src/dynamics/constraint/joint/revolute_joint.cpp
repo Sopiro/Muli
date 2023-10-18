@@ -38,11 +38,12 @@ void RevoluteJoint::Prepare()
 
     m = k.GetInverse();
 
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 
     Vec2 error = pb - pa;
-
     bias = error * beta * settings.inv_dt;
 
     if (settings.warm_starting)

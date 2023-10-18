@@ -53,8 +53,9 @@ void LineJoint::Prepare()
         m = 1.0f / k;
     }
 
-    float error = Dot(d, t);
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
 
+    float error = Dot(d, t);
     bias = error * beta * settings.inv_dt;
 
     if (settings.warm_starting)

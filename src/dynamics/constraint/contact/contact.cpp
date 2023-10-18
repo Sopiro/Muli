@@ -122,10 +122,12 @@ void Contact::Update()
 
 void Contact::Prepare()
 {
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal);
-        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent);
+        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal, settings);
+        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent, settings);
         positionSolvers[i].Prepare(this, i);
     }
 

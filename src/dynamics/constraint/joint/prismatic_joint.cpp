@@ -53,6 +53,7 @@ void PrismaticJoint::Prepare()
     sb = Cross(rb, t);
 
     Mat2 k;
+
     k[0][0] = bodyA->invMass + bodyB->invMass + sa * sa * bodyA->invInertia + sb * sb * bodyB->invInertia;
     k[1][0] = sa * bodyA->invInertia + sb * bodyB->invInertia;
     k[0][1] = k[1][0];
@@ -63,8 +64,12 @@ void PrismaticJoint::Prepare()
 
     m = k.GetInverse();
 
-    bias.x = Dot(d, t);
-    bias.y = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
+    float error0 = Dot(d, t);
+    float error1 = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
+
+    bias.Set(error0, error1);
     bias *= beta * settings.inv_dt;
 
     if (settings.warm_starting)

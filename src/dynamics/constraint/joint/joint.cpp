@@ -1,5 +1,6 @@
 #include "muli/joint.h"
 #include "muli/callbacks.h"
+#include "muli/world.h"
 
 namespace muli
 {
@@ -27,8 +28,8 @@ void Joint::SetParameters(float _frequency, float _dampingRatio, float _jointMas
     if (_frequency > 0.0f)
     {
         frequency = _frequency;
-        dampingRatio = Clamp<float>(_dampingRatio, 0.0f, 1.0f);
-        jointMass = Clamp<float>(_jointMass, epsilon, max_value);
+        dampingRatio = Clamp(_dampingRatio, 0.0f, 1.0f);
+        jointMass = Clamp(_jointMass, epsilon, max_value);
     }
     else
     {
@@ -48,6 +49,8 @@ void Joint::ComputeBetaAndGamma()
     }
     else
     {
+        const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
         float omega = 2.0f * pi * frequency;
         float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
         float k = jointMass * omega * omega;               // Spring constant

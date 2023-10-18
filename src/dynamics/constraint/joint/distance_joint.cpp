@@ -49,8 +49,10 @@ void DistanceJoint::Prepare()
         m = 1.0f / k;
     }
 
-    bias = currentLength - length;
-    bias *= beta * settings.inv_dt;
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
+
+    float error = currentLength - length;
+    bias = error * settings.inv_dt;
 
     if (settings.warm_starting)
     {

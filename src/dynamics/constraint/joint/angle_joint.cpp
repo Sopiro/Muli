@@ -26,8 +26,9 @@ void AngleJoint::Prepare()
         m = 1.0f / k;
     }
 
-    float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
+    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
 
+    float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
     bias = error * beta * settings.inv_dt;
 
     if (settings.warm_starting)

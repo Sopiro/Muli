@@ -18,8 +18,6 @@ public:
 private:
     friend class Contact;
 
-    BlockSolver() = default;
-
     Contact* c;
 
     Mat2 k;
