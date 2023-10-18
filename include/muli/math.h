@@ -1272,6 +1272,11 @@ inline Mat2 Abs(const Mat2& A)
     return Mat2(Abs(A.ex), Abs(A.ey));
 }
 
+inline float Min(float a, float b)
+{
+    return fminf(a, b);
+}
+
 template <typename T>
 inline T Min(T a, T b)
 {
@@ -1309,15 +1314,15 @@ inline Vec3 Max(const Vec3& a, const Vec3& b)
     return Vec3(Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z));
 }
 
+inline Vec2 Clamp(const Vec2& a, const Vec2& _min, const Vec2& _max)
+{
+    return Max(_min, Min(a, _max));
+}
+
 template <typename T>
 inline T Clamp(T v, T _min, T _max)
 {
     return Max(_min, Min(v, _max));
-}
-
-inline Vec2 Clamp(const Vec2& a, const Vec2& _min, const Vec2& _max)
-{
-    return Max(_min, Min(a, _max));
 }
 
 inline float Floor(float s)
@@ -1439,7 +1444,7 @@ inline Vec2 PolarToCart(float theta, float r)
     float x = Cos(theta);
     float y = Sin(theta);
 
-    return Vec2{ x, y } * r;
+    return Vec2{ x * r, y * r };
 }
 
 inline Vec3 PolarToCart(float phi, float theta, float r)
@@ -1448,7 +1453,7 @@ inline Vec3 PolarToCart(float phi, float theta, float r)
     float y = Sin(phi) * Sin(theta);
     float z = Cos(phi);
 
-    return Vec3{ x, y, z } * r;
+    return Vec3{ x * r, y * r, z * r };
 }
 
 inline void Sweep::GetTransform(float beta, Transform* transform) const

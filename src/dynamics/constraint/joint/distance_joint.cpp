@@ -20,9 +20,9 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
     length = _length < 0.0f ? Length(_anchorB - _anchorA) : _length;
 }
 
-void DistanceJoint::Prepare()
+void DistanceJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
@@ -49,8 +49,6 @@ void DistanceJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     float error = currentLength - length;
     bias = error * step.inv_dt;
 
@@ -60,8 +58,10 @@ void DistanceJoint::Prepare()
     }
 }
 
-void DistanceJoint::SolveVelocityConstraints()
+void DistanceJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

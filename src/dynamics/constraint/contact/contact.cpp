@@ -120,14 +120,12 @@ void Contact::Update()
     }
 }
 
-void Contact::Prepare()
+void Contact::Prepare(const Timestep& step)
 {
-    const WorldSettings& settings = bodyA->GetWorld()->GetWorldSettings();
-
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal, settings);
-        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent, settings);
+        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal, step);
+        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent, step);
         positionSolvers[i].Prepare(this, i);
     }
 
@@ -137,8 +135,10 @@ void Contact::Prepare()
     }
 }
 
-void Contact::SolveVelocityConstraints()
+void Contact::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Solve tangential constraint first
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
@@ -159,8 +159,10 @@ void Contact::SolveVelocityConstraints()
     }
 }
 
-bool Contact::SolvePositionConstraints()
+bool Contact::SolvePositionConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     bool solved = true;
 
     cLinearImpulseA.SetZero();

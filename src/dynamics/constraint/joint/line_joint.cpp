@@ -23,9 +23,9 @@ LineJoint::LineJoint(
     }
 }
 
-void LineJoint::Prepare()
+void LineJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [-t^t, -(ra + d)×t, t^t, rb×t]
@@ -53,8 +53,6 @@ void LineJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     float error = Dot(d, t);
     bias = error * beta * step.inv_dt;
 
@@ -64,8 +62,10 @@ void LineJoint::Prepare()
     }
 }
 
-void LineJoint::SolveVelocityConstraints()
+void LineJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

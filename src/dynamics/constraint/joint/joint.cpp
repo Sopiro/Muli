@@ -39,7 +39,7 @@ void Joint::SetParameters(float _frequency, float _dampingRatio, float _jointMas
     }
 }
 
-void Joint::ComputeBetaAndGamma()
+void Joint::ComputeBetaAndGamma(const Timestep& step)
 {
     // If the frequency is less than or equal to zero, make this joint solid
     if (frequency < 0.0f)
@@ -49,8 +49,6 @@ void Joint::ComputeBetaAndGamma()
     }
     else
     {
-        const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
         float omega = 2.0f * pi * frequency;
         float d = 2.0f * jointMass * dampingRatio * omega; // Damping coefficient
         float k = jointMass * omega * omega;               // Spring constant

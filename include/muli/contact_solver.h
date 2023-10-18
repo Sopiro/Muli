@@ -6,7 +6,7 @@ namespace muli
 {
 
 class Contact;
-struct WorldSettings;
+struct Timestep;
 
 class ContactSolver
 {
@@ -25,7 +25,7 @@ public:
         tangent,
     };
 
-    void Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType, const WorldSettings& settings);
+    void Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType, const Timestep& step);
     void Solve(const ContactSolver* normalContact = nullptr);
 
 private:

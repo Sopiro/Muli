@@ -17,9 +17,9 @@ WeldJoint::WeldJoint(
     angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
 }
 
-void WeldJoint::Prepare()
+void WeldJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
@@ -52,8 +52,6 @@ void WeldJoint::Prepare()
 
     m = k.GetInverse();
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 
@@ -69,8 +67,10 @@ void WeldJoint::Prepare()
     }
 }
 
-void WeldJoint::SolveVelocityConstraints()
+void WeldJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

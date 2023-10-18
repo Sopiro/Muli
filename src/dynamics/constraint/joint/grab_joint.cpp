@@ -13,9 +13,9 @@ GrabJoint::GrabJoint(
     target = _target;
 }
 
-void GrabJoint::Prepare()
+void GrabJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [I, skew(r)]
@@ -36,8 +36,6 @@ void GrabJoint::Prepare()
 
     m = k.GetInverse();
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     Vec2 error = p - target;
     bias = error * beta * step.inv_dt;
 
@@ -47,8 +45,10 @@ void GrabJoint::Prepare()
     }
 }
 
-void GrabJoint::SolveVelocityConstraints()
+void GrabJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

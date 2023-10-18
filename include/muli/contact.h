@@ -81,9 +81,9 @@ private:
         flag_toi = 1 << 3,
     };
 
-    virtual void Prepare() override;
-    virtual void SolveVelocityConstraints() override;
-    virtual bool SolvePositionConstraints() override;
+    virtual void Prepare(const Timestep& step) override;
+    virtual void SolveVelocityConstraints(const Timestep& step) override;
+    virtual bool SolvePositionConstraints(const Timestep& step) override;
     bool SolveTOIPositionConstraints();
 
     void Update();

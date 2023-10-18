@@ -32,9 +32,9 @@ PrismaticJoint::PrismaticJoint(RigidBody* _bodyA,
     angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
 }
 
-void PrismaticJoint::Prepare()
+void PrismaticJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [-t^t, -(ra + u)×t, t^t, rb×t] // Line
@@ -64,8 +64,6 @@ void PrismaticJoint::Prepare()
 
     m = k.GetInverse();
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     float error0 = Dot(d, t);
     float error1 = bodyB->GetAngle() - bodyA->GetAngle() - angleOffset;
 
@@ -78,8 +76,10 @@ void PrismaticJoint::Prepare()
     }
 }
 
-void PrismaticJoint::SolveVelocityConstraints()
+void PrismaticJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

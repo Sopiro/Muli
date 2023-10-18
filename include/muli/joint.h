@@ -76,6 +76,13 @@ public:
           float jointMass = default_joint_mass);
     virtual ~Joint() noexcept;
 
+    virtual bool SolvePositionConstraints(const Timestep& step) override
+    {
+        muliNotUsed(step);
+
+        return true;
+    }
+
     float GetFrequency() const;
     void SetFrequency(float frequency);
     float GetDampingRatio() const;
@@ -104,7 +111,7 @@ public:
 protected:
     Joint::Type type;
 
-    void ComputeBetaAndGamma();
+    void ComputeBetaAndGamma(const Timestep& step);
 
 private:
     // Following parameters are used to soften the joint

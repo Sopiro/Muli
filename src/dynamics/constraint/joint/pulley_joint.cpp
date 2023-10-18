@@ -26,9 +26,9 @@ PulleyJoint::PulleyJoint(RigidBody* _bodyA,
     length = Dist(_anchorA, _groundAnchorA) + Dist(_anchorB, _groundAnchorB);
 }
 
-void PulleyJoint::Prepare()
+void PulleyJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = -[ua, ra×ua, r*ub, r*rb×ub]
@@ -77,8 +77,6 @@ void PulleyJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     float error = length - (lengthA + lengthB);
     bias = error * step.inv_dt;
 
@@ -88,8 +86,10 @@ void PulleyJoint::Prepare()
     }
 }
 
-void PulleyJoint::SolveVelocityConstraints()
+void PulleyJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

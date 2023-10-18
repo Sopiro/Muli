@@ -11,9 +11,9 @@ AngleJoint::AngleJoint(RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, f
     angleOffset = bodyB->sweep.a - bodyA->sweep.a;
 }
 
-void AngleJoint::Prepare()
+void AngleJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [0 -1 0 1]
@@ -26,8 +26,6 @@ void AngleJoint::Prepare()
         m = 1.0f / k;
     }
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
     bias = error * beta * step.inv_dt;
 
@@ -37,8 +35,10 @@ void AngleJoint::Prepare()
     }
 }
 
-void AngleJoint::SolveVelocityConstraints()
+void AngleJoint::SolveVelocityConstraints(const Timestep& step)
 {
+    muliNotUsed(step);
+
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)

@@ -6,6 +6,8 @@
 namespace muli
 {
 
+struct Timestep;
+
 class Constraint
 {
 public:
@@ -26,7 +28,7 @@ public:
      * Compute Jacobian J and effective mass M
      * M = K^-1 = (J · M^-1 · J^t)^-1
      */
-    virtual void Prepare() = 0;
+    virtual void Prepare(const Timestep& step) = 0;
 
     /*
      * Solve velocity constraint, calculate corrective impulse for current iteration
@@ -42,11 +44,8 @@ public:
      * More reading:
      * https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=4&t=1354
      */
-    virtual void SolveVelocityConstraints() = 0;
-    virtual bool SolvePositionConstraints()
-    {
-        return true;
-    }
+    virtual void SolveVelocityConstraints(const Timestep& step) = 0;
+    virtual bool SolvePositionConstraints(const Timestep& step) = 0;
 
     RigidBody* GetBodyA() const;
     RigidBody* GetBodyB() const;

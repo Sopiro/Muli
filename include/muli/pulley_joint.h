@@ -20,8 +20,8 @@ public:
                 float dampingRatio = 1.0f,
                 float jointMass = 1.0f);
 
-    virtual void Prepare() override;
-    virtual void SolveVelocityConstraints() override;
+    virtual void Prepare(const Timestep& step) override;
+    virtual void SolveVelocityConstraints(const Timestep& step) override;
 
     const Vec2& GetGroundAnchorA() const;
     const Vec2& GetGroundAnchorB() const;

@@ -27,9 +27,9 @@ MotorJoint::MotorJoint(RigidBody* _bodyA,
     maxTorque = _maxTorque < 0 ? max_value : Clamp<float>(_maxTorque, 0.0f, max_value);
 }
 
-void MotorJoint::Prepare()
+void MotorJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma();
+    ComputeBetaAndGamma(step);
 
     // Compute Jacobian J and effective mass M
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
@@ -54,8 +54,6 @@ void MotorJoint::Prepare()
     m0 = k0.GetInverse();
     m1 = 1.0f / k1;
 
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
-
     Vec2 pa = bodyA->sweep.c + ra;
     Vec2 pb = bodyB->sweep.c + rb;
 
@@ -71,13 +69,11 @@ void MotorJoint::Prepare()
     }
 }
 
-void MotorJoint::SolveVelocityConstraints()
+void MotorJoint::SolveVelocityConstraints(const Timestep& step)
 {
     // Compute corrective impulse: Pc
     // Pc = J^t * λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
-
-    const Timestep& step = bodyA->GetWorld()->GetWorldSettings().step;
 
     Vec2 jv0 =
         (bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) - (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra));

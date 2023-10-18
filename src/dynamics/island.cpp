@@ -100,11 +100,11 @@ void Island::Solve()
     // Prepare constraints for solving step
     for (int32 i = 0; i < contactCount; ++i)
     {
-        contacts[i]->Prepare();
+        contacts[i]->Prepare(step);
     }
     for (int32 i = 0; i < jointCount; ++i)
     {
-        joints[i]->Prepare();
+        joints[i]->Prepare(step);
     }
 
     // Iteratively solve the violated velocity constraints
@@ -115,23 +115,23 @@ void Island::Solve()
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = contactCount; j > 0; j--)
         {
-            contacts[j - 1]->SolveVelocityConstraints();
+            contacts[j - 1]->SolveVelocityConstraints(step);
         }
 #endif
         for (int32 j = jointCount; j > 0; j--)
         {
-            joints[j - 1]->SolveVelocityConstraints();
+            joints[j - 1]->SolveVelocityConstraints(step);
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contacts[j]->SolveVelocityConstraints();
+            contacts[j]->SolveVelocityConstraints(step);
         }
 #endif
         for (int32 j = 0; j < jointCount; ++j)
         {
-            joints[j]->SolveVelocityConstraints();
+            joints[j]->SolveVelocityConstraints(step);
         }
 #endif
     }
@@ -152,14 +152,14 @@ void Island::Solve()
         b->sweep.c += b->linearVelocity * step.dt;
         b->sweep.a += b->angularVelocity * step.dt;
 
-        if (world->settings.world_bounds.TestPoint(b->GetPosition()) == false)
+        if (settings.world_bounds.TestPoint(b->GetPosition()) == false)
         {
             world->BufferDestroy(b);
         }
     }
 
     // Solve position constraints
-    for (int32 i = 0; i < world->settings.step.position_iterations; ++i)
+    for (int32 i = 0; i < settings.step.position_iterations; ++i)
     {
         bool contactSolved = true;
         bool jointSolved = true;
@@ -170,7 +170,7 @@ void Island::Solve()
         {
             Contact* c = contacts[j - 1];
 
-            bool solved = c->SolvePositionConstraints();
+            bool solved = c->SolvePositionConstraints(step);
             if (solved == false)
             {
                 c->b1->Awake();
@@ -182,7 +182,7 @@ void Island::Solve()
 #endif
         for (int32 j = jointCount; j > 0; j--)
         {
-            jointSolved &= joints[j - 1]->SolvePositionConstraints();
+            jointSolved &= joints[j - 1]->SolvePositionConstraints(step);
         }
 #else
 #if SOLVE_CONTACT_CONSTRAINT
@@ -229,14 +229,16 @@ static constexpr int32 toi_index_2 = 1;
 
 void Island::SolveTOI(float dt)
 {
-    bool warmStartingEnabled = world->settings.step.warm_starting;
-    world->settings.step.warm_starting = false;
+    Timestep& step = world->settings.step;
+    bool warmStartingEnabled = step.warm_starting;
+
+    step.warm_starting = false;
 
     for (int32 i = 0; i < contactCount; ++i)
     {
         // Save the impulses computed by the discrete solver
         contacts[i]->SaveImpulses();
-        contacts[i]->Prepare();
+        contacts[i]->Prepare(step);
     }
 
     // Move the TOI contact to a safe position so that the next ComputeTimeOfImpact() returns the separated state
@@ -260,20 +262,20 @@ void Island::SolveTOI(float dt)
     bodies[toi_index_2]->sweep.c0 = bodies[toi_index_2]->sweep.c;
     bodies[toi_index_2]->sweep.a0 = bodies[toi_index_2]->sweep.a;
 
-    for (int32 i = 0; i < world->settings.step.velocity_iterations; ++i)
+    for (int32 i = 0; i < step.velocity_iterations; ++i)
     {
 #if SOLVE_CONTACTS_BACKWARD
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = contactCount; j > 0; j--)
         {
-            contacts[j - 1]->SolveVelocityConstraints();
+            contacts[j - 1]->SolveVelocityConstraints(step);
         }
 #endif
 #else
 #if SOLVE_CONTACT_CONSTRAINT
         for (int32 j = 0; j < contactCount; ++j)
         {
-            contacts[j]->SolveVelocityConstraints();
+            contacts[j]->SolveVelocityConstraints(step);
         }
 #endif
 #endif
@@ -291,7 +293,7 @@ void Island::SolveTOI(float dt)
         b->SynchronizeTransform();
     }
 
-    world->settings.step.warm_starting = warmStartingEnabled;
+    step.warm_starting = warmStartingEnabled;
 
     for (int32 i = 0; i < contactCount; ++i)
     {
@@ -303,7 +305,7 @@ void Island::SolveTOI(float dt)
         if (colliderA->ContactListener) colliderA->ContactListener->OnPostSolve(colliderA, colliderB, contact);
         if (colliderB->ContactListener) colliderB->ContactListener->OnPostSolve(colliderB, colliderA, contact);
 
-        // Restore the impulses of the discrete solver
+        // Restore the impulses
         contact->RestoreImpulses();
     }
 }
