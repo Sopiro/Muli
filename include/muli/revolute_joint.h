@@ -14,7 +14,6 @@ public:
     RevoluteJoint(RigidBody* bodyA,
                   RigidBody* bodyB,
                   const Vec2& anchor,
-                  const WorldSettings& settings,
                   float frequency = 10.0f,
                   float dampingRatio = 1.0f,
                   float jointMass = -1.0f);

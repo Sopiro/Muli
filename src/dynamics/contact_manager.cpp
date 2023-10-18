@@ -99,7 +99,7 @@ void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
 
     // Create new contact
     void* mem = world->blockAllocator.Allocate(sizeof(Contact));
-    Contact* c = new (mem) Contact(colliderA, colliderB, world->settings);
+    Contact* c = new (mem) Contact(colliderA, colliderB);
 
     // Insert into the world
     c->prev = nullptr;

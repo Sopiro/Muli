@@ -10,12 +10,11 @@ PulleyJoint::PulleyJoint(RigidBody* _bodyA,
                          const Vec2& _anchorB,
                          const Vec2& _groundAnchorA,
                          const Vec2& _groundAnchorB,
-                         const WorldSettings& _settings,
                          float _ratio,
                          float _frequency,
                          float _dampingRatio,
                          float _jointMass)
-    : Joint(pulley_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(pulley_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchorA);

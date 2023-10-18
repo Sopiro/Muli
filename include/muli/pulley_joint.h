@@ -17,7 +17,6 @@ public:
                 const Vec2& anchorB,
                 const Vec2& groundAnchorA,
                 const Vec2& groundAnchorB,
-                const WorldSettings& settings,
                 float ratio = 1.0f,
                 float frequency = -1.0f,
                 float dampingRatio = 1.0f,

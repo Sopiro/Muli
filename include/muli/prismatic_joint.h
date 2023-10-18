@@ -15,7 +15,6 @@ public:
                    RigidBody* bodyB,
                    const Vec2& anchor,
                    const Vec2& dir,
-                   const WorldSettings& settings,
                    float frequency = -1.0f,
                    float dampingRatio = 1.0f,
                    float jointMass = 1.0f);

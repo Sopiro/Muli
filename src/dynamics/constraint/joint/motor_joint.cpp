@@ -7,13 +7,12 @@ namespace muli
 MotorJoint::MotorJoint(RigidBody* _bodyA,
                        RigidBody* _bodyB,
                        const Vec2& _anchor,
-                       const WorldSettings& _settings,
                        float _maxForce,
                        float _maxTorque,
                        float _frequency,
                        float _dampingRatio,
                        float _jointMass)
-    : Joint(motor_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(motor_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , linearImpulseSum{ 0.0f }
     , angularImpulseSum{ 0.0f }
 {

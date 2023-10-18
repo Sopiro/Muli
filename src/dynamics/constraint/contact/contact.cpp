@@ -11,8 +11,8 @@ namespace muli
 bool block_solve = true;
 extern DetectionFunction* detection_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
 
-Contact::Contact(Collider* _colliderA, Collider* _colliderB, const WorldSettings& _settings)
-    : Constraint(_colliderA->body, _colliderB->body, _settings)
+Contact::Contact(Collider* _colliderA, Collider* _colliderB)
+    : Constraint(_colliderA->body, _colliderB->body)
     , colliderA{ _colliderA }
     , colliderB{ _colliderB }
     , flag{ 0 }

@@ -87,6 +87,7 @@ set(SOURCE_FILES
     dynamics/island.cpp
     dynamics/contact_manager.cpp
 
+    dynamics/constraint/constraint.cpp
     dynamics/constraint/contact/contact.cpp
     dynamics/constraint/contact/contact_solver.cpp
     dynamics/constraint/contact/block_solver.cpp

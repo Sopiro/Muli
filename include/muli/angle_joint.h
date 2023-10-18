@@ -11,12 +11,7 @@ struct WorldSettings;
 class AngleJoint : public Joint
 {
 public:
-    AngleJoint(RigidBody* bodyA,
-               RigidBody* bodyB,
-               const WorldSettings& settings,
-               float frequency = 10.0f,
-               float dampingRatio = 1.0f,
-               float jointMass = -1.0f);
+    AngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = -1.0f);
 
     virtual void Prepare() override;
     virtual void SolveVelocityConstraints() override;

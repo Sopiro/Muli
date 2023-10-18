@@ -10,11 +10,10 @@ PrismaticJoint::PrismaticJoint(RigidBody* _bodyA,
                                RigidBody* _bodyB,
                                const Vec2& _anchor,
                                const Vec2& _dir,
-                               const WorldSettings& _settings,
                                float _frequency,
                                float _dampingRatio,
                                float _jointMass)
-    : Joint(prismatic_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(prismatic_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchor);

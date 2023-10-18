@@ -201,6 +201,8 @@ public:
     const AABBTree& GetDynamicTree() const;
     void RebuildDynamicTree();
 
+    const WorldSettings& GetWorldSettings() const;
+
     void Awake();
 
 private:
@@ -300,6 +302,11 @@ inline const AABBTree& World::GetDynamicTree() const
 inline void World::RebuildDynamicTree()
 {
     contactManager.broadPhase.tree.Rebuild();
+}
+
+inline const WorldSettings& World::GetWorldSettings() const
+{
+    return settings;
 }
 
 } // namespace muli

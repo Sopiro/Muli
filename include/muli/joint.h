@@ -72,7 +72,6 @@ public:
     Joint(Joint::Type type,
           RigidBody* bodyA,
           RigidBody* bodyB,
-          const WorldSettings& settings,
           float frequency = default_joint_frequency,
           float dampingRatio = default_joint_damping_ratio,
           float jointMass = default_joint_mass);

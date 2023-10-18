@@ -11,7 +11,7 @@ struct WorldSettings;
 class Constraint
 {
 public:
-    Constraint(RigidBody* bodyA, RigidBody* bodyB, const WorldSettings& settings);
+    Constraint(RigidBody* bodyA, RigidBody* bodyB);
     virtual ~Constraint() noexcept = default;
 
     Constraint(const Constraint&) noexcept = delete;
@@ -61,15 +61,6 @@ protected:
     float beta;
     float gamma;
 };
-
-inline Constraint::Constraint(RigidBody* _bodyA, RigidBody* _bodyB, const WorldSettings& _settings)
-    : bodyA{ _bodyA }
-    , bodyB{ _bodyB }
-    , settings{ _settings }
-    , beta{ 0.0f }
-    , gamma{ 0.0f }
-{
-}
 
 inline RigidBody* Constraint::GetBodyA() const
 {

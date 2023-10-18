@@ -4,14 +4,8 @@
 namespace muli
 {
 
-Joint::Joint(Joint::Type _type,
-             RigidBody* _bodyA,
-             RigidBody* _bodyB,
-             const WorldSettings& _settings,
-             float _frequency,
-             float _dampingRatio,
-             float _jointMass)
-    : Constraint(_bodyA, _bodyB, _settings)
+Joint::Joint(Joint::Type _type, RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, float _dampingRatio, float _jointMass)
+    : Constraint(_bodyA, _bodyB)
     , OnDestroy{ nullptr }
     , UserData{ nullptr }
     , type{ _type }

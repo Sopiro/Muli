@@ -9,11 +9,10 @@ DistanceJoint::DistanceJoint(RigidBody* _bodyA,
                              const Vec2& _anchorA,
                              const Vec2& _anchorB,
                              float _length,
-                             const WorldSettings& _settings,
                              float _frequency,
                              float _dampingRatio,
                              float _jointMass)
-    : Joint(distance_joint, _bodyA, _bodyB, _settings, _frequency, _dampingRatio, _jointMass)
+    : Joint(distance_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), _anchorA);

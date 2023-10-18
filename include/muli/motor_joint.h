@@ -14,7 +14,6 @@ public:
     MotorJoint(RigidBody* bodyA,
                RigidBody* bodyB,
                const Vec2& anchor,
-               const WorldSettings& settings,
                float maxForce = 1000.0f,
                float maxTorque = 1000.0f,
                float frequency = -1.0f,

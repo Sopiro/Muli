@@ -38,7 +38,7 @@ struct ContactEdge
 class Contact : Constraint
 {
 public:
-    Contact(Collider* colliderA, Collider* colliderB, const WorldSettings& settings);
+    Contact(Collider* colliderA, Collider* colliderB);
     ~Contact() noexcept = default;
 
     Collider* GetColliderA() const;
