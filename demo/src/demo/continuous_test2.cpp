@@ -39,7 +39,7 @@ public:
             target->UserData = (void*)((size_t)target->UserData | UserFlag::render_polygon_radius);
             break;
         case 4:
-            target = world->CreateRandomConvexPolygon(0.28f, Rand(6, 8));
+            target = world->CreateRandomConvexPolygon(0.28f, (int32)Rand(6, 8));
             break;
 
         default:

@@ -1074,7 +1074,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 {
     if (vertexCount < 3)
     {
-        vertexCount = Rand(6, 12);
+        vertexCount = (int32)Rand(6, 12);
     }
 
     std::vector<float> angles;
@@ -1108,7 +1108,7 @@ RigidBody* World::CreateRegularPolygon(
 {
     if (vertexCount < 3)
     {
-        vertexCount = Rand(3, 12);
+        vertexCount = (int32)Rand(3, 12);
     }
 
     float angleStart = initialAngle - pi / 2.0f;
