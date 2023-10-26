@@ -42,7 +42,6 @@ struct ShapeCastOutput
 
 // GJK-raycast
 // Algorithm by Gino van den Bergen.
-// "5.6 Continuous Collision Detection" in Game Physics Pearls. 2010
 bool ShapeCast(const Shape* a, const Transform& tfA,
                const Shape* b, const Transform& tfB,
                const Vec2& translationA, const Vec2& translationB,

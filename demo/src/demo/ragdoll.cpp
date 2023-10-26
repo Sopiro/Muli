@@ -19,11 +19,11 @@ public:
         CreateRagdoll(0.0f, 5.0f, 1.0f);
 
         RigidBody* c = world->CreateCircle(0.6f);
-        float r = RandRange(0.0f, pi);
+        float r = Rand(0.0f, pi);
         Vec2 p{ Cos(r), Sin(r) };
         p *= 8.0f;
 
-        c->SetLinearVelocity(-p * RandRange(4.0f, 8.0f) + Vec2{ 0.0f, RandRange(5.0f, 15.0f) });
+        c->SetLinearVelocity(-p * Rand(4.0f, 8.0f) + Vec2{ 0.0f, Rand(5.0f, 15.0f) });
         p.y += 0.5f;
         c->SetPosition(p);
 

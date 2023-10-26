@@ -521,6 +521,24 @@ struct Quat
         w = 1.0f;
     }
 
+    static inline Quat FromEuler(float x, float y, float z)
+    {
+        float cr = cos(x * 0.5f);
+        float sr = sin(x * 0.5f);
+        float cp = cos(y * 0.5f);
+        float sp = sin(y * 0.5f);
+        float cy = cos(z * 0.5f);
+        float sy = sin(z * 0.5f);
+
+        Quat q;
+        q.w = cr * cp * cy + sr * sp * sy;
+        q.x = sr * cp * cy - cr * sp * sy;
+        q.y = cr * sp * cy + sr * cp * sy;
+        q.z = cr * cp * sy - sr * sp * cy;
+
+        return q;
+    }
+
     float x, y, z, w;
 };
 

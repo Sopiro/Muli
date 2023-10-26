@@ -22,7 +22,7 @@ public:
 
         for (int32 i = 0; i < 2; ++i)
         {
-            float r = RandRange(0.0f, 3.0f);
+            float r = Rand(0.0f, 3.0f);
             RigidBody* b;
 
             if (r < 1.0f)
@@ -39,7 +39,7 @@ public:
             }
 
             b->SetPosition(RandVec2(Vec2{ -range, -range }, Vec2{ range, range }));
-            b->SetRotation(RandRange(0.0f, pi));
+            b->SetRotation(Rand(0.0f, pi));
         }
 
         camera.position.SetZero();

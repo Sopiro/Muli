@@ -29,13 +29,13 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
         {
             float currentAngle = angle * i;
 
-            Vec3 corner{ Cos(currentAngle), Sin(currentAngle), 0.0f };
-            corner *= radius;
-            corner.x += localCenter.x;
-            corner.y += localCenter.y;
+            Vec3 vertex{ Cos(currentAngle), Sin(currentAngle), 0.0f };
+            vertex *= radius;
+            vertex.x += localCenter.x;
+            vertex.y += localCenter.y;
 
-            vertices.push_back(corner);
-            texCoords.emplace_back(corner.x, corner.y);
+            vertices.push_back(vertex);
+            texCoords.emplace_back(vertex.x, vertex.y);
         }
 
         std::vector<int32> indices = Triangulate(texCoords);
@@ -122,12 +122,12 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
         {
             float currentAngle = angleOffset - pi / 2.0f + angle * i;
 
-            Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
-            corner *= r;
-            corner += v2;
+            Vec3 vertex{ Cos(currentAngle), Sin(currentAngle), 0.0f };
+            vertex *= r;
+            vertex += v2;
 
-            vertices.push_back(corner);
-            texCoords.emplace_back(corner.x, corner.y);
+            vertices.push_back(vertex);
+            texCoords.emplace_back(vertex.x, vertex.y);
         }
 
         vertices.emplace_back(v2 + normal * r);
@@ -138,12 +138,12 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
         {
             float currentAngle = angleOffset + pi / 2.0f + angle * i;
 
-            Vec3 corner = Vec3{ Cos(currentAngle), Sin(currentAngle), 0.0f };
-            corner *= r;
-            corner += v1;
+            Vec3 vertex{ Cos(currentAngle), Sin(currentAngle), 0.0f };
+            vertex *= r;
+            vertex += v1;
 
-            vertices.push_back(corner);
-            texCoords.emplace_back(corner.x, corner.y);
+            vertices.push_back(vertex);
+            texCoords.emplace_back(vertex.x, vertex.y);
         }
 
         std::vector<int32> indices = Triangulate(texCoords);

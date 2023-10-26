@@ -1074,7 +1074,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 {
     if (vertexCount < 3)
     {
-        vertexCount = RandRange(6, 12);
+        vertexCount = Rand(6, 12);
     }
 
     std::vector<float> angles;
@@ -1082,7 +1082,7 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 
     for (int32 i = 0; i < vertexCount; ++i)
     {
-        angles.push_back(RandRange(0.0f, 1.0f) * (pi * 2.0f - epsilon));
+        angles.push_back(Rand(0.0f, 1.0f) * (pi * 2.0f - epsilon));
     }
 
     std::sort(angles.begin(), angles.end());
@@ -1108,7 +1108,7 @@ RigidBody* World::CreateRegularPolygon(
 {
     if (vertexCount < 3)
     {
-        vertexCount = RandRange(3, 12);
+        vertexCount = Rand(3, 12);
     }
 
     float angleStart = initialAngle - pi / 2.0f;
@@ -1121,10 +1121,10 @@ RigidBody* World::CreateRegularPolygon(
     {
         float currentAngle = angleStart + angle * i;
 
-        Vec2 corner{ Cos(currentAngle), Sin(currentAngle) };
-        corner *= length * Sqrt(2.0f);
+        Vec2 vertex{ Cos(currentAngle), Sin(currentAngle) };
+        vertex *= length * Sqrt(2.0f);
 
-        vertices.push_back(corner);
+        vertices.push_back(vertex);
     }
 
     RigidBody* b = CreateEmptyBody(type);

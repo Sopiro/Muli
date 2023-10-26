@@ -24,9 +24,9 @@ public:
         for (int32 i = 0; i < 1000; ++i)
         {
             RigidBody* b = world->CreateCircle(r);
-            b->SetPosition(RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           RandRange(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
-            b->SetRotation(RandRange(0.0f, pi * 2.0f));
+            b->SetPosition(Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
+                           Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            b->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 
         camera.position = { 0.0f, 0.0f };
