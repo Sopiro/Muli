@@ -20,8 +20,9 @@ public:
     virtual void SolveVelocityConstraints(const Timestep& step) override;
 
     const Vec2& GetLocalAnchor() const;
+
     const Vec2& GetTarget() const;
-    void SetTarget(const Vec2& target);
+    void SetTarget(const Vec2& newTarget);
 
 private:
     Vec2 localAnchor;
@@ -46,9 +47,9 @@ inline const Vec2& GrabJoint::GetTarget() const
     return target;
 }
 
-inline void GrabJoint::SetTarget(const Vec2& _target)
+inline void GrabJoint::SetTarget(const Vec2& newTarget)
 {
-    target = _target;
+    target = newTarget;
 }
 
 } // namespace muli

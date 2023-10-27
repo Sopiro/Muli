@@ -5,19 +5,20 @@
 namespace muli
 {
 
-void ContactSolver::Prepare(Contact* contact, int32 index, const Vec2& dir, Type contactType, const Timestep& step)
+void ContactSolver::Prepare(Contact* contact, Type contactType, const Vec2& dir, int32 index, const Timestep& step)
 {
+    c = contact;
+    type = contactType;
+
     // Compute Jacobian J and effective mass M
     // J = [-dir, -ra × dir, dir, rb × dir] (dir: Contact vector, normal or tangent)
     // M = (J · M^-1 · J^t)^-1
 
-    c = contact;
-    p = contact->manifold.contactPoints[index].position;
-    type = contactType;
+    Vec2 point = c->manifold.contactPoints[index].p;
+    Vec2 ra = point - c->b1->sweep.c;
+    Vec2 rb = point - c->b2->sweep.c;
 
-    Vec2 ra = p - c->b1->sweep.c;
-    Vec2 rb = p - c->b2->sweep.c;
-
+    // Setup jacobian
     j.va = -dir;
     j.wa = -Cross(ra, dir);
     j.vb = dir;

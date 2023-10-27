@@ -13,8 +13,8 @@ void PositionSolver::Prepare(Contact* _contact, int32 index)
     Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
     Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
 
-    localPlainPoint = MulT(tfA, contact->manifold.referencePoint.position);
-    localClipPoint = MulT(tfB, contact->manifold.contactPoints[index].position);
+    localPlainPoint = MulT(tfA, contact->manifold.referencePoint.p);
+    localClipPoint = MulT(tfB, contact->manifold.contactPoints[index].p);
     localNormal = MulT(tfA.rotation, contact->manifold.contactNormal);
 }
 

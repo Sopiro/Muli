@@ -420,7 +420,7 @@ void Game::Render()
 
             for (int32 j = 0; j < m.contactCount; ++j)
             {
-                Vec2 p1 = m.contactPoints[j].position;
+                Vec2 p1 = m.contactPoints[j].p;
 
                 if (options.show_contact_point)
                 {

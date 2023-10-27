@@ -22,6 +22,8 @@ public:
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
 
+    float GetAngleOffset() const;
+
 private:
     Vec2 localAnchorA;
     Vec2 localAnchorB;
@@ -46,6 +48,11 @@ inline const Vec2& WeldJoint::GetLocalAnchorA() const
 inline const Vec2& WeldJoint::GetLocalAnchorB() const
 {
     return localAnchorB;
+}
+
+inline float WeldJoint::GetAngleOffset() const
+{
+    return angleOffset;
 }
 
 } // namespace muli

@@ -7,8 +7,8 @@ namespace muli
 
 struct ContactPoint
 {
-    Vec2 position;
-    int32 id;
+    Vec2 p;   // vertex position
+    int32 id; // vertex index
 };
 
 } // namespace muli

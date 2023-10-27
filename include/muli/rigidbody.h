@@ -87,8 +87,8 @@ public:
     void Translate(float dx, float dy);
     void Rotate(float a);
 
-    Type GetType() const;
-    void SetType(Type type);
+    RigidBody::Type GetType() const;
+    void SetType(RigidBody::Type type);
 
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;

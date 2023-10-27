@@ -9,21 +9,6 @@
 namespace muli
 {
 
-inline float MixFriction(float f1, float f2)
-{
-    return Sqrt(f1 * f2);
-}
-
-inline float MixRestitution(float r1, float r2)
-{
-    return Max(r1, r2);
-}
-
-inline float MixRestitutionTreshold(float t1, float t2)
-{
-    return Min(t1, t2);
-}
-
 class RigidBody;
 class Contact;
 

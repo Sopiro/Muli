@@ -56,16 +56,16 @@ void Simplex::GetWitnessPoint(Vec2* pointA, Vec2* pointB)
     {
     case 1:
     {
-        *pointA = vertices[0].pointA.position;
-        *pointB = vertices[0].pointB.position;
+        *pointA = vertices[0].pointA.p;
+        *pointB = vertices[0].pointB.p;
         return;
     }
 
     case 2:
     {
         float d = 1.0f / divisor;
-        *pointA = (d * vertices[0].weight) * vertices[0].pointA.position + (d * vertices[1].weight) * vertices[1].pointA.position;
-        *pointB = (d * vertices[0].weight) * vertices[0].pointB.position + (d * vertices[1].weight) * vertices[1].pointB.position;
+        *pointA = (d * vertices[0].weight) * vertices[0].pointA.p + (d * vertices[1].weight) * vertices[1].pointA.p;
+        *pointB = (d * vertices[0].weight) * vertices[0].pointB.p + (d * vertices[1].weight) * vertices[1].pointB.p;
         return;
     }
 
@@ -73,9 +73,9 @@ void Simplex::GetWitnessPoint(Vec2* pointA, Vec2* pointB)
     {
         // clang-format off
         float d = 1.0f / divisor;
-        *pointA = (d * vertices[0].weight) * vertices[0].pointA.position +
-                  (d * vertices[1].weight) * vertices[1].pointA.position +
-                  (d * vertices[2].weight) * vertices[2].pointA.position;
+        *pointA = (d * vertices[0].weight) * vertices[0].pointA.p +
+                  (d * vertices[1].weight) * vertices[1].pointA.p +
+                  (d * vertices[2].weight) * vertices[2].pointA.p;
         *pointB = *pointA;
         return;
         // clang-format on

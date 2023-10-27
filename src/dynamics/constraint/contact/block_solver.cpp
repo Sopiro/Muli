@@ -6,13 +6,13 @@ namespace muli
 
 void BlockSolver::Prepare(Contact* contact)
 {
+    c = contact;
+
     // Compute Jacobian J and effective mass M
     // J = [-n, -ra1 × n, n, rb1 × n
     //      -n, -ra2 × n, n, rb2 × n]
     // K = (J · M^-1 · J^t)
     // M = K^-1
-
-    c = contact;
 
     ContactSolver::Jacobian j1 = c->normalSolvers[0].j;
     ContactSolver::Jacobian j2 = c->normalSolvers[1].j;

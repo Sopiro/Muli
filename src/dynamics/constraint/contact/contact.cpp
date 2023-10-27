@@ -124,8 +124,8 @@ void Contact::Prepare(const Timestep& step)
 {
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].Prepare(this, i, manifold.contactNormal, ContactSolver::Type::normal, step);
-        tangentSolvers[i].Prepare(this, i, manifold.contactTangent, ContactSolver::Type::tangent, step);
+        normalSolvers[i].Prepare(this, ContactSolver::Type::normal, manifold.contactNormal, i, step);
+        tangentSolvers[i].Prepare(this, ContactSolver::Type::tangent, manifold.contactTangent, i, step);
         positionSolvers[i].Prepare(this, i);
     }
 

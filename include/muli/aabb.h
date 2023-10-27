@@ -51,8 +51,8 @@ inline float AABB::GetArea() const
 
 inline float AABB::GetPerimeter()
 {
-    Vec2 w = max - min;
-    return 2.0f * (w.x + w.y);
+    Vec2 d = max - min;
+    return 2.0f * (d.x + d.y);
 }
 
 inline bool AABB::Contains(const AABB& aabb) const

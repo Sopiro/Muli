@@ -30,9 +30,9 @@ inline SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape
     SupportPoint supportPoint;
     supportPoint.pointA.id = a->GetSupport(MulT(tfA.rotation, dir));
     supportPoint.pointB.id = b->GetSupport(MulT(tfB.rotation, -dir));
-    supportPoint.pointA.position = Mul(tfA, a->GetVertex(supportPoint.pointA.id));
-    supportPoint.pointB.position = Mul(tfB, b->GetVertex(supportPoint.pointB.id));
-    supportPoint.point = supportPoint.pointA.position - supportPoint.pointB.position;
+    supportPoint.pointA.p = Mul(tfA, a->GetVertex(supportPoint.pointA.id));
+    supportPoint.pointB.p = Mul(tfB, b->GetVertex(supportPoint.pointB.id));
+    supportPoint.point = supportPoint.pointA.p - supportPoint.pointB.p;
 
     return supportPoint;
 }
@@ -121,8 +121,8 @@ void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& 
 
 static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClippedPoint)
 {
-    float d1 = Dot(e->p1.position - p, dir);
-    float d2 = Dot(e->p2.position - p, dir);
+    float d1 = Dot(e->p1.p - p, dir);
+    float d2 = Dot(e->p2.p - p, dir);
 
     if (d1 >= 0 && d2 >= 0)
     {
@@ -137,7 +137,7 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
         }
         else
         {
-            e->p1.position = e->p1.position + (e->p2.position - e->p1.position) * (-d1 / (Abs(d1) + Abs(d2)));
+            e->p1.p = e->p1.p + (e->p2.p - e->p1.p) * (-d1 / (Abs(d1) + Abs(d2)));
         }
     }
     else if (d2 < 0)
@@ -148,7 +148,7 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
         }
         else
         {
-            e->p2.position = e->p2.position + (e->p1.position - e->p2.position) * (-d2 / (Abs(d1) + Abs(d2)));
+            e->p2.p = e->p2.p + (e->p1.p - e->p2.p) * (-d2 / (Abs(d1) + Abs(d2)));
         }
     }
 }
@@ -167,8 +167,8 @@ static void FindContactPoints(
     manifold->contactNormal = n;
     manifold->featureFlipped = false;
 
-    float aPerpendicularness = Abs(Dot(edgeA.dir, n));
-    float bPerpendicularness = Abs(Dot(edgeB.dir, n));
+    float aPerpendicularness = Abs(Dot(edgeA.tangent, n));
+    float bPerpendicularness = Abs(Dot(edgeB.tangent, n));
 
     if (bPerpendicularness < aPerpendicularness)
     {
@@ -178,24 +178,24 @@ static void FindContactPoints(
         manifold->featureFlipped = true;
     }
 
-    ClipEdge(inc, ref->p1.position, ref->dir, false);
-    ClipEdge(inc, ref->p2.position, -ref->dir, false);
-    ClipEdge(inc, ref->p1.position, -manifold->contactNormal, true);
+    ClipEdge(inc, ref->p1.p, ref->tangent, false);
+    ClipEdge(inc, ref->p2.p, -ref->tangent, false);
+    ClipEdge(inc, ref->p1.p, -manifold->contactNormal, true);
 
     // To ensure consistent warm starting, the contact point id is always set based on Shape A
     if (inc->GetLength2() <= contact_merge_threshold)
     {
         // If two points are closer than the threshold, merge them into one point
         manifold->contactPoints[0].id = edgeA.p1.id;
-        manifold->contactPoints[0].position = inc->p1.position;
+        manifold->contactPoints[0].p = inc->p1.p;
         manifold->contactCount = 1;
     }
     else
     {
         manifold->contactPoints[0].id = edgeA.p1.id;
-        manifold->contactPoints[0].position = inc->p1.position;
+        manifold->contactPoints[0].p = inc->p1.p;
         manifold->contactPoints[1].id = edgeA.p2.id;
-        manifold->contactPoints[1].position = inc->p2.position;
+        manifold->contactPoints[1].p = inc->p2.p;
         manifold->contactCount = 2;
     }
 
@@ -224,9 +224,9 @@ bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const 
     manifold->contactNormal = normal;
     manifold->contactTangent.Set(-normal.y, normal.x);
     manifold->contactPoints[0].id = 0;
-    manifold->contactPoints[0].position = pb - normal * rb;
+    manifold->contactPoints[0].p = pb - normal * rb;
     manifold->referencePoint.id = 0;
-    manifold->referencePoint.position = pa + normal * ra;
+    manifold->referencePoint.p = pa + normal * ra;
     manifold->contactCount = 1;
     manifold->penetrationDepth = radii - distance;
     manifold->featureFlipped = false;
@@ -295,9 +295,9 @@ bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
     manifold->contactTangent.Set(-normal.y, normal.x);
     manifold->penetrationDepth = radii - distance;
     manifold->contactPoints[0].id = 0;
-    manifold->contactPoints[0].position = pb - normal * rb;
+    manifold->contactPoints[0].p = pb - normal * rb;
     manifold->referencePoint.id = index;
-    manifold->referencePoint.position = point + normal * ra;
+    manifold->referencePoint.p = point + normal * ra;
     manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
@@ -346,9 +346,9 @@ bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
         manifold->contactTangent.Set(-normal.y, normal.x);
         manifold->penetrationDepth = radii - minSeparation;
         manifold->contactPoints[0].id = 0;
-        manifold->contactPoints[0].position = pb - normal * rb;
+        manifold->contactPoints[0].p = pb - normal * rb;
         manifold->referencePoint.id = index;
-        manifold->referencePoint.position = point + normal * ra;
+        manifold->referencePoint.p = point + normal * ra;
         manifold->contactCount = 1;
         manifold->featureFlipped = false;
 
@@ -396,9 +396,9 @@ bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
     manifold->contactTangent.Set(-normal.y, normal.x);
     manifold->penetrationDepth = radii - distance;
     manifold->contactPoints[0].id = 0;
-    manifold->contactPoints[0].position = pb - normal * rb;
+    manifold->contactPoints[0].p = pb - normal * rb;
     manifold->referencePoint.id = index;
-    manifold->referencePoint.position = point + normal * ra;
+    manifold->referencePoint.p = point + normal * ra;
     manifold->contactCount = 1;
     manifold->featureFlipped = false;
 
@@ -428,8 +428,8 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
 
                 ContactPoint supportA = simplex.vertices[0].pointA;
                 ContactPoint supportB = simplex.vertices[0].pointB;
-                supportA.position += normal * ra;
-                supportB.position -= normal * rb;
+                supportA.p += normal * ra;
+                supportB.p -= normal * rb;
 
                 manifold->contactNormal = normal;
                 manifold->contactTangent.Set(-normal.y, normal.x);

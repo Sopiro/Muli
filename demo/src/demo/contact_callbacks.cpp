@@ -69,7 +69,7 @@ public:
         for (int32 i = 0; i < m.contactCount; ++i)
         {
             ContactRecord r;
-            r.pos = m.contactPoints[i].position;
+            r.pos = m.contactPoints[i].p;
             r.normal = m.contactNormal;
             r.impulse = contact->GetNormalImpulse(i);
             rec[p++] = r;

@@ -129,10 +129,10 @@ bool ShapeCast(const Shape* a,
 
         SupportPoint* vertex = simplex.vertices + simplex.count;
         vertex->pointA.id = idA;
-        vertex->pointA.position = pointA;
+        vertex->pointA.p = pointA;
         vertex->pointB.id = idB;
-        vertex->pointB.position = pointB + t * r; // This effectively shifts the ray origin to the new clip point
-        vertex->point = vertex->pointA.position - vertex->pointB.position;
+        vertex->pointB.p = pointB + t * r; // This effectively shifts the ray origin to the new clip point
+        vertex->point = vertex->pointA.p - vertex->pointB.p;
         vertex->weight = 1.0f;
         simplex.count += 1;
 

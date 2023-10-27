@@ -303,7 +303,7 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
     return false;
 }
 
-void RigidBody::SetType(Type newType)
+void RigidBody::SetType(RigidBody::Type newType)
 {
     if (type == newType)
     {

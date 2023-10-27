@@ -42,7 +42,7 @@ struct SeparationFunction
             type = points;
 
             // Separating axis in world space
-            axis = featuresB[0].position - featuresA[0].position;
+            axis = featuresB[0].p - featuresA[0].p;
             axis.Normalize();
         }
         else if (featuresA[0].id == featuresA[1].id)
@@ -60,7 +60,7 @@ struct SeparationFunction
             axis.Normalize();
 
             Vec2 pointB = Mul(tfB, localPoint);
-            Vec2 pointA = featuresA[0].position;
+            Vec2 pointA = featuresA[0].p;
 
             // world space face normal
             Vec2 normal = Mul(tfB.rotation, axis);
@@ -85,7 +85,7 @@ struct SeparationFunction
             axis.Normalize();
 
             Vec2 pointA = Mul(tfA, localPoint);
-            Vec2 pointB = featuresB[0].position;
+            Vec2 pointB = featuresB[0].p;
 
             // world space face normal
             Vec2 normal = Mul(tfA.rotation, axis);

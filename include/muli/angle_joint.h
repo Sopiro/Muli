@@ -14,9 +14,6 @@ public:
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;
 
-    const Vec2& GetLocalAnchorA() const;
-    const Vec2& GetLocalAnchorB() const;
-
     float GetAngleOffset() const;
 
 private:

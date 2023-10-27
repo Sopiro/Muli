@@ -8,13 +8,6 @@ namespace muli
 
 constexpr int32 max_simplex_vertex_count = 3;
 
-struct ClosestResult
-{
-    Vec2 point;
-    int16 contributors[max_simplex_vertex_count]; // Vertex indices contributed to calculating the closest point
-    int16 count;
-};
-
 struct SupportPoint
 {
     ContactPoint pointA;
