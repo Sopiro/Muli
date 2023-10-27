@@ -2,6 +2,8 @@
 
 #include "common.h"
 
+#include <unordered_map>
+
 namespace muli
 {
 
