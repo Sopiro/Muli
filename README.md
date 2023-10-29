@@ -88,7 +88,7 @@ Assuming you've added "installation-path" to your system `PATH`, you can now int
 ``` cmake
 find_package(muli REQUIRED)
 
-target_link_libraries(your-project PUBLIC muli::muli)
+target_link_libraries(your-project PRIVATE muli::muli)
 ```
 
 ## Todo
@@ -97,7 +97,8 @@ target_link_libraries(your-project PUBLIC muli::muli)
 
 ## References
 Here are some great resources to learn how to build a physics engine!
-- https://box2d.org/publications/
-- https://allenchou.net/game-physics-series/
-- https://dyn4j.org/blog/
 - https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
+- https://allenchou.net/game-physics-series/
+- https://box2d.org/publications/
+- https://www.cs.cmu.edu/~baraff/sigcourse/index.html
+- https://dyn4j.org/blog/
