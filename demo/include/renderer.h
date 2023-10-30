@@ -65,7 +65,7 @@ public:
     Vec2 Pick(Vec2 screenPos) const;
 
 private:
-    friend class DynamicShader;
+    friend class BatchShader;
 
     std::array<Vec2, max_vertex_count> points;
     std::array<Vec4, max_vertex_count> pointColors;
@@ -79,7 +79,7 @@ private:
     std::array<Vec4, max_vertex_count> triangleColors;
     int32 triangleCount;
 
-    std::unique_ptr<DynamicShader> shader;
+    std::unique_ptr<BatchShader> shader;
 
     GLuint VAO;
     GLuint pVBO; // position buffer

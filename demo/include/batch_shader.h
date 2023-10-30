@@ -6,10 +6,10 @@
 namespace muli
 {
 
-class DynamicShader final : public Shader
+class BatchShader final : public Shader
 {
 public:
-    static std::unique_ptr<DynamicShader> Create();
+    static std::unique_ptr<BatchShader> Create();
 
     const Mat4& GetViewMatrix() const;
     void SetViewMatrix(const Mat4& viewMatrix);
@@ -20,34 +20,34 @@ public:
 private:
     friend class Renderer;
 
-    DynamicShader();
+    BatchShader();
 
     Mat4 viewMatrix{ identity };
     Mat4 projMatrix{ identity };
 };
 
-inline std::unique_ptr<DynamicShader> DynamicShader::Create()
+inline std::unique_ptr<BatchShader> BatchShader::Create()
 {
-    return std::unique_ptr<DynamicShader>(new DynamicShader);
+    return std::unique_ptr<BatchShader>(new BatchShader);
 }
 
-inline const Mat4& DynamicShader::GetViewMatrix() const
+inline const Mat4& BatchShader::GetViewMatrix() const
 {
     return viewMatrix;
 }
 
-inline void DynamicShader::SetViewMatrix(const Mat4& _viewMatrix)
+inline void BatchShader::SetViewMatrix(const Mat4& _viewMatrix)
 {
     viewMatrix = _viewMatrix;
     glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, &viewMatrix[0][0]);
 }
 
-inline const Mat4& DynamicShader::GetProjectionMatrix() const
+inline const Mat4& BatchShader::GetProjectionMatrix() const
 {
     return projMatrix;
 }
 
-inline void DynamicShader::SetProjectionMatrix(const Mat4& _projMatrix)
+inline void BatchShader::SetProjectionMatrix(const Mat4& _projMatrix)
 {
     projMatrix = _projMatrix;
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix[0][0]);

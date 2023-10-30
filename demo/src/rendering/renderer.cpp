@@ -9,7 +9,7 @@ Renderer::Renderer()
     , lineCount{ 0 }
     , triangleCount{ 0 }
 {
-    shader = DynamicShader::Create();
+    shader = BatchShader::Create();
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &pVBO);

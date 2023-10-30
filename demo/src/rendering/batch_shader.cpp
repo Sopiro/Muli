@@ -3,7 +3,7 @@
 namespace muli
 {
 
-DynamicShader::DynamicShader()
+BatchShader::BatchShader()
     : Shader(
           // Vertex shader
           R"(
