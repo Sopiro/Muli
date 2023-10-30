@@ -12,17 +12,12 @@ namespace muli
 
 class Application;
 
-class Game final : public ColliderDestroyCallback
+class Game final : NonCopyable,
+                   ColliderDestroyCallback
 {
 public:
     Game(Application& app);
     ~Game() noexcept;
-
-    Game(const Game&) noexcept = delete;
-    Game& operator=(const Game&) noexcept = delete;
-
-    Game(Game&&) noexcept = delete;
-    Game& operator=(Game&&) noexcept = delete;
 
     void Update(float dt);
     void Render();

@@ -5,14 +5,11 @@
 namespace muli
 {
 
-class Mesh
+class Mesh : NonCopyable
 {
 public:
     Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& texCoords, const std::vector<int32>& indices);
     ~Mesh() noexcept;
-
-    Mesh(const Mesh&) noexcept = delete;
-    Mesh& operator=(const Mesh&) noexcept = delete;
 
     Mesh(Mesh&&) noexcept;
     Mesh& operator=(Mesh&&) noexcept;

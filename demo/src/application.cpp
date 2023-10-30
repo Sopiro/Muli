@@ -7,6 +7,7 @@ Application::Application(int32 width, int32 height, std::string title)
     : window(width, height, std::move(title))
 {
     Input::Init();
+
     game = std::make_unique<Game>(*this);
     frameTime = 1.0f / window.GetRefreshRate();
 }

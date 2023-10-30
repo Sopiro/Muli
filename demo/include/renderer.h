@@ -13,7 +13,7 @@ struct Vertex
 };
 
 // Batch renderer
-class Renderer final
+class Renderer final : NonCopyable
 {
     static inline bool initialized = false;
 
@@ -33,12 +33,6 @@ class Renderer final
 public:
     Renderer();
     virtual ~Renderer();
-
-    Renderer(const Renderer&) noexcept = delete;
-    Renderer& operator=(const Renderer&) noexcept = delete;
-
-    Renderer(Renderer&&) noexcept = delete;
-    Renderer& operator=(Renderer&&) noexcept = delete;
 
     void SetPointSize(float size) const;
     void SetLineWidth(float lineWidth) const;

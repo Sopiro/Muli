@@ -1,26 +1,22 @@
 #pragma once
 
 #include "common.h"
-
 #include "input.h"
+#include "util.h"
+
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
 namespace muli
 {
 
-class Window final
+class Window final : NonCopyable
 {
 public:
     ~Window() noexcept;
 
-    Window(const Window&) noexcept = delete;
-    Window& operator=(const Window&) noexcept = delete;
-
-    Window(Window&&) noexcept = delete;
-    Window& operator=(const Window&&) noexcept = delete;
-
     void SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback);
+
     Vec2 GetWindowSize() const;
     int32 GetRefreshRate() const;
 

@@ -1,22 +1,17 @@
 #pragma once
 
 #include "common.h"
+#include "util.h"
 
 #include <unordered_map>
 
 namespace muli
 {
 
-class Shader
+class Shader : NonCopyable
 {
 public:
     virtual ~Shader() noexcept;
-
-    Shader(const Shader&) noexcept = delete;
-    Shader& operator=(const Shader&) noexcept = delete;
-
-    Shader(Shader&&) noexcept = delete;
-    Shader& operator=(Shader&&) noexcept = delete;
 
     void Use() const;
 

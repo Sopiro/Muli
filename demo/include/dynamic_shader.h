@@ -13,6 +13,7 @@ public:
 
     const Mat4& GetViewMatrix() const;
     void SetViewMatrix(const Mat4& viewMatrix);
+
     const Mat4& GetProjectionMatrix() const;
     void SetProjectionMatrix(const Mat4& projMatrix);
 
