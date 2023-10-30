@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dynamic_shader.h"
+#include "batch_shader.h"
 #include "window.h"
 
 namespace muli

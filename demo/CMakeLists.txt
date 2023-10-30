@@ -1,7 +1,7 @@
 set(DEMO_HEADER_FILES
     include/mesh.h
     include/shader.h
-    include/dynamic_shader.h
+    include/batch_shader.h
     include/renderer.h
 
     include/application.h
@@ -24,7 +24,7 @@ set(DEMO_SOURCE_FILES
 
     src/rendering/shader.cpp
     src/rendering/mesh.cpp
-    src/rendering/dynamic_shader.cpp
+    src/rendering/batch_shader.cpp
     src/rendering/renderer.cpp
 
     src/demo/demo.cpp

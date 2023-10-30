@@ -1,4 +1,4 @@
-#include "dynamic_shader.h"
+#include "batch_shader.h"
 
 namespace muli
 {
