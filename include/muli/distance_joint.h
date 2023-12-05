@@ -24,7 +24,7 @@ public:
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
     float GetJointLength() const;
-    void SetJointLength(float _length);
+    void SetJointLength(float newLength);
 
 private:
     Vec2 localAnchorA;
@@ -57,9 +57,9 @@ inline float DistanceJoint::GetJointLength() const
     return length;
 }
 
-inline void DistanceJoint::SetJointLength(float _length)
+inline void DistanceJoint::SetJointLength(float newLength)
 {
-    length = Clamp<float>(_length, 0, max_value);
+    length = Clamp<float>(newLength, 0, max_value);
 }
 
 } // namespace muli

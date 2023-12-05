@@ -23,13 +23,13 @@ Joint::~Joint() noexcept
     }
 }
 
-void Joint::SetParameters(float _frequency, float _dampingRatio, float _jointMass)
+void Joint::SetParameters(float newFrequency, float newDampingRatio, float newJointMass)
 {
-    if (_frequency > 0.0f)
+    if (newFrequency > 0.0f)
     {
-        frequency = _frequency;
-        dampingRatio = Clamp(_dampingRatio, 0.0f, 1.0f);
-        jointMass = Clamp(_jointMass, epsilon, max_value);
+        frequency = newFrequency;
+        dampingRatio = Clamp(newDampingRatio, 0.0f, 1.0f);
+        jointMass = Clamp(newJointMass, epsilon, max_value);
     }
     else
     {

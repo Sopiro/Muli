@@ -28,7 +28,7 @@ public:
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
     float GetPulleyLength() const;
-    void SetPulleyLength(float _length);
+    void SetPulleyLength(float newLength);
 
 private:
     Vec2 groundAnchorA;
@@ -75,9 +75,9 @@ inline float PulleyJoint::GetPulleyLength() const
     return length;
 }
 
-inline void PulleyJoint::SetPulleyLength(float _length)
+inline void PulleyJoint::SetPulleyLength(float newLength)
 {
-    length = _length;
+    length = newLength;
 }
 
 } // namespace muli
