@@ -1,9 +1,15 @@
 #pragma once
 
-#include "contact_point.h"
+#include "common.h"
 
 namespace muli
 {
+
+struct ContactPoint
+{
+    Vec2 p;   // vertex position
+    int32 id; // vertex index
+};
 
 struct Edge
 {

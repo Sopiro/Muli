@@ -3,8 +3,8 @@
 #include "aabb.h"
 #include "collision.h"
 #include "common.h"
-#include "edge.h"
 #include "predefined_block_allocator.h"
+#include "primitives.h"
 
 namespace muli
 {

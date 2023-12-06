@@ -1,7 +1,5 @@
 #pragma once
 
-#include "contact_point.h"
-#include "edge.h"
 #include "settings.h"
 #include "simplex.h"
 

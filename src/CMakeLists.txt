@@ -7,8 +7,7 @@ set(HEADER_FILES
     ../include/muli/collision.h
     ../include/muli/simplex.h
     ../include/muli/polytope.h
-    ../include/muli/contact_point.h
-    ../include/muli/edge.h
+    ../include/muli/primitives.h
     ../include/muli/collision_filter.h
     ../include/muli/distance.h
     ../include/muli/time_of_impact.h

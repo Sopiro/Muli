@@ -3,7 +3,6 @@
 #include "aabb.h"
 #include "collision.h"
 #include "collision_filter.h"
-#include "edge.h"
 #include "material.h"
 #include "settings.h"
 

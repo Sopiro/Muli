@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "contact_point.h"
+#include "primitives.h"
 
 namespace muli
 {
