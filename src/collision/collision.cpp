@@ -424,8 +424,8 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
             {
                 Vec2 normal = Normalize(origin - simplex.vertices[0].point);
 
-                ContactPoint supportA = simplex.vertices[0].pointA;
-                ContactPoint supportB = simplex.vertices[0].pointB;
+                Point supportA = simplex.vertices[0].pointA;
+                Point supportB = simplex.vertices[0].pointB;
                 supportA.p += normal * ra;
                 supportB.p -= normal * rb;
 

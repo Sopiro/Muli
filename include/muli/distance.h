@@ -9,8 +9,8 @@ namespace muli
 // Closest features in world space
 struct ClosestFeatures
 {
-    ContactPoint featuresA[max_simplex_vertex_count - 1];
-    ContactPoint featuresB[max_simplex_vertex_count - 1];
+    Point featuresA[max_simplex_vertex_count - 1];
+    Point featuresB[max_simplex_vertex_count - 1];
     int32 count;
 };
 

@@ -10,8 +10,8 @@ constexpr int32 max_simplex_vertex_count = 3;
 
 struct SupportPoint
 {
-    ContactPoint pointA;
-    ContactPoint pointB;
+    Point pointA;
+    Point pointB;
     Vec2 point; // pointA - pointB
     float weight;
 };

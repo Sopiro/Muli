@@ -23,8 +23,8 @@ class Shape;
 // 64byte
 struct ContactManifold
 {
-    ContactPoint contactPoints[max_contact_point_count];
-    ContactPoint referencePoint;
+    Point contactPoints[max_contact_point_count];
+    Point referencePoint;
     Vec2 contactNormal; // Contact normal is always pointing from bodyA to bodyB
     Vec2 contactTangent;
     float penetrationDepth;

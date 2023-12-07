@@ -5,7 +5,7 @@
 namespace muli
 {
 
-struct ContactPoint
+struct Point
 {
     Vec2 p;   // vertex position
     int32 id; // vertex index
@@ -13,20 +13,20 @@ struct ContactPoint
 
 struct Edge
 {
-    Edge(const ContactPoint& p1, const ContactPoint& p2);
+    Edge(const Point& p1, const Point& p2);
     Edge(const Vec2& p1, const Vec2& p2, int32 id1 = -1, int32 id2 = -1);
 
     void ComputeProperty();
     void Translate(const Vec2& d);
     float GetLength2() const;
 
-    ContactPoint p1, p2;
+    Point p1, p2;
 
     Vec2 tangent;
     Vec2 normal;
 };
 
-inline Edge::Edge(const ContactPoint& _p1, const ContactPoint& _p2)
+inline Edge::Edge(const Point& _p1, const Point& _p2)
     : p1{ _p1 }
     , p2{ _p2 }
 {

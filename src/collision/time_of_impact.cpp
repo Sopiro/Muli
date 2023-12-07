@@ -33,8 +33,8 @@ struct SeparationFunction
         sweepB.GetTransform(t1, &tfB);
 
         int32 count = closestFeatures.count;
-        const ContactPoint* featuresA = closestFeatures.featuresA;
-        const ContactPoint* featuresB = closestFeatures.featuresB;
+        const Point* featuresA = closestFeatures.featuresA;
+        const Point* featuresB = closestFeatures.featuresB;
 
         if (count == 1)
         {
