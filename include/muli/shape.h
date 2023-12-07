@@ -1,9 +1,9 @@
 #pragma once
 
 #include "aabb.h"
+#include "allocator.h"
 #include "collision.h"
 #include "common.h"
-#include "predefined_block_allocator.h"
 #include "primitives.h"
 
 namespace muli

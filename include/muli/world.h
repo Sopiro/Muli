@@ -5,7 +5,6 @@
 #include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
-#include "predefined_block_allocator.h"
 #include "stack_allocator.h"
 #include "util.h"
 

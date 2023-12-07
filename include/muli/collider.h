@@ -1,8 +1,8 @@
 #pragma once
 
+#include "allocator.h"
 #include "collision_filter.h"
 #include "material.h"
-#include "predefined_block_allocator.h"
 #include "rigidbody.h"
 #include "shape.h"
 
