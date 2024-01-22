@@ -40,8 +40,8 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
         return 0.0f;
     }
 
-    float r2 = a->GetRadius() + b->GetRadius();
-    if (gjkResult.distance < r2)
+    float radii = a->GetRadius() + b->GetRadius();
+    if (gjkResult.distance < radii)
     {
         return 0.0f;
     }
@@ -56,7 +56,7 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
     *pointA += gjkResult.direction * a->GetRadius();
     *pointB -= gjkResult.direction * b->GetRadius();
 
-    return gjkResult.distance - r2;
+    return gjkResult.distance - radii;
 }
 
 bool ShapeCast(const Shape* a,

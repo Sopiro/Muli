@@ -232,8 +232,8 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
     sweepB.Normalize();
 
     /*
-        target        = r2 - linear_slop * 3.0 (discrete position solver threshold)
-        safe position < r2 - linear_slop * 2.0 (TOI position solver threshold)
+        target        = radii - linear_slop * 3.0 (discrete position solver threshold)
+        safe position < radii - linear_slop * 2.0 (TOI position solver threshold)
 
         s - target  > tolerance        | TOIOutput::separated
         0.0 < s - target < tolerance   | TOIOutput::touching
@@ -241,8 +241,8 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
         The radius must be at least twice as large as linear_slop
         otherwise TOI computation will stuck in touching state
     */
-    float r2 = shapeA->GetRadius() + shapeB->GetRadius();
-    float target = Max(linear_slop, r2 - position_solver_threshold);
+    float radii = shapeA->GetRadius() + shapeB->GetRadius();
+    float target = Max(linear_slop, radii - position_solver_threshold);
     float tolerance = 0.1f * linear_slop;
     muliAssert(target > tolerance);
 
