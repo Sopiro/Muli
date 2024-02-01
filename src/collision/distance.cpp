@@ -40,7 +40,10 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
         return 0.0f;
     }
 
-    float radii = a->GetRadius() + b->GetRadius();
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
+
     if (gjkResult.distance < radii)
     {
         return 0.0f;
@@ -53,8 +56,8 @@ float ComputeDistance(const Shape* a, const Transform& tfA, const Shape* b, cons
     simplex.GetWitnessPoint(pointA, pointB);
 
     // displace simplex vertices along normal
-    *pointA += gjkResult.direction * a->GetRadius();
-    *pointB -= gjkResult.direction * b->GetRadius();
+    *pointA += gjkResult.direction * ra;
+    *pointB -= gjkResult.direction * rb;
 
     return gjkResult.distance - radii;
 }
