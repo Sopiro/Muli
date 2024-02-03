@@ -82,21 +82,22 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        if (ImGui::Begin("Shape cast", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (world->GetBodyCount() > 1)
         {
-            if (world->GetBodyCount() > 1)
+            if (ImGui::Begin("Shape cast", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::Text("Translation A");
                 ImGui::DragFloat2("##Translation A", &translationA.x, 0.1f);
                 ImGui::Text("Translation B");
                 ImGui::DragFloat2("##Translation B", &translationB.x, 0.1f);
+
+                if (hit)
+                {
+                    ImGui::Text("Hit! at t: %.4f", output.t);
+                }
             }
-            if (hit)
-            {
-                ImGui::Text("Hit! at t: %.4f", output.t);
-            }
+            ImGui::End();
         }
-        ImGui::End();
     }
 
     ~ShapeCastTest()
