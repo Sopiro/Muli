@@ -11,6 +11,7 @@ public:
     ShapeCastOutput output;
 
     Vec2 translation{ -3.0f, 0.0f };
+    bool closest = false;
 
     ShapeCastWorld(Game& game)
         : Demo(game)
@@ -53,52 +54,94 @@ public:
             drawMode.fill = false;
             drawMode.outline = true;
 
-            struct TempCallback : public ShapeCastAnyCallback
+            if (!closest)
             {
-                Renderer* r;
-
-                Transform tf0;
-                Vec2 translation;
-                const Collider* original;
-                const Shape* shape;
-
-                bool hit = false;
-
-                virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t) override
+                struct TempAnyCallback : public ShapeCastAnyCallback
                 {
-                    Renderer::DrawMode drawMode;
-                    drawMode.fill = false;
-                    drawMode.outline = true;
+                    Renderer* r;
 
+                    Transform tf0;
+                    Vec2 translation;
+                    const Shape* shape;
+
+                    bool hit = false;
+
+                    float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+                    {
+                        Renderer::DrawMode drawMode;
+                        drawMode.fill = false;
+                        drawMode.outline = true;
+
+                        Transform tf1 = tf0;
+                        tf1.position += translation * t;
+
+                        r->DrawShape(shape, tf1, drawMode);
+                        r->DrawLine(tf0.position, tf1.position);
+                        r->DrawPoint(point);
+                        r->DrawLine(point, point + normal * 0.1f);
+
+                        hit = true;
+
+                        return 1.0f;
+                    }
+
+                } callback;
+
+                callback.r = &renderer;
+                callback.translation = translation;
+                callback.tf0 = tf0;
+                callback.shape = shape;
+                world->ShapeCastAny(shape, tf0, translation, &callback);
+
+                if (callback.hit == false)
+                {
                     Transform tf1 = tf0;
-                    tf1.position += translation * t;
+                    tf1.position += translation;
 
-                    r->DrawShape(shape, tf1, drawMode);
-                    r->DrawLine(tf0.position, tf1.position);
-                    r->DrawPoint(point);
-                    r->DrawLine(point, point + normal * 0.1f);
-
-                    hit = true;
-
-                    return 1.0f;
+                    renderer.DrawShape(shape, tf1, drawMode);
+                    renderer.DrawLine(tf0.position, tf1.position);
                 }
-
-            } callback;
-
-            callback.r = &renderer;
-            callback.translation = translation;
-            callback.tf0 = tf0;
-            callback.original = collider;
-            callback.shape = shape;
-            world->ShapeCastAny(shape, tf0, translation, &callback);
-
-            if (callback.hit == false)
+            }
+            else
             {
-                Transform tf1 = tf0;
-                tf1.position += translation;
+                struct TempClosestCallback : public ShapeCastClosestCallback
+                {
+                    Renderer* r;
 
-                renderer.DrawShape(shape, tf1, drawMode);
-                renderer.DrawLine(tf0.position, tf1.position);
+                    Transform tf0;
+                    Vec2 translation;
+                    const Shape* shape;
+
+                    void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+                    {
+                        Renderer::DrawMode drawMode;
+                        drawMode.fill = false;
+                        drawMode.outline = true;
+
+                        Transform tf1 = tf0;
+                        tf1.position += translation * t;
+
+                        r->DrawShape(shape, tf1, drawMode);
+                        r->DrawLine(tf0.position, tf1.position);
+                        r->DrawPoint(point);
+                        r->DrawLine(point, point + normal * 0.1f);
+                    }
+                } callback;
+
+                callback.r = &renderer;
+                callback.translation = translation;
+                callback.tf0 = tf0;
+                callback.shape = shape;
+
+                bool hit = world->ShapeCastClosest(shape, tf0, translation, &callback);
+                if (hit == false)
+                {
+                    Transform tf1 = tf0;
+                    tf1.position += translation;
+
+                    renderer.DrawShape(shape, tf1, drawMode);
+                    renderer.DrawLine(tf0.position, tf1.position);
+                }
             }
         }
     }
@@ -113,6 +156,7 @@ public:
             {
                 ImGui::Text("Translation");
                 ImGui::DragFloat2("##Translation", &translation.x, 0.1f);
+                ImGui::Checkbox("Closest", &closest);
             }
             ImGui::End();
         }

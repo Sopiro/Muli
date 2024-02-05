@@ -98,4 +98,11 @@ public:
     virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t) = 0;
 };
 
+class ShapeCastClosestCallback
+{
+public:
+    virtual ~ShapeCastClosestCallback() {}
+    virtual void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float t) = 0;
+};
+
 } // namespace muli

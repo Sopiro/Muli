@@ -967,6 +967,43 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     contactManager.broadPhase.tree.Query(aabb, &anyCallback);
 }
 
+bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback)
+{
+    struct TempCallback : ShapeCastAnyCallback
+    {
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestT = 1.0f;
+
+        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+        {
+            hit = true;
+            if (t < closestT)
+            {
+                closestCollider = collider;
+                closestPoint = point;
+                closestNormal = normal;
+                closestT = t;
+            }
+
+            return t;
+        }
+    } tempCallback;
+
+    ShapeCastAny(shape, tf, translation, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback->OnHitClosest(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                               tempCallback.closestT);
+        return true;
+    }
+
+    return false;
+}
+
 RigidBody* World::DuplicateBody(RigidBody* body)
 {
     muliAssert(body->world == this);
