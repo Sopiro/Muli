@@ -185,6 +185,8 @@ public:
     void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback);
     bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback);
 
+    void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
+
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;
     int32 GetBodyCount() const;

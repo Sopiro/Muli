@@ -91,4 +91,11 @@ public:
     virtual void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
 };
 
+class ShapeCastAnyCallback
+{
+public:
+    virtual ~ShapeCastAnyCallback() {}
+    virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t) = 0;
+};
+
 } // namespace muli

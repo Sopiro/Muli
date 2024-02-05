@@ -925,6 +925,48 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
     return false;
 }
 
+void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback)
+{
+    AABB aabb0;
+    shape->ComputeAABB(tf, &aabb0);
+
+    AABB aabb1;
+    aabb1.min = aabb0.min + translation;
+    aabb1.max = aabb0.max + translation;
+
+    AABB aabb = AABB::Union(aabb0, aabb1);
+
+    struct TempCallback
+    {
+        ShapeCastAnyCallback* callback;
+        const Shape* shape;
+        Transform tf;
+        Vec2 translation;
+
+        bool QueryCallback(NodeProxy node, Collider* collider)
+        {
+            muliNotUsed(node);
+            ShapeCastOutput output;
+
+            bool hit =
+                ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation, zero_vec2, &output);
+            if (hit)
+            {
+                return callback->OnHitAny(collider, output.point, output.normal, output.t);
+            }
+
+            return true;
+        }
+    } anyCallback;
+
+    anyCallback.callback = callback;
+    anyCallback.shape = shape;
+    anyCallback.tf = tf;
+    anyCallback.translation = translation;
+
+    contactManager.broadPhase.tree.Query(aabb, &anyCallback);
+}
+
 RigidBody* World::DuplicateBody(RigidBody* body)
 {
     muliAssert(body->world == this);
