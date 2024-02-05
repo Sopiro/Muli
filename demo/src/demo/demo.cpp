@@ -496,6 +496,7 @@ extern DemoFrame continuous_test2;
 extern DemoFrame sub_stepping;
 extern DemoFrame shape_cast;
 extern DemoFrame correct_awake;
+extern DemoFrame shape_cast_2;
 
 static int32 init_demos()
 {
@@ -549,6 +550,7 @@ static int32 init_demos()
     demos[demo_count++] = sub_stepping;
     demos[demo_count++] = shape_cast;
     demos[demo_count++] = correct_awake;
+    demos[demo_count++] = shape_cast_2;
 
     return demo_count;
 }
