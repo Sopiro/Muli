@@ -129,11 +129,25 @@ struct Vec2
         return x * x + y * y;
     }
 
-    // Optimized to not check length == 0
     float Normalize()
     {
         float length = Length();
         assert(length > 0.0f);
+
+        float invLength = 1.0f / length;
+        x *= invLength;
+        y *= invLength;
+
+        return length;
+    }
+
+    float NormalizeSafe()
+    {
+        float length = Length();
+        if (length < epsilon)
+        {
+            return 0.0f;
+        }
 
         float invLength = 1.0f / length;
         x *= invLength;
@@ -268,6 +282,22 @@ struct Vec3
     {
         float length = Length();
         assert(length > 0.0f);
+
+        float invLength = 1.0f / length;
+        x *= invLength;
+        y *= invLength;
+        z *= invLength;
+
+        return length;
+    }
+
+    float NormalizeSafe()
+    {
+        float length = Length();
+        if (length < epsilon)
+        {
+            return 0.0f;
+        }
 
         float invLength = 1.0f / length;
         x *= invLength;
