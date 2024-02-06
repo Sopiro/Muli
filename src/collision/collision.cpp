@@ -9,7 +9,7 @@
 namespace muli
 {
 
-static constexpr Vec2 origin{ 0.0f };
+static constexpr Vec2 origin = Vec2::zero;
 
 static bool detection_function_initialized = false;
 DetectionFunction* detection_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
@@ -93,7 +93,7 @@ end:
 void EPA(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Simplex& simplex, EPAResult* result)
 {
     Polytope polytope{ simplex };
-    PolytopeEdge edge{ 0, max_value, zero_vec2 };
+    PolytopeEdge edge{ 0, max_value, Vec2::zero };
 
     for (int32 k = 0; k < epa_max_iteration; ++k)
     {

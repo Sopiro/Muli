@@ -57,7 +57,7 @@ public:
     struct ContactRecord
     {
         Vec2 pos = { max_value, max_value };
-        Vec2 normal = zero_vec2;
+        Vec2 normal = Vec2::zero;
         float impulse = 0.0f;
     };
     ContactRecord rec[100];

@@ -33,11 +33,11 @@ private:
     static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> last_btns;
     static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> curr_btns;
 
-    static inline Vec2 curr_mouse_pos{ 0.0f };
-    static inline Vec2 last_mouse_pos{ 0.0f };
-    static inline Vec2 mouse_acceleration{ 0.0f };
+    static inline Vec2 curr_mouse_pos = Vec2::zero;
+    static inline Vec2 last_mouse_pos = Vec2::zero;
+    static inline Vec2 mouse_acceleration = Vec2::zero;
 
-    static inline Vec2 mouse_scroll{ 0.0f };
+    static inline Vec2 mouse_scroll = Vec2::zero;
 };
 
 inline void Input::Init()

@@ -162,8 +162,11 @@ struct Vec2
     {
         return Vec2{ -y, x };
     }
+
+    static const Vec2 zero;
 };
-constexpr Vec2 zero_vec2{ 0.0f };
+
+constexpr inline Vec2 Vec2::zero{ 0.0f };
 
 struct Vec3
 {
@@ -306,8 +309,11 @@ struct Vec3
 
         return length;
     }
+
+    static const Vec3 zero;
 };
-constexpr Vec3 zero_vec3{ 0.0f };
+
+constexpr inline Vec3 Vec3::zero{ 0.0f };
 
 struct Vec4
 {
@@ -422,8 +428,11 @@ struct Vec4
     {
         operator*=(1.0f / s);
     }
+
+    static const Vec4 zero;
 };
-constexpr Vec4 zero_vec4{ 0.0f, 0.0f };
+
+constexpr inline Vec4 Vec4::zero{ 0.0f, 0.0f };
 
 struct Quat
 {
@@ -1095,6 +1104,19 @@ template <typename T>
 inline T Normalize(const T& v)
 {
     float invLength = 1.0f / v.Length();
+    return v * invLength;
+}
+
+template <typename T>
+inline T NormalizeSafe(const T& v)
+{
+    float length = v.Length();
+    if (length < epsilon)
+    {
+        return T::zero;
+    }
+
+    float invLength = 1.0f / length;
     return v * invLength;
 }
 

@@ -9,7 +9,7 @@ class ComputeDistancePoint : public Demo
 {
 public:
     RigidBody* b;
-    Vec2 closest{ 0.0f };
+    Vec2 closest = Vec2::zero;
     float distance = 0.0f;
 
     ComputeDistancePoint(Game& game)

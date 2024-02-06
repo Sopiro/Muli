@@ -75,7 +75,7 @@ bool ShapeCast(const Shape* a,
     output->t = 1.0f;
 
     float t = 0.0f;
-    Vec2 n = zero_vec2;
+    Vec2 n = Vec2::zero;
 
     const float radii = a->GetRadius() + b->GetRadius();
     const Vec2 r = translationB - translationA; // Ray vector
@@ -140,7 +140,7 @@ bool ShapeCast(const Shape* a,
         vertex->weight = 1.0f;
         simplex.count += 1;
 
-        simplex.Advance(zero_vec2);
+        simplex.Advance(Vec2::zero);
 
         if (simplex.count == 3)
         {

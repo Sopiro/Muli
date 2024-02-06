@@ -949,7 +949,7 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
             ShapeCastOutput output;
 
             bool hit =
-                ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation, zero_vec2, &output);
+                ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation, Vec2::zero, &output);
             if (hit)
             {
                 return callback->OnHitAny(collider, output.point, output.normal, output.t);

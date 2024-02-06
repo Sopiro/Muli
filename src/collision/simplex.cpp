@@ -25,7 +25,7 @@ Vec2 Simplex::GetSearchDirection() const
     }
     default:
         muliAssert(false);
-        return zero_vec2;
+        return Vec2::zero;
     }
 }
 
@@ -42,11 +42,11 @@ Vec2 Simplex::GetClosestPoint() const
         return (d * vertices[0].weight) * vertices[0].point + (d * vertices[1].weight) * vertices[1].point;
     }
     case 3:
-        return zero_vec2;
+        return Vec2::zero;
 
     default:
         muliAssert(false);
-        return zero_vec2;
+        return Vec2::zero;
     }
 }
 

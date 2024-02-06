@@ -10,8 +10,8 @@ class Polygon : public Shape
 public:
     Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = false, float radius = default_radius);
     Polygon(std::initializer_list<Vec2> vertices, bool resetPosition = false, float radius = default_radius);
-    Polygon(float width, float height, float radius = default_radius, const Vec2& position = zero_vec2, float angle = 0.0f);
-    Polygon(float size, float radius = default_radius, const Vec2& position = zero_vec2, float angle = 0.0f);
+    Polygon(float width, float height, float radius = default_radius, const Vec2& position = Vec2::zero, float angle = 0.0f);
+    Polygon(float size, float radius = default_radius, const Vec2& position = Vec2::zero, float angle = 0.0f);
     ~Polygon();
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;

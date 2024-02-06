@@ -113,7 +113,7 @@ void BroadPhase::Refresh(Collider* collider)
     NodeProxy node = collider->node;
     AABB aabb = collider->GetAABB();
 
-    tree.MoveNode(node, aabb, zero_vec2, true);
+    tree.MoveNode(node, aabb, Vec2::zero, true);
     BufferMove(node);
 }
 

@@ -202,7 +202,7 @@ void ContactManager::UpdateCollider(Collider* collider, const Transform& tf)
     AABB aabb;
     shape->ComputeAABB(tf, &aabb);
 
-    broadPhase.Update(collider, aabb, zero_vec2);
+    broadPhase.Update(collider, aabb, Vec2::zero);
 }
 
 void ContactManager::UpdateCollider(Collider* collider, const Transform& tf0, const Transform& tf1)
