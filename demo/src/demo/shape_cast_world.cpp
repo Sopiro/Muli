@@ -10,8 +10,8 @@ class ShapeCastWorld : public Demo
 public:
     ShapeCastOutput output;
 
-    Vec2 translation{ -3.0f, 0.0f };
-    bool closest = false;
+    Vec2 translation{ -5.0f, 0.0f };
+    bool closest = true;
 
     ShapeCastWorld(Game& game)
         : Demo(game)
@@ -22,17 +22,22 @@ public:
         settings.sleeping = false;
 
         RigidBody* b = world->CreateBox(0.5f);
-        b->SetPosition(0.0f, 5.0f);
+        b->SetPosition(0.0f, 5.5f);
         b->SetRotation(pi / 3);
 
+        b = world->CreateRegularPolygon(0.3, 3, 0.0f, RigidBody::dynamic_body, 0.1f);
+        b->SetPosition(0.0f, 4.0f);
+        b->SetRotation(pi / 2);
+        b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
+
         b = world->CreateCapsule(0.5, 0.25f);
-        b->SetPosition(0.0f, 3.0f);
+        b->SetPosition(0.0f, 2.5f);
         b->SetRotation(pi / 4);
 
         b = world->CreateCircle(0.3f);
         b->SetPosition(0.0f, 1.0f);
 
-        b = world->CreateCapsule(0.8f, 0.3f);
+        b = world->CreateCapsule(0.7f, 0.3f);
         // RigidBody* b = world->CreateCircle(0.5f);
         // RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(3.0f, 3.0f);
