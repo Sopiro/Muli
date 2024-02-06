@@ -9,7 +9,9 @@ class RayCasting : public Demo
 {
 public:
     int32 count;
-    Vec2 from{ 0.0f, 3.0f };
+    Vec2 from{ -3.0f, 2.7f };
+    Vec2 to{ 3.0f, 3.3f };
+
     bool closest = true;
 
     RayCasting(Game& game)
@@ -17,27 +19,26 @@ public:
     {
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
-        RigidBody* b = world->CreateCircle(1.0f);
-        b->SetPosition(3, 3);
+        RigidBody* b = world->CreateCircle(0.3f);
+        b->SetPosition(1.5f, 3);
 
-        b = world->CreateCapsule(1.0f, 0.5f);
-        b->SetPosition(-3, 3);
+        b = world->CreateCapsule(0.5f, 0.2f);
+        b->SetPosition(-0.5f, 3);
 
-        b = world->CreateBox(1.0f, RigidBody::dynamic_body, 0.1f);
-        b->SetPosition(1, 3);
+        b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
+        b->SetPosition(0.5f, 3);
         b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
 
-        b = world->CreateRegularPolygon(0.5f, 3);
-        b->SetPosition(-1, 3);
+        b = world->CreateRegularPolygon(0.2f, 3);
+        b->SetPosition(-1.5f, 3);
+
+        settings.apply_gravity = false;
+        settings.sleeping = false;
     }
 
     void Step() override
     {
         Demo::Step();
-
-        Vec2 to = cursorPos;
-
-        renderer.DrawLine(from, to);
 
         bool hit = false;
         Vec2 closestPoint;
@@ -71,17 +72,50 @@ public:
         }
     }
 
+    void UpdateInput() override
+    {
+        FindTargetBody();
+        EnableKeyboardShortcut();
+        EnablePolygonCreate();
+
+        static bool pressed = false;
+
+        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+        {
+            EnableCameraControl();
+
+            if (!pressed && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                from = cursorPos;
+                pressed = true;
+            }
+
+            if (pressed && Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                to = cursorPos;
+            }
+
+            if (pressed && Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                pressed = false;
+            }
+        }
+    }
+
     void UpdateUI() override
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        if (ImGui::Begin("Ray casting", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::Begin("Ray casting", NULL,
+                         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
-            ImGui::Text("Ray start");
-            ImGui::DragFloat2("", &from.x, 0.1f);
             ImGui::Checkbox("Closest", &closest);
         }
         ImGui::End();
+
+        renderer.DrawLine(from, to);
+        renderer.DrawPoint(from, Vec4{ 1, 0, 0, 1 });
+        renderer.DrawPoint(to, Vec4{ 0, 0, 1, 1 });
     }
 
     static Demo* Create(Game& game)

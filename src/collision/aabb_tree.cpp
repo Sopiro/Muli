@@ -639,8 +639,11 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     float maxFraction = input.maxFraction;
 
     Vec2 d = p2 - p1;
-    muliAssert(d.Length2() > 0.0f);
-    d.Normalize();
+    float length = d.NormalizeSafe();
+    if (length == 0.0f)
+    {
+        return;
+    }
 
     Vec2 perp = Cross(d, 1.0f); // separating axis
     Vec2 absPerp = Abs(perp);
