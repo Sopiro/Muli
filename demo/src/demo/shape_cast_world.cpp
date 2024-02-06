@@ -28,7 +28,7 @@ public:
         b = world->CreateRegularPolygon(0.3, 3, 0.0f, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(0.0f, 4.0f);
         b->SetRotation(pi / 2);
-        b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
+        UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
         b = world->CreateCapsule(0.5, 0.25f);
         b->SetPosition(0.0f, 2.5f);

@@ -19,10 +19,32 @@ struct DebugOptions
     bool colorize_island = true;
 };
 
-enum UserFlag : size_t
+namespace UserFlag
+{
+
+enum Flag : size_t
 {
     remove_outline = 1 << 1,
     render_polygon_radius = 1 << 2,
 };
+
+inline void SetFlag(RigidBody* body, Flag flag, bool enabled)
+{
+    if (enabled)
+    {
+        body->UserData = (void*)((size_t)body->UserData | flag);
+    }
+    else
+    {
+        body->UserData = (void*)((size_t)body->UserData & ~flag);
+    }
+}
+
+inline bool IsEnabled(const RigidBody* body, Flag flag)
+{
+    return ((size_t)body->UserData & flag) == flag;
+}
+
+} // namespace UserFlag
 
 } // namespace muli

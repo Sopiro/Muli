@@ -27,7 +27,7 @@ public:
 
         b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(0.5f, 3);
-        b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
+        UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
         b = world->CreateRegularPolygon(0.2f, 3);
         b->SetPosition(-1.5f, 3);

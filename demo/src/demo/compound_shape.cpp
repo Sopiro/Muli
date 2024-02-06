@@ -54,7 +54,7 @@ public:
             b = world->CreateBox(w, h, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);
             b->SetRotation(angle);
-            b->UserData = (void*)((size_t)b->UserData | UserFlag::render_polygon_radius);
+            UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
         }
     }
 
