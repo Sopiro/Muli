@@ -71,6 +71,6 @@ public:
     virtual void OnPostSolve(Collider* me, Collider* other, Contact* contact) override {}
 };
 
-DemoFrame breakable{ "Breakable", Breakable::Create };
+static int index = register_demo("Breakable", Breakable::Create, 42);
 
 } // namespace muli

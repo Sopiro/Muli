@@ -38,6 +38,6 @@ public:
     }
 };
 
-DemoFrame boxes_1000{ "1000 Boxes", Boxes1000::Create };
+static int index = register_demo("1000 Boxes", Boxes1000::Create, 15);
 
 } // namespace muli

@@ -94,6 +94,6 @@ public:
     }
 };
 
-DemoFrame dynamic_aabb_tree{ "Dynamic AABB tree", DynamicAABBTree::Create };
+static int index = register_demo("Dynamic AABB tree", DynamicAABBTree::Create, 22);
 
 } // namespace muli

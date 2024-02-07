@@ -52,6 +52,6 @@ public:
     }
 };
 
-DemoFrame mix_1000{ "1000 Random shapes", Mix1000::Create };
+static int index = register_demo("1000 Random shapes", Mix1000::Create, 18);
 
 } // namespace muli

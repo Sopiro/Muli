@@ -38,8 +38,9 @@ private:
 
     float time = 0.0f;
 
-    int32 newIndex;
-    int32 demoIndex;
+    size_t demoCount;
+    size_t newIndex;
+    size_t demoIndex;
     Demo* demo = nullptr;
     bool restart = false;
     DebugOptions options;
@@ -74,13 +75,13 @@ inline void Game::RestartDemo()
 
 inline void Game::NextDemo()
 {
-    newIndex = (demoIndex + 1) % demo_count;
+    newIndex = (demoIndex + 1) % demoCount;
     restart = true;
 }
 
 inline void Game::PrevDemo()
 {
-    newIndex = (demoIndex - 1 + demo_count) % demo_count;
+    newIndex = (demoIndex - 1 + demoCount) % demoCount;
     restart = true;
 }
 

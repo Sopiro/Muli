@@ -54,6 +54,6 @@ public:
     }
 };
 
-DemoFrame crank{ "Crank", Crank::Create };
+static int index = register_demo("Crank", Crank::Create, 31);
 
 } // namespace muli

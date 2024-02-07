@@ -105,6 +105,6 @@ public:
     }
 };
 
-DemoFrame collision_filtering{ "Collision filtering", CollisionFiltering::Create };
+static int index = register_demo("Collision filtering", CollisionFiltering::Create, 1);
 
 } // namespace muli

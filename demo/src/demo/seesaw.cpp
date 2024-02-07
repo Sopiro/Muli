@@ -44,5 +44,6 @@ public:
 };
 
 DemoFrame seesaw{ "Seesaw", Seesaw::Create };
+static int index = register_demo("Seesaw", Seesaw::Create, 7);
 
 } // namespace muli

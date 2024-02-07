@@ -43,6 +43,6 @@ public:
     }
 };
 
-DemoFrame kinematic_body{ "Kinematic body", KinematicBody::Create };
+static int index = register_demo("Kinematic body", KinematicBody::Create, 20);
 
 } // namespace muli

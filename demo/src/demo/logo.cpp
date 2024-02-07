@@ -64,6 +64,6 @@ public:
     }
 };
 
-DemoFrame logo{ "Logo", Logo::Create };
+static int index = register_demo("Logo", Logo::Create, 41);
 
 } // namespace muli

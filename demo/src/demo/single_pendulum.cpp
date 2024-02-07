@@ -23,6 +23,6 @@ public:
     }
 };
 
-DemoFrame single_pendulum{ "Single pendulum", SinglePendulum::Create };
+static int index = register_demo("Single pendulum", SinglePendulum::Create, 4);
 
 } // namespace muli

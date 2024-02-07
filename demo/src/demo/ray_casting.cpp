@@ -124,6 +124,6 @@ public:
     }
 };
 
-DemoFrame ray_casting{ "Ray casting", RayCasting::Create };
+static int index = register_demo("Ray casting", RayCasting::Create, 34);
 
 } // namespace muli

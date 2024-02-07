@@ -37,6 +37,6 @@ public:
     }
 };
 
-DemoFrame convex_polygons_1000{ "1000 Convex polygons", ConvexPolygons1000::Create };
+static int index = register_demo("1000 Convex polygons", ConvexPolygons1000::Create, 17);
 
 } // namespace muli

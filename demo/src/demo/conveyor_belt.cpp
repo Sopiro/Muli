@@ -94,6 +94,6 @@ public:
     }
 };
 
-DemoFrame conveyor_belt{ "Conbeyor belt", ConveyorBelt::Create };
+static int index = register_demo("Conbeyor belt", ConveyorBelt::Create, 28);
 
 } // namespace muli

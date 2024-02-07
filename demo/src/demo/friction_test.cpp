@@ -57,6 +57,6 @@ public:
     }
 };
 
-DemoFrame friction_test{ "Friction test", FrictionTest::Create };
+static int index = register_demo("Friction test", FrictionTest::Create, 8);
 
 } // namespace muli

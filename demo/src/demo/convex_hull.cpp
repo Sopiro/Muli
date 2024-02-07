@@ -80,6 +80,6 @@ public:
     }
 };
 
-DemoFrame convex_hull{ "Convex hull", ConvexHull::Create };
+static int index = register_demo("Convex hull", ConvexHull::Create, 21);
 
 } // namespace muli

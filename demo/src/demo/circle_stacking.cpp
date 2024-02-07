@@ -34,6 +34,6 @@ public:
     }
 };
 
-DemoFrame circle_stacking{ "Circle stacking", CircleStacking::Create };
+static int index = register_demo("Circle stacking", CircleStacking::Create, 12);
 
 } // namespace muli

@@ -38,6 +38,6 @@ public:
     }
 };
 
-DemoFrame rounded_polygon{ "Rounded polygons", RoundedPolygon::Create };
+static int index = register_demo("Rounded polygons", RoundedPolygon::Create, 33);
 
 } // namespace muli

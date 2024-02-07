@@ -77,5 +77,6 @@ public:
 };
 
 DemoFrame windmill{ "Windmill", Windmill::Create };
+static int index = register_demo("Windmill", Windmill::Create, 30);
 
 } // namespace muli

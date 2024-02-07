@@ -39,6 +39,6 @@ public:
     }
 };
 
-DemoFrame circles_1000{ "1000 Circles", Circles1000::Create };
+static int index = register_demo("1000 Circles", Circles1000::Create, 14);
 
 } // namespace muli

@@ -62,6 +62,6 @@ public:
     }
 };
 
-DemoFrame dense_collision{ "Dense collision", DenseCollision::Create };
+static int index = register_demo("Dense collision", DenseCollision::Create, 19);
 
 } // namespace muli

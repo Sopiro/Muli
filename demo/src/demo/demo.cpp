@@ -443,118 +443,71 @@ void Demo::Step()
     }
 }
 
-int32 demo_count = 0;
-DemoFrame demos[MAX_DEMOS];
+std::vector<DemoFrame> demos;
 
-extern DemoFrame single_box;
-extern DemoFrame box_stacking;
-extern DemoFrame pyramid;
-extern DemoFrame single_pendulum;
-extern DemoFrame springs;
-extern DemoFrame random_convex_polygons;
-extern DemoFrame seesaw;
-extern DemoFrame friction_test;
-extern DemoFrame restitution_test;
-extern DemoFrame multi_pendulum;
-extern DemoFrame suspension_bridge;
-extern DemoFrame circle_stacking;
-extern DemoFrame capsule_stacking;
-extern DemoFrame circles_1000;
-extern DemoFrame boxes_1000;
-extern DemoFrame capsules_1000;
-extern DemoFrame convex_polygons_1000;
-extern DemoFrame mix_1000;
-extern DemoFrame dense_collision;
-extern DemoFrame kinematic_body;
-extern DemoFrame convex_hull;
-extern DemoFrame dynamic_aabb_tree;
-extern DemoFrame compute_distance_point;
-extern DemoFrame collision_detection;
-extern DemoFrame cloth;
-extern DemoFrame collision_filtering;
-extern DemoFrame fixed_rotation;
-extern DemoFrame weld_joint_test;
-extern DemoFrame prismatic_joint_test;
-extern DemoFrame conveyor_belt;
-extern DemoFrame pulley;
-extern DemoFrame windmill;
-extern DemoFrame crank;
-extern DemoFrame terrain;
-extern DemoFrame rounded_polygon;
-extern DemoFrame ray_casting;
-extern DemoFrame line_of_sight;
-extern DemoFrame ragdoll;
-extern DemoFrame ragdoll_100;
-extern DemoFrame car;
-extern DemoFrame compound_shape;
-extern DemoFrame contact_callbacks;
-extern DemoFrame logo;
-extern DemoFrame breakable;
-extern DemoFrame distance_test;
-extern DemoFrame continuous_test;
-extern DemoFrame continuous_test2;
-extern DemoFrame sub_stepping;
-extern DemoFrame shape_cast;
-extern DemoFrame correct_awake;
-extern DemoFrame shape_cast_2;
+// extern DemoFrame single_box;
+// extern DemoFrame box_stacking;
+// extern DemoFrame pyramid;
+// extern DemoFrame single_pendulum;
+// extern DemoFrame springs;
+// extern DemoFrame random_convex_polygons;
+// extern DemoFrame seesaw;
+// extern DemoFrame friction_test;
+// extern DemoFrame restitution_test;
+// extern DemoFrame multi_pendulum;
+// extern DemoFrame suspension_bridge;
+// extern DemoFrame circle_stacking;
+// extern DemoFrame capsule_stacking;
+// extern DemoFrame circles_1000;
+// extern DemoFrame boxes_1000;
+// extern DemoFrame capsules_1000;
+// extern DemoFrame convex_polygons_1000;
+// extern DemoFrame mix_1000;
+// extern DemoFrame dense_collision;
+// extern DemoFrame kinematic_body;
+// extern DemoFrame convex_hull;
+// extern DemoFrame dynamic_aabb_tree;
+// extern DemoFrame compute_distance_point;
+// extern DemoFrame collision_detection;
+// extern DemoFrame cloth;
+// extern DemoFrame collision_filtering;
+// extern DemoFrame fixed_rotation;
+// extern DemoFrame weld_joint_test;
+// extern DemoFrame prismatic_joint_test;
+// extern DemoFrame conveyor_belt;
+// extern DemoFrame pulley;
+// extern DemoFrame windmill;
+// extern DemoFrame crank;
+// extern DemoFrame terrain;
+// extern DemoFrame rounded_polygon;
+// extern DemoFrame ray_casting;
+// extern DemoFrame line_of_sight;
+// extern DemoFrame ragdoll;
+// extern DemoFrame ragdoll_100;
+// extern DemoFrame car;
+// extern DemoFrame compound_shape;
+// extern DemoFrame contact_callbacks;
+// extern DemoFrame logo;
+// extern DemoFrame breakable;
+// extern DemoFrame distance_test;
+// extern DemoFrame continuous_test;
+// extern DemoFrame continuous_test2;
+// extern DemoFrame sub_stepping;
+// extern DemoFrame shape_cast;
+// extern DemoFrame correct_awake;
+// extern DemoFrame shape_cast_2;
 
-static int32 init_demos()
+int32 register_demo(const char* name, DemoCreateFunction* createFunction, int index = 0)
 {
-    demos[demo_count++] = single_box;
-    demos[demo_count++] = box_stacking;
-    demos[demo_count++] = pyramid;
-    demos[demo_count++] = single_pendulum;
-    demos[demo_count++] = springs;
-    demos[demo_count++] = random_convex_polygons;
-    demos[demo_count++] = seesaw;
-    demos[demo_count++] = friction_test;
-    demos[demo_count++] = restitution_test;
-    demos[demo_count++] = multi_pendulum;
-    demos[demo_count++] = suspension_bridge;
-    demos[demo_count++] = circle_stacking;
-    demos[demo_count++] = capsule_stacking;
-    demos[demo_count++] = circles_1000;
-    demos[demo_count++] = boxes_1000;
-    demos[demo_count++] = capsules_1000;
-    demos[demo_count++] = convex_polygons_1000;
-    demos[demo_count++] = mix_1000;
-    demos[demo_count++] = dense_collision;
-    demos[demo_count++] = kinematic_body;
-    demos[demo_count++] = convex_hull;
-    demos[demo_count++] = dynamic_aabb_tree;
-    demos[demo_count++] = compute_distance_point;
-    demos[demo_count++] = collision_detection;
-    demos[demo_count++] = cloth;
-    demos[demo_count++] = collision_filtering;
-    demos[demo_count++] = fixed_rotation;
-    demos[demo_count++] = weld_joint_test;
-    demos[demo_count++] = prismatic_joint_test;
-    demos[demo_count++] = conveyor_belt;
-    demos[demo_count++] = pulley;
-    demos[demo_count++] = windmill;
-    demos[demo_count++] = crank;
-    demos[demo_count++] = terrain;
-    demos[demo_count++] = rounded_polygon;
-    demos[demo_count++] = ray_casting;
-    demos[demo_count++] = line_of_sight;
-    demos[demo_count++] = ragdoll;
-    demos[demo_count++] = ragdoll_100;
-    demos[demo_count++] = car;
-    demos[demo_count++] = compound_shape;
-    demos[demo_count++] = contact_callbacks;
-    demos[demo_count++] = logo;
-    demos[demo_count++] = breakable;
-    demos[demo_count++] = distance_test;
-    demos[demo_count++] = continuous_test;
-    demos[demo_count++] = continuous_test2;
-    demos[demo_count++] = sub_stepping;
-    demos[demo_count++] = shape_cast;
-    demos[demo_count++] = correct_awake;
-    demos[demo_count++] = shape_cast_2;
-
-    return demo_count;
+    demos.push_back(DemoFrame{ name, createFunction, index });
+    return demos.size();
 }
 
-static int32 _ = init_demos();
+void sort_demos(std::vector<DemoFrame>& demos)
+{
+    std::sort(demos.begin(), demos.end(), [&demos](DemoFrame& l, DemoFrame& r) { return l.index < r.index; });
+}
+
+// static int32 _ = init_demos();
 
 } // namespace muli

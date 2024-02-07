@@ -6,7 +6,8 @@ namespace muli
 
 Game::Game(Application& _app)
     : app{ _app }
-    , demoIndex{ demo_count }
+    , demoCount{ demos.size() }
+    , demoIndex{ demos.size() }
 {
     UpdateProjectionMatrix();
     Window::Get().SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
@@ -16,8 +17,10 @@ Game::Game(Application& _app)
 
     Srand(uint32(std::time(nullptr)));
 
+    sort_demos(demos);
+
     InitDemo(0);
-    // InitDemo(demo_count - 1);
+    // InitDemo(demoCount - 1);
     // InitDemo(42); // Logo
 }
 
@@ -176,7 +179,7 @@ void Game::UpdateUI()
             {
                 if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 28 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
-                    for (int32 i = 0; i < demo_count; ++i)
+                    for (int32 i = 0; i < demoCount; ++i)
                     {
                         const bool selected = (demoIndex == i);
 
@@ -459,7 +462,7 @@ void Game::UpdateProjectionMatrix()
 
 void Game::InitDemo(int32 index)
 {
-    if (index >= demo_count)
+    if (index >= demos.size())
     {
         return;
     }

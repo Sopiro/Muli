@@ -24,6 +24,7 @@ public:
 
         RigidBody* b = world->CreateCapsule(1.0f, 0.3f);
         b->SetPosition(4.0f, 3.0f);
+        b->SetFixedRotation(true);
 
         b = world->CreateBox(0.5f);
         b->SetPosition(0.0f, 5.0f);
@@ -33,8 +34,8 @@ public:
     {
         if (world->GetBodyCount() > 1)
         {
-            RigidBody* a = world->GetBodyList();
-            RigidBody* b = a->GetNext();
+            RigidBody* a = world->GetBodyListTail()->GetPrev();
+            RigidBody* b = world->GetBodyListTail();
 
             Collider* ca = a->GetColliderList();
             Collider* cb = b->GetColliderList();
@@ -112,6 +113,6 @@ public:
     }
 };
 
-DemoFrame shape_cast{ "Shape cast", ShapeCastTest::Create };
+static int index = register_demo("Shape cast", ShapeCastTest::Create, 48);
 
 } // namespace muli

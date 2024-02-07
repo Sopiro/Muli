@@ -46,6 +46,6 @@ public:
     }
 };
 
-DemoFrame random_convex_polygons{ "Random convex polygons", RandomConvexPolygons::Create };
+static int index = register_demo("Random convex polygons", RandomConvexPolygons::Create, 6);
 
 } // namespace muli

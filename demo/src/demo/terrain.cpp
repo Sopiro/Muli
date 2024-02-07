@@ -53,6 +53,6 @@ public:
     }
 };
 
-DemoFrame terrain{ "Terrain", Terrain::Create };
+static int index = register_demo("Terrain", Terrain::Create, 32);
 
 } // namespace muli

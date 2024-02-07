@@ -106,6 +106,6 @@ public:
     }
 };
 
-DemoFrame suspension_bridge{ "Suspension bridge", SuspensionBridge::Create };
+static int index = register_demo("Suspension bridge", SuspensionBridge::Create, 11);
 
 } // namespace muli

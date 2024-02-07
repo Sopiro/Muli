@@ -87,10 +87,11 @@ struct DemoFrame
 {
     const char* name;
     DemoCreateFunction* createFunction;
+    int index;
 };
 
-#define MAX_DEMOS 100
-extern int32 demo_count;
-extern DemoFrame demos[MAX_DEMOS];
+extern std::vector<DemoFrame> demos;
+int32 register_demo(const char* name, DemoCreateFunction* createFunction, int index);
+void sort_demos(std::vector<DemoFrame>& demos);
 
 } // namespace muli

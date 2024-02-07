@@ -39,6 +39,6 @@ public:
     }
 };
 
-DemoFrame capsules_1000{ "1000 Capsules", Capsules1000::Create };
+static int index = register_demo("1000 Capsules", Capsules1000::Create, 16);
 
 } // namespace muli

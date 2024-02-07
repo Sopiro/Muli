@@ -36,6 +36,6 @@ public:
     }
 };
 
-DemoFrame prismatic_joint_test{ "Prismatic joint test", PrismaticJointTest::Create };
+static int index = register_demo("Prismatic joint test", PrismaticJointTest::Create, 27);
 
 } // namespace muli

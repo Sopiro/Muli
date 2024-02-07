@@ -108,6 +108,6 @@ public:
     }
 };
 
-DemoFrame car{ "Car", Car::Create };
+static int index = register_demo("Car", Car::Create, 38);
 
 } // namespace muli

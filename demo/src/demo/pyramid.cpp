@@ -55,6 +55,6 @@ public:
     }
 };
 
-DemoFrame pyramid{ "Pyramid", Pyramid::Create };
+static int index = register_demo("Pyramid", Pyramid::Create, 3);
 
 } // namespace muli

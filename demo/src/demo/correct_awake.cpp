@@ -67,6 +67,6 @@ public:
     }
 };
 
-DemoFrame correct_awake{ "Correct awake", CorrectAwake::Create };
+static int index = register_demo("Correct awake", CorrectAwake::Create, 47);
 
 } // namespace muli

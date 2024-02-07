@@ -48,6 +48,6 @@ public:
     }
 };
 
-DemoFrame fixed_rotation{ "Fixed rotation", FixedRotation::Create };
+static int index = register_demo("Fixed rotation", FixedRotation::Create, 25);
 
 } // namespace muli

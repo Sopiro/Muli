@@ -180,6 +180,6 @@ public:
     }
 };
 
-DemoFrame shape_cast_2{ "Shape cast world", ShapeCastWorld::Create };
+static int index = register_demo("Shape cast world", ShapeCastWorld::Create, 49);
 
 } // namespace muli

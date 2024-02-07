@@ -104,5 +104,6 @@ public:
 };
 
 DemoFrame springs{ "Springs", Springs::Create };
+static int index = register_demo("Springs", Springs::Create, 5);
 
 } // namespace muli

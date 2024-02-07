@@ -39,6 +39,6 @@ public:
     }
 };
 
-DemoFrame capsule_stacking{ "Capsule stacking", CapsuleStacking::Create };
+static int index = register_demo("Capsule stacking", CapsuleStacking::Create, 13);
 
 } // namespace muli

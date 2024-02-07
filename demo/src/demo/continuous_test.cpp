@@ -69,6 +69,6 @@ public:
     }
 };
 
-DemoFrame continuous_test{ "Continuous test", ContinuousTest::Create };
+static int index = register_demo("Continuous test", ContinuousTest::Create, 44);
 
 } // namespace muli

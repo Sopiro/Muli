@@ -80,6 +80,6 @@ public:
     }
 };
 
-DemoFrame multi_pendulum{ "Multi pendulum", MultiPendulum::Create };
+static int index = register_demo("Multi pendulum", MultiPendulum::Create, 10);
 
 } // namespace muli

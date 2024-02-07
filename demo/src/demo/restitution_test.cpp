@@ -86,6 +86,6 @@ public:
     }
 };
 
-DemoFrame restitution_test{ "Restitution test", RestitutionTest::Create };
+static int index = register_demo("Restitution test", RestitutionTest::Create, 9);
 
 } // namespace muli

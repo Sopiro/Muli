@@ -52,6 +52,6 @@ public:
     }
 };
 
-DemoFrame box_stacking{ "Box stacking", BoxStacking::Create };
+static int index = register_demo("Box stacking", BoxStacking::Create, 2);
 
 } // namespace muli

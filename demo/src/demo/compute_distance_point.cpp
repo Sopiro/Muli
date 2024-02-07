@@ -90,6 +90,6 @@ public:
     }
 };
 
-DemoFrame compute_distance_point{ "Distance to a point", ComputeDistancePoint::Create };
+static int index = register_demo("Distance to a point", ComputeDistancePoint::Create, 23);
 
 } // namespace muli
