@@ -70,7 +70,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
         case Shape::Type::circle:
         {
-            const Circle* c = static_cast<const Circle*>(shape);
+            const Circle* c = (const Circle*)shape;
             Vec2 localCenter = c->GetCenter();
             Vec2 center = Mul(tf, localCenter);
             float radius = c->GetRadius();
@@ -100,7 +100,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         break;
         case Shape::Type::capsule:
         {
-            const Capsule* c = static_cast<const Capsule*>(shape);
+            const Capsule* c = (const Capsule*)shape;
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
@@ -166,7 +166,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
             if (mode.rounded == false)
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();
@@ -189,7 +189,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
             }
             else
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();
@@ -250,7 +250,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
         case Shape::Type::circle:
         {
-            const Circle* c = static_cast<const Circle*>(shape);
+            const Circle* c = (const Circle*)shape;
             Vec2 localCenter = c->GetCenter();
             Vec2 center = Mul(tf, localCenter);
             float radius = c->GetRadius();
@@ -277,7 +277,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         break;
         case Shape::Type::capsule:
         {
-            const Capsule* c = static_cast<const Capsule*>(shape);
+            const Capsule* c = (const Capsule*)shape;
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
@@ -339,7 +339,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
             if (mode.rounded == false)
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();
@@ -361,7 +361,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
             }
             else
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();
@@ -420,7 +420,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
         case Shape::Type::circle:
         {
-            const Circle* c = static_cast<const Circle*>(shape);
+            const Circle* c = (const Circle*)shape;
 
             float radius = c->GetRadius();
             Vec2 localCenter = c->GetCenter();
@@ -449,7 +449,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         break;
         case Shape::Type::capsule:
         {
-            const Capsule* c = static_cast<const Capsule*>(shape);
+            const Capsule* c = (const Capsule*)shape;
 
             Vec2 va = c->GetVertexA();
             Vec2 vb = c->GetVertexB();
@@ -508,7 +508,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         {
             if (mode.rounded == false)
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();
@@ -528,7 +528,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
             }
             else
             {
-                const Polygon* p = static_cast<const Polygon*>(shape);
+                const Polygon* p = (const Polygon*)shape;
                 float radius = p->GetRadius();
 
                 const Vec2* vertices = p->GetVertices();

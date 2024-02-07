@@ -41,7 +41,7 @@ void Application::Run()
         {
             window.BeginFrame(clearColor);
 
-            Update(static_cast<float>(deltaTime));
+            Update(float(deltaTime));
             Render();
 
             deltaTime = 0.0f;

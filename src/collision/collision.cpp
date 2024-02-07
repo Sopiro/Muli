@@ -234,7 +234,7 @@ bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const 
 
 bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    const Capsule* c = static_cast<const Capsule*>(a);
+    const Capsule* c = (const Capsule*)a;
     Vec2 va = c->GetVertexA();
     Vec2 vb = c->GetVertexB();
     Vec2 l = vb - va;
@@ -304,7 +304,7 @@ bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
 
 bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    const Polygon* p = static_cast<const Polygon*>(a);
+    const Polygon* p = (const Polygon*)a;
     const Vec2* vertices = p->GetVertices();
     const Vec2* normals = p->GetNormals();
     int32 vertexCount = p->GetVertexCount();

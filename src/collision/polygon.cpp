@@ -57,7 +57,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
 }
 
 Polygon::Polygon(std::initializer_list<Vec2> vertices, bool resetPosition, float radius)
-    : Polygon(vertices.begin(), static_cast<int32>(vertices.size()), resetPosition, radius)
+    : Polygon(vertices.begin(), int32(vertices.size()), resetPosition, radius)
 {
 }
 

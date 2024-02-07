@@ -20,7 +20,7 @@ public:
         float size = 0.2f;
         float range = 3.0f;
 
-        srand(static_cast<uint32>(std::hash<std::string>{}(seed)));
+        srand(uint32(std::hash<std::string>{}(seed)));
 
         for (int32 i = 0; i < 10; ++i)
         {

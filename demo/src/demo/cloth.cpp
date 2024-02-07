@@ -17,7 +17,7 @@ public:
         options.draw_outlined = true;
 
         const int32 rows = 24;
-        const int32 cols = static_cast<int32>(rows * 1.4f);
+        const int32 cols = int32(rows * 1.4f);
         float radius = 0.02f;
 
         float width = 4.5f;

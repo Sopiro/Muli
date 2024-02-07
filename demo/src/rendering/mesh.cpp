@@ -91,17 +91,17 @@ void Mesh::Draw(GLenum drawMode) const
     {
     case GL_TRIANGLES:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, GLsizei(indices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     case GL_LINE_LOOP:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-        glDrawElements(GL_LINE_LOOP, static_cast<GLsizei>(vertices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_LOOP, GLsizei(vertices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     case GL_POINTS:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOl);
-        glDrawElements(GL_POINTS, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_POINTS, GLsizei(indices.size()), GL_UNSIGNED_INT, 0);
         break;
 
     default:

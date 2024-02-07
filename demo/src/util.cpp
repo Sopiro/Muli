@@ -15,7 +15,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     {
     case Shape::Type::circle:
     {
-        const Circle* c = static_cast<const Circle*>(shape);
+        const Circle* c = (const Circle*)shape;
         Vec2 localCenter = c->GetCenter();
         float radius = c->GetRadius();
 
@@ -47,7 +47,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     }
     case Shape::Type::polygon:
     {
-        const Polygon* p = static_cast<const Polygon*>(shape);
+        const Polygon* p = (const Polygon*)shape;
         float radius = p->GetRadius();
 
         const Vec2* vertices = p->GetVertices();
@@ -101,7 +101,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     }
     case Shape::Type::capsule:
     {
-        const Capsule* c = static_cast<const Capsule*>(shape);
+        const Capsule* c = (const Capsule*)shape;
 
         Vec2 v1 = c->GetVertexA();
         Vec2 v2 = c->GetVertexB();
@@ -171,7 +171,7 @@ static inline int32 GetNext(std::unordered_set<int32>& done, int32 i, int32 coun
 std::vector<int32> Triangulate(const std::vector<Vec2>& vertices)
 {
     std::vector<int32> indices;
-    int32 count = static_cast<int32>(vertices.size());
+    int32 count = int32(vertices.size());
     indices.reserve((count - 2) * 3);
 
     std::unordered_set<int32> done;

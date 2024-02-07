@@ -1115,7 +1115,7 @@ RigidBody* World::CreatePolygon(
 {
     RigidBody* b = CreateEmptyBody(type);
 
-    Polygon polygon(vertices.data(), static_cast<int32>(vertices.size()), true, radius);
+    Polygon polygon(vertices.data(), int32(vertices.size()), true, radius);
     b->CreateCollider(&polygon, density);
 
     Vec2 center{ 0.0f };

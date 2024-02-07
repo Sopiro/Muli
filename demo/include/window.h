@@ -107,16 +107,16 @@ inline void Window::OnCursorPos(GLFWwindow* glfwWindow, double xpos, double ypos
 {
     ImGui_ImplGlfw_CursorPosCallback(glfwWindow, xpos, ypos);
 
-    Input::curr_mouse_pos.x = static_cast<float>(xpos);
-    Input::curr_mouse_pos.y = static_cast<float>(ypos);
+    Input::curr_mouse_pos.x = float(xpos);
+    Input::curr_mouse_pos.y = float(ypos);
 }
 
 inline void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_ScrollCallback(glfwWindow, xoffset, yoffset);
 
-    Input::mouse_scroll.x = static_cast<float>(xoffset);
-    Input::mouse_scroll.y = static_cast<float>(yoffset);
+    Input::mouse_scroll.x = float(xoffset);
+    Input::mouse_scroll.y = float(yoffset);
 }
 
 inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback)
