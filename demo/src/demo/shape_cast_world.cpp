@@ -42,6 +42,7 @@ public:
         // RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(3.0f, 3.0f);
         b->SetFixedRotation(true);
+        b->SetContinuous(true);
     }
 
     void Render() override
