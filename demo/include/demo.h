@@ -90,8 +90,17 @@ struct DemoFrame
     int index;
 };
 
-extern std::vector<DemoFrame> demos;
-int32 register_demo(const char* name, DemoCreateFunction* createFunction, int index);
-void sort_demos(std::vector<DemoFrame>& demos);
+inline std::vector<DemoFrame> demos;
+
+inline int32 register_demo(const char* name, DemoCreateFunction* createFunction, int index = 0)
+{
+    demos.push_back(DemoFrame{ name, createFunction, index });
+    return demos.size();
+}
+
+inline void sort_demos(std::vector<DemoFrame>& demos)
+{
+    std::sort(demos.begin(), demos.end(), [&demos](DemoFrame& l, DemoFrame& r) { return l.index < r.index; });
+}
 
 } // namespace muli
