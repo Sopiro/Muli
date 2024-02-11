@@ -959,10 +959,10 @@ void World::RayCastAny(
 
     struct TempCallback
     {
-        decltype(callback) callback;
+        decltype(callback) callbackFcn;
 
         TempCallback(decltype(callback) callback)
-            : callback{ callback }
+            : callbackFcn{ callback }
         {
         }
 
@@ -976,7 +976,7 @@ void World::RayCastAny(
                 float fraction = output.fraction;
                 Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
 
-                return callback(collider, point, output.normal, fraction);
+                return callbackFcn(collider, point, output.normal, fraction);
             }
 
             return input.maxFraction;
@@ -1040,13 +1040,13 @@ void World::ShapeCastAny(const Shape* shape,
 
     struct TempCallback
     {
-        decltype(callback) callback;
+        decltype(callback) callbackFcn;
         const Shape* shape;
         Transform tf;
         Vec2 translation;
 
         TempCallback(decltype(callback) callback, const Shape* shape, Transform tf, Vec2 translation)
-            : callback{ callback }
+            : callbackFcn{ callback }
             , shape{ shape }
             , tf{ tf }
             , translation{ translation }
@@ -1061,7 +1061,7 @@ void World::ShapeCastAny(const Shape* shape,
                                  translation * input.maxFraction, Vec2::zero, &output);
             if (hit)
             {
-                return callback(collider, output.point, output.normal, output.t * input.maxFraction);
+                return callbackFcn(collider, output.point, output.normal, output.t * input.maxFraction);
             }
 
             return input.maxFraction;
