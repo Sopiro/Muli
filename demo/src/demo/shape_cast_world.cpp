@@ -38,7 +38,7 @@ public:
         b->SetPosition(0.0f, 1.0f);
 
         b = world->CreateCapsule(0.7f, 0.3f);
-        // RigidBody* b = world->CreateCircle(0.5f);
+        // b = world->CreateCircle(0.5f);
         // RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(3.0f, 3.0f);
         b->SetFixedRotation(true);

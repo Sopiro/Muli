@@ -934,14 +934,19 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
 
 void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback)
 {
-    AABB aabb0;
-    shape->ComputeAABB(tf, &aabb0);
+    AABB aabb;
+    shape->ComputeAABB(tf, &aabb);
 
-    AABB aabb1;
-    aabb1.min = aabb0.min + translation;
-    aabb1.max = aabb0.max + translation;
+    Vec2 extents = aabb.GetExtents();
+    Vec2 d = Normalize(translation);
+    Vec2 perp = Cross(1.0f, d);
+    float r = Dot(Abs(perp), extents);
 
-    AABB aabb = AABB::Union(aabb0, aabb1);
+    RayCastInput input;
+    input.from = tf.position;
+    input.to = tf.position + translation;
+    input.maxFraction = 1.0f;
+    input.radius = r;
 
     struct TempCallback
     {
@@ -950,9 +955,8 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
         Transform tf;
         Vec2 translation;
 
-        bool QueryCallback(NodeProxy node, Collider* collider)
+        float RayCastCallback(const RayCastInput& input, Collider* collider)
         {
-            muliNotUsed(node);
             ShapeCastOutput output;
 
             bool hit =
@@ -962,7 +966,7 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
                 return callback->OnHitAny(collider, output.point, output.normal, output.t);
             }
 
-            return true;
+            return input.maxFraction;
         }
     } anyCallback;
 
@@ -971,7 +975,7 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     anyCallback.tf = tf;
     anyCallback.translation = translation;
 
-    contactManager.broadPhase.tree.Query(aabb, &anyCallback);
+    contactManager.broadPhase.tree.RayCast(input, &anyCallback);
 }
 
 bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback)
