@@ -49,29 +49,27 @@ public:
         Renderer::DrawMode dm{};
 
         count = 0;
-        world->RayCastAny(
-            from, to,
-            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-                ++count;
+        world->RayCastAny(from, to, radius,
+                          [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+                              ++count;
 
-                if (closest == false)
-                {
-                    renderer.DrawPoint(point);
-                    renderer.DrawLine(point, point + normal * 0.2f);
-                    renderer.DrawShape(&c, Transform(point, identity), dm);
+                              if (closest == false)
+                              {
+                                  renderer.DrawPoint(point);
+                                  renderer.DrawLine(point, point + normal * 0.2f);
+                                  renderer.DrawShape(&c, Transform(point, identity), dm);
 
-                    return 1.0f;
-                }
-                else
-                {
-                    hit = true;
-                    closestPoint = point;
-                    closestNormal = normal;
+                                  return 1.0f;
+                              }
+                              else
+                              {
+                                  hit = true;
+                                  closestPoint = point;
+                                  closestNormal = normal;
 
-                    return fraction;
-                }
-            },
-            radius);
+                                  return fraction;
+                              }
+                          });
 
         if (closest && hit)
         {

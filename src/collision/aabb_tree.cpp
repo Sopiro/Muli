@@ -537,6 +537,31 @@ void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
     nodes[node1].parent = parent2;
 }
 
+void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
+{
+    if (root == muliNullNode)
+    {
+        return;
+    }
+
+    GrowableArray<NodeProxy, 256> stack;
+    stack.EmplaceBack(root);
+
+    while (stack.Count() != 0)
+    {
+        NodeProxy current = stack.PopBack();
+
+        if (nodes[current].IsLeaf() == false)
+        {
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
+        }
+
+        const Node* node = nodes + current;
+        callback(node);
+    }
+}
+
 void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const
 {
     if (root == muliNullNode)
@@ -607,31 +632,6 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*
     }
 }
 
-void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
-{
-    if (root == muliNullNode)
-    {
-        return;
-    }
-
-    GrowableArray<NodeProxy, 256> stack;
-    stack.EmplaceBack(root);
-
-    while (stack.Count() != 0)
-    {
-        NodeProxy current = stack.PopBack();
-
-        if (nodes[current].IsLeaf() == false)
-        {
-            stack.EmplaceBack(nodes[current].child1);
-            stack.EmplaceBack(nodes[current].child2);
-        }
-
-        const Node* node = nodes + current;
-        callback(node);
-    }
-}
-
 void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Data*)>& callback) const
 {
     Vec2 p1 = input.from;
@@ -688,16 +688,16 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
             subInput.maxFraction = maxFraction;
             subInput.radius = input.radius;
 
-            float value = callback(subInput, node->data);
-            if (value == 0.0f)
+            float newFraction = callback(subInput, node->data);
+            if (newFraction == 0.0f)
             {
                 return;
             }
 
-            if (value > 0.0f)
+            if (newFraction > 0.0f)
             {
                 // Update ray AABB
-                maxFraction = value;
+                maxFraction = newFraction;
                 Vec2 newEnd = p1 + maxFraction * (p2 - p1);
                 rayAABB.min = Min(p1, newEnd) - radius;
                 rayAABB.max = Max(p1, newEnd) + radius;

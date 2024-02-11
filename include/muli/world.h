@@ -51,144 +51,197 @@ public:
     void BufferDestroy(Joint* joint);
     void BufferDestroy(const std::vector<Joint*>& joints);
 
+    // clang-format off
     // Factory functions for bodies
-
     RigidBody* DuplicateBody(RigidBody* body);
 
-    RigidBody* CreateEmptyBody(RigidBody::Type type = RigidBody::Type::dynamic_body);
-    RigidBody* CreateCircle(float radius, RigidBody::Type type = RigidBody::Type::dynamic_body, float density = default_density);
-    RigidBody* CreateCapsule(float length,
-                             float radius,
-                             bool horizontal = false,
-                             RigidBody::Type type = RigidBody::Type::dynamic_body,
-                             float density = default_density);
-    RigidBody* CreateCapsule(const Vec2& point1,
-                             const Vec2& point2,
-                             float radius,
-                             RigidBody::Type type = RigidBody::Type::dynamic_body,
-                             bool resetPosition = false,
-                             float density = default_density);
-    RigidBody* CreatePolygon(const std::vector<Vec2>& vertices,
-                             RigidBody::Type type = RigidBody::Type::dynamic_body,
-                             bool resetCenter = true,
-                             float radius = default_radius,
-                             float density = default_density);
-    RigidBody* CreateBox(float size,
-                         RigidBody::Type type = RigidBody::Type::dynamic_body,
-                         float radius = default_radius,
-                         float density = default_density);
-    RigidBody* CreateBox(float width,
-                         float height,
-                         RigidBody::Type type = RigidBody::Type::dynamic_body,
-                         float radius = default_radius,
-                         float density = default_density);
-    RigidBody* CreateRandomConvexPolygon(float length,
-                                         int32 vertexCount = 0,
-                                         RigidBody::Type type = RigidBody::Type::dynamic_body,
-                                         float radius = default_radius,
-                                         float density = default_density);
-    RigidBody* CreateRegularPolygon(float length,
-                                    int32 vertexCount = 0,
-                                    float initialAngle = 0,
-                                    RigidBody::Type type = RigidBody::Type::dynamic_body,
-                                    float radius = default_radius,
-                                    float density = default_density);
+    RigidBody* CreateEmptyBody(
+        RigidBody::Type type = RigidBody::Type::dynamic_body
+    );
+    RigidBody* CreateCircle(
+        float radius,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float density = default_density
+    );
+    RigidBody* CreateCapsule(
+        float length,
+        float radius,
+        bool horizontal = false,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float density = default_density
+    );
+    RigidBody* CreateCapsule(
+        const Vec2& point1,
+        const Vec2& point2,
+        float radius,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        bool resetPosition = false,
+        float density = default_density
+    );
+    RigidBody* CreatePolygon(
+        const std::vector<Vec2>& vertices,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        bool resetCenter = true,
+        float radius = default_radius,
+        float density = default_density
+    );
+    RigidBody* CreateBox(
+        float size,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float radius = default_radius,
+        float density = default_density
+    );
+    RigidBody* CreateBox(
+        float width,
+        float height,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float radius = default_radius,
+        float density = default_density
+    );
+    RigidBody* CreateRandomConvexPolygon(
+        float length,
+        int32 vertexCount = 0,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float radius = default_radius,
+        float density = default_density
+    );
+    RigidBody* CreateRegularPolygon(
+        float length,
+        int32 vertexCount = 0,
+        float initialAngle = 0,
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        float radius = default_radius,
+        float density = default_density
+    );
 
     // Factory functions for joints
     // You should register the bodies to the world before registering the joints
     // Otherwise the functions will return nullptr
-
-    GrabJoint* CreateGrabJoint(RigidBody* body,
-                               const Vec2& anchor,
-                               const Vec2& target,
-                               float frequency = 1.0f,
-                               float dampingRatio = 0.5f,
-                               float jointMass = 1.0f);
-    RevoluteJoint* CreateRevoluteJoint(RigidBody* bodyA,
-                                       RigidBody* bodyB,
-                                       const Vec2& anchor,
-                                       float frequency = 10.0f,
-                                       float dampingRatio = 1.0f,
-                                       float jointMass = 1.0f);
-    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
-                                       RigidBody* bodyB,
-                                       const Vec2& anchorA,
-                                       const Vec2& anchorB,
-                                       float length = -1.0f,
-                                       float frequency = 10.0f,
-                                       float dampingRatio = 1.0f,
-                                       float jointMass = 1.0f);
-    DistanceJoint* CreateDistanceJoint(RigidBody* bodyA,
-                                       RigidBody* bodyB,
-                                       float length = -1.0f,
-                                       float frequency = 10.0f,
-                                       float dampingRatio = 1.0f,
-                                       float jointMass = 1.0f);
+    GrabJoint* CreateGrabJoint(
+        RigidBody* body,
+        const Vec2& anchor,
+        const Vec2& target,
+        float frequency = 1.0f,
+        float dampingRatio = 0.5f,
+        float jointMass = 1.0f
+    );
+    RevoluteJoint* CreateRevoluteJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchor,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    DistanceJoint* CreateDistanceJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchorA,
+        const Vec2& anchorB,
+        float length = -1.0f,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    DistanceJoint* CreateDistanceJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        float length = -1.0f,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
     AngleJoint* CreateAngleJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    WeldJoint* CreateWeldJoint(RigidBody* bodyA,
-                               RigidBody* bodyB,
-                               const Vec2& anchor,
-                               float frequency = -1.0f,
-                               float dampingRatio = 1.0f,
-                               float jointMass = 1.0f);
-    LineJoint* CreateLineJoint(RigidBody* bodyA,
-                               RigidBody* bodyB,
-                               const Vec2& anchorA,
-                               const Vec2& dir,
-                               float frequency = 10.0f,
-                               float dampingRatio = 1.0f,
-                               float jointMass = 1.0f);
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    WeldJoint* CreateWeldJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchor,
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
     LineJoint* CreateLineJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = 10.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    PrismaticJoint* CreatePrismaticJoint(RigidBody* bodyA,
-                                         RigidBody* bodyB,
-                                         const Vec2& anchor,
-                                         const Vec2& dir,
-                                         float frequency = -1.0f,
-                                         float dampingRatio = 1.0f,
-                                         float jointMass = 1.0f);
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchorA,
+        const Vec2& dir,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    LineJoint* CreateLineJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
     PrismaticJoint* CreatePrismaticJoint(
-        RigidBody* bodyA, RigidBody* bodyB, float frequency = -1.0f, float dampingRatio = 1.0f, float jointMass = 1.0f);
-    PulleyJoint* CreatePulleyJoint(RigidBody* bodyA,
-                                   RigidBody* bodyB,
-                                   const Vec2& anchorA,
-                                   const Vec2& anchorB,
-                                   const Vec2& groundAnchorA,
-                                   const Vec2& groundAnchorB,
-                                   float ratio = 1.0f,
-                                   float frequency = -1.0f,
-                                   float dampingRatio = 1.0f,
-                                   float jointMass = 1.0f);
-    MotorJoint* CreateMotorJoint(RigidBody* bodyA,
-                                 RigidBody* bodyB,
-                                 const Vec2& anchor,
-                                 float maxForce = 1000.0f,
-                                 float maxTorque = 1000.0f,
-                                 float frequency = -1.0f,
-                                 float dampingRatio = 1.0f,
-                                 float jointMass = 1.0f);
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchor,
+        const Vec2& dir,
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    PrismaticJoint* CreatePrismaticJoint(
+        RigidBody* bodyA, 
+        RigidBody* bodyB, 
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    PulleyJoint* CreatePulleyJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchorA,
+        const Vec2& anchorB,
+        const Vec2& groundAnchorA,
+        const Vec2& groundAnchorB,
+        float ratio = 1.0f,
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    MotorJoint* CreateMotorJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchor,
+        float maxForce = 1000.0f,
+        float maxTorque = 1000.0f,
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    // clang-format on
 
     std::vector<Collider*> Query(const Vec2& point) const;
     std::vector<Collider*> Query(const AABB& aabb) const;
     void Query(const Vec2& point, WorldQueryCallback* callback);
     void Query(const AABB& aabb, WorldQueryCallback* callback);
 
+    void RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback);
+    bool RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback);
+    void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
+    bool ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback);
+
     void RayCastAny(
         const Vec2& from,
         const Vec2& to,
-        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback,
-        float radius = 0.0f);
+        float radius,
+        const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback);
     bool RayCastClosest(
         const Vec2& from,
         const Vec2& to,
-        const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback,
-        float radius = 0.0f);
-    void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback, float radius = 0.0f);
-    bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback, float radius = 0.0f);
-
-    void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
-    bool ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback);
+        float radius,
+        const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback);
 
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;

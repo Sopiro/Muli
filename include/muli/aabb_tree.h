@@ -68,20 +68,19 @@ public:
     bool WasMoved(NodeProxy node) const;
     Data* GetData(NodeProxy node) const;
 
-    void Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const;
-    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const;
+    template <typename T>
+    void Traverse(T* callback) const;
     template <typename T>
     void Query(const Vec2& point, T* callback) const;
     template <typename T>
     void Query(const AABB& aabb, T* callback) const;
-
-    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Data* data)>& callback) const;
     template <typename T>
     void RayCast(const RayCastInput& input, T* callback) const;
 
     void Traverse(const std::function<void(const Node*)>& callback) const;
-    template <typename T>
-    void Traverse(T* callback) const;
+    void Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const;
+    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const;
+    void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Data* data)>& callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();
@@ -149,6 +148,32 @@ inline float AABBTree::ComputeTreeCost() const
     Traverse([&cost](const Node* node) -> void { cost += SAH(node->aabb); });
 
     return cost;
+}
+
+template <typename T>
+void AABBTree::Traverse(T* callback) const
+{
+    if (root == muliNullNode)
+    {
+        return;
+    }
+
+    GrowableArray<NodeProxy, 256> stack;
+    stack.EmplaceBack(root);
+
+    while (stack.Count() != 0)
+    {
+        NodeProxy current = stack.PopBack();
+
+        if (nodes[current].IsLeaf() == false)
+        {
+            stack.EmplaceBack(nodes[current].child1);
+            stack.EmplaceBack(nodes[current].child2);
+        }
+
+        const Node* node = nodes + current;
+        callback->TraverseCallback(node);
+    }
 }
 
 template <typename T>
@@ -280,16 +305,16 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
             subInput.maxFraction = maxFraction;
             subInput.radius = radius.x;
 
-            float value = callback->RayCastCallback(subInput, node->data);
-            if (value == 0.0f)
+            float newFraction = callback->RayCastCallback(subInput, node->data);
+            if (newFraction == 0.0f)
             {
                 return;
             }
 
-            if (value > 0.0f)
+            if (newFraction > 0.0f)
             {
                 // Update ray AABB
-                maxFraction = value;
+                maxFraction = newFraction;
                 Vec2 newEnd = p1 + maxFraction * (p2 - p1);
                 rayAABB.min = Min(p1, newEnd) - radius;
                 rayAABB.max = Max(p1, newEnd) + radius;
@@ -300,32 +325,6 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
             stack.EmplaceBack(node->child1);
             stack.EmplaceBack(node->child2);
         }
-    }
-}
-
-template <typename T>
-void AABBTree::Traverse(T* callback) const
-{
-    if (root == muliNullNode)
-    {
-        return;
-    }
-
-    GrowableArray<NodeProxy, 256> stack;
-    stack.EmplaceBack(root);
-
-    while (stack.Count() != 0)
-    {
-        NodeProxy current = stack.PopBack();
-
-        if (nodes[current].IsLeaf() == false)
-        {
-            stack.EmplaceBack(nodes[current].child1);
-            stack.EmplaceBack(nodes[current].child2);
-        }
-
-        const Node* node = nodes + current;
-        callback->TraverseCallback(node);
     }
 }
 
