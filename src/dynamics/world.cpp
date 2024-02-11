@@ -829,11 +829,11 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAn
 
             return input.maxFraction;
         }
-    } anyCallback;
+    } tempCallback;
 
-    anyCallback.callback = callback;
+    tempCallback.callback = callback;
 
-    contactManager.broadPhase.tree.RayCast(input, &anyCallback);
+    contactManager.broadPhase.tree.RayCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback)
@@ -875,16 +875,11 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     AABB aabb;
     shape->ComputeAABB(tf, &aabb);
 
-    Vec2 extents = aabb.GetExtents();
-    Vec2 d = Normalize(translation);
-    Vec2 perp = Cross(1.0f, d);
-    float r = Dot(Abs(perp), extents);
-
-    RayCastInput input;
+    AABBCastInput input;
     input.from = tf.position;
     input.to = tf.position + translation;
     input.maxFraction = 1.0f;
-    input.radius = r;
+    input.extents = aabb.GetExtents();
 
     struct TempCallback
     {
@@ -893,27 +888,27 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
         Transform tf;
         Vec2 translation;
 
-        float RayCastCallback(const RayCastInput& input, Collider* collider)
+        float AABBCastCallback(const AABBCastInput& input, Collider* collider)
         {
             ShapeCastOutput output;
 
-            bool hit =
-                ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation, Vec2::zero, &output);
+            bool hit = ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(),
+                                 translation * input.maxFraction, Vec2::zero, &output);
             if (hit)
             {
-                return callback->OnHitAny(collider, output.point, output.normal, output.t);
+                return callback->OnHitAny(collider, output.point, output.normal, output.t * input.maxFraction);
             }
 
             return input.maxFraction;
         }
-    } anyCallback;
+    } tempCallback;
 
-    anyCallback.callback = callback;
-    anyCallback.shape = shape;
-    anyCallback.tf = tf;
-    anyCallback.translation = translation;
+    tempCallback.callback = callback;
+    tempCallback.shape = shape;
+    tempCallback.tf = tf;
+    tempCallback.translation = translation;
 
-    contactManager.broadPhase.tree.RayCast(input, &anyCallback);
+    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback)
@@ -929,13 +924,10 @@ bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2
         float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
         {
             hit = true;
-            if (t < closestT)
-            {
-                closestCollider = collider;
-                closestPoint = point;
-                closestNormal = normal;
-                closestT = t;
-            }
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestT = t;
 
             return t;
         }

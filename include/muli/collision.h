@@ -33,7 +33,7 @@ struct ContactManifold
 };
 
 // Define a ray such that:
-// Ray = from + maxFraction * (to - from)
+// Ray = from + maxFraction * (to - from) with search radius
 struct RayCastInput
 {
     Vec2 from;
@@ -46,6 +46,14 @@ struct RayCastOutput
 {
     Vec2 normal;
     float fraction;
+};
+
+struct AABBCastInput
+{
+    Vec2 from;
+    Vec2 to;
+    float maxFraction;
+    Vec2 extents;
 };
 
 // clang-format off
