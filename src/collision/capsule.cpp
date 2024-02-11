@@ -156,11 +156,13 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
     Vec2 pv = p1 - v1;
 
+    float radii = radius + input.radius;
+
     // Signed distance along normal
     float distance = Dot(pv, n);
 
     // Does the ray start within the capsule band?
-    if (Abs(distance) <= radius)
+    if (Abs(distance) <= radii)
     {
         float r = Dot(e, pv);
 
@@ -172,7 +174,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;
@@ -205,7 +207,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;
@@ -234,7 +236,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
         return false;
     }
 
-    Vec2 rn = n * radius;
+    Vec2 rn = n * radii;
 
     // Translate edge along normal
     if (distance > 0.0f)
@@ -277,7 +279,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
         float a = Dot(d, d);
         float b = 2.0f * Dot(f, d);
-        float c = Dot(f, f) - radius * radius;
+        float c = Dot(f, f) - radii * radii;
 
         // Quadratic equation discriminant
         float discriminant = b * b - 4.0f * a * c;
@@ -309,7 +311,7 @@ bool Capsule::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
         float a = Dot(d, d);
         float b = 2.0f * Dot(f, d);
-        float c = Dot(f, f) - radius * radius;
+        float c = Dot(f, f) - radii * radii;
 
         // Quadratic equation discriminant
         float discriminant = b * b - 4.0f * a * c;

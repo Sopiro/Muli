@@ -396,7 +396,8 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
     Vec2 d = p2 - p1;
 
     // Offset for polygon skin
-    float offset = (radius <= default_radius) ? 0.0f : radius;
+    float radii = radius + input.radius;
+    float offset = (radii <= default_radius) ? 0.0f : radii;
 
     float near = 0.0f;
     float far = input.maxFraction;
@@ -460,7 +461,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         Vec2 e = v2 - v1;
         Vec2 q = p1 + d * near;
 
-        float u = Dot(q - (v1 + n * radius), e);
+        float u = Dot(q - (v1 + n * radii), e);
 
         if (u < 0.0f)
         {
@@ -469,7 +470,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;
@@ -500,7 +501,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;

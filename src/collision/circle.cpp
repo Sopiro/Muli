@@ -56,11 +56,12 @@ bool Circle::RayCast(const Transform& transform, const RayCastInput& input, RayC
 
     Vec2 d = input.to - input.from;
     Vec2 f = input.from - position;
-    float r2 = radius * radius;
+
+    float radii = radius + input.radius;
 
     float a = Dot(d, d);
     float b = 2.0f * Dot(f, d);
-    float c = Dot(f, f) - r2;
+    float c = Dot(f, f) - radii * radii;
 
     // Quadratic equation discriminant
     float discriminant = b * b - 4.0f * a * c;

@@ -13,6 +13,7 @@ public:
     Vec2 to{ 3.0f, 3.3f };
 
     bool closest = true;
+    float radius = 0.0f;
 
     RayCasting(Game& game)
         : Demo(game)
@@ -44,32 +45,59 @@ public:
         Vec2 closestPoint;
         Vec2 closestNormal;
 
+        Circle c(radius);
+        Renderer::DrawMode dm{};
+
         count = 0;
-        world->RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-            ++count;
+        world->RayCastAny(
+            from, to,
+            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+                ++count;
 
-            if (closest == false)
-            {
-                renderer.DrawPoint(point);
-                renderer.DrawLine(point, point + normal * 0.2f);
+                if (closest == false)
+                {
+                    renderer.DrawPoint(point);
+                    renderer.DrawLine(point, point + normal * 0.2f);
+                    renderer.DrawShape(&c, Transform(point, identity), dm);
 
-                return 1.0f;
-            }
-            else
-            {
-                hit = true;
-                closestPoint = point;
-                closestNormal = normal;
+                    return 1.0f;
+                }
+                else
+                {
+                    hit = true;
+                    closestPoint = point;
+                    closestNormal = normal;
 
-                return fraction;
-            }
-        });
+                    return fraction;
+                }
+            },
+            radius);
 
         if (closest && hit)
         {
             renderer.DrawPoint(closestPoint);
             renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
+            renderer.DrawShape(&c, Transform(closestPoint, identity), dm);
         }
+
+        // {
+        //     Vec2 p1 = Vec2{ 3, 1 };
+        //     Vec2 p2 = Vec2{ 3, 3 };
+        //     renderer.DrawLine(p1, p2);
+        //     renderer.DrawPoint(p1);
+        //     renderer.DrawPoint(p2);
+
+        //     RayCastOutput ro;
+        //     bool h =
+        //         RayCastLineSegment(p1, p2, RayCastInput{ .from = from, .to = to, .maxFraction = 1.0f, .radius = radius }, &ro);
+        //     if (h)
+        //     {
+        //         // std::cout << "hit" << std::endl;
+        //         Vec2 p = from + ro.fraction * (to - from);
+        //         renderer.DrawPoint(p);
+        //         renderer.DrawShape(&c, Transform{ p, identity }, dm);
+        //     }
+        // }
     }
 
     void UpdateInput() override
@@ -110,6 +138,7 @@ public:
                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::Checkbox("Closest", &closest);
+            ImGui::DragFloat("Ray radius", &radius, 0.01, 0.0f, 0.5f, "%.2f");
         }
         ImGui::End();
 

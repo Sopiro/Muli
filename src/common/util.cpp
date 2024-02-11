@@ -200,11 +200,11 @@ bool RayCastCircle(const Vec2& p, float r, const RayCastInput& input, RayCastOut
 {
     Vec2 d = input.to - input.from;
     Vec2 f = input.from - p;
-    float r2 = r * r;
+    float radii = r + input.radius;
 
     float a = Dot(d, d);
     float b = 2.0f * Dot(f, d);
-    float c = Dot(f, f) - r2;
+    float c = Dot(f, f) - radii * radii;
 
     // Quadratic equation discriminant
     float discriminant = b * b - 4.0f * a * c;
@@ -230,10 +230,15 @@ bool RayCastCircle(const Vec2& p, float r, const RayCastInput& input, RayCastOut
 
 bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& input, RayCastOutput* output)
 {
-    Vec2 d = input.from - input.to;
+    Vec2 d = input.to - input.from;
     Vec2 e = v2 - v1;
     Vec2 normal = Cross(e, 1.0f);
-    normal.Normalize();
+
+    float length = normal.NormalizeSafe();
+    if (length == 0.0f)
+    {
+        return false;
+    }
 
     float denominator = Dot(normal, d);
 
@@ -243,10 +248,18 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& inpu
         return false;
     }
 
-    float numeratorT = Dot(normal, v1 - input.from);
+    float numerator = Dot(normal, v1 - input.from);
+    if (denominator < 0)
+    {
+        numerator += input.radius;
+    }
+    else
+    {
+        numerator -= input.radius;
+    }
 
-    float t = numeratorT / denominator;
-    if (t < 0.0f || 1.0f < t)
+    float t = numerator / denominator;
+    if (t < 0.0f || t > input.maxFraction)
     {
         return false;
     }
@@ -255,13 +268,13 @@ bool RayCastLineSegment(const Vec2& v1, const Vec2& v2, const RayCastInput& inpu
     Vec2 q = input.from + t * d;
 
     float u = Dot(q - v1, e);
-    if (u < 0.0f || Dot(e, e) < u)
+    if (u < 0.0f || u > Dot(e, e))
     {
         return false;
     }
 
     output->fraction = t;
-    if (numeratorT > 0.0f)
+    if (denominator > 0.0f)
     {
         output->normal = -normal;
     }
@@ -288,11 +301,13 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
     Vec2 pv = p1 - v1;
 
+    float radii = radius + input.radius;
+
     // Signed distance along normal
     float distance = Dot(pv, n);
 
     // Does the ray start within the capsule band?
-    if (Abs(distance) <= radius)
+    if (Abs(distance) <= radii)
     {
         float r = Dot(e, pv);
 
@@ -304,7 +319,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;
@@ -337,7 +352,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
             float a = Dot(d, d);
             float b = 2.0f * Dot(f, d);
-            float c = Dot(f, f) - radius * radius;
+            float c = Dot(f, f) - radii * radii;
 
             // Quadratic equation discriminant
             float discriminant = b * b - 4.0f * a * c;
@@ -366,7 +381,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
         return false;
     }
 
-    Vec2 rn = n * radius;
+    Vec2 rn = n * radii;
 
     // Translate edge along normal
     if (distance > 0.0f)
@@ -409,7 +424,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
         float a = Dot(d, d);
         float b = 2.0f * Dot(f, d);
-        float c = Dot(f, f) - radius * radius;
+        float c = Dot(f, f) - radii * radii;
 
         // Quadratic equation discriminant
         float discriminant = b * b - 4.0f * a * c;
@@ -441,7 +456,7 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
         float a = Dot(d, d);
         float b = 2.0f * Dot(f, d);
-        float c = Dot(f, f) - radius * radius;
+        float c = Dot(f, f) - radii * radii;
 
         // Quadratic equation discriminant
         float discriminant = b * b - 4.0f * a * c;

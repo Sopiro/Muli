@@ -67,7 +67,7 @@ inline Shape::Shape(Type _type, float _radius)
     , center{ 0.0f }
     , radius{ _radius }
 {
-#if 1
+#if 0
     // Radius must be greater than or equal to linear_slop * 2.0 for stable CCD
     muliAssert(radius >= linear_slop * 2.0f);
 #endif

@@ -59,6 +59,11 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
     Allocator* allocator = &world->blockAllocator;
     void* mem = allocator->Allocate(sizeof(Collider));
 
+#if 1
+    // Shape radius(skin) must be greater than or equal to linear_slop * 2.0 for stable CCD
+    muliAssert(_shape->radius >= linear_slop * 2.0f);
+#endif
+
     Collider* collider = new (mem) Collider;
     collider->Create(allocator, this, _shape, _density, _material);
 

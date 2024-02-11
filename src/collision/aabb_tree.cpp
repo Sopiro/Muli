@@ -637,6 +637,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
     Vec2 p1 = input.from;
     Vec2 p2 = input.to;
     float maxFraction = input.maxFraction;
+    Vec2 radius(input.radius, input.radius);
 
     Vec2 d = p2 - p1;
     float length = d.NormalizeSafe();
@@ -650,8 +651,8 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
 
     Vec2 end = p1 + maxFraction * (p2 - p1);
     AABB rayAABB;
-    rayAABB.min = Min(p1, end);
-    rayAABB.max = Max(p1, end);
+    rayAABB.min = Min(p1, end) - radius;
+    rayAABB.max = Max(p1, end) + radius;
 
     GrowableArray<NodeProxy, 256> stack;
     stack.EmplaceBack(root);
@@ -674,7 +675,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
         Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
 
         float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > 0.0f) // Separating axis test
+        if (separation > radius.x) // Separating axis test
         {
             continue;
         }
@@ -685,6 +686,7 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
             subInput.from = p1;
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
+            subInput.radius = input.radius;
 
             float value = callback(subInput, node->data);
             if (value == 0.0f)
@@ -697,8 +699,8 @@ void AABBTree::RayCast(const RayCastInput& input, const std::function<float(cons
                 // Update ray AABB
                 maxFraction = value;
                 Vec2 newEnd = p1 + maxFraction * (p2 - p1);
-                rayAABB.min = Min(p1, newEnd);
-                rayAABB.max = Max(p1, newEnd);
+                rayAABB.min = Min(p1, newEnd) - radius;
+                rayAABB.max = Max(p1, newEnd) + radius;
             }
         }
         else

@@ -805,12 +805,14 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
 void World::RayCastAny(
     const Vec2& from,
     const Vec2& to,
-    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+    const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback,
+    float radius)
 {
     RayCastInput input;
     input.from = from;
     input.to = to;
     input.maxFraction = 1.0f;
+    input.radius = radius;
 
     contactManager.broadPhase.tree.RayCast(input, [&](const RayCastInput& input, Collider* collider) -> float {
         RayCastOutput output;
@@ -831,7 +833,8 @@ void World::RayCastAny(
 bool World::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
-    const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
+    const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback,
+    float radius)
 {
     bool hit = false;
     Collider* closestCollider;
@@ -839,15 +842,18 @@ bool World::RayCastClosest(
     Vec2 closestNormal;
     float closestFraction;
 
-    RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-        hit = true;
-        closestCollider = collider;
-        closestPoint = point;
-        closestNormal = normal;
-        closestFraction = fraction;
+    RayCastAny(
+        from, to,
+        [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestFraction = fraction;
 
-        return fraction;
-    });
+            return fraction;
+        },
+        radius);
 
     if (hit)
     {
@@ -858,12 +864,13 @@ bool World::RayCastClosest(
     return false;
 }
 
-void World::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback)
+void World::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback, float radius)
 {
     RayCastInput input;
     input.from = from;
     input.to = to;
     input.maxFraction = 1.0f;
+    input.radius = radius;
 
     struct TempCallback
     {
@@ -891,7 +898,7 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* cal
     contactManager.broadPhase.tree.RayCast(input, &anyCallback);
 }
 
-bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback)
+bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback, float radius)
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -913,7 +920,7 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallb
         }
     } tempCallback;
 
-    RayCastAny(from, to, &tempCallback);
+    RayCastAny(from, to, &tempCallback, radius);
 
     if (tempCallback.hit)
     {
