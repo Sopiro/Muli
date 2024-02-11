@@ -54,100 +54,60 @@ public:
             const Shape* shape = collider->GetShape();
             Transform tf0 = body->GetTransform();
 
-            Renderer& renderer = game.GetRenderer();
+            Renderer& r = game.GetRenderer();
 
             Renderer::DrawMode drawMode;
             drawMode.fill = false;
             drawMode.outline = true;
 
-            if (!closest)
+            bool hit = false;
+            float closestT;
+            Vec2 closestPoint;
+            Vec2 closestNormal;
+
+            world->ShapeCastAny(shape, tf0, translation,
+                                [&](Collider* collider, const Vec2& point, const Vec2& normal, float t) -> float {
+                                    hit = true;
+
+                                    Transform tf1 = tf0;
+                                    tf1.position += translation * t;
+
+                                    if (closest == false)
+                                    {
+                                        r.DrawShape(shape, tf1, drawMode);
+                                        r.DrawLine(tf0.position, tf1.position);
+                                        r.DrawPoint(point);
+                                        r.DrawLine(point, point + normal * 0.1f);
+
+                                        return 1.0f;
+                                    }
+                                    else
+                                    {
+                                        closestT = t;
+                                        closestPoint = point;
+                                        closestNormal = normal;
+
+                                        return t;
+                                    }
+                                });
+
+            if (hit == false)
             {
-                struct TempAnyCallback : public ShapeCastAnyCallback
-                {
-                    Renderer* r;
+                Transform tf1 = tf0;
+                tf1.position += translation;
 
-                    Transform tf0;
-                    Vec2 translation;
-                    const Shape* shape;
-
-                    bool hit = false;
-
-                    float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
-                    {
-                        Renderer::DrawMode drawMode;
-                        drawMode.fill = false;
-                        drawMode.outline = true;
-
-                        Transform tf1 = tf0;
-                        tf1.position += translation * t;
-
-                        r->DrawShape(shape, tf1, drawMode);
-                        r->DrawLine(tf0.position, tf1.position);
-                        r->DrawPoint(point);
-                        r->DrawLine(point, point + normal * 0.1f);
-
-                        hit = true;
-
-                        return 1.0f;
-                    }
-
-                } callback;
-
-                callback.r = &renderer;
-                callback.translation = translation;
-                callback.tf0 = tf0;
-                callback.shape = shape;
-                world->ShapeCastAny(shape, tf0, translation, &callback);
-
-                if (callback.hit == false)
-                {
-                    Transform tf1 = tf0;
-                    tf1.position += translation;
-
-                    renderer.DrawShape(shape, tf1, drawMode);
-                    renderer.DrawLine(tf0.position, tf1.position);
-                }
+                renderer.DrawShape(shape, tf1, drawMode);
+                renderer.DrawLine(tf0.position, tf1.position);
             }
-            else
+            else if (closest)
             {
-                struct TempClosestCallback : public ShapeCastClosestCallback
-                {
-                    Renderer* r;
+                Transform tf1 = tf0;
+                tf1.position += translation * closestT;
 
-                    Transform tf0;
-                    Vec2 translation;
-                    const Shape* shape;
-
-                    void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float t)
-                    {
-                        Renderer::DrawMode drawMode;
-                        drawMode.fill = false;
-                        drawMode.outline = true;
-
-                        Transform tf1 = tf0;
-                        tf1.position += translation * t;
-
-                        r->DrawShape(shape, tf1, drawMode);
-                        r->DrawLine(tf0.position, tf1.position);
-                        r->DrawPoint(point);
-                        r->DrawLine(point, point + normal * 0.1f);
-                    }
-                } callback;
-
-                callback.r = &renderer;
-                callback.translation = translation;
-                callback.tf0 = tf0;
-                callback.shape = shape;
-
-                bool hit = world->ShapeCastClosest(shape, tf0, translation, &callback);
-                if (hit == false)
-                {
-                    Transform tf1 = tf0;
-                    tf1.position += translation;
-
-                    renderer.DrawShape(shape, tf1, drawMode);
-                    renderer.DrawLine(tf0.position, tf1.position);
-                }
+                renderer.DrawPoint(closestPoint);
+                renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
+                renderer.DrawLine(tf0.position, tf1.position);
+                renderer.DrawShape(shape, tf1, drawMode);
             }
         }
     }

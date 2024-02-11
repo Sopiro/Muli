@@ -48,10 +48,9 @@ public:
         Circle c(radius);
         Renderer::DrawMode dm{};
 
-        count = 0;
         world->RayCastAny(from, to, radius,
                           [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-                              ++count;
+                              hit = true;
 
                               if (closest == false)
                               {
@@ -63,13 +62,16 @@ public:
                               }
                               else
                               {
-                                  hit = true;
                                   closestPoint = point;
                                   closestNormal = normal;
 
                                   return fraction;
                               }
                           });
+
+        renderer.DrawLine(from, to);
+        renderer.DrawPoint(from, Vec4{ 1, 0, 0, 1 });
+        renderer.DrawPoint(to, Vec4{ 0, 0, 1, 1 });
 
         if (closest && hit)
         {
@@ -139,10 +141,6 @@ public:
             ImGui::DragFloat("Ray radius", &radius, 0.01, 0.0f, 0.5f, "%.2f");
         }
         ImGui::End();
-
-        renderer.DrawLine(from, to);
-        renderer.DrawPoint(from, Vec4{ 1, 0, 0, 1 });
-        renderer.DrawPoint(to, Vec4{ 0, 0, 1, 1 });
     }
 
     static Demo* Create(Game& game)

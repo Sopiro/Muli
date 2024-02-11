@@ -83,6 +83,7 @@ public:
     void Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const;
     void Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const;
     void RayCast(const RayCastInput& input, const std::function<float(const RayCastInput& input, Data* data)>& callback) const;
+    void AABBCast(const AABBCastInput& input, const std::function<float(const AABBCastInput& input, Data* data)>& callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();

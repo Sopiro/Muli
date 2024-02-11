@@ -957,20 +957,33 @@ void World::RayCastAny(
     input.maxFraction = 1.0f;
     input.radius = radius;
 
-    contactManager.broadPhase.tree.RayCast(input, [&](const RayCastInput& input, Collider* collider) -> float {
-        RayCastOutput output;
+    struct TempCallback
+    {
+        decltype(callback) callback;
 
-        bool hit = collider->RayCast(input, &output);
-        if (hit)
+        TempCallback(decltype(callback) callback)
+            : callback{ callback }
         {
-            float fraction = output.fraction;
-            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
-
-            return callback(collider, point, output.normal, fraction);
         }
 
-        return input.maxFraction;
-    });
+        float RayCastCallback(const RayCastInput& input, Collider* collider)
+        {
+            RayCastOutput output;
+
+            bool hit = collider->RayCast(input, &output);
+            if (hit)
+            {
+                float fraction = output.fraction;
+                Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+                return callback(collider, point, output.normal, fraction);
+            }
+
+            return input.maxFraction;
+        }
+    } tempCallback(callback);
+
+    contactManager.broadPhase.tree.RayCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(
@@ -979,25 +992,116 @@ bool World::RayCastClosest(
     float radius,
     const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
-    bool hit = false;
-    Collider* closestCollider;
-    Vec2 closestPoint;
-    Vec2 closestNormal;
-    float closestFraction;
-
-    RayCastAny(from, to, radius, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-        hit = true;
-        closestCollider = collider;
-        closestPoint = point;
-        closestNormal = normal;
-        closestFraction = fraction;
-
-        return fraction;
-    });
-
-    if (hit)
+    struct TempCallback : public RayCastAnyCallback
     {
-        callback(closestCollider, closestPoint, closestNormal, closestFraction);
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestFraction;
+
+        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestFraction = fraction;
+
+            return fraction;
+        }
+    } tempCallback;
+
+    RayCastAny(from, to, radius, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
+                 tempCallback.closestFraction);
+        return true;
+    }
+
+    return false;
+}
+
+void World::ShapeCastAny(const Shape* shape,
+                         const Transform& tf,
+                         const Vec2& translation,
+                         const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)>& callback)
+{
+    AABB aabb;
+    shape->ComputeAABB(tf, &aabb);
+
+    AABBCastInput input;
+    input.from = tf.position;
+    input.to = tf.position + translation;
+    input.maxFraction = 1.0f;
+    input.extents = aabb.GetExtents();
+
+    struct TempCallback
+    {
+        decltype(callback) callback;
+        const Shape* shape;
+        Transform tf;
+        Vec2 translation;
+
+        TempCallback(decltype(callback) callback, const Shape* shape, Transform tf, Vec2 translation)
+            : callback{ callback }
+            , shape{ shape }
+            , tf{ tf }
+            , translation{ translation }
+        {
+        }
+
+        float AABBCastCallback(const AABBCastInput& input, Collider* collider)
+        {
+            ShapeCastOutput output;
+
+            bool hit = ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(),
+                                 translation * input.maxFraction, Vec2::zero, &output);
+            if (hit)
+            {
+                return callback(collider, output.point, output.normal, output.t * input.maxFraction);
+            }
+
+            return input.maxFraction;
+        }
+    } tempCallback(callback, shape, tf, translation);
+
+    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
+}
+
+bool World::ShapeCastClosest(
+    const Shape* shape,
+    const Transform& tf,
+    const Vec2& translation,
+    const std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)>& callback)
+{
+    struct TempCallback : ShapeCastAnyCallback
+    {
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestT = 1.0f;
+
+        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+        {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestT = t;
+
+            return t;
+        }
+    } tempCallback;
+
+    ShapeCastAny(shape, tf, translation, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestT);
         return true;
     }
 
