@@ -1,6 +1,5 @@
 #include "muli/broad_phase.h"
 #include "muli/contact_manager.h"
-#include "muli/util.h"
 #include "muli/world.h"
 
 namespace muli

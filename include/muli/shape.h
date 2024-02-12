@@ -5,6 +5,7 @@
 #include "collision.h"
 #include "common.h"
 #include "primitives.h"
+#include "raycast.h"
 
 namespace muli
 {

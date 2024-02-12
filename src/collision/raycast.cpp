@@ -1,199 +1,9 @@
-#include "muli/util.h"
-#include "muli/aabb.h"
+#include "muli/raycast.h"
+#include "muli/collision.h"
+#include "muli/shape.h"
 
 namespace muli
 {
-
-void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount)
-{
-    if (vertexCount < 3)
-    {
-        memcpy(outVertices, vertices, vertexCount * sizeof(Vec2));
-        *outVertexCount = vertexCount;
-        return;
-    }
-
-    // Find the lowest vertex
-    int32 index = 0;
-    for (int32 i = 1; i < vertexCount; ++i)
-    {
-        if (vertices[i].y < vertices[index].y)
-        {
-            index = i;
-        }
-    }
-    Vec2 bottom = vertices[index];
-
-    Vec2* sorted = new Vec2[vertexCount];
-    memcpy(sorted, vertices, vertexCount * sizeof(Vec2));
-    std::swap(sorted[index], sorted[0]);
-
-    // Sort the vertices based on the angle related to the lowest vertex.
-    std::sort(sorted + 1, sorted + vertexCount, [&](const Vec2& a, const Vec2& b) -> bool {
-        Vec2 ra = a - bottom;
-        Vec2 rb = b - bottom;
-
-        float angleA = Atan2(ra.y, ra.x);
-        float angleB = Atan2(rb.y, rb.x);
-
-        if (angleA == angleB)
-        {
-            return Dist2(bottom, a) < Dist2(bottom, b);
-        }
-        else
-        {
-            return angleA < angleB;
-        }
-    });
-
-    // Discard overlapped bottom vertices
-    int32 i = 0;
-    while (i < vertexCount)
-    {
-        Vec2& v0 = sorted[i];
-        Vec2& v1 = sorted[(i + 1) % vertexCount];
-
-        if (v0 == v1)
-        {
-            ++i;
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    // Initialize stack
-    int32 sp = 0;
-    *outVertexCount = vertexCount - i;
-    outVertices[sp++] = sorted[i++];
-    outVertices[sp++] = sorted[i++];
-
-    while (i < vertexCount)
-    {
-        Vec2& v = sorted[i];
-        int32 l = sp;
-
-        if (v == outVertices[l - 1])
-        {
-            ++i;
-            continue;
-        }
-
-        Vec2 d1 = outVertices[l - 1] - outVertices[l - 2];
-        Vec2 d2 = v - outVertices[l - 1];
-
-        if (Cross(d1, d2) <= 0)
-        {
-            --sp;
-
-            if (l < 3)
-            {
-                outVertices[sp++] = v;
-                break;
-            }
-        }
-        else
-        {
-            outVertices[sp++] = v;
-            ++i;
-        }
-    }
-
-    delete[] sorted;
-}
-
-std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
-{
-    if (vertices.size() < 3)
-    {
-        return vertices;
-    }
-
-    size_t index = 0;
-    for (size_t i = 1; i < vertices.size(); ++i)
-    {
-        if (vertices[i].y < vertices[index].y)
-        {
-            index = i;
-        }
-    }
-    Vec2 bottom = vertices[index];
-
-    std::vector<Vec2> sorted = vertices;
-    std::swap(sorted[index], sorted[0]);
-
-    std::sort(sorted.begin() + 1, sorted.end(), [&](const Vec2& a, const Vec2& b) -> bool {
-        Vec2 ra = a - bottom;
-        Vec2 rb = b - bottom;
-
-        float angleA = Atan2(ra.y, ra.x);
-        float angleB = Atan2(rb.y, rb.x);
-
-        if (angleA == angleB)
-        {
-            return Dist2(bottom, a) < Dist2(bottom, b);
-        }
-        else
-        {
-            return angleA < angleB;
-        }
-    });
-
-    // Discard overlapped bottom vertices
-    size_t i = 0;
-    while (i < sorted.size())
-    {
-        Vec2& v0 = sorted[i];
-        Vec2& v1 = sorted[(i + 1) % sorted.size()];
-
-        if (v0 == v1)
-        {
-            i++;
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    std::vector<Vec2> s;
-    s.push_back(sorted[i++]);
-    s.push_back(sorted[i++]);
-
-    while (i < sorted.size())
-    {
-        Vec2& v = sorted[i];
-        size_t l = s.size();
-
-        if (v == s[l - 1])
-        {
-            ++i;
-            continue;
-        }
-
-        Vec2 d1 = s[l - 1] - s[l - 2];
-        Vec2 d2 = v - s[l - 1];
-
-        if (Cross(d1, d2) <= 0)
-        {
-            s.pop_back();
-
-            if (l < 3)
-            {
-                s.push_back(v);
-                break;
-            }
-        }
-        else
-        {
-            s.push_back(v);
-            ++i;
-        }
-    }
-
-    return s;
-}
 
 // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 bool RayCastCircle(const Vec2& p, float r, const RayCastInput& input, RayCastOutput* output)
@@ -492,6 +302,120 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
         output->normal = n;
     }
 
+    return true;
+}
+
+extern SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir);
+
+bool ShapeCast(const Shape* a,
+               const Transform& tfA,
+               const Shape* b,
+               const Transform& tfB,
+               const Vec2& translationA,
+               const Vec2& translationB,
+               ShapeCastOutput* output)
+{
+    output->point.SetZero();
+    output->normal.SetZero();
+    output->t = 1.0f;
+
+    float t = 0.0f;
+    Vec2 n = Vec2::zero;
+
+    const float radii = a->GetRadius() + b->GetRadius();
+    const Vec2 r = translationB - translationA; // Ray vector
+
+    Simplex simplex;
+
+    // Get CSO support point in inverse ray direction
+    int32 idA = a->GetSupport(MulT(tfA.rotation, -r));
+    Vec2 pointA = Mul(tfA, a->GetVertex(idA));
+    int32 idB = b->GetSupport(MulT(tfB.rotation, r));
+    Vec2 pointB = Mul(tfB, b->GetVertex(idB));
+    Vec2 v = pointA - pointB;
+
+    const float target = Max(default_radius, radii - toi_position_solver_threshold);
+    const float tolerance = linear_slop * 0.1f;
+
+    const int32 maxIterations = 20;
+    int32 iteration = 0;
+
+    while (iteration < maxIterations && v.Length() - target > tolerance)
+    {
+        muliAssert(simplex.count < 3);
+
+        // Get CSO support point in search direction(-v)
+        idA = a->GetSupport(MulT(tfA.rotation, -v));
+        pointA = Mul(tfA, a->GetVertex(idA));
+        idB = b->GetSupport(MulT(tfB.rotation, v));
+        pointB = Mul(tfB, b->GetVertex(idB));
+        Vec2 p = pointA - pointB; // Outer vertex of CSO
+
+        // -v is the plane normal at p
+        v.Normalize();
+
+        // Find intersection with support plane
+        float vp = Dot(v, p);
+        float vr = Dot(v, r);
+
+        // March ray by (vp - target) / vr if the new t is greater
+        if (vp - target > t * vr)
+        {
+            if (vr <= 0.0f)
+            {
+                return false;
+            }
+
+            t = (vp - target) / vr;
+            if (t > 1.0f)
+            {
+                return false;
+            }
+
+            n = -v;
+            simplex.count = 0;
+        }
+
+        SupportPoint* vertex = simplex.vertices + simplex.count;
+        vertex->pointA.id = idA;
+        vertex->pointA.p = pointA;
+        vertex->pointB.id = idB;
+        vertex->pointB.p = pointB + t * r; // This effectively shifts the ray origin to the new clip plane
+        vertex->point = vertex->pointA.p - vertex->pointB.p;
+        vertex->weight = 1.0f;
+        simplex.count += 1;
+
+        simplex.Advance(Vec2::zero);
+
+        if (simplex.count == 3)
+        {
+            // Initial overlap
+            return false;
+        }
+
+        // Update search direciton
+        v = simplex.GetClosestPoint();
+
+        ++iteration;
+    }
+
+    if (iteration == 0 || t == 0.0f)
+    {
+        // Initial overlap
+        return false;
+    }
+
+    simplex.GetWitnessPoint(&pointA, &pointB);
+
+    if (v.Length2() > 0.0f)
+    {
+        n = -v;
+        n.Normalize();
+    }
+
+    output->point = pointA + a->GetRadius() * n + translationA * t;
+    output->normal = n;
+    output->t = t;
     return true;
 }
 

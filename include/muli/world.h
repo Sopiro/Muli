@@ -6,7 +6,6 @@
 #include "common.h"
 #include "contact_manager.h"
 #include "stack_allocator.h"
-#include "util.h"
 
 #include "collider.h"
 #include "rigidbody.h"

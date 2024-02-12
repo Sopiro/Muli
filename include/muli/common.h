@@ -20,3 +20,20 @@
 
 #define muliAssert(A) assert(A)
 #define muliNotUsed(x) ((void)(x))
+
+namespace muli
+{
+
+// default alloc/dealloc funcitons
+
+inline void* Alloc(int32 size)
+{
+    return std::malloc(size);
+}
+
+inline void Free(void* mem)
+{
+    std::free(mem);
+}
+
+}

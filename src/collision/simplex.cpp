@@ -1,5 +1,4 @@
 #include "muli/simplex.h"
-#include "muli/util.h"
 
 namespace muli
 {

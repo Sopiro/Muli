@@ -32,30 +32,6 @@ struct ContactManifold
     bool featureFlipped;
 };
 
-// Define a ray such that:
-// Ray = from + maxFraction * (to - from) with search radius
-struct RayCastInput
-{
-    Vec2 from;
-    Vec2 to;
-    float maxFraction;
-    float radius;
-};
-
-struct RayCastOutput
-{
-    Vec2 normal;
-    float fraction;
-};
-
-struct AABBCastInput
-{
-    Vec2 from;
-    Vec2 to;
-    float maxFraction;
-    Vec2 extents;
-};
-
 // clang-format off
 typedef bool DetectionFunction(const Shape*, const Transform&,
                                const Shape*, const Transform&,

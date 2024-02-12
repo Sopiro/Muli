@@ -10,6 +10,7 @@ set(HEADER_FILES
     ../include/muli/primitives.h
     ../include/muli/collision_filter.h
     ../include/muli/distance.h
+    ../include/muli/raycast.h
     ../include/muli/time_of_impact.h
 
     ../include/muli/rigidbody.h
@@ -43,6 +44,8 @@ set(HEADER_FILES
     ../include/muli/island.h
     ../include/muli/world.h
 
+    ../include/muli/common.h
+    ../include/muli/muli.h
     ../include/muli/settings.h
     ../include/muli/growable_array.h
     ../include/muli/allocator.h
@@ -51,24 +54,23 @@ set(HEADER_FILES
     ../include/muli/predefined_block_allocator.h
     ../include/muli/fixed_block_allocator.h
     ../include/muli/callbacks.h
-    ../include/muli/common.h
-    ../include/muli/util.h
-    ../include/muli/muli.h
+    ../include/muli/convex_hull.h
     ../include/muli/math.h
     ../include/muli/types.h
     ../include/muli/random.h
 )
 
 set(SOURCE_FILES
-    common/util.cpp
     common/math.cpp
     common/stack_allocator.cpp
     common/block_allocator.cpp
     common/predefined_block_allocator.cpp
+    common/convex_hull.cpp
 
     collision/collision.cpp
     collision/simplex.cpp
     collision/polytope.cpp
+    collision/raycast.cpp
     collision/distance.cpp
     collision/time_of_impact.cpp
 
