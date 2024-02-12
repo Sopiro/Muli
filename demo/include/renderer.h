@@ -46,6 +46,7 @@ public:
     void DrawLine(const Vec2& p1, const Vec2& p2, const Vec4& color = default_color);
     void DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3);
     void DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color = default_color);
+    void DrawAABB(const AABB& aabb);
 
     struct DrawMode
     {
@@ -203,6 +204,16 @@ inline void Renderer::DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p
     triangles[triangleCount] = p3;
     triangleColors[triangleCount] = color;
     ++triangleCount;
+}
+
+inline void Renderer::DrawAABB(const AABB& aabb)
+{
+    Vec2 br{ aabb.max.x, aabb.min.y };
+    Vec2 tl{ aabb.min.x, aabb.max.y };
+    DrawLine(aabb.min, br);
+    DrawLine(br, aabb.max);
+    DrawLine(aabb.max, tl);
+    DrawLine(tl, aabb.min);
 }
 
 // Viewport space -> NDC -> world spcae

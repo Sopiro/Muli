@@ -398,12 +398,7 @@ void Game::Render()
                 return;
             }
 
-            Vec2 br{ n->aabb.max.x, n->aabb.min.y };
-            Vec2 tl{ n->aabb.min.x, n->aabb.max.y };
-            renderer.DrawLine(n->aabb.min, br);
-            renderer.DrawLine(br, n->aabb.max);
-            renderer.DrawLine(n->aabb.max, tl);
-            renderer.DrawLine(tl, n->aabb.min);
+            renderer.DrawAABB(n->aabb);
         });
     }
 
