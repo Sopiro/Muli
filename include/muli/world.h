@@ -221,17 +221,16 @@ public:
     );
     // clang-format on
 
-    std::vector<Collider*> Query(const Vec2& point) const;
-    std::vector<Collider*> Query(const AABB& aabb) const;
     void Query(const Vec2& point, WorldQueryCallback* callback);
     void Query(const AABB& aabb, WorldQueryCallback* callback);
-
     void RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback);
     bool RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback);
     void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
     bool ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback);
 
     // clang-format off
+    void Query(const Vec2& point, const std::function<bool(Collider* collider)> callback) const;
+    void Query(const AABB& aabb, const std::function<bool(Collider* collider)> callback) const;
     void RayCastAny(
         const Vec2& from,
         const Vec2& to,

@@ -15,6 +15,8 @@ public:
     Polygon(float size, float radius = default_radius, const Vec2& position = Vec2::zero, float angle = 0.0f);
     ~Polygon();
 
+    Polygon(const Polygon& other);
+
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
 

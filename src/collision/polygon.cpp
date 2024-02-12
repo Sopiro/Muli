@@ -101,6 +101,11 @@ Polygon::~Polygon()
     }
 }
 
+Polygon::Polygon(const Polygon& other)
+    : Polygon(other.vertices, other.vertexCount, false, other.radius)
+{
+}
+
 Shape* Polygon::Clone(Allocator* allocator) const
 {
     void* mem = allocator->Allocate(sizeof(Polygon));

@@ -55,17 +55,16 @@ void Demo::UpdateInput()
 void Demo::FindTargetBody()
 {
     cursorPos = game.GetWorldCursorPosition();
-    qr = world->Query(cursorPos); // Query result
-    if (qr.size() > 0)
-    {
-        targetCollider = qr[0];   // Mouseovered body
-        targetBody = targetCollider->GetBody();
-    }
-    else
-    {
-        targetCollider = nullptr;
-        targetBody = nullptr;
-    }
+
+    targetCollider = nullptr;
+    targetBody = nullptr;
+
+    world->Query(cursorPos, [&](Collider* collider) -> bool {
+        targetCollider = collider;
+        targetBody = collider->GetBody();
+
+        return false;
+    });
 }
 
 void Demo::EnableBodyCreate()
@@ -260,11 +259,7 @@ void Demo::EnableBodyRemove()
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
-            auto qr = (aabb.max == aabb.min) ? world->Query(aabb.min) : world->Query(aabb);
-
-            for (int32 i = 0; i < qr.size(); ++i)
-            {
-                Collider* c = qr[i];
+            const auto callback = [&](Collider* c) -> bool {
                 RigidBody* b = c->GetBody();
                 b->DestroyCollider(c);
 
@@ -272,6 +267,17 @@ void Demo::EnableBodyRemove()
                 {
                     world->Destroy(b);
                 }
+
+                return true;
+            };
+
+            if (aabb.min == aabb.max)
+            {
+                world->Query(aabb.min, callback);
+            }
+            else
+            {
+                world->Query(aabb, callback);
             }
 
             draging = false;

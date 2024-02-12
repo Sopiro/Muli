@@ -74,7 +74,6 @@ protected:
 
     float dt;
     Vec2 cursorPos;
-    std::vector<Collider*> qr;
 
     RigidBody* targetBody;
     Collider* targetCollider;

@@ -700,46 +700,64 @@ void World::BufferDestroy(const std::vector<Joint*>& joints)
     }
 }
 
-std::vector<Collider*> World::Query(const Vec2& point) const
+void World::Query(const Vec2& point, const std::function<bool(Collider* collider)> callback) const
 {
-    std::vector<Collider*> res;
-    res.reserve(8);
+    struct TempCallback
+    {
+        Vec2 point;
+        decltype(callback) callbackFcn;
 
-    contactManager.broadPhase.tree.Query(point, [&](NodeProxy node, Collider* collider) -> bool {
-        muliNotUsed(node);
-
-        if (collider->TestPoint(point))
+        TempCallback(Vec2 point, decltype(callback) callback)
+            : point{ point }
+            , callbackFcn{ callback }
         {
-            res.push_back(collider);
         }
 
-        return true;
-    });
+        bool QueryCallback(NodeProxy node, Collider* collider)
+        {
+            muliNotUsed(node);
 
-    return res;
+            if (collider->TestPoint(point))
+            {
+                return callbackFcn(collider);
+            }
+
+            return true;
+        }
+    } tempCallback(point, callback);
+
+    tempCallback.point = point;
+
+    contactManager.broadPhase.tree.Query(point, &tempCallback);
 }
 
-std::vector<Collider*> World::Query(const AABB& aabb) const
+void World::Query(const AABB& aabb, const std::function<bool(Collider* collider)> callback) const
 {
-    std::vector<Collider*> res;
-    res.reserve(8);
+    struct TempCallback
+    {
+        Polygon box;
+        decltype(callback) callbackFcn;
 
-    Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
-    Polygon box{ vertices, 4, false, minimum_radius };
-    Transform t{ identity };
-
-    contactManager.broadPhase.tree.Query(aabb, [&](NodeProxy node, Collider* collider) -> bool {
-        muliNotUsed(node);
-
-        if (DetectCollision(collider->shape, collider->body->transform, &box, t))
+        TempCallback(const AABB& aabb, decltype(callback) callback)
+            : box{ { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } }, false, 0.0f }
+            , callbackFcn{ callback }
         {
-            res.push_back(collider);
         }
 
-        return true;
-    });
+        bool QueryCallback(NodeProxy node, Collider* collider)
+        {
+            muliNotUsed(node);
 
-    return res;
+            if (DetectCollision(collider->shape, collider->body->transform, &box, identity))
+            {
+                return callbackFcn(collider);
+            }
+
+            return true;
+        }
+    } tempCallback(aabb, callback);
+
+    contactManager.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
 void World::Query(const Vec2& point, WorldQueryCallback* callback)
