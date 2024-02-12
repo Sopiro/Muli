@@ -16,7 +16,7 @@
   - Dynamic, static and kinematic bodies
   - Collision filtering
   - Dynamic AABB tree broadphase
-  - Dynamic tree accelerated ray casting and area querying
+  - Dynamic tree accelerated raycast, shapecast and world query
   - Easy-to-use collision detection and distance funtions
   
 ### Physics Simulation
