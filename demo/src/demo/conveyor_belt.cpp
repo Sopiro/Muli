@@ -5,10 +5,10 @@
 namespace muli
 {
 
-static float speed = 2.0f;
-
 class ConveyorBelt : public Demo
 {
+    static inline float speed = 2.0f;
+
 public:
     ConveyorBelt(Game& game)
         : Demo(game)

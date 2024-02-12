@@ -5,11 +5,11 @@
 namespace muli
 {
 
-static bool disable_contact = false;
-
 class ContactCallbacks : public Demo,
                          public ContactListener
 {
+    static inline bool disable_contact = false;
+
 public:
     ContactCallbacks(Game& game)
         : Demo(game)

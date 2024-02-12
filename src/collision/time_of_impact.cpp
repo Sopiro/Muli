@@ -221,7 +221,7 @@ struct SeparationFunction
     Vec2 axis;
 };
 
-static constexpr int32 max_iteration = 20;
+static constexpr int32 max_iterations = 20;
 
 void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB, Sweep sweepB, float tMax, TOIOutput* output)
 {
@@ -405,7 +405,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
             break;
         }
 
-        if (iteration == max_iteration)
+        if (iteration == max_iterations)
         {
             // Root finder got stuck
             output->state = TOIOutput::failed;

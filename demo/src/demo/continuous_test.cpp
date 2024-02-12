@@ -5,10 +5,10 @@
 namespace muli
 {
 
-static bool drawTrajectory = true;
-
 class ContinuousTest : public Demo
 {
+    static inline bool drawTrajectory = true;
+
 public:
     RigidBody* target;
     Capsule* stick;

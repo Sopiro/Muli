@@ -5,10 +5,10 @@
 namespace muli
 {
 
-static float angle = 45.0f;
-
 class SubStepping : public Demo
 {
+    static inline float angle = 45.0f;
+
 public:
     float progress = 0.0f;
 

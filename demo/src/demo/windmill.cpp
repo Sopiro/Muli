@@ -5,13 +5,13 @@
 namespace muli
 {
 
-static bool obstacles = true;
-static float speed = 270.0f;
-static float force = 1000.0f;
-static float torque = 100.0f;
-
 class Windmill : public Demo
 {
+    static inline bool obstacles = true;
+    static inline float speed = 270.0f;
+    static inline float force = 1000.0f;
+    static inline float torque = 100.0f;
+
 public:
     MotorJoint* motor;
     RigidBody* windmill;

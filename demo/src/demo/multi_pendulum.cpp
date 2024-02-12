@@ -4,14 +4,14 @@
 namespace muli
 {
 
-static int32 selection = 0;
-static const char* items[] = { "Revolute joint", "Distance joint" };
-static float f = 12.0f;
-static float d = 0.5f;
-static float m = 1.0f;
-
 class MultiPendulum : public Demo
 {
+    static inline int32 selection = 0;
+    static inline const char* items[] = { "Revolute joint", "Distance joint" };
+    static inline float f = 12.0f;
+    static inline float d = 0.5f;
+    static inline float m = 1.0f;
+
 public:
     MultiPendulum(Game& game)
         : Demo(game)
