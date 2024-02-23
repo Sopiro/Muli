@@ -171,7 +171,7 @@ void ContactManager::AddCollider(Collider* collider)
 void ContactManager::RemoveCollider(Collider* collider)
 {
     broadPhase.Remove(collider);
-    collider->node = muliNullNode;
+    collider->node = AABBTree::nullNode;
 
     RigidBody* body = collider->body;
 

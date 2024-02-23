@@ -6,8 +6,6 @@
 #include "growable_array.h"
 #include "settings.h"
 
-#define muliNullNode (-1)
-
 namespace muli
 {
 
@@ -27,11 +25,13 @@ typedef Collider Data;
 class AABBTree
 {
 public:
+    static constexpr inline int32 nullNode = -1;
+
     struct Node
     {
         bool IsLeaf() const
         {
-            return child1 == muliNullNode;
+            return child1 == nullNode;
         }
 
         int32 id;
@@ -156,7 +156,7 @@ inline float AABBTree::ComputeTreeCost() const
 template <typename T>
 void AABBTree::Traverse(T* callback) const
 {
-    if (root == muliNullNode)
+    if (root == nullNode)
     {
         return;
     }
@@ -182,7 +182,7 @@ void AABBTree::Traverse(T* callback) const
 template <typename T>
 void AABBTree::Query(const Vec2& point, T* callback) const
 {
-    if (root == muliNullNode)
+    if (root == nullNode)
     {
         return;
     }
@@ -218,7 +218,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
 template <typename T>
 void AABBTree::Query(const AABB& aabb, T* callback) const
 {
-    if (root == muliNullNode)
+    if (root == nullNode)
     {
         return;
     }
@@ -280,7 +280,7 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
     while (stack.Count() > 0)
     {
         NodeProxy current = stack.PopBack();
-        if (current == muliNullNode)
+        if (current == nullNode)
         {
             continue;
         }
@@ -362,7 +362,7 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
     while (stack.Count() > 0)
     {
         NodeProxy current = stack.PopBack();
-        if (current == muliNullNode)
+        if (current == nullNode)
         {
             continue;
         }

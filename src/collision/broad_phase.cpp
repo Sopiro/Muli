@@ -41,7 +41,7 @@ void BroadPhase::UnBufferMove(NodeProxy node)
     {
         if (moveBuffer[i] == node)
         {
-            moveBuffer[i] = muliNullNode;
+            moveBuffer[i] = AABBTree::nullNode;
         }
     }
 }
@@ -51,7 +51,7 @@ void BroadPhase::FindNewContacts()
     for (int32 i = 0; i < moveCount; ++i)
     {
         nodeA = moveBuffer[i];
-        if (nodeA == muliNullNode)
+        if (nodeA == AABBTree::nullNode)
         {
             continue;
         }
@@ -70,7 +70,7 @@ void BroadPhase::FindNewContacts()
     for (int32 i = 0; i < moveCount; ++i)
     {
         NodeProxy node = moveBuffer[i];
-        if (node != muliNullNode)
+        if (node != AABBTree::nullNode)
         {
             tree.ClearMoved(node);
         }

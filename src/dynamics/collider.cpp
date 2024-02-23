@@ -14,7 +14,7 @@ Collider::Collider()
     : OnDestroy{ nullptr }
     , ContactListener{ &defaultListener }
     , next{ nullptr }
-    , node{ muliNullNode }
+    , node{ AABBTree::nullNode }
     , enabled{ true }
 {
 }
