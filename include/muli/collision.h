@@ -4,8 +4,8 @@
 #include "simplex.h"
 
 /*
- *           \        /         ↑
- *            \      /          | <- Contact normal
+ *           \        /         ↑ <- Contact normal
+ *            \      /          |
  *    ---------\----/-------------------------------  <- Reference edge
  *              \  /
  *               \/  <- Incident point(Contact point)
@@ -29,17 +29,17 @@ struct ContactManifold
     Vec2 contactTangent;
     float penetrationDepth;
     int32 contactCount;
-    bool featureFlipped;
+    bool featureFlipped; // Set to true if shape b is incident body
 };
 
 // clang-format off
-typedef bool DetectionFunction(const Shape*, const Transform&,
-                               const Shape*, const Transform&,
-                               ContactManifold*);
+typedef bool CollideFunction(const Shape*, const Transform&,
+                             const Shape*, const Transform&,
+                             ContactManifold*);
                                
-bool DetectCollision(const Shape* a, const Transform& tfA,
-                     const Shape* b, const Transform& tfB,
-                     ContactManifold* manifold = nullptr);
+bool Collide(const Shape* a, const Transform& tfA,
+             const Shape* b, const Transform& tfB,
+             ContactManifold* manifold = nullptr);
 
 struct GJKResult
 {

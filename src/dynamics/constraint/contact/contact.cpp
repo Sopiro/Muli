@@ -9,7 +9,7 @@ namespace muli
 {
 
 bool block_solve = true;
-extern DetectionFunction* detection_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
+extern CollideFunction* collide_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
 
 Contact::Contact(Collider* _colliderA, Collider* _colliderB)
     : Constraint(_colliderA->body, _colliderB->body)
@@ -28,8 +28,8 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB)
     restitutionThreshold = MixRestitutionTreshold(colliderA->GetRestitutionTreshold(), colliderB->GetRestitutionTreshold());
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
 
-    collisionDetectionFunction = detection_function_map[colliderA->GetType()][colliderB->GetType()];
-    muliAssert(collisionDetectionFunction != nullptr);
+    collideFunction = collide_function_map[colliderA->GetType()][colliderB->GetType()];
+    muliAssert(collideFunction != nullptr);
 }
 
 void Contact::Update()
@@ -47,7 +47,7 @@ void Contact::Update()
 
     // clang-format off
     bool wasTouching = (flag & flag_touching) == flag_touching;
-    bool touching = collisionDetectionFunction(colliderA->shape, bodyA->transform,
+    bool touching = collideFunction(colliderA->shape, bodyA->transform,
                                                colliderB->shape, bodyB->transform,
                                                &manifold);
     // clang-format on

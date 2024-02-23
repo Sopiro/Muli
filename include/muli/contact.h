@@ -76,7 +76,7 @@ private:
     void SaveImpulses();
     void RestoreImpulses();
 
-    DetectionFunction* collisionDetectionFunction;
+    CollideFunction* collideFunction;
 
     RigidBody* b1; // Reference body
     RigidBody* b2; // Incident body
@@ -104,6 +104,7 @@ private:
     BlockSolver blockSolver;
 
     // Impulse buffer for position correction
+    // prefix 'c' stands for corrective
     Vec2 cLinearImpulseA, cLinearImpulseB;
     float cAngularImpulseA, cAngularImpulseB;
 

@@ -748,7 +748,7 @@ void World::Query(const AABB& aabb, const std::function<bool(Collider* collider)
         {
             muliNotUsed(node);
 
-            if (DetectCollision(collider->shape, collider->body->transform, &box, identity))
+            if (Collide(collider->shape, collider->body->transform, &box, identity))
             {
                 return callbackFcn(collider);
             }
@@ -806,7 +806,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
         {
             muliNotUsed(node);
 
-            if (DetectCollision(collider->shape, collider->body->transform, &region, t))
+            if (Collide(collider->shape, collider->body->transform, &region, t))
             {
                 return callback->OnQuery(collider);
             }

@@ -12,7 +12,7 @@ namespace muli
 static constexpr Vec2 origin = Vec2::zero;
 
 static bool detection_function_initialized = false;
-DetectionFunction* detection_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
+CollideFunction* collide_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
 void InitializeDetectionFunctionMap();
 
 /*
@@ -510,7 +510,7 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
     return true;
 }
 
-bool DetectCollision(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+bool Collide(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     if (detection_function_initialized == false)
     {
@@ -528,18 +528,18 @@ bool DetectCollision(const Shape* a, const Transform& tfA, const Shape* b, const
 
     if (shapeB > shapeA)
     {
-        muliAssert(detection_function_map[shapeB][shapeA] != nullptr);
+        muliAssert(collide_function_map[shapeB][shapeA] != nullptr);
 
-        bool collide = detection_function_map[shapeB][shapeA](b, tfB, a, tfA, manifold);
+        bool collide = collide_function_map[shapeB][shapeA](b, tfB, a, tfA, manifold);
         manifold->featureFlipped = true;
 
         return collide;
     }
     else
     {
-        muliAssert(detection_function_map[shapeA][shapeB] != nullptr);
+        muliAssert(collide_function_map[shapeA][shapeB] != nullptr);
 
-        return detection_function_map[shapeA][shapeB](a, tfA, b, tfB, manifold);
+        return collide_function_map[shapeA][shapeB](a, tfA, b, tfB, manifold);
     }
 }
 
@@ -550,14 +550,14 @@ void InitializeDetectionFunctionMap()
         return;
     }
 
-    detection_function_map[Shape::Type::circle][Shape::Type::circle] = &CircleVsCircle;
+    collide_function_map[Shape::Type::circle][Shape::Type::circle] = &CircleVsCircle;
 
-    detection_function_map[Shape::Type::capsule][Shape::Type::circle] = &CapsuleVsCircle;
-    detection_function_map[Shape::Type::capsule][Shape::Type::capsule] = &ConvexVsConvex;
+    collide_function_map[Shape::Type::capsule][Shape::Type::circle] = &CapsuleVsCircle;
+    collide_function_map[Shape::Type::capsule][Shape::Type::capsule] = &ConvexVsConvex;
 
-    detection_function_map[Shape::Type::polygon][Shape::Type::circle] = &PolygonVsCircle;
-    detection_function_map[Shape::Type::polygon][Shape::Type::capsule] = &ConvexVsConvex;
-    detection_function_map[Shape::Type::polygon][Shape::Type::polygon] = &ConvexVsConvex;
+    collide_function_map[Shape::Type::polygon][Shape::Type::circle] = &PolygonVsCircle;
+    collide_function_map[Shape::Type::polygon][Shape::Type::capsule] = &ConvexVsConvex;
+    collide_function_map[Shape::Type::polygon][Shape::Type::polygon] = &ConvexVsConvex;
 
     detection_function_initialized = true;
 }
