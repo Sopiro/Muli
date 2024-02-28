@@ -33,12 +33,11 @@ public:
 
     void UpdateUI() override
     {
+        // ImGui::ShowDemoWindow();
+
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
         if (ImGui::Begin("Collision detection", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
-            // ImGui::TextColored(ImColor{ 12, 11, 14 }, "Contact normal is pointing from refernce body to incident body");
-            // ImGui::ShowDemoWindow();
-
             ImGui::SetNextItemWidth(100);
             if (ImGui::Combo("shape1", &item1, items, IM_ARRAYSIZE(items)))
             {
@@ -58,6 +57,7 @@ public:
                     break;
                 }
             }
+
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
             if (ImGui::Combo("shape2", &item2, items, IM_ARRAYSIZE(items)))
@@ -78,8 +78,10 @@ public:
                     break;
                 }
             }
+
             ImGui::SetNextItemWidth(100);
             ImGui::DragFloat2("pos1", &tf1.position.x, 0.01f);
+
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
             ImGui::DragFloat2("pos2", &tf2.position.x, 0.01f);
@@ -90,15 +92,23 @@ public:
             {
                 tf1.rotation = r1;
             }
+
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
             if (ImGui::DragFloat("rot2", &r2, 0.01f))
             {
                 tf2.rotation = r2;
             }
-
-            ImGui::End();
         }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always,
+                                { 1.0f, 1.0f });
+        ImGui::Begin("notice", NULL,
+                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
+                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
+        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Contact normal is pointing from refernce body to incident body");
+        ImGui::End();
     }
 
     void UpdateInput() override
