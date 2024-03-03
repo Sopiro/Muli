@@ -91,7 +91,7 @@ struct DemoFrame
 
 inline std::vector<DemoFrame> demos;
 
-inline int32 register_demo(const char* name, DemoCreateFunction* createFunction, int index = 0)
+inline size_t register_demo(const char* name, DemoCreateFunction* createFunction, int index = 0)
 {
     demos.push_back(DemoFrame{ name, createFunction, index });
     return demos.size();
