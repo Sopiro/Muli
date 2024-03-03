@@ -11,3 +11,10 @@ target_include_directories(demo PRIVATE
 )
 
 target_link_libraries(demo PUBLIC muli glad glfw imgui)
+
+set_target_properties(demo PROPERTIES
+    CMAKE_COMPILE_WARNING_AS_ERROR ON
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)

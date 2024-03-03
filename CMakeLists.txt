@@ -4,10 +4,6 @@ project(muli LANGUAGES CXX VERSION 0.1.0)
 
 option(MULI_BUILD_DEMO "Build the demo project" ON)
 
-# compiler settings
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 if(MSVC)
     add_compile_options(/MP /wd4819 /wd4996)
     add_definitions(-DUNICODE -D_UNICODE)
