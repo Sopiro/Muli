@@ -138,7 +138,7 @@ public:
                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::Checkbox("Closest", &closest);
-            ImGui::DragFloat("Ray radius", &radius, 0.01, 0.0f, 0.5f, "%.2f");
+            ImGui::DragFloat("Ray radius", &radius, 0.01f, 0.0f, 0.5f, "%.2f");
         }
         ImGui::End();
     }

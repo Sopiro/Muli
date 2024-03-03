@@ -25,7 +25,7 @@ public:
         b->SetPosition(0.0f, 5.5f);
         b->SetRotation(pi / 3);
 
-        b = world->CreateRegularPolygon(0.3, 3, 0.0f, RigidBody::dynamic_body, 0.1f);
+        b = world->CreateRegularPolygon(0.3f, 3, 0.0f, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(0.0f, 4.0f);
         b->SetRotation(pi / 2);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);

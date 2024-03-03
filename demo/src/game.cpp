@@ -455,7 +455,7 @@ void Game::UpdateProjectionMatrix()
     renderer.SetProjectionMatrix(projMatrix);
 }
 
-void Game::InitDemo(int32 index)
+void Game::InitDemo(size_t index)
 {
     if (index >= demos.size())
     {
