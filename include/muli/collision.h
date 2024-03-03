@@ -25,11 +25,11 @@ struct ContactManifold
 {
     Point contactPoints[max_contact_point_count];
     Point referencePoint;
-    Vec2 contactNormal; // Contact normal is always pointing from bodyA to bodyB
+    Vec2 contactNormal; // Contact normal is always pointing from reference body to incident body
     Vec2 contactTangent;
     float penetrationDepth;
     int32 contactCount;
-    bool featureFlipped; // Set to true if shape b is incident body
+    bool featureFlipped; // Set to true if shape a is incident body
 };
 
 // clang-format off
