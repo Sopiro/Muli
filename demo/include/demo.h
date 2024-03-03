@@ -91,10 +91,10 @@ struct DemoFrame
 
 inline std::vector<DemoFrame> demos;
 
-inline size_t register_demo(const char* name, DemoCreateFunction* createFunction, int index = 0)
+inline int32 register_demo(const char* name, DemoCreateFunction* createFunction, int32 index = 0)
 {
     demos.push_back(DemoFrame{ name, createFunction, index });
-    return demos.size();
+    return (int32)demos.size();
 }
 
 inline void sort_demos(std::vector<DemoFrame>& demos)
