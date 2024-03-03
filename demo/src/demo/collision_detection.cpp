@@ -14,7 +14,7 @@ public:
     std::unique_ptr<Shape> shape1, shape2;
 
     int item1 = 1;
-    int item2 = 0;
+    int item2 = 2;
 
     bool collide = false;
     ContactManifold manifold;
@@ -22,13 +22,14 @@ public:
     CollisionDetection(Game& game)
         : Demo(game)
     {
-        shape1.reset(new Capsule(1.0f, 0.5f));
-        shape2.reset(new Circle(0.5f));
+        UpdateShape1();
+        UpdateShape2();
 
         camera.position.SetZero();
 
         tf1.position.Set(-0.4f, 0.0f);
         tf2.position.Set(0.4f, 0.0f);
+        // tf2.rotation = 0.5f;
     }
 
     void UpdateUI() override
@@ -41,42 +42,14 @@ public:
             ImGui::SetNextItemWidth(100);
             if (ImGui::Combo("shape1", &item1, items, IM_ARRAYSIZE(items)))
             {
-                switch (item1)
-                {
-                case 0:
-                    shape1.reset(new Circle(0.5f));
-                    break;
-                case 1:
-                    shape1.reset(new Capsule(1.0f, 0.5f));
-                    break;
-                case 2:
-                    shape1.reset(new Polygon(1.0f));
-                    break;
-
-                default:
-                    break;
-                }
+                UpdateShape1();
             }
 
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
             if (ImGui::Combo("shape2", &item2, items, IM_ARRAYSIZE(items)))
             {
-                switch (item2)
-                {
-                case 0:
-                    shape2.reset(new Circle(0.5f));
-                    break;
-                case 1:
-                    shape2.reset(new Capsule(1.0f, 0.5f));
-                    break;
-                case 2:
-                    shape2.reset(new Polygon(1.0f));
-                    break;
-
-                default:
-                    break;
-                }
+                UpdateShape2();
             }
 
             ImGui::SetNextItemWidth(100);
@@ -192,6 +165,44 @@ public:
                 renderer.DrawLine(p2, t1);
                 renderer.DrawLine(p2, t2);
             }
+        }
+    }
+
+    void UpdateShape1()
+    {
+        switch (item1)
+        {
+        case 0:
+            shape1.reset(new Circle(0.5f));
+            break;
+        case 1:
+            shape1.reset(new Capsule(1.0f, 0.5f));
+            break;
+        case 2:
+            shape1.reset(new Polygon(1.0f));
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    void UpdateShape2()
+    {
+        switch (item2)
+        {
+        case 0:
+            shape2.reset(new Circle(0.5f));
+            break;
+        case 1:
+            shape2.reset(new Capsule(1.0f, 0.5f));
+            break;
+        case 2:
+            shape2.reset(new Polygon(1.0f));
+            break;
+
+        default:
+            break;
         }
     }
 
