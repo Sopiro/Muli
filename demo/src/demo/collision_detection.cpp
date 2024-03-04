@@ -176,7 +176,7 @@ public:
             shape1.reset(new Circle(0.5f));
             break;
         case 1:
-            shape1.reset(new Capsule(1.0f, 0.5f));
+            shape1.reset(new Capsule(0.9f, 0.4f));
             break;
         case 2:
             shape1.reset(new Polygon(1.0f));
@@ -192,13 +192,13 @@ public:
         switch (item2)
         {
         case 0:
-            shape2.reset(new Circle(0.5f));
+            shape2.reset(new Circle(0.4f));
             break;
         case 1:
-            shape2.reset(new Capsule(1.0f, 0.5f));
+            shape2.reset(new Capsule(0.8f, 0.3f));
             break;
         case 2:
-            shape2.reset(new Polygon(1.0f));
+            shape2.reset(new Polygon(0.8f));
             break;
 
         default:
