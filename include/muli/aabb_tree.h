@@ -291,11 +291,11 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
             continue;
         }
 
-        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
-        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
+        Vec2 center = node->aabb.GetCenter();
+        Vec2 extents = node->aabb.GetHalfExtents();
 
         float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > radius.x) // Separating axis test
+        if (separation > radius.x) // Separation test
         {
             continue;
         }
@@ -337,7 +337,7 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
     Vec2 p1 = input.from;
     Vec2 p2 = input.to;
     float maxFraction = input.maxFraction;
-    Vec2 half = input.extents;
+    Vec2 half = input.halfExtents;
 
     Vec2 d = p2 - p1;
     float length = d.NormalizeSafe();
@@ -373,11 +373,11 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
             continue;
         }
 
-        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
-        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
+        Vec2 center = node->aabb.GetCenter();
+        Vec2 extents = node->aabb.GetHalfExtents();
 
         float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > r) // Separating axis test
+        if (separation > r) // Separation test
         {
             continue;
         }
@@ -388,7 +388,7 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
             subInput.from = p1;
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
-            subInput.extents = half;
+            subInput.halfExtents = half;
 
             float newFraction = callback->AABBCastCallback(subInput, node->data);
             if (newFraction == 0.0f)

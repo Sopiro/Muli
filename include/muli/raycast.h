@@ -26,7 +26,7 @@ struct AABBCastInput
     Vec2 from;
     Vec2 to;
     float maxFraction;
-    Vec2 extents;
+    Vec2 halfExtents;
 };
 
 struct ShapeCastInput

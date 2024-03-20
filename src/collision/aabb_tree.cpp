@@ -716,7 +716,7 @@ void AABBTree::AABBCast(const AABBCastInput& input,
     Vec2 p1 = input.from;
     Vec2 p2 = input.to;
     float maxFraction = input.maxFraction;
-    Vec2 half = input.extents;
+    Vec2 half = input.halfExtents;
 
     Vec2 d = p2 - p1;
     float length = d.NormalizeSafe();
@@ -767,7 +767,7 @@ void AABBTree::AABBCast(const AABBCastInput& input,
             subInput.from = p1;
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
-            subInput.extents = half;
+            subInput.halfExtents = half;
 
             float newFraction = callback(subInput, node->data);
             if (newFraction == 0.0f)

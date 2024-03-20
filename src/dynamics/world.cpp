@@ -897,7 +897,7 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     input.from = tf.position;
     input.to = tf.position + translation;
     input.maxFraction = 1.0f;
-    input.extents = aabb.GetExtents();
+    input.halfExtents = aabb.GetHalfExtents();
 
     struct TempCallback
     {
@@ -1054,7 +1054,7 @@ void World::ShapeCastAny(const Shape* shape,
     input.from = tf.position;
     input.to = tf.position + translation;
     input.maxFraction = 1.0f;
-    input.extents = aabb.GetExtents();
+    input.halfExtents = aabb.GetHalfExtents();
 
     struct TempCallback
     {

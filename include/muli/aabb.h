@@ -11,16 +11,16 @@ struct AABB
     AABB(const Vec2& min, const Vec2& max);
 
     Vec2 GetCenter() const;
-    Vec2 GetExtents() const;
+    Vec2 GetHalfExtents() const;
 
     float GetArea() const;
     float GetPerimeter();
 
     bool Contains(const AABB& aabb) const;
-
     bool TestPoint(const Vec2& point) const;
     bool TestOverlap(const AABB& other) const;
     bool TestRay(const Vec2& from, const Vec2& to, float tMin, float tMax) const;
+    float RayCast(const Vec2& from, const Vec2& to, float tMin, float tMax) const;
 
     Vec2 min;
     Vec2 max;
@@ -39,7 +39,7 @@ inline Vec2 AABB::GetCenter() const
     return (min + max) * 0.5f;
 }
 
-inline Vec2 AABB::GetExtents() const
+inline Vec2 AABB::GetHalfExtents() const
 {
     return (max - min) * 0.5f;
 }
