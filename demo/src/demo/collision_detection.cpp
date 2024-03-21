@@ -27,8 +27,8 @@ public:
 
         camera.position.SetZero();
 
-        tf1.position.Set(-0.4f, 0.0f);
-        tf2.position.Set(0.4f, 0.0f);
+        tf1.position.Set(-0.3f, 0.0f);
+        tf2.position.Set(0.3f, 0.0f);
         // tf2.rotation = 0.5f;
     }
 
@@ -173,7 +173,7 @@ public:
         switch (item1)
         {
         case 0:
-            shape1.reset(new Circle(0.5f));
+            shape1.reset(new Circle(0.45f));
             break;
         case 1:
             shape1.reset(new Capsule(0.9f, 0.4f));
@@ -192,7 +192,7 @@ public:
         switch (item2)
         {
         case 0:
-            shape2.reset(new Circle(0.4f));
+            shape2.reset(new Circle(0.35f));
             break;
         case 1:
             shape2.reset(new Capsule(0.8f, 0.3f));
