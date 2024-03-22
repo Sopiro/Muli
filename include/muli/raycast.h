@@ -21,14 +21,6 @@ struct RayCastOutput
     float fraction;
 };
 
-struct AABBCastInput
-{
-    Vec2 from;
-    Vec2 to;
-    float maxFraction;
-    Vec2 halfExtents;
-};
-
 struct ShapeCastInput
 {
     class Shape* shapeA;
@@ -80,5 +72,13 @@ bool ShapeCast(
 );
 
 // clang-format on
+
+struct AABBCastInput
+{
+    Vec2 from;
+    Vec2 to;
+    float maxFraction;
+    Vec2 halfExtents;
+};
 
 } // namespace muli

@@ -631,92 +631,14 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*
     }
 }
 
-void AABBTree::RayCast(const RayCastInput& input, const std::function<float(const RayCastInput&, Data*)>& callback) const
-{
-    Vec2 p1 = input.from;
-    Vec2 p2 = input.to;
-    float maxFraction = input.maxFraction;
-    Vec2 radius(input.radius, input.radius);
-
-    Vec2 d = p2 - p1;
-    float length = d.NormalizeSafe();
-    if (length == 0.0f)
-    {
-        return;
-    }
-
-    Vec2 perp = Cross(d, 1.0f); // separating axis
-    Vec2 absPerp = Abs(perp);
-
-    Vec2 end = p1 + maxFraction * (p2 - p1);
-    AABB rayAABB;
-    rayAABB.min = Min(p1, end) - radius;
-    rayAABB.max = Max(p1, end) + radius;
-
-    GrowableArray<NodeProxy, 256> stack;
-    stack.EmplaceBack(root);
-
-    while (stack.Count() > 0)
-    {
-        NodeProxy nodeIndex = stack.PopBack();
-        if (nodeIndex == nullNode)
-        {
-            continue;
-        }
-
-        const Node* node = nodes + nodeIndex;
-        if (node->aabb.TestOverlap(rayAABB) == false)
-        {
-            continue;
-        }
-
-        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
-        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
-
-        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > radius.x) // Separating axis test
-        {
-            continue;
-        }
-
-        if (node->IsLeaf())
-        {
-            RayCastInput subInput;
-            subInput.from = p1;
-            subInput.to = p2;
-            subInput.maxFraction = maxFraction;
-            subInput.radius = input.radius;
-
-            float newFraction = callback(subInput, node->data);
-            if (newFraction == 0.0f)
-            {
-                return;
-            }
-
-            if (newFraction > 0.0f)
-            {
-                // Update ray AABB
-                maxFraction = newFraction;
-                Vec2 newEnd = p1 + maxFraction * (p2 - p1);
-                rayAABB.min = Min(p1, newEnd) - radius;
-                rayAABB.max = Max(p1, newEnd) + radius;
-            }
-        }
-        else
-        {
-            stack.EmplaceBack(node->child1);
-            stack.EmplaceBack(node->child2);
-        }
-    }
-}
-
 void AABBTree::AABBCast(const AABBCastInput& input,
                         const std::function<float(const AABBCastInput& input, Data* data)>& callback) const
 {
-    Vec2 p1 = input.from;
-    Vec2 p2 = input.to;
+    const Vec2 p1 = input.from;
+    const Vec2 p2 = input.to;
+    const Vec2 halfExtents = input.halfExtents;
+
     float maxFraction = input.maxFraction;
-    Vec2 half = input.halfExtents;
 
     Vec2 d = p2 - p1;
     float length = d.NormalizeSafe();
@@ -724,16 +646,6 @@ void AABBTree::AABBCast(const AABBCastInput& input,
     {
         return;
     }
-
-    Vec2 perp = Cross(d, 1.0f); // separating axis
-    Vec2 absPerp = Abs(perp);
-
-    float r = Dot(absPerp, half);
-
-    Vec2 end = p1 + maxFraction * (p2 - p1);
-    AABB rayAABB;
-    rayAABB.min = Min(p1, end) - half;
-    rayAABB.max = Max(p1, end) + half;
 
     GrowableArray<NodeProxy, 256> stack;
     stack.EmplaceBack(root);
@@ -747,19 +659,6 @@ void AABBTree::AABBCast(const AABBCastInput& input,
         }
 
         const Node* node = nodes + current;
-        if (node->aabb.TestOverlap(rayAABB) == false)
-        {
-            continue;
-        }
-
-        Vec2 center = (node->aabb.min + node->aabb.max) * 0.5f;
-        Vec2 extents = (node->aabb.max - node->aabb.min) * 0.5f;
-
-        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > r) // Separating axis test
-        {
-            continue;
-        }
 
         if (node->IsLeaf())
         {
@@ -767,7 +666,7 @@ void AABBTree::AABBCast(const AABBCastInput& input,
             subInput.from = p1;
             subInput.to = p2;
             subInput.maxFraction = maxFraction;
-            subInput.halfExtents = half;
+            subInput.halfExtents = halfExtents;
 
             float newFraction = callback(subInput, node->data);
             if (newFraction == 0.0f)
@@ -777,17 +676,37 @@ void AABBTree::AABBCast(const AABBCastInput& input,
 
             if (newFraction > 0.0f)
             {
-                // Update ray AABB
+                // Shorten the ray
                 maxFraction = newFraction;
-                Vec2 newEnd = p1 + maxFraction * (p2 - p1);
-                rayAABB.min = Min(p1, newEnd) - half;
-                rayAABB.max = Max(p1, newEnd) + half;
             }
         }
         else
         {
-            stack.EmplaceBack(node->child1);
-            stack.EmplaceBack(node->child2);
+            // Ordered traversal
+            NodeProxy child1 = node->child1;
+            NodeProxy child2 = node->child2;
+
+            float dist1 = nodes[child1].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);
+            float dist2 = nodes[child2].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);
+
+            if (dist2 < dist1)
+            {
+                std::swap(dist1, dist2);
+                std::swap(child1, child2);
+            }
+
+            if (dist1 == max_value)
+            {
+                continue;
+            }
+            else
+            {
+                if (dist2 != max_value)
+                {
+                    stack.EmplaceBack(child2);
+                }
+                stack.EmplaceBack(child1);
+            }
         }
     }
 }

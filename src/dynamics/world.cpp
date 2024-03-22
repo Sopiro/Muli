@@ -822,18 +822,24 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
 
 void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback)
 {
-    RayCastInput input;
+    AABBCastInput input;
     input.from = from;
     input.to = to;
     input.maxFraction = 1.0f;
-    input.radius = radius;
+    input.halfExtents.Set(radius);
 
     struct TempCallback
     {
         RayCastAnyCallback* callback;
 
-        float RayCastCallback(const RayCastInput& input, Collider* collider)
+        float AABBCastCallback(const AABBCastInput& subInput, Collider* collider)
         {
+            RayCastInput input;
+            input.from = subInput.from;
+            input.to = subInput.to;
+            input.maxFraction = subInput.maxFraction;
+            input.radius = subInput.halfExtents.x;
+
             RayCastOutput output;
 
             bool hit = collider->RayCast(input, &output);
@@ -851,7 +857,7 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAn
 
     tempCallback.callback = callback;
 
-    contactManager.broadPhase.tree.RayCast(input, &tempCallback);
+    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback)
@@ -969,11 +975,11 @@ void World::RayCastAny(
     float radius,
     const std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)>& callback)
 {
-    RayCastInput input;
+    AABBCastInput input;
     input.from = from;
     input.to = to;
     input.maxFraction = 1.0f;
-    input.radius = radius;
+    input.halfExtents.Set(radius);
 
     struct TempCallback
     {
@@ -984,8 +990,14 @@ void World::RayCastAny(
         {
         }
 
-        float RayCastCallback(const RayCastInput& input, Collider* collider)
+        float AABBCastCallback(const AABBCastInput& subInput, Collider* collider)
         {
+            RayCastInput input;
+            input.from = subInput.from;
+            input.to = subInput.to;
+            input.maxFraction = subInput.maxFraction;
+            input.radius = subInput.halfExtents.x;
+
             RayCastOutput output;
 
             bool hit = collider->RayCast(input, &output);
@@ -1001,7 +1013,7 @@ void World::RayCastAny(
         }
     } tempCallback(callback);
 
-    contactManager.broadPhase.tree.RayCast(input, &tempCallback);
+    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(
