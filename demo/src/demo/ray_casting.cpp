@@ -55,6 +55,8 @@ public:
                               {
                                   renderer.DrawPoint(point);
                                   renderer.DrawLine(point, point + normal * 0.2f);
+
+                                  ++dm.colorIndex;
                                   renderer.DrawShape(&c, Transform(point, identity), dm);
 
                                   return 1.0f;

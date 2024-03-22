@@ -5,109 +5,129 @@
 namespace muli
 {
 
+static const char* items[] = { "Circle", "Capsule", "Polygon" };
+
 class ShapeCastWorld : public Demo
 {
 public:
-    ShapeCastOutput output;
+    Transform tf = identity;
+    std::unique_ptr<Shape> shape;
 
-    Vec2 translation{ -5.0f, 0.0f };
+    int32 count;
+    Vec2 from{ -3.0f, 2.7f };
+    Vec2 to{ 3.0f, 3.3f };
+
     bool closest = true;
+    float radius = 0.0f;
+
+    int item = 1;
 
     ShapeCastWorld(Game& game)
         : Demo(game)
     {
-        options.show_contact_normal = true;
-        options.show_contact_point = true;
+        RigidBody* b;
+        b = world->CreateCircle(0.3f);
+        b->SetPosition(1.5f, 3);
+
+        b = world->CreateCapsule(0.5f, 0.2f);
+        b->SetPosition(-0.5f, 3);
+
+        b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
+        b->SetPosition(0.5f, 3);
+        UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
+
+        b = world->CreateRegularPolygon(0.2f, 3);
+        b->SetPosition(-1.5f, 3);
+
         settings.apply_gravity = false;
         settings.sleeping = false;
 
-        RigidBody* b = world->CreateBox(0.5f);
-        b->SetPosition(0.0f, 5.5f);
-        b->SetRotation(pi / 3);
-
-        b = world->CreateRegularPolygon(0.3f, 3, 0.0f, RigidBody::dynamic_body, 0.1f);
-        b->SetPosition(0.0f, 4.0f);
-        b->SetRotation(pi / 2);
-        UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
-
-        b = world->CreateCapsule(0.5, 0.25f);
-        b->SetPosition(0.0f, 2.5f);
-        b->SetRotation(pi / 4);
-
-        b = world->CreateCircle(0.3f);
-        b->SetPosition(0.0f, 1.0f);
-
-        b = world->CreateCapsule(0.7f, 0.3f);
-        // b = world->CreateCircle(0.5f);
-        // RigidBody* b = world->CreateBox(0.5f);
-        b->SetPosition(3.0f, 3.0f);
-        b->SetFixedRotation(true);
-        b->SetContinuous(true);
+        UpdateShape();
     }
 
-    void Render() override
+    void Step() override
     {
-        if (world->GetBodyCount() > 1)
+        Demo::Step();
+
+        bool hit = false;
+        float closestFraction;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+
+        Renderer::DrawMode dm{};
+
+        tf.position = from;
+        Vec2 translation = to - from;
+
+        world->ShapeCastAny(shape.get(), tf, translation,
+                            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+                                hit = true;
+
+                                if (closest == false)
+                                {
+                                    renderer.DrawPoint(point);
+                                    renderer.DrawLine(point, point + normal * 0.2f);
+                                    ++dm.colorIndex;
+                                    renderer.DrawShape(shape.get(), Transform(from + translation * fraction, identity), dm);
+
+                                    return 1.0f;
+                                }
+                                else
+                                {
+                                    closestPoint = point;
+                                    closestNormal = normal;
+                                    closestFraction = fraction;
+
+                                    return fraction;
+                                }
+                            });
+
+        renderer.DrawLine(from, to);
+        renderer.DrawPoint(from, Vec4{ 1, 0, 0, 1 });
+        renderer.DrawPoint(to, Vec4{ 0, 0, 1, 1 });
+
+        if (closest && hit)
         {
-            RigidBody* body = world->GetBodyListTail();
-            Collider* collider = body->GetColliderList();
-            const Shape* shape = collider->GetShape();
-            Transform tf0 = body->GetTransform();
+            renderer.DrawPoint(closestPoint);
+            renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
+            renderer.DrawShape(shape.get(), Transform(from + translation * closestFraction, identity), dm);
+        }
+        else
+        {
+            // renderer.DrawShape(shape.get(), Transform(to, identity), dm);
+            // AABB aabb;
+            // shape->ComputeAABB(Transform(to, identity), &aabb);
+            // renderer.DrawAABB(aabb);
+        }
+    }
 
-            Renderer& r = game.GetRenderer();
+    void UpdateInput() override
+    {
+        FindTargetBody();
+        EnableKeyboardShortcut();
+        EnablePolygonCreate();
+        EnableBodyRemove();
 
-            Renderer::DrawMode drawMode;
-            drawMode.fill = false;
-            drawMode.outline = true;
+        static bool pressed = false;
 
-            bool hit = false;
-            float closestT;
-            Vec2 closestPoint;
-            Vec2 closestNormal;
+        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+        {
+            EnableCameraControl();
 
-            world->ShapeCastAny(shape, tf0, translation,
-                                [&](Collider* collider, const Vec2& point, const Vec2& normal, float t) -> float {
-                                    hit = true;
-
-                                    Transform tf1 = tf0;
-                                    tf1.position += translation * t;
-
-                                    if (closest == false)
-                                    {
-                                        r.DrawShape(shape, tf1, drawMode);
-                                        r.DrawLine(tf0.position, tf1.position);
-                                        r.DrawPoint(point);
-                                        r.DrawLine(point, point + normal * 0.1f);
-
-                                        return 1.0f;
-                                    }
-                                    else
-                                    {
-                                        closestT = t;
-                                        closestPoint = point;
-                                        closestNormal = normal;
-
-                                        return t;
-                                    }
-                                });
-
-            if (hit == false)
+            if (!pressed && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
-                Transform tf1 = tf0;
-                tf1.position += translation;
-
-                renderer.DrawShape(shape, tf1, drawMode);
-                renderer.DrawLine(tf0.position, tf1.position);
+                from = cursorPos;
+                pressed = true;
             }
-            else if (closest)
-            {
-                Transform tf1 = tf0;
-                tf1.position += translation * closestT;
 
-                renderer.DrawPoint(closestPoint);
-                renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
-                renderer.DrawLine(tf0.position, tf1.position);
-                renderer.DrawShape(shape, tf1, drawMode);
+            if (pressed && Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                to = cursorPos;
+            }
+
+            if (pressed && Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                pressed = false;
             }
         }
     }
@@ -116,15 +136,39 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        if (world->GetBodyCount() > 1)
+        if (ImGui::Begin("Shape cast world", NULL,
+                         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
-            if (ImGui::Begin("Shape cast", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            ImGui::Checkbox("Closest", &closest);
+
+            ImGui::SetNextItemWidth(100);
+            ImGui::DragFloat("Ray radius", &radius, 0.01f, 0.0f, 0.5f, "%.2f");
+
+            ImGui::SetNextItemWidth(100);
+            if (ImGui::Combo("shape", &item, items, IM_ARRAYSIZE(items)))
             {
-                ImGui::Text("Translation");
-                ImGui::DragFloat2("##Translation", &translation.x, 0.1f);
-                ImGui::Checkbox("Closest", &closest);
+                UpdateShape();
             }
-            ImGui::End();
+        }
+        ImGui::End();
+    }
+
+    void UpdateShape()
+    {
+        switch (item)
+        {
+        case 0:
+            shape.reset(new Circle(0.2f));
+            break;
+        case 1:
+            shape.reset(new Capsule(0.3f, 0.14f));
+            break;
+        case 2:
+            shape.reset(new Polygon(0.3f));
+            break;
+
+        default:
+            break;
         }
     }
 
