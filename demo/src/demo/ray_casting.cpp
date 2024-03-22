@@ -18,9 +18,8 @@ public:
     RayCasting(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
-
-        RigidBody* b = world->CreateCircle(0.3f);
+        RigidBody* b;
+        b = world->CreateCircle(0.3f);
         b->SetPosition(1.5f, 3);
 
         b = world->CreateCapsule(0.5f, 0.2f);
@@ -79,6 +78,13 @@ public:
             renderer.DrawLine(closestPoint, closestPoint + closestNormal * 0.2f);
             renderer.DrawShape(&c, Transform(closestPoint, identity), dm);
         }
+        else
+        {
+            // renderer.DrawShape(&c, Transform(to, identity), dm);
+            // AABB aabb;
+            // c.ComputeAABB(Transform(to, identity), &aabb);
+            // renderer.DrawAABB(aabb);
+        }
 
         // {
         //     Vec2 p1 = Vec2{ 3, 1 };
@@ -105,6 +111,7 @@ public:
         FindTargetBody();
         EnableKeyboardShortcut();
         EnablePolygonCreate();
+        EnableBodyRemove();
 
         static bool pressed = false;
 
