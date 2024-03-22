@@ -19,8 +19,8 @@ struct AABB
     bool Contains(const AABB& aabb) const;
     bool TestPoint(const Vec2& point) const;
     bool TestOverlap(const AABB& other) const;
-    bool TestRay(const Vec2& from, const Vec2& to, float tMin, float tMax) const;
-    float RayCast(const Vec2& from, const Vec2& to, float tMin, float tMax) const;
+    bool TestRay(const Vec2& from, const Vec2& to, float tMin, float tMax, Vec2 margin = Vec2::zero) const;
+    float RayCast(const Vec2& from, const Vec2& to, float tMin, float tMax, Vec2 margin = Vec2::zero) const;
 
     Vec2 min;
     Vec2 max;

@@ -254,10 +254,11 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
 template <typename T>
 void AABBTree::RayCast(const RayCastInput& input, T* callback) const
 {
-    Vec2 p1 = input.from;
-    Vec2 p2 = input.to;
+    const Vec2 p1 = input.from;
+    const Vec2 p2 = input.to;
+    const Vec2 radius(input.radius, input.radius);
+
     float maxFraction = input.maxFraction;
-    Vec2 radius(input.radius, input.radius);
 
     Vec2 d = p2 - p1;
     float length = d.NormalizeSafe();
@@ -265,14 +266,6 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
     {
         return;
     }
-
-    Vec2 perp = Cross(d, 1.0f); // separating axis
-    Vec2 absPerp = Abs(perp);
-
-    Vec2 end = p1 + maxFraction * (p2 - p1);
-    AABB rayAABB;
-    rayAABB.min = Min(p1, end) - radius;
-    rayAABB.max = Max(p1, end) + radius;
 
     GrowableArray<NodeProxy, 256> stack;
     stack.EmplaceBack(root);
@@ -286,19 +279,6 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
         }
 
         const Node* node = nodes + current;
-        if (node->aabb.TestOverlap(rayAABB) == false)
-        {
-            continue;
-        }
-
-        Vec2 center = node->aabb.GetCenter();
-        Vec2 extents = node->aabb.GetHalfExtents();
-
-        float separation = Abs(Dot(perp, p1 - center)) - Dot(absPerp, extents);
-        if (separation > radius.x) // Separation test
-        {
-            continue;
-        }
 
         if (node->IsLeaf())
         {
@@ -316,17 +296,37 @@ void AABBTree::RayCast(const RayCastInput& input, T* callback) const
 
             if (newFraction > 0.0f)
             {
-                // Update ray AABB
+                // Shorten the ray
                 maxFraction = newFraction;
-                Vec2 newEnd = p1 + maxFraction * (p2 - p1);
-                rayAABB.min = Min(p1, newEnd) - radius;
-                rayAABB.max = Max(p1, newEnd) + radius;
             }
         }
         else
         {
-            stack.EmplaceBack(node->child1);
-            stack.EmplaceBack(node->child2);
+            // Ordered traversal
+            NodeProxy child1 = node->child1;
+            NodeProxy child2 = node->child2;
+
+            float dist1 = nodes[child1].aabb.RayCast(p1, p2, 0.0f, maxFraction, radius);
+            float dist2 = nodes[child2].aabb.RayCast(p1, p2, 0.0f, maxFraction, radius);
+
+            if (dist2 < dist1)
+            {
+                std::swap(dist1, dist2);
+                std::swap(child1, child2);
+            }
+
+            if (dist1 == max_value)
+            {
+                continue;
+            }
+            else
+            {
+                if (dist2 != max_value)
+                {
+                    stack.EmplaceBack(child2);
+                }
+                stack.EmplaceBack(child1);
+            }
         }
     }
 }
