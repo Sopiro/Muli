@@ -717,6 +717,12 @@ void World::Query(const Vec2& point, const std::function<bool(Collider* collider
         {
             muliNotUsed(node);
 
+            // Body was destroyed while querying
+            if (collider->body == nullptr)
+            {
+                return true;
+            }
+
             if (collider->TestPoint(point))
             {
                 return callbackFcn(collider);
@@ -748,6 +754,12 @@ void World::Query(const AABB& aabb, const std::function<bool(Collider* collider)
         {
             muliNotUsed(node);
 
+            // Body was destroyed while querying
+            if (collider->body == nullptr)
+            {
+                return true;
+            }
+
             if (Collide(collider->shape, collider->body->transform, &box, identity))
             {
                 return callbackFcn(collider);
@@ -770,6 +782,12 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
             muliNotUsed(node);
+
+            // Body was destroyed while querying
+            if (collider->body == nullptr)
+            {
+                return true;
+            }
 
             if (collider->TestPoint(point))
             {
@@ -805,6 +823,12 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
             muliNotUsed(node);
+
+            // Body was destroyed while querying
+            if (collider->body == nullptr)
+            {
+                return true;
+            }
 
             if (Collide(collider->shape, collider->body->transform, &region, t))
             {

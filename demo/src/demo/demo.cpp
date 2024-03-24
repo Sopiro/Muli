@@ -259,15 +259,9 @@ void Demo::EnableBodyRemove()
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
         {
+            std::vector<Collider*> colliders;
             const auto callback = [&](Collider* c) -> bool {
-                RigidBody* b = c->GetBody();
-                b->DestroyCollider(c);
-
-                if (b->GetColliderCount() == 0)
-                {
-                    world->Destroy(b);
-                }
-
+                colliders.push_back(c);
                 return true;
             };
 
@@ -278,6 +272,18 @@ void Demo::EnableBodyRemove()
             else
             {
                 world->Query(aabb, callback);
+            }
+
+            for (int32 i = 0; i < colliders.size(); ++i)
+            {
+                Collider* c = colliders[i];
+                RigidBody* b = c->GetBody();
+                b->DestroyCollider(c);
+
+                if (b->GetColliderCount() == 0)
+                {
+                    world->Destroy(b);
+                }
             }
 
             draging = false;

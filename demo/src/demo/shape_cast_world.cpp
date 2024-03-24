@@ -18,7 +18,6 @@ public:
     Vec2 to{ 3.0f, 3.3f };
 
     bool closest = true;
-    float radius = 0.0f;
 
     int item = 1;
 
@@ -30,7 +29,7 @@ public:
         b->SetPosition(1.5f, 3);
 
         b = world->CreateCapsule(0.5f, 0.2f);
-        b->SetPosition(-0.5f, 3);
+        b->SetPosition(-0.5f, 3.5);
 
         b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(0.5f, 3);
@@ -140,9 +139,6 @@ public:
                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::Checkbox("Closest", &closest);
-
-            ImGui::SetNextItemWidth(100);
-            ImGui::DragFloat("Ray radius", &radius, 0.01f, 0.0f, 0.5f, "%.2f");
 
             ImGui::SetNextItemWidth(100);
             if (ImGui::Combo("shape", &item, items, IM_ARRAYSIZE(items)))
