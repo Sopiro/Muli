@@ -197,6 +197,12 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     nodes[newParent].data = nullptr;
     nodes[newParent].parent = oldParent;
 
+    // Connect new leaf and sibling to new parent
+    nodes[newParent].child1 = leaf;
+    nodes[newParent].child2 = bestSibling;
+    nodes[leaf].parent = newParent;
+    nodes[bestSibling].parent = newParent;
+
     if (oldParent != nullNode)
     {
         if (nodes[oldParent].child1 == bestSibling)
@@ -207,23 +213,14 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         {
             nodes[oldParent].child2 = newParent;
         }
-
-        nodes[newParent].child1 = bestSibling;
-        nodes[newParent].child2 = leaf;
-        nodes[bestSibling].parent = newParent;
-        nodes[leaf].parent = newParent;
     }
     else
     {
-        nodes[newParent].child1 = bestSibling;
-        nodes[newParent].child2 = leaf;
-        nodes[bestSibling].parent = newParent;
-        nodes[leaf].parent = newParent;
         root = newParent;
     }
 
     // Walk back up the tree refitting ancestors' AABB and applying rotations
-    NodeProxy ancestor = nodes[leaf].parent;
+    NodeProxy ancestor = newParent;
     while (ancestor != nullNode)
     {
         NodeProxy child1 = nodes[ancestor].child1;
@@ -245,50 +242,54 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
     muliAssert(nodes[leaf].IsLeaf());
 
     NodeProxy parent = nodes[leaf].parent;
-
-    if (parent != nullNode) // node is not root
-    {
-        NodeProxy sibling = nodes[parent].child1 == leaf ? nodes[parent].child2 : nodes[parent].child1;
-
-        if (nodes[parent].parent != nullNode) // sibling has grandparent
-        {
-            nodes[sibling].parent = nodes[parent].parent;
-
-            NodeProxy grandParent = nodes[parent].parent;
-            if (nodes[grandParent].child1 == parent)
-            {
-                nodes[grandParent].child1 = sibling;
-            }
-            else
-            {
-                nodes[grandParent].child2 = sibling;
-            }
-        }
-        else // sibling has no grandparent
-        {
-            root = sibling;
-
-            nodes[sibling].parent = nullNode;
-        }
-
-        FreeNode(parent);
-
-        NodeProxy ancestor = nodes[sibling].parent;
-        while (ancestor != nullNode)
-        {
-            NodeProxy child1 = nodes[ancestor].child1;
-            NodeProxy child2 = nodes[ancestor].child2;
-
-            nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
-
-            ancestor = nodes[ancestor].parent;
-        }
-    }
-    else // node is root
+    if (parent == nullNode) // node is root
     {
         muliAssert(root == leaf);
-
         root = nullNode;
+        return;
+    }
+
+    NodeProxy grandParent = nodes[parent].parent;
+    NodeProxy sibling;
+    if (nodes[parent].child1 == leaf)
+    {
+        sibling = nodes[parent].child2;
+    }
+    else
+    {
+        sibling = nodes[parent].child1;
+    }
+
+    if (grandParent != nullNode) // node has grandparent
+    {
+        nodes[sibling].parent = grandParent;
+
+        if (nodes[grandParent].child1 == parent)
+        {
+            nodes[grandParent].child1 = sibling;
+        }
+        else
+        {
+            nodes[grandParent].child2 = sibling;
+        }
+    }
+    else // node has no grandparent
+    {
+        root = sibling;
+        nodes[sibling].parent = nullNode;
+    }
+
+    FreeNode(parent);
+
+    NodeProxy ancestor = grandParent;
+    while (ancestor != nullNode)
+    {
+        NodeProxy child1 = nodes[ancestor].child1;
+        NodeProxy child2 = nodes[ancestor].child2;
+
+        nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
+
+        ancestor = nodes[ancestor].parent;
     }
 }
 
@@ -370,12 +371,11 @@ void AABBTree::Rotate(NodeProxy node)
         return;
     }
 
-    if (nodes[node].parent == nullNode)
+    NodeProxy parent = nodes[node].parent;
+    if (parent == nullNode)
     {
         return;
     }
-
-    NodeProxy parent = nodes[node].parent;
 
     NodeProxy sibling;
     if (nodes[parent].child1 == node)
@@ -413,93 +413,94 @@ void AABBTree::Rotate(NodeProxy node)
     }
 
     // Rotate only if it reduce the suface area
-    if (costDiffs[bestDiffIndex] < 0.0f)
+    if (costDiffs[bestDiffIndex] >= 0.0f)
     {
-        // printf("Tree rotation occurred: %d\n", bestDiffIndex);
+        return;
+    }
 
-        switch (bestDiffIndex)
+    // printf("Tree rotation occurred: %d\n", bestDiffIndex);
+    switch (bestDiffIndex)
+    {
+    case 0:
+    {
+        // Swap(sibling, node->child2);
+        if (nodes[parent].child1 == sibling)
         {
-        case 0:
+            nodes[parent].child1 = nodes[node].child2;
+        }
+        else
         {
-            // Swap(sibling, node->child2);
-            if (nodes[parent].child1 == sibling)
-            {
-                nodes[parent].child1 = nodes[node].child2;
-            }
-            else
-            {
-                nodes[parent].child2 = nodes[node].child2;
-            }
-
-            nodes[nodes[node].child2].parent = parent;
-
-            nodes[node].child2 = sibling;
-            nodes[sibling].parent = node;
-
-            nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb);
+            nodes[parent].child2 = nodes[node].child2;
         }
-        break;
-        case 1:
+
+        nodes[nodes[node].child2].parent = parent;
+
+        nodes[node].child2 = sibling;
+        nodes[sibling].parent = node;
+
+        nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child1].aabb);
+    }
+    break;
+    case 1:
+    {
+        // Swap(sibling, node->child1);
+        if (nodes[parent].child1 == sibling)
         {
-            // Swap(sibling, node->child1);
-            if (nodes[parent].child1 == sibling)
-            {
-                nodes[parent].child1 = nodes[node].child1;
-            }
-            else
-            {
-                nodes[parent].child2 = nodes[node].child1;
-            }
-
-            nodes[nodes[node].child1].parent = parent;
-
-            nodes[node].child1 = sibling;
-            nodes[sibling].parent = node;
-
-            nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb);
+            nodes[parent].child1 = nodes[node].child1;
         }
-        break;
-        case 2:
+        else
         {
-            // Swap(node, sibling->child2);
-            if (nodes[parent].child1 == node)
-            {
-                nodes[parent].child1 = nodes[sibling].child2;
-            }
-            else
-            {
-                nodes[parent].child2 = nodes[sibling].child2;
-            }
-
-            nodes[nodes[sibling].child2].parent = parent;
-
-            nodes[sibling].child2 = node;
-            nodes[node].parent = sibling;
-
-            nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb);
+            nodes[parent].child2 = nodes[node].child1;
         }
-        break;
-        case 3:
+
+        nodes[nodes[node].child1].parent = parent;
+
+        nodes[node].child1 = sibling;
+        nodes[sibling].parent = node;
+
+        nodes[node].aabb = AABB::Union(nodes[sibling].aabb, nodes[nodes[node].child2].aabb);
+    }
+    break;
+    case 2:
+    {
+        // Swap(node, sibling->child2);
+        if (nodes[parent].child1 == node)
         {
-            // Swap(node, sibling->child1);
-            if (nodes[parent].child1 == node)
-            {
-                nodes[parent].child1 = nodes[sibling].child1;
-            }
-            else
-            {
-                nodes[parent].child2 = nodes[sibling].child1;
-            }
-
-            nodes[nodes[sibling].child1].parent = parent;
-
-            nodes[sibling].child1 = node;
-            nodes[node].parent = sibling;
-
-            nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb);
+            nodes[parent].child1 = nodes[sibling].child2;
         }
-        break;
+        else
+        {
+            nodes[parent].child2 = nodes[sibling].child2;
         }
+
+        nodes[nodes[sibling].child2].parent = parent;
+
+        nodes[sibling].child2 = node;
+        nodes[node].parent = sibling;
+
+        nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child2].aabb);
+    }
+    break;
+    case 3:
+    {
+        // Swap(node, sibling->child1);
+        if (nodes[parent].child1 == node)
+        {
+            nodes[parent].child1 = nodes[sibling].child1;
+        }
+        else
+        {
+            nodes[parent].child2 = nodes[sibling].child1;
+        }
+
+        nodes[nodes[sibling].child1].parent = parent;
+
+        nodes[sibling].child1 = node;
+        nodes[node].parent = sibling;
+
+        nodes[sibling].aabb = AABB::Union(nodes[node].aabb, nodes[nodes[sibling].child1].aabb);
+    }
+    break;
     }
 }
 
