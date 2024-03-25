@@ -5,7 +5,7 @@
 namespace muli
 {
 
-static const char* items[] = { "Circle", "Capsule", "Polygon" };
+static const char* items[] = { "Circle", "Capsule", "Polygon", "Rounded" };
 
 class ShapeCastWorld : public Demo
 {
@@ -26,17 +26,17 @@ public:
     {
         RigidBody* b;
         b = world->CreateCircle(0.3f);
-        b->SetPosition(1.5f, 3);
+        b->SetPosition(1.5f, 3.0f);
 
         b = world->CreateCapsule(0.5f, 0.2f);
-        b->SetPosition(-0.5f, 3.5);
+        b->SetPosition(-0.5f, 3.0f);
 
         b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
-        b->SetPosition(0.5f, 3);
+        b->SetPosition(0.5f, 3.0f);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
         b = world->CreateRegularPolygon(0.2f, 3);
-        b->SetPosition(-1.5f, 3);
+        b->SetPosition(-1.5f, 3.0f);
 
         settings.apply_gravity = false;
         settings.sleeping = false;
@@ -53,7 +53,8 @@ public:
         Vec2 closestPoint;
         Vec2 closestNormal;
 
-        Renderer::DrawMode dm{};
+        Renderer::DrawMode dm;
+        dm.rounded = true;
 
         tf.position = from;
         Vec2 translation = to - from;
@@ -154,14 +155,26 @@ public:
         switch (item)
         {
         case 0:
+        {
             shape.reset(new Circle(0.2f));
-            break;
+        }
+        break;
         case 1:
+        {
             shape.reset(new Capsule(0.3f, 0.14f));
-            break;
+        }
+        break;
         case 2:
+        {
             shape.reset(new Polygon(0.3f));
-            break;
+        }
+        break;
+        case 3:
+        {
+            float h = 0.15f;
+            shape.reset(new Polygon({ { -h, 0.0f }, { h, 0.0f }, { 0.0f, 2.0f * h / 1.732f } }, true, 0.05f));
+        }
+        break;
 
         default:
             break;
