@@ -5,8 +5,7 @@ namespace muli
 {
 
 AABBTree::AABBTree()
-    : nodeID{ 0 }
-    , root{ nullNode }
+    : root{ nullNode }
     , nodeCapacity{ 32 }
     , nodeCount{ 0 }
 {
@@ -17,8 +16,11 @@ AABBTree::AABBTree()
     for (int32 i = 0; i < nodeCapacity - 1; ++i)
     {
         nodes[i].next = i + 1;
+        nodes[i].parent = i;
     }
     nodes[nodeCapacity - 1].next = nullNode;
+    nodes[nodeCapacity - 1].parent = nodeCapacity - 1;
+
     freeList = 0;
 }
 
@@ -31,7 +33,6 @@ AABBTree::~AABBTree() noexcept
 
 AABBTree::AABBTree(AABBTree&& other) noexcept
 {
-    nodeID = other.nodeID;
     root = other.root;
 
     nodes = other.nodes;
@@ -40,7 +41,6 @@ AABBTree::AABBTree(AABBTree&& other) noexcept
 
     freeList = other.freeList;
 
-    other.nodeID = 0;
     other.root = nullNode;
 
     other.nodes = nullptr;
@@ -56,7 +56,6 @@ AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
 
     muli::Free(nodes);
 
-    nodeID = other.nodeID;
     root = other.root;
 
     nodes = other.nodes;
@@ -65,7 +64,6 @@ AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
 
     freeList = other.freeList;
 
-    other.nodeID = 0;
     other.root = nullNode;
 
     other.nodes = nullptr;
@@ -671,7 +669,6 @@ void AABBTree::AABBCast(const AABBCastInput& input,
 
 void AABBTree::Reset()
 {
-    nodeID = 0;
     root = nullNode;
     nodeCount = 0;
     memset(nodes, 0, nodeCapacity * sizeof(Node));
@@ -680,8 +677,11 @@ void AABBTree::Reset()
     for (int32 i = 0; i < nodeCapacity - 1; ++i)
     {
         nodes[i].next = i + 1;
+        nodes[i].parent = i;
     }
     nodes[nodeCapacity - 1].next = nullNode;
+    nodes[nodeCapacity - 1].parent = nodeCapacity - 1;
+
     freeList = 0;
 }
 
@@ -703,14 +703,16 @@ NodeProxy AABBTree::AllocateNode()
         for (int32 i = nodeCount; i < nodeCapacity - 1; ++i)
         {
             nodes[i].next = i + 1;
+            nodes[i].parent = i;
         }
         nodes[nodeCapacity - 1].next = nullNode;
+        nodes[nodeCapacity - 1].parent = nodeCapacity - 1;
+
         freeList = nodeCount;
     }
 
     NodeProxy node = freeList;
     freeList = nodes[node].next;
-    nodes[node].id = ++nodeID;
     nodes[node].parent = nullNode;
     nodes[node].child1 = nullNode;
     nodes[node].child2 = nullNode;
@@ -725,24 +727,25 @@ void AABBTree::FreeNode(NodeProxy node)
     muliAssert(0 <= node && node <= nodeCapacity);
     muliAssert(0 < nodeCount);
 
-    nodes[node].id = 0;
+    nodes[node].parent = node;
     nodes[node].next = freeList;
     freeList = node;
+
     --nodeCount;
 }
 
 void AABBTree::Rebuild()
 {
-    // Rebuild the tree with bottom up approach
+    // Rebuild tree with bottom up approach
 
     NodeProxy* leaves = (NodeProxy*)muli::Alloc(nodeCount * sizeof(NodeProxy));
     int32 count = 0;
 
-    // Build an array of leaf node
+    // Collect all leaves
     for (int32 i = 0; i < nodeCapacity; ++i)
     {
         // Already in the free list
-        if (nodes[i].id == 0)
+        if (nodes[i].parent == i)
         {
             continue;
         }

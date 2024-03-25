@@ -34,7 +34,6 @@ public:
             return child1 == nullNode;
         }
 
-        int32 id;
         AABB aabb;
 
         NodeProxy parent;
@@ -86,7 +85,6 @@ public:
     void Rebuild();
 
 private:
-    NodeProxy nodeID;
     NodeProxy root;
 
     Node* nodes;
