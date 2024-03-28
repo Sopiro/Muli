@@ -14,14 +14,16 @@ Demo::Demo(Game& _game)
     , cursorJoint{ nullptr }
 {
     dt = 1.0f / Window::Get().GetRefreshRate();
+    screenBounds = Window::Get().GetWindowSize() * 0.01f;
+
     // dt = 1.0f / 60.0f;
-    settings.world_bounds.min.y = -20.0f;
+    settings.world_bounds.min.y = -30.0f;
 
     world = new World(settings);
 
     camera.scale.Set(1.0f);
     camera.rotation = 0.0f;
-    camera.position.Set(0.0f, 3.6f);
+    camera.position.Set(0.0f, screenBounds.y / 2.0f);
 }
 
 Demo::~Demo()

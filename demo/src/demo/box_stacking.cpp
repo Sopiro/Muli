@@ -30,7 +30,7 @@ public:
             float h = count * (size + gap) - gap;
 
             camera.position.Set(0.0f, h / 2.0f);
-            camera.scale.Set(h / 7.2f);
+            camera.scale.Set(h / screenBounds.y);
         }
     }
 

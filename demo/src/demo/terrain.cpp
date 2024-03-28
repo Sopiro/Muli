@@ -53,6 +53,6 @@ public:
     }
 };
 
-static int index = register_demo("Terrain", Terrain::Create, 32);
+static int index = register_demo("Terrain", Terrain::Create, 35);
 
 } // namespace muli

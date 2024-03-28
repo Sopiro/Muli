@@ -108,6 +108,6 @@ public:
     }
 };
 
-static int index = register_demo("Car", Car::Create, 38);
+static int index = register_demo("Car", Car::Create, 41);
 
 } // namespace muli

@@ -64,6 +64,6 @@ public:
     }
 };
 
-static int index = register_demo("Compound shapes", CompoundShape::Create, 39);
+static int index = register_demo("Compound shapes", CompoundShape::Create, 42);
 
 } // namespace muli

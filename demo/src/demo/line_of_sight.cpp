@@ -93,6 +93,6 @@ public:
     }
 };
 
-static int index = register_demo("Line of sight", LineOfSight::Create, 35);
+static int index = register_demo("Line of sight", LineOfSight::Create, 38);
 
 } // namespace muli

@@ -32,6 +32,6 @@ public:
     }
 };
 
-static int index = register_demo("Pulley", Pulley::Create, 29);
+static int index = register_demo("Pulley", Pulley::Create, 32);
 
 } // namespace muli

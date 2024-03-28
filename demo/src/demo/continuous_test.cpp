@@ -21,7 +21,7 @@ public:
         world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, RigidBody::Type::static_body);
 
         target = world->CreateCapsule(2.8f, 0.05f, true);
-        target->SetPosition(Rand(-0.5f, 0.5f), 7.2f);
+        target->SetPosition(Rand(-0.5f, 0.5f), screenBounds.y);
         target->SetLinearVelocity(0.0f, -100.0f);
         target->SetAngularVelocity(Rand(-20.0f, 20.0f));
         target->SetContinuous(true);
@@ -69,6 +69,6 @@ public:
     }
 };
 
-static int index = register_demo("Continuous test", ContinuousTest::Create, 44);
+static int index = register_demo("Continuous test", ContinuousTest::Create, 48);
 
 } // namespace muli

@@ -74,6 +74,7 @@ protected:
 
     float dt;
     Vec2 cursorPos;
+    Vec2 screenBounds;
 
     RigidBody* targetBody;
     Collider* targetCollider;

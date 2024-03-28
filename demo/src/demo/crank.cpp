@@ -54,6 +54,6 @@ public:
     }
 };
 
-static int index = register_demo("Crank", Crank::Create, 31);
+static int index = register_demo("Crank", Crank::Create, 34);
 
 } // namespace muli

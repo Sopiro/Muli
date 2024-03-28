@@ -15,13 +15,15 @@ public:
     {
         settings.apply_gravity = false;
 
+        float h = screenBounds.y / 2.0f;
+
         RigidBody* g = world->CreateBox(0.3f, 6, RigidBody::Type::static_body);
-        g->SetPosition(0.0f, 3.6f);
+        g->SetPosition(0.0f, h);
 
         float size = 0.3f;
         float bind = 3.0f;
         float length = 2.0f;
-        float yStart = 3.6f;
+        float yStart = h;
         float yGap = 2.0f;
 
         RigidBody* b = world->CreateBox(size);

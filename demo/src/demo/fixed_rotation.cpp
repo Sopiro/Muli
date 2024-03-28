@@ -48,6 +48,6 @@ public:
     }
 };
 
-static int index = register_demo("Fixed rotation", FixedRotation::Create, 25);
+static int index = register_demo("Fixed rotation", FixedRotation::Create, 27);
 
 } // namespace muli

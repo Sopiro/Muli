@@ -115,6 +115,6 @@ public:
     }
 };
 
-static int index = register_demo("Contact callbacks", ContactCallbacks::Create, 40);
+static int index = register_demo("Contact callbacks", ContactCallbacks::Create, 43);
 
 } // namespace muli

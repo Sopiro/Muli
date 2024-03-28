@@ -113,6 +113,6 @@ public:
     }
 };
 
-static int index = register_demo("Shape cast", ShapeCastTest::Create, 48);
+static int index = register_demo("Shape cast", ShapeCastTest::Create, 51);
 
 } // namespace muli

@@ -62,14 +62,20 @@ Window::Window(int32 _width, int32 _height, const std::string& _title)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    // io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;
 
     // ImGui::StyleColorsClassic();
     // ImGui::StyleColorsLight();
     ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    style.Colors[ImGuiCol_WindowBg] = ImColor(33, 34, 32);
 
     // Rounded corner style
     float rounding = 5.0f;
-    ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = rounding;
     style.ChildRounding = rounding;
     style.FrameRounding = rounding;

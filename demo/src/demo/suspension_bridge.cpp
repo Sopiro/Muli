@@ -79,7 +79,7 @@ public:
                                            b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f);
         }
 
-        camera.position = Vec2{ 0, 3.6f + 1.8f };
+        camera.position = Vec2{ 0, screenBounds.y / 2.0f + 1.8f };
         camera.scale = Vec2{ 1.5f, 1.5f };
     }
 

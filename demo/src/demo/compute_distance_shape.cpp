@@ -115,6 +115,6 @@ public:
     }
 };
 
-static int index = register_demo("Distance between shapes", ComputeDistanceShape::Create, 43);
+static int index = register_demo("Distance between shapes", ComputeDistanceShape::Create, 46);
 
 } // namespace muli

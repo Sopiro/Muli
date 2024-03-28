@@ -99,6 +99,6 @@ public:
     }
 };
 
-static int index = register_demo("Weld joint test", WeldJointTest::Create, 26);
+static int index = register_demo("Weld joint test", WeldJointTest::Create, 29);
 
 } // namespace muli

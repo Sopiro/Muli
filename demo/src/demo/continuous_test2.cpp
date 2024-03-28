@@ -52,8 +52,9 @@ public:
         target->SetContinuous(true);
         target->SetLinearVelocity(100.0f, 0.0f);
 
-        world->CreateCapsule(Vec2{ 3.6f, 6.0f }, Vec2{ 3.6f, 0.0f }, 0.05f, RigidBody::Type::static_body);
-        world->CreateCapsule(Vec2{ 3.6f, 6.0f }, Vec2{ -1.0f, 6.0f }, 0.05f, RigidBody::Type::static_body);
+        float h = screenBounds.y / 2.0f;
+        world->CreateCapsule(Vec2{ h, 6.0f }, Vec2{ h, 0.0f }, 0.05f, RigidBody::Type::static_body);
+        world->CreateCapsule(Vec2{ h, 6.0f }, Vec2{ -1.0f, 6.0f }, 0.05f, RigidBody::Type::static_body);
 
         settings.continuous = true;
     }
@@ -112,6 +113,6 @@ public:
     }
 };
 
-static int index = register_demo("Continuous test 2", ContinuousTest2::Create, 45);
+static int index = register_demo("Continuous test 2", ContinuousTest2::Create, 49);
 
 } // namespace muli

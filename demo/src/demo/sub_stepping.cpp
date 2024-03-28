@@ -104,6 +104,6 @@ public:
     }
 };
 
-static int index = register_demo("Sub-stepping", SubStepping::Create, 46);
+static int index = register_demo("Sub-stepping", SubStepping::Create, 50);
 
 } // namespace muli

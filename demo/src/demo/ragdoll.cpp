@@ -147,6 +147,6 @@ public:
     }
 };
 
-static int index = register_demo("Ragdoll", Ragdoll::Create, 36);
+static int index = register_demo("Ragdoll", Ragdoll::Create, 39);
 
 } // namespace muli

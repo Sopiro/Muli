@@ -57,6 +57,9 @@ extern bool block_solve;
 
 void Game::UpdateUI()
 {
+    // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(),
+    //                              ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_PassthruCentralNode);
+
     // ImGui::ShowDemoWindow();
 
     // ImGui Windows
@@ -67,7 +70,8 @@ void Game::UpdateUI()
     if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT)) collapsed = !collapsed;
     ImGui::SetNextWindowCollapsed(collapsed, ImGuiCond_None);
 
-    if (ImGui::Begin("Muli Engine", NULL))
+    ImGuiWindowFlags flag = ImGuiWindowFlags_NoResize;
+    if (ImGui::Begin("Muli Engine", NULL, flag))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;
         if (ImGui::BeginTabBar("TabBar", tab_bar_flags))
