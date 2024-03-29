@@ -72,7 +72,7 @@ Window::Window(int32 _width, int32 _height, const std::string& _title)
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
 
-    style.Colors[ImGuiCol_WindowBg] = ImColor(33, 34, 32);
+    style.Colors[ImGuiCol_WindowBg] = ImColor(33, 34, 32, 240);
 
     // Rounded corner style
     float rounding = 5.0f;
@@ -109,6 +109,39 @@ Window::~Window() noexcept
 
     glfwDestroyWindow(glfwWindow);
     glfwTerminate();
+}
+
+void Window::BeginFrame(const Vec4& clearColor) const
+{
+    Input::Update();
+
+    glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    // glViewport(0, 0, Window::Width, Window::Height);
+}
+
+void Window::EndFrame() const
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // ImGuiIO& io = ImGui::GetIO();
+    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    // {
+    //     GLFWwindow* backup_current_context = glfwGetCurrentContext();
+    //     ImGui::UpdatePlatformWindows();
+    //     ImGui::RenderPlatformWindowsDefault();
+    //     glfwMakeContextCurrent(backup_current_context);
+    // }
+
+    glfwSwapBuffers(glfwWindow);
 }
 
 } // namespace muli

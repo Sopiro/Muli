@@ -63,14 +63,14 @@ void Game::UpdateUI()
     // ImGui::ShowDemoWindow();
 
     // ImGui Windows
-    ImGui::SetNextWindowPos({ 5, 5 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 535 }, ImGuiCond_Once);
+    ImGui::SetNextWindowPos({ 2, 2 }, ImGuiCond_Once, { 0.0f, 0.0f });
+    ImGui::SetNextWindowSize({ 240, 450 }, ImGuiCond_Once);
 
     static bool collapsed = false;
     if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT)) collapsed = !collapsed;
     ImGui::SetNextWindowCollapsed(collapsed, ImGuiCond_None);
 
-    ImGuiWindowFlags flag = ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags flag = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     if (ImGui::Begin("Muli Engine", NULL, flag))
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs;
@@ -162,26 +162,12 @@ void Game::UpdateUI()
                 ImGui::Text("Sleeping dynamic bodies: %d", world.GetSleepingBodyCount());
                 // ImGui::Text("Awake island count: %d", world.GetIslandCount());
                 ImGui::Text("Broad phase contacts: %d", world.GetContactCount());
-
-                ImGui::Separator();
-
-                RigidBody* t = demo->GetTargetBody();
-
-                if (t)
-                {
-                    ImGui::Text("Continuous: %s", t->IsContinuous() ? "true" : "false");
-                    ImGui::Text("Mass: %.4f", t->GetMass());
-                    ImGui::Text("Inertia: %.4f", t->GetInertia());
-                    ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);
-                    ImGui::Text("Rot: %.4f", t->GetAngle());
-                }
-
                 ImGui::EndTabItem();
             }
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 28 * ImGui::GetTextLineHeightWithSpacing() }))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 23 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
                     for (int32 i = 0; i < demoCount; ++i)
                     {
@@ -208,6 +194,24 @@ void Game::UpdateUI()
     if (!collapsed && ImGui::IsWindowCollapsed()) collapsed = true;
     if (collapsed && !ImGui::IsWindowCollapsed()) collapsed = false;
 
+    ImGui::End();
+
+    ImGui::SetNextWindowPos({ 0, Window::Get().GetWindowSize().y }, ImGuiCond_Always, ImVec2{ 0.0f, 1.0f });
+    ImGui::Begin("Body info", NULL,
+                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
+                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
+    RigidBody* t = demo->GetTargetBody();
+
+    if (t)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 12 / 255.0f, 11 / 255.0f, 14 / 255.0f, 255 / 255.0f });
+        ImGui::Text("Continuous: %s", t->IsContinuous() ? "true" : "false");
+        ImGui::Text("Mass: %.4f", t->GetMass());
+        ImGui::Text("Inertia: %.4f", t->GetInertia());
+        ImGui::Text("Pos: %.4f, %.4f", t->GetPosition().x, t->GetPosition().y);
+        ImGui::Text("Rot: %.4f", t->GetAngle());
+        ImGui::PopStyleColor();
+    }
     ImGui::End();
 
     demo->UpdateUI();

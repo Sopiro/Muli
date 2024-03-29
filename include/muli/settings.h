@@ -32,8 +32,8 @@ constexpr int32 max_sub_steps = 8;
 constexpr int32 max_toi_contacts = 32;
 
 // Broad phase settings
-constexpr Vec2 aabb_margin{ 0.05f };
-constexpr float aabb_multiplier = 4.0f;
+constexpr Vec2 aabb_margin{ 0.03f };
+constexpr float aabb_multiplier = 3.0f;
 
 // Default body/collider settings
 

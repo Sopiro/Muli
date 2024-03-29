@@ -14,7 +14,7 @@ struct AABB
     Vec2 GetHalfExtents() const;
 
     float GetArea() const;
-    float GetPerimeter();
+    float GetPerimeter() const;
 
     bool Contains(const AABB& aabb) const;
     bool TestPoint(const Vec2& point) const;
@@ -49,7 +49,7 @@ inline float AABB::GetArea() const
     return (max.x - min.x) * (max.y - min.y);
 }
 
-inline float AABB::GetPerimeter()
+inline float AABB::GetPerimeter() const
 {
     Vec2 d = max - min;
     return 2.0f * (d.x + d.y);

@@ -10,9 +10,9 @@ namespace muli
 {
 
 // You can use either Area() or Perimeter() as a surface area heuristic(SAH) function
-inline float SAH(const AABB& aabb)
+inline float SurfaceArea(const AABB& aabb)
 {
-#if 1
+#if 0
     return aabb.GetArea();
 #else
     return aabb.GetPerimeter();
@@ -143,7 +143,7 @@ inline float AABBTree::ComputeTreeCost() const
 {
     float cost = 0.0f;
 
-    Traverse([&cost](const Node* node) -> void { cost += SAH(node->aabb); });
+    Traverse([&cost](const Node* node) -> void { cost += SurfaceArea(node->aabb); });
 
     return cost;
 }

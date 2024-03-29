@@ -92,7 +92,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 
 #if 1
     NodeProxy bestSibling = root;
-    float bestCost = SAH(AABB::Union(nodes[root].aabb, aabb));
+    float bestCost = SurfaceArea(AABB::Union(nodes[root].aabb, aabb));
 
     // Candidate node with inherited cost
     struct Candidate
@@ -111,7 +111,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
         stack.PopBack();
 
         AABB combined = AABB::Union(nodes[current].aabb, aabb);
-        float directCost = SAH(combined);
+        float directCost = SurfaceArea(combined);
 
         float cost = directCost + inheritedCost;
         if (cost < bestCost)
@@ -120,9 +120,9 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
             bestSibling = current;
         }
 
-        inheritedCost += directCost - SAH(nodes[current].aabb);
+        inheritedCost += directCost - SurfaceArea(nodes[current].aabb);
 
-        float lowerBoundCost = SAH(aabb) + inheritedCost;
+        float lowerBoundCost = SurfaceArea(aabb) + inheritedCost;
         if (lowerBoundCost < bestCost)
         {
             if (nodes[current].IsLeaf() == false)
@@ -378,16 +378,16 @@ void AABBTree::Rotate(NodeProxy node)
 
     if (nodes[child1].IsLeaf() == false)
     {
-        float area1 = SAH(nodes[child1].aabb);
-        costDiffs[0] = SAH(AABB::Union(nodes[nodes[child1].child1].aabb, nodes[child2].aabb)) - area1;
-        costDiffs[1] = SAH(AABB::Union(nodes[nodes[child1].child2].aabb, nodes[child2].aabb)) - area1;
+        float area1 = SurfaceArea(nodes[child1].aabb);
+        costDiffs[0] = SurfaceArea(AABB::Union(nodes[nodes[child1].child1].aabb, nodes[child2].aabb)) - area1;
+        costDiffs[1] = SurfaceArea(AABB::Union(nodes[nodes[child1].child2].aabb, nodes[child2].aabb)) - area1;
     }
 
     if (nodes[child2].IsLeaf() == false)
     {
-        float area2 = SAH(nodes[child2].aabb);
-        costDiffs[2] = SAH(AABB::Union(nodes[nodes[child2].child1].aabb, nodes[child1].aabb)) - area2;
-        costDiffs[3] = SAH(AABB::Union(nodes[nodes[child2].child2].aabb, nodes[child1].aabb)) - area2;
+        float area2 = SurfaceArea(nodes[child2].aabb);
+        costDiffs[2] = SurfaceArea(AABB::Union(nodes[nodes[child2].child1].aabb, nodes[child1].aabb)) - area2;
+        costDiffs[3] = SurfaceArea(AABB::Union(nodes[nodes[child2].child2].aabb, nodes[child1].aabb)) - area2;
     }
 
     int32 bestDiffIndex = 0;
@@ -780,7 +780,7 @@ void AABBTree::Rebuild()
                 AABB aabbJ = nodes[leaves[j]].aabb;
 
                 AABB combined = AABB::Union(aabbI, aabbJ);
-                float cost = SAH(combined);
+                float cost = SurfaceArea(combined);
 
                 if (cost < minCost)
                 {

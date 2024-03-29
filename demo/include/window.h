@@ -129,39 +129,6 @@ inline bool Window::ShouldClose() const
     return glfwWindowShouldClose(glfwWindow);
 }
 
-inline void Window::BeginFrame(const Vec4& clearColor) const
-{
-    Input::Update();
-
-    glfwPollEvents();
-
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-    // glViewport(0, 0, Window::Width, Window::Height);
-}
-
-inline void Window::EndFrame() const
-{
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    // ImGuiIO& io = ImGui::GetIO();
-    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    // {
-    //     GLFWwindow* backup_current_context = glfwGetCurrentContext();
-    //     ImGui::UpdatePlatformWindows();
-    //     ImGui::RenderPlatformWindowsDefault();
-    //     glfwMakeContextCurrent(backup_current_context);
-    // }
-
-    glfwSwapBuffers(glfwWindow);
-}
-
 inline Vec2 Window::GetWindowSize() const
 {
     return Vec2{ float(width), float(height) };
