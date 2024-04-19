@@ -492,7 +492,7 @@ void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
     nodes[node1].parent = parent2;
 }
 
-void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
+void AABBTree::Traverse(std::function<void(const Node*)> callback) const
 {
     if (root == nullNode)
     {
@@ -517,7 +517,7 @@ void AABBTree::Traverse(const std::function<void(const Node*)>& callback) const
     }
 }
 
-void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const
+void AABBTree::Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> callback) const
 {
     if (root == nullNode)
     {
@@ -552,7 +552,7 @@ void AABBTree::Query(const Vec2& point, const std::function<bool(NodeProxy, Data
     }
 }
 
-void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const
+void AABBTree::Query(const AABB& aabb, std::function<bool(NodeProxy, Data*)> callback) const
 {
     if (root == nullNode)
     {
@@ -587,8 +587,7 @@ void AABBTree::Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*
     }
 }
 
-void AABBTree::AABBCast(const AABBCastInput& input,
-                        const std::function<float(const AABBCastInput& input, Data* data)>& callback) const
+void AABBTree::AABBCast(const AABBCastInput& input, std::function<float(const AABBCastInput& input, Data* data)> callback) const
 {
     const Vec2 p1 = input.from;
     const Vec2 p2 = input.to;

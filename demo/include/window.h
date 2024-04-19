@@ -15,7 +15,7 @@ class Window final : NonCopyable
 public:
     ~Window() noexcept;
 
-    void SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback);
+    void SetFramebufferSizeChangeCallback(std::function<void(int32 width, int32 height)> callback);
 
     Vec2 GetWindowSize() const;
     int32 GetRefreshRate() const;
@@ -119,9 +119,9 @@ inline void Window::OnScroll(GLFWwindow* glfwWindow, double xoffset, double yoff
     Input::mouse_scroll.y = float(yoffset);
 }
 
-inline void Window::SetFramebufferSizeChangeCallback(const std::function<void(int32 width, int32 height)>& callback)
+inline void Window::SetFramebufferSizeChangeCallback(std::function<void(int32 width, int32 height)> callback)
 {
-    framebufferSizeChangeCallback = callback;
+    framebufferSizeChangeCallback = std::move(callback);
 }
 
 inline bool Window::ShouldClose() const

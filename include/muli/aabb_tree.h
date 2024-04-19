@@ -76,10 +76,10 @@ public:
     template <typename T>
     void AABBCast(const AABBCastInput& input, T* callback) const;
 
-    void Traverse(const std::function<void(const Node*)>& callback) const;
-    void Query(const Vec2& point, const std::function<bool(NodeProxy, Data*)>& callback) const;
-    void Query(const AABB& aabb, const std::function<bool(NodeProxy, Data*)>& callback) const;
-    void AABBCast(const AABBCastInput& input, const std::function<float(const AABBCastInput& input, Data* data)>& callback) const;
+    void Traverse(std::function<void(const Node*)> callback) const;
+    void Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> callback) const;
+    void Query(const AABB& aabb, std::function<bool(NodeProxy, Data*)> callback) const;
+    void AABBCast(const AABBCastInput& input, std::function<float(const AABBCastInput& input, Data* data)> callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();
