@@ -35,9 +35,6 @@ public:
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;
 
-    RigidBody(RigidBody&&) noexcept = delete;
-    RigidBody& operator=(RigidBody&&) = delete;
-
     const Transform& GetTransform() const;
     void SetTransform(const Transform& transform);
     void SetTransform(const Vec2& pos, float angle);

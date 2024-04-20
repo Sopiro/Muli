@@ -16,6 +16,9 @@ typedef int32 NodeProxy;
 class Collider
 {
 public:
+    Collider(const Collider&) = delete;
+    Collider& operator=(const Collider&) = delete;
+
     RigidBody* GetBody();
     const RigidBody* GetBody() const;
 

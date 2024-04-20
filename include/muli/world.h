@@ -33,9 +33,6 @@ public:
     World(const World&) noexcept = delete;
     World& operator=(const World&) noexcept = delete;
 
-    World(World&&) noexcept = delete;
-    World& operator=(World&&) noexcept = delete;
-
     float Step(float dt);
     void Reset();
 
