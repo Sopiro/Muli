@@ -1,7 +1,5 @@
 #include "application.h"
 
-#include <chrono>
-
 namespace muli
 {
 

@@ -4,6 +4,8 @@
 #include "util.h"
 #include "window.h"
 
+#include <chrono>
+
 namespace muli
 {
 
