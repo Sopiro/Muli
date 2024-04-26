@@ -41,7 +41,7 @@ public:
         if (ImGui::Begin("Box stacking", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::SliderInt("Count", &count, 1, 100);
-            ImGui::SliderFloat("Error", &error, 0.0f, 0.1f, "%.2f", 1.0f);
+            ImGui::SliderFloat("Error", &error, 0.0f, 0.1f, "%.2f");
         }
         ImGui::End();
     }

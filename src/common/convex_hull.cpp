@@ -103,11 +103,11 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertice
     delete[] sorted;
 }
 
-std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
+std::vector<Vec2> ComputeConvexHull(std::span<Vec2> vertices)
 {
     if (vertices.size() < 3)
     {
-        return vertices;
+        return std::vector<Vec2>(vertices.begin(), vertices.end());
     }
 
     size_t index = 0;
@@ -120,7 +120,7 @@ std::vector<Vec2> ComputeConvexHull(const std::vector<Vec2>& vertices)
     }
     Vec2 bottom = vertices[index];
 
-    std::vector<Vec2> sorted = vertices;
+    std::span<Vec2> sorted = vertices;
     std::swap(sorted[index], sorted[0]);
 
     std::sort(sorted.begin() + 1, sorted.end(), [&](const Vec2& a, const Vec2& b) -> bool {

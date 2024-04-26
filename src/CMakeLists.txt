@@ -121,7 +121,7 @@ target_include_directories(muli
 
 set_target_properties(muli PROPERTIES
     CMAKE_COMPILE_WARNING_AS_ERROR ON
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )

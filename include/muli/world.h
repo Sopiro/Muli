@@ -37,15 +37,15 @@ public:
     void Reset();
 
     void Destroy(RigidBody* body);
-    void Destroy(const std::vector<RigidBody*>& bodies);
+    void Destroy(std::span<RigidBody*> bodies);
     void Destroy(Joint* joint);
-    void Destroy(const std::vector<Joint*>& joints);
+    void Destroy(std::span<Joint*> joints);
 
     // Buffered body will be destroy at the end of the step
     void BufferDestroy(RigidBody* body);
-    void BufferDestroy(const std::vector<RigidBody*>& bodies);
+    void BufferDestroy(std::span<RigidBody*> bodies);
     void BufferDestroy(Joint* joint);
-    void BufferDestroy(const std::vector<Joint*>& joints);
+    void BufferDestroy(std::span<Joint*> joints);
 
     // clang-format off
     // Factory functions for bodies
@@ -75,7 +75,7 @@ public:
         float density = default_density
     );
     RigidBody* CreatePolygon(
-        const std::vector<Vec2>& vertices,
+        std::span<Vec2> vertices,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         bool resetCenter = true,
         float radius = default_radius,

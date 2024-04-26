@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <span>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -35,4 +36,4 @@ inline void Free(void* mem)
     std::free(mem);
 }
 
-}
+} // namespace muli

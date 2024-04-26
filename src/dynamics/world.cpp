@@ -615,7 +615,7 @@ void World::Destroy(RigidBody* body)
     --bodyCount;
 }
 
-void World::Destroy(const std::vector<RigidBody*>& bodies)
+void World::Destroy(std::span<RigidBody*> bodies)
 {
     std::unordered_set<RigidBody*> destroyed;
 
@@ -636,7 +636,7 @@ void World::BufferDestroy(RigidBody* body)
     destroyBodyBuffer.push_back(body);
 }
 
-void World::BufferDestroy(const std::vector<RigidBody*>& bodies)
+void World::BufferDestroy(std::span<RigidBody*> bodies)
 {
     for (size_t i = 0; i < bodies.size(); ++i)
     {
@@ -671,7 +671,7 @@ void World::Destroy(Joint* joint)
     --jointCount;
 }
 
-void World::Destroy(const std::vector<Joint*>& joints)
+void World::Destroy(std::span<Joint*> joints)
 {
     std::unordered_set<Joint*> destroyed;
 
@@ -692,7 +692,7 @@ void World::BufferDestroy(Joint* joint)
     destroyJointBuffer.push_back(joint);
 }
 
-void World::BufferDestroy(const std::vector<Joint*>& joints)
+void World::BufferDestroy(std::span<Joint*> joints)
 {
     for (size_t i = 0; i < joints.size(); ++i)
     {
@@ -1266,8 +1266,7 @@ RigidBody* World::CreateCapsule(
     return b;
 }
 
-RigidBody* World::CreatePolygon(
-    const std::vector<Vec2>& vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
+RigidBody* World::CreatePolygon(std::span<Vec2> vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
 {
     RigidBody* b = CreateEmptyBody(type);
 
