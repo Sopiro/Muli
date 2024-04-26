@@ -8,7 +8,7 @@ namespace muli
 class Mesh : NonCopyable
 {
 public:
-    Mesh(const std::vector<Vec3>& vertices, const std::vector<Vec2>& texCoords, const std::vector<int32>& indices);
+    Mesh(std::vector<Vec3> vertices, std::vector<Vec2> texCoords, std::vector<int32> indices);
     ~Mesh() noexcept;
 
     Mesh(Mesh&&) noexcept;

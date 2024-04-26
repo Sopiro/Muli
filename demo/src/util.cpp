@@ -24,6 +24,7 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
         std::vector<Vec3> vertices;
         std::vector<Vec2> texCoords;
         vertices.reserve(circlePolygonCount);
+        texCoords.reserve(circlePolygonCount);
 
         for (int32 i = 0; i < circlePolygonCount; ++i)
         {
