@@ -45,9 +45,9 @@ struct Vec2
     {
     }
 
-    constexpr Vec2(float _x, float _y)
-        : x{ _x }
-        , y{ _y }
+    constexpr Vec2(float x, float y)
+        : x{ x }
+        , y{ y }
     {
     }
 
@@ -181,10 +181,10 @@ struct Vec3
     {
     }
 
-    constexpr Vec3(float _x, float _y, float _z)
-        : x{ _x }
-        , y{ _y }
-        , z{ _z }
+    constexpr Vec3(float x, float y, float z)
+        : x{ x }
+        , y{ y }
+        , z{ z }
     {
     }
 
@@ -321,27 +321,27 @@ struct Vec4
 
     Vec4() = default;
 
-    constexpr Vec4(float _v, float _w)
-        : x{ _v }
-        , y{ _v }
-        , z{ _v }
-        , w{ _w }
+    constexpr Vec4(float v, float w)
+        : x{ v }
+        , y{ v }
+        , z{ v }
+        , w{ w }
     {
     }
 
-    constexpr Vec4(float _x, float _y, float _z, float _w)
-        : x{ _x }
-        , y{ _y }
-        , z{ _z }
-        , w{ _w }
+    constexpr Vec4(float x, float y, float z, float w)
+        : x{ x }
+        , y{ y }
+        , z{ z }
+        , w{ w }
     {
     }
 
-    constexpr Vec4(const Vec3& _v, float _w)
-        : x{ _v.x }
-        , y{ _v.y }
-        , z{ _v.z }
-        , w{ _w }
+    constexpr Vec4(const Vec3& v, float w)
+        : x{ v.x }
+        , y{ v.y }
+        , z{ v.z }
+        , w{ w }
     {
     }
 
@@ -443,19 +443,19 @@ struct Quat
     {
     }
 
-    Quat(float _x, float _y, float _z, float _w)
-        : x{ _x }
-        , y{ _y }
-        , z{ _z }
-        , w{ _w }
+    Quat(float x, float y, float z, float w)
+        : x{ x }
+        , y{ y }
+        , z{ z }
+        , w{ w }
     {
     }
 
-    constexpr explicit Quat(float _w)
+    constexpr explicit Quat(float w)
         : x{ 0.0f }
         , y{ 0.0f }
         , z{ 0.0f }
-        , w{ _w }
+        , w{ w }
     {
     }
 
@@ -748,13 +748,13 @@ struct Mat4
 
     Mat4(const Transform& t);
 
-    Mat4(float _v)
+    Mat4(float v)
     {
         // clang-format off
-        ex.x = _v;      ey.x = 0.0f;    ez.x = 0.0f;    ew.x = 0.0f;
-        ex.y = 0.0f;    ey.y = _v;      ez.y = 0.0f;    ew.y = 0.0f;
-        ex.z = 0.0f;    ey.z = 0.0f;    ez.z = _v;      ew.z = 0.0f;
-        ex.w = 0.0f;    ey.w = 0.0f;    ez.w = 0.0f;    ew.w = _v;
+        ex.x = v;       ey.x = 0.0f;    ez.x = 0.0f;    ew.x = 0.0f;
+        ex.y = 0.0f;    ey.y = v;       ez.y = 0.0f;    ew.y = 0.0f;
+        ex.z = 0.0f;    ey.z = 0.0f;    ez.z = v;       ew.z = 0.0f;
+        ex.w = 0.0f;    ey.w = 0.0f;    ez.w = 0.0f;    ew.w = v;
         // clang-format on
     }
 
@@ -825,16 +825,16 @@ struct Rotation
     {
     }
 
-    explicit Rotation(float _angle)
+    explicit Rotation(float angle)
     {
-        s = sinf(_angle);
-        c = cosf(_angle);
+        s = sinf(angle);
+        c = cosf(angle);
     }
 
-    void operator=(float _angle)
+    void operator=(float angle)
     {
-        s = sinf(_angle);
-        c = cosf(_angle);
+        s = sinf(angle);
+        c = cosf(angle);
     }
 
     void SetIdentity()
@@ -859,15 +859,15 @@ struct Transform
     {
     }
 
-    Transform(const Vec2& _position, const Rotation& _rotation)
-        : position{ _position }
-        , rotation{ _rotation }
+    Transform(const Vec2& position, const Rotation& rotation)
+        : position{ position }
+        , rotation{ rotation }
     {
     }
 
-    Transform(const Vec2& _position, float _angle)
-        : position{ _position }
-        , rotation{ _angle }
+    Transform(const Vec2& position, float angle)
+        : position{ position }
+        , rotation{ angle }
     {
     }
 

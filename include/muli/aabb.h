@@ -11,7 +11,7 @@ struct AABB
     AABB(const Vec2& min, const Vec2& max);
 
     Vec2 GetCenter() const;
-    Vec2 GetHalfExtents() const;
+    Vec2 GetExtents() const;
 
     float GetArea() const;
     float GetPerimeter() const;
@@ -39,9 +39,9 @@ inline Vec2 AABB::GetCenter() const
     return (min + max) * 0.5f;
 }
 
-inline Vec2 AABB::GetHalfExtents() const
+inline Vec2 AABB::GetExtents() const
 {
-    return (max - min) * 0.5f;
+    return (max - min);
 }
 
 inline float AABB::GetArea() const
