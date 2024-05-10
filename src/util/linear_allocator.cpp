@@ -6,8 +6,8 @@ namespace muli
 LinearAllocator::LinearAllocator(int32 initialCapacity)
     : entryCount{ 0 }
     , entryCapacity{ 32 }
-    , index{ 0 }
     , capacity{ initialCapacity }
+    , index{ 0 }
     , allocation{ 0 }
     , maxAllocation{ 0 }
 {
@@ -65,6 +65,7 @@ void* LinearAllocator::Allocate(int32 size)
 
 void LinearAllocator::Free(void* p, int32 size)
 {
+    muliNotUsed(size);
     assert(entryCount > 0);
 
     MemoryEntry* entry = entries + (entryCount - 1);

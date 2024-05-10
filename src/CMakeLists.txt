@@ -61,11 +61,12 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-    common/math.cpp
-    common/stack_allocator.cpp
-    common/block_allocator.cpp
-    common/predefined_block_allocator.cpp
-    common/convex_hull.cpp
+    util/math.cpp
+    util/stack_allocator.cpp
+    util/linear_allocator.cpp
+    util/block_allocator.cpp
+    util/predefined_block_allocator.cpp
+    util/convex_hull.cpp
 
     collision/collision.cpp
     collision/simplex.cpp
