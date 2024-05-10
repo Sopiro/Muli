@@ -5,13 +5,6 @@
 namespace muli
 {
 
-struct StackEntry
-{
-    int8* data;
-    int32 size;
-    bool mallocUsed;
-};
-
 // Stack allocator used for transient, predictable allocations.
 // You muse nest allocate/free pairs
 class StackAllocator : public Allocator
@@ -31,6 +24,13 @@ public:
     int32 GetMaxAllocation() const;
 
 private:
+    struct StackEntry
+    {
+        int8* data;
+        int32 size;
+        bool mallocUsed;
+    };
+
     int8 stack[stack_size];
     int32 index;
 

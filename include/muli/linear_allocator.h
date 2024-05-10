@@ -25,7 +25,7 @@ public:
 private:
     struct MemoryEntry
     {
-        char* data;
+        int8* data;
         int32 size;
         bool mallocUsed;
     };
@@ -34,7 +34,7 @@ private:
     int32 entryCount;
     int32 entryCapacity;
 
-    char* mem;
+    int8* mem;
     int32 capacity;
     int32 index;
 

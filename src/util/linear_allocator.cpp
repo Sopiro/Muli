@@ -11,7 +11,7 @@ LinearAllocator::LinearAllocator(int32 initialCapacity)
     , allocation{ 0 }
     , maxAllocation{ 0 }
 {
-    mem = (char*)malloc(capacity);
+    mem = (int8*)malloc(capacity);
     memset(mem, 0, capacity);
     entries = (MemoryEntry*)malloc(entryCapacity * sizeof(MemoryEntry));
 }
@@ -42,7 +42,7 @@ void* LinearAllocator::Allocate(int32 size)
 
     if (index + size > capacity)
     {
-        entry->data = (char*)malloc(size);
+        entry->data = (int8*)malloc(size);
         entry->mallocUsed = true;
     }
     else
@@ -99,7 +99,7 @@ bool LinearAllocator::GrowMemory()
     // Grow memory by half
     free(mem);
     capacity += capacity / 2;
-    mem = (char*)malloc(capacity);
+    mem = (int8*)malloc(capacity);
     memset(mem, 0, capacity);
 
     return true;
