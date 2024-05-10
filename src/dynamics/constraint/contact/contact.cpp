@@ -48,8 +48,8 @@ void Contact::Update()
     // clang-format off
     bool wasTouching = (flag & flag_touching) == flag_touching;
     bool touching = collideFunction(colliderA->shape, bodyA->transform,
-                                               colliderB->shape, bodyB->transform,
-                                               &manifold);
+                                    colliderB->shape, bodyB->transform,
+                                    &manifold);
     // clang-format on
 
     if (touching == true)

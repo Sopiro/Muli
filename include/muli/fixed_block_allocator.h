@@ -6,12 +6,13 @@
 namespace muli
 {
 
-template <int32 blockSize, int32 blockCapacity = 32>
+template <int32 blockSize>
 class FixedBlockAllocator
 {
 public:
-    FixedBlockAllocator()
-        : blockCount{ 0 }
+    FixedBlockAllocator(int32 initialBlockCapacity = 64)
+        : blockCapacity{ initialBlockCapacity }
+        , blockCount{ 0 }
         , chunkCount{ 0 }
         , chunks{ nullptr }
         , freeList{ nullptr }
@@ -29,6 +30,7 @@ public:
         {
             muliAssert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
 
+            blockCapacity += blockCapacity / 2;
             Block* blocks = (Block*)muli::Alloc(blockCapacity * blockSize);
             memset(blocks, 0, blockCapacity * blockSize);
 
@@ -43,6 +45,7 @@ public:
             last->next = nullptr;
 
             Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
+            newChunk->capacity = blockCapacity;
             newChunk->blockSize = blockSize;
             newChunk->blocks = blocks;
             newChunk->next = chunks;
@@ -70,7 +73,7 @@ public:
         Chunk* chunk = chunks;
         while (chunk)
         {
-            if ((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + blockSize * blockCapacity)
+            if ((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + blockSize * chunk->capacity)
             {
                 found = true;
                 break;
@@ -113,6 +116,7 @@ public:
     }
 
 private:
+    int32 blockCapacity;
     int32 chunkCount;
     int32 blockCount;
     Chunk* chunks;

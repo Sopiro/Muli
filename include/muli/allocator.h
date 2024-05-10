@@ -12,6 +12,7 @@ struct Block
 
 struct Chunk
 {
+    int32 capacity;
     int32 blockSize;
     Block* blocks;
     Chunk* next;

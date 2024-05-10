@@ -3,12 +3,17 @@
 namespace muli
 {
 
-BlockAllocator::BlockAllocator()
+BlockAllocator::BlockAllocator(int32 initialChunkSize)
     : blockCount{ 0 }
     , chunkCount{ 0 }
     , chunks{ nullptr }
 {
     memset(freeList, 0, sizeof(freeList));
+
+    for (int32 i = 0; i < block_size_count; ++i)
+    {
+        chunkSizes[i] = initialChunkSize;
+    }
 }
 
 BlockAllocator::~BlockAllocator()
@@ -22,15 +27,10 @@ void* BlockAllocator::Allocate(int32 size)
     {
         return nullptr;
     }
-
-#if 0
-    muliAssert(size <= maxBlockSize);
-#else
     if (size > max_block_size)
     {
         return muli::Alloc(size);
     }
-#endif
 
     muliAssert(0 < size && size <= max_block_size);
 
@@ -45,13 +45,18 @@ void* BlockAllocator::Allocate(int32 size)
     {
         --index;
     }
-    int32 blockCapacity = chunk_size / blockSize;
 
     muliAssert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)muli::Alloc(chunk_size);
+        // Increase chunk size by half
+        chunkSizes[index] += chunkSizes[index] / 2;
+
+        int32 chunkSize = chunkSizes[index];
+        int32 blockCapacity = chunkSize / blockSize;
+
+        Block* blocks = (Block*)muli::Alloc(chunkSize);
 
         // Build a linked list for the free list.
         for (int32 i = 0; i < blockCapacity - 1; ++i)
@@ -64,6 +69,7 @@ void* BlockAllocator::Allocate(int32 size)
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
+        newChunk->capacity = blockCapacity;
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -114,13 +120,14 @@ void BlockAllocator::Free(void* p, int32 size)
     Chunk* chunk = chunks;
     while (chunk)
     {
+        int32 chunkSize = chunk->capacity * chunk->blockSize;
         if (chunk->blockSize != blockSize)
         {
-            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunkSize <= (int8*)p);
         }
         else
         {
-            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunk_size))
+            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunkSize))
             {
                 found = true;
                 break;
@@ -156,6 +163,27 @@ void BlockAllocator::Clear()
     chunkCount = 0;
     chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
+}
+
+void BlockAllocator::Clear(int32 initialChunkSize)
+{
+    Clear();
+
+    for (int32 i = 0; i < block_size_count; ++i)
+    {
+        chunkSizes[i] = initialChunkSize;
+    }
+}
+
+int32 BlockAllocator::GetChunkSize(int32 size) const
+{
+    int32 index = size / block_unit;
+    if (size % block_unit == 0)
+    {
+        --index;
+    }
+
+    return chunkSizes[index];
 }
 
 } // namespace muli
