@@ -5,7 +5,7 @@
 #include "collision.h"
 #include "common.h"
 #include "contact_manager.h"
-#include "stack_allocator.h"
+#include "linear_allocator.h"
 
 #include "collider.h"
 #include "rigidbody.h"
@@ -301,7 +301,7 @@ private:
     std::vector<RigidBody*> destroyBodyBuffer;
     std::vector<Joint*> destroyJointBuffer;
 
-    StackAllocator stackAllocator;
+    LinearAllocator linearAllocator;
     BlockAllocator blockAllocator;
 };
 

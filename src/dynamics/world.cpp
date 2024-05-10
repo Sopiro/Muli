@@ -62,8 +62,8 @@ void World::Solve()
     int32 islandID = 0;
     sleepingBodyCount = 0;
 
-    // Use stack allocator to avoid per-frame allocation
-    RigidBody** stack = (RigidBody**)stackAllocator.Allocate(bodyCount * sizeof(RigidBody*));
+    // Use arena allocator to avoid per-frame allocation
+    RigidBody** stack = (RigidBody**)linearAllocator.Allocate(bodyCount * sizeof(RigidBody*));
     int32 stackPointer;
 
     // Perform a DFS(Depth First Search) on the constraint graph
@@ -188,7 +188,7 @@ void World::Solve()
         restingBodies = 0;
     }
 
-    stackAllocator.Free(stack, bodyCount * sizeof(RigidBody*));
+    linearAllocator.Free(stack, bodyCount * sizeof(RigidBody*));
 
     islandCount = islandID;
 
@@ -551,6 +551,9 @@ float World::Step(float dt)
     {
         return 0.0f;
     }
+
+    // Grow the allocator buffer size if needed
+    linearAllocator.GrowMemory();
 
     if (stepComplete)
     {

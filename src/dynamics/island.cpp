@@ -16,16 +16,16 @@ Island::Island(World* _world, int32 _bodyCapacity, int32 _contactCapacity, int32
     , jointCount{ 0 }
     , sleeping{ false }
 {
-    bodies = (RigidBody**)world->stackAllocator.Allocate(bodyCapacity * sizeof(RigidBody*));
-    contacts = (Contact**)world->stackAllocator.Allocate(contactCapacity * sizeof(Contact*));
-    joints = (Joint**)world->stackAllocator.Allocate(jointCapacity * sizeof(Joint*));
+    bodies = (RigidBody**)world->linearAllocator.Allocate(bodyCapacity * sizeof(RigidBody*));
+    contacts = (Contact**)world->linearAllocator.Allocate(contactCapacity * sizeof(Contact*));
+    joints = (Joint**)world->linearAllocator.Allocate(jointCapacity * sizeof(Joint*));
 }
 
 Island::~Island()
 {
-    world->stackAllocator.Free(joints, jointCapacity * sizeof(Joint*));
-    world->stackAllocator.Free(contacts, contactCapacity * sizeof(Contact*));
-    world->stackAllocator.Free(bodies, bodyCapacity * sizeof(RigidBody*));
+    world->linearAllocator.Free(joints, jointCapacity * sizeof(Joint*));
+    world->linearAllocator.Free(contacts, contactCapacity * sizeof(Contact*));
+    world->linearAllocator.Free(bodies, bodyCapacity * sizeof(RigidBody*));
 }
 
 void Island::Solve()
