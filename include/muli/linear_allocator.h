@@ -9,7 +9,7 @@ namespace muli
 class LinearAllocator : public Allocator
 {
 public:
-    LinearAllocator(int32 initialCapacity = 10 * 1024);
+    LinearAllocator(int32 initialCapacity = 16 * 1024);
     ~LinearAllocator();
 
     virtual void* Allocate(int32 size) override;

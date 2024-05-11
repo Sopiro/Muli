@@ -107,9 +107,8 @@ bool LinearAllocator::GrowMemory()
 
 void LinearAllocator::Clear()
 {
-    index = 0;
     entryCount = 0;
-    entryCapacity = 0;
+    index = 0;
     allocation = 0;
     maxAllocation = 0;
 }
