@@ -10,8 +10,8 @@ PredefinedBlockAllocator::PredefinedBlockAllocator(int32 initialChunkSize, std::
     , chunkSize{ initialChunkSize }
     , chunks{ nullptr }
 {
-    freeList = (Block**)muli::Alloc(sizeMap.sizes.size() * sizeof(Block*));
-    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
+    freeList = (Block**)muli::Alloc(sizeMap.BlockSizeCount() * sizeof(Block*));
+    memset(freeList, 0, sizeMap.BlockSizeCount() * sizeof(Block*));
 }
 
 PredefinedBlockAllocator::~PredefinedBlockAllocator()
@@ -32,7 +32,7 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     }
 
     int32 index = sizeMap.values[size];
-    muliAssert(0 <= index && index <= sizeMap.sizes.size());
+    muliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
 
     if (freeList[index] == nullptr)
     {
@@ -86,7 +86,7 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
     muliAssert(0 < size && size <= sizeMap.MaxBlockSize());
 
     int32 index = sizeMap.values[size];
-    muliAssert(0 <= index && index <= sizeMap.sizes.size());
+    muliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -136,7 +136,7 @@ void PredefinedBlockAllocator::Clear()
     blockCount = 0;
     chunkCount = 0;
     chunks = nullptr;
-    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
+    memset(freeList, 0, sizeMap.BlockSizeCount() * sizeof(Block*));
 }
 
 } // namespace  muli

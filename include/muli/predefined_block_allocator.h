@@ -66,6 +66,11 @@ private:
             return sizes.back();
         }
 
+        int32 BlockSizeCount() const
+        {
+            return (int32)sizes.size();
+        }
+
         std::vector<int32> sizes, values;
     };
 
@@ -91,7 +96,7 @@ inline int32 PredefinedBlockAllocator::GetChunkCount() const
 
 inline int32 PredefinedBlockAllocator::GetBlockSizeCount() const
 {
-    return sizeMap.sizes.size();
+    return sizeMap.BlockSizeCount();
 }
 
 } // namespace muli
