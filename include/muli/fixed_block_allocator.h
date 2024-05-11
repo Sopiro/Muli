@@ -7,7 +7,7 @@ namespace muli
 {
 
 template <int32 blockSize>
-class FixedBlockAllocator
+class FixedBlockAllocator : public Allocator
 {
 public:
     FixedBlockAllocator(int32 initialBlockCapacity = 64)
@@ -24,8 +24,15 @@ public:
         Clear();
     }
 
-    void* Allocate()
+    void* Allocate(int32 size = blockSize) override
     {
+        muliAssert(size == blockSize);
+
+        if (size > blockSize)
+        {
+            return muli::Alloc(size);
+        }
+
         if (freeList == nullptr)
         {
             muliAssert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
@@ -62,9 +69,15 @@ public:
         return block;
     }
 
-    void Free(void* p)
+    void Free(void* p, int32 size = blockSize) override
     {
         muliAssert(0 < blockCount && 0 < chunkCount);
+
+        if (size > blockSize)
+        {
+            muli::Free(p);
+            return;
+        }
 
 #if defined(_DEBUG)
         // Verify the memory address and size is valid.
@@ -90,7 +103,7 @@ public:
         --blockCount;
     }
 
-    void Clear()
+    void Clear() override
     {
         Chunk* chunk = chunks;
         while (chunk)
