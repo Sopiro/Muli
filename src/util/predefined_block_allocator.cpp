@@ -3,85 +3,21 @@
 namespace muli
 {
 
-//                   Sizes
-// Circle           : 32
-// Capsule          : 56
-// Polygon          : 184
-// Collider         : 80
-// RigidBody        : 192
-// Contact          : 616
-// Manifold         : 64
-
-// Angle joint      : 160
-// Distance joint   : 200
-// Grab joint       : 200
-// Line joint       : 200
-// Motor joint      : 248
-// Prismatic joint  : 224
-// Pulley joint     : 232
-// Revolute joint   : 208
-// Weld joint       : 240
-
-// Predefined block sizes
-static constexpr int32 block_sizes[PredefinedBlockAllocator::block_size_count] = {
-    16,  // 0
-    32,  // 1
-    64,  // 2
-    96,  // 3
-    128, // 4
-    160, // 5
-    192, // 6
-    224, // 7
-    256, // 8
-    320, // 9
-    384, // 10
-    416, // 11
-    448, // 12
-    512, // 13
-    640, // 14
-    704, // 15
-    // 1024, // 16 for debug
-};
-
-static constexpr int32 chunk_size = 16 * 1024;
-static constexpr int32 max_block_size = block_sizes[PredefinedBlockAllocator::block_size_count - 1];
-
-struct SizeMap
-{
-    SizeMap()
-    {
-        int32 j = 0;
-        values[0] = 0;
-        for (int32 i = 1; i <= max_block_size; ++i)
-        {
-            if (i <= block_sizes[j])
-            {
-                values[i] = j;
-            }
-            else
-            {
-                ++j;
-                values[i] = j;
-            }
-        }
-    }
-
-    int32 values[max_block_size + 1];
-};
-
-static const SizeMap size_map;
-
-PredefinedBlockAllocator::PredefinedBlockAllocator()
-    : blockCount{ 0 }
+PredefinedBlockAllocator::PredefinedBlockAllocator(int32 initialChunkSize, std::span<int32> blockSizes)
+    : sizeMap(std::move(blockSizes))
+    , blockCount{ 0 }
     , chunkCount{ 0 }
+    , chunkSize{ initialChunkSize }
     , chunks{ nullptr }
 {
-    memset(freeList, 0, sizeof(freeList));
+    freeList = (Block**)muli::Alloc(sizeMap.sizes.size() * sizeof(Block*));
+    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
 }
 
 PredefinedBlockAllocator::~PredefinedBlockAllocator()
 {
     Clear();
+    muli::Free(freeList);
 }
 
 void* PredefinedBlockAllocator::Allocate(int32 size)
@@ -90,20 +26,21 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     {
         return nullptr;
     }
-    if (size > max_block_size)
+    if (size > sizeMap.MaxBlockSize())
     {
-        muliAssert(false);
         return muli::Alloc(size);
     }
 
-    int32 index = size_map.values[size];
-    muliAssert(0 <= index && index <= block_size_count);
+    int32 index = sizeMap.values[size];
+    muliAssert(0 <= index && index <= sizeMap.sizes.size());
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)muli::Alloc(chunk_size);
-        int32 blockSize = block_sizes[index];
-        int32 blockCapacity = chunk_size / blockSize;
+        chunkSize += chunkSize / 2;
+
+        Block* blocks = (Block*)muli::Alloc(chunkSize);
+        int32 blockSize = sizeMap.sizes[index];
+        int32 blockCapacity = chunkSize / blockSize;
 
         // Build a linked list for the free list.
         for (int32 i = 0; i < blockCapacity - 1; ++i)
@@ -116,6 +53,7 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)muli::Alloc(sizeof(Chunk));
+        newChunk->capacity = blockCapacity;
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -139,32 +77,33 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         return;
     }
 
-    if (size > max_block_size)
+    if (size > sizeMap.MaxBlockSize())
     {
         muli::Free(p);
         return;
     }
 
-    muliAssert(0 < size && size <= max_block_size);
+    muliAssert(0 < size && size <= sizeMap.MaxBlockSize());
 
-    int32 index = size_map.values[size];
-    muliAssert(0 <= index && index <= block_size_count);
+    int32 index = sizeMap.values[size];
+    muliAssert(0 <= index && index <= sizeMap.sizes.size());
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
-    int32 blockSize = block_sizes[index];
+    int32 blockSize = sizeMap.sizes[index];
     bool found = false;
 
     Chunk* chunk = chunks;
     while (chunk)
     {
+        int32 currentChunkSize = chunk->blockSize * chunk->capacity;
         if (chunk->blockSize != blockSize)
         {
-            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + currentChunkSize <= (int8*)p);
         }
         else
         {
-            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunk_size))
+            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + currentChunkSize))
             {
                 found = true;
                 break;
@@ -197,7 +136,7 @@ void PredefinedBlockAllocator::Clear()
     blockCount = 0;
     chunkCount = 0;
     chunks = nullptr;
-    memset(freeList, 0, sizeof(freeList));
+    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
 }
 
 } // namespace  muli
