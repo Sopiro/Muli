@@ -6,11 +6,15 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SO
 
 add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
 
-target_include_directories(demo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(demo 
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(demo PUBLIC muli glad glfw imgui)
+target_link_libraries(demo 
+    PUBLIC 
+        muli glad glfw imgui
+)
 
 set_target_properties(demo PROPERTIES
     CMAKE_COMPILE_WARNING_AS_ERROR ON

@@ -112,12 +112,17 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/../include" PREFIX "include" FILE
 
 add_library(muli ${SOURCE_FILES} ${HEADER_FILES})
 
+target_precompile_headers(muli
+    PUBLIC
+        ../include/muli/common.h
+)
+
 target_include_directories(muli
     PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(muli PROPERTIES
