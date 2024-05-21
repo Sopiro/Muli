@@ -114,7 +114,7 @@ add_library(muli ${SOURCE_FILES} ${HEADER_FILES})
 
 target_precompile_headers(muli
     PUBLIC
-        ../include/muli/common.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/muli/common.h
 )
 
 target_include_directories(muli

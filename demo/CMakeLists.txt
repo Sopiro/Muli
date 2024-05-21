@@ -6,6 +6,11 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SO
 
 add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
 
+target_precompile_headers(demo
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/common.h
+)
+
 target_include_directories(demo 
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
