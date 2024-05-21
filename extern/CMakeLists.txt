@@ -4,7 +4,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # glad
 add_subdirectory(glad)
-set_target_properties(glad glad-generate-files PROPERTIES FOLDER "GLAD")
 
 # glfw
 option(GLFW_BUILD_EXAMPLES OFF)

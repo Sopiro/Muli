@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(muli LANGUAGES CXX VERSION 0.1.0)
+project(muli LANGUAGES C CXX VERSION 0.1.0)
 
 option(MULI_BUILD_DEMO "Build the demo project" ON)
 
@@ -10,12 +10,10 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+include(GNUInstallDirs)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-
-include(GNUInstallDirs)
-include(ExternalProject)
 
 add_subdirectory(src)
 
