@@ -1,4 +1,4 @@
-name: Build
+name: Build demo
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with: 
         submodules: true
 
@@ -31,7 +31,7 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
   build-ubuntu:
     name: ubuntu
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with: 
         submodules: true
 
@@ -51,14 +51,14 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
   build-macos:
     name: macos
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with: 
         submodules: true
         
@@ -66,4 +66,4 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
