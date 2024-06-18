@@ -2,7 +2,7 @@
 
 # Muli
 
-[![CMake Build](https://github.com/Sopiro/Muli/actions/workflows/cmake_build.yml/badge.svg)](https://github.com/Sopiro/Muli/actions/workflows/cmake_build.yml)
+[![Build library](https://github.com/Sopiro/Muli/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Sopiro/Muli/actions/workflows/cmake-multi-platform.yml)
 
 2D Rigidbody physics engine
 
