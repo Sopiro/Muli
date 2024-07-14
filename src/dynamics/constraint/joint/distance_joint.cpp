@@ -4,14 +4,16 @@
 namespace muli
 {
 
-DistanceJoint::DistanceJoint(RigidBody* _bodyA,
-                             RigidBody* _bodyB,
-                             const Vec2& _anchorA,
-                             const Vec2& _anchorB,
-                             float _length,
-                             float _frequency,
-                             float _dampingRatio,
-                             float _jointMass)
+DistanceJoint::DistanceJoint(
+    RigidBody* _bodyA,
+    RigidBody* _bodyB,
+    const Vec2& _anchorA,
+    const Vec2& _anchorB,
+    float _length,
+    float _frequency,
+    float _dampingRatio,
+    float _jointMass
+)
     : Joint(distance_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
@@ -66,9 +68,10 @@ void DistanceJoint::SolveVelocityConstraints(const Timestep& step)
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    float jv = Dot((bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) -
-                       (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)),
-                   d);
+    float jv =
+        Dot((bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb)) -
+                (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)),
+            d);
 
     // You don't have to clamp the impulse. It's equality constraint!
     float lambda = m * -(jv + bias + impulseSum * gamma);

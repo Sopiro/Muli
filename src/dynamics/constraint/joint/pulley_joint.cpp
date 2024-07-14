@@ -4,16 +4,18 @@
 namespace muli
 {
 
-PulleyJoint::PulleyJoint(RigidBody* _bodyA,
-                         RigidBody* _bodyB,
-                         const Vec2& _anchorA,
-                         const Vec2& _anchorB,
-                         const Vec2& _groundAnchorA,
-                         const Vec2& _groundAnchorB,
-                         float _ratio,
-                         float _frequency,
-                         float _dampingRatio,
-                         float _jointMass)
+PulleyJoint::PulleyJoint(
+    RigidBody* _bodyA,
+    RigidBody* _bodyB,
+    const Vec2& _anchorA,
+    const Vec2& _anchorB,
+    const Vec2& _groundAnchorA,
+    const Vec2& _groundAnchorB,
+    float _ratio,
+    float _frequency,
+    float _dampingRatio,
+    float _jointMass
+)
     : Joint(pulley_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {
@@ -94,8 +96,9 @@ void PulleyJoint::SolveVelocityConstraints(const Timestep& step)
     // Pc = J^t · λ (λ: lagrangian multiplier)
     // λ = (J · M^-1 · J^t)^-1 ⋅ -(J·v+b)
 
-    float jv = -(ratio * (Dot(ub, bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb))) +
-                 Dot(ua, bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)));
+    float jv =
+        -(ratio * (Dot(ub, bodyB->linearVelocity + Cross(bodyB->angularVelocity, rb))) +
+          Dot(ua, bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)));
 
     float lambda = m * -(jv + bias + impulseSum * gamma);
 

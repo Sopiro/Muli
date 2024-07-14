@@ -9,13 +9,15 @@ namespace muli
 class PrismaticJoint : public Joint
 {
 public:
-    PrismaticJoint(RigidBody* bodyA,
-                   RigidBody* bodyB,
-                   const Vec2& anchor,
-                   const Vec2& dir,
-                   float frequency = -1.0f,
-                   float dampingRatio = 1.0f,
-                   float jointMass = 1.0f);
+    PrismaticJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchor,
+        const Vec2& dir,
+        float frequency = -1.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

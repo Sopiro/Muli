@@ -38,13 +38,16 @@ public:
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency,
-                                           1.0f);
+            j = world->CreateRevoluteJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f
+            );
         }
         else
         {
-            j = world->CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
-                                           b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f);
+            j = world->CreateDistanceJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
+                b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f
+            );
         }
 
         for (int32 i = 1; i + 1 < xStart * -2 / (sizeX + gap); ++i)
@@ -58,8 +61,10 @@ public:
             }
             else
             {
-                j = world->CreateDistanceJoint(b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f },
-                                               b2->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f);
+                j = world->CreateDistanceJoint(
+                    b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, b2->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f },
+                    -1.0f, frequency, 1.0f
+                );
             }
 
             b1 = b2;
@@ -70,13 +75,16 @@ public:
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency,
-                                           1.0f);
+            j = world->CreateRevoluteJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f
+            );
         }
         else
         {
-            j = world->CreateDistanceJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
-                                           b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f);
+            j = world->CreateDistanceJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
+                b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f
+            );
         }
 
         camera.position = Vec2{ 0, screenBounds.y / 2.0f + 1.8f };

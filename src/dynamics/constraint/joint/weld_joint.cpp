@@ -7,7 +7,8 @@ namespace muli
 // Revolute joint + Angle joint
 
 WeldJoint::WeldJoint(
-    RigidBody* _bodyA, RigidBody* _bodyB, const Vec2& _anchor, float _frequency, float _dampingRatio, float _jointMass)
+    RigidBody* _bodyA, RigidBody* _bodyB, const Vec2& _anchor, float _frequency, float _dampingRatio, float _jointMass
+)
     : Joint(weld_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
     , impulseSum{ 0.0f }
 {

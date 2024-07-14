@@ -59,28 +59,30 @@ public:
         tf.position = from;
         Vec2 translation = to - from;
 
-        world->ShapeCastAny(shape.get(), tf, translation,
-                            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
-                                hit = true;
+        world->ShapeCastAny(
+            shape.get(), tf, translation,
+            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+                hit = true;
 
-                                if (closest == false)
-                                {
-                                    renderer.DrawPoint(point);
-                                    renderer.DrawLine(point, point + normal * 0.2f);
-                                    ++dm.colorIndex;
-                                    renderer.DrawShape(shape.get(), Transform(from + translation * fraction, identity), dm);
+                if (closest == false)
+                {
+                    renderer.DrawPoint(point);
+                    renderer.DrawLine(point, point + normal * 0.2f);
+                    ++dm.colorIndex;
+                    renderer.DrawShape(shape.get(), Transform(from + translation * fraction, identity), dm);
 
-                                    return 1.0f;
-                                }
-                                else
-                                {
-                                    closestPoint = point;
-                                    closestNormal = normal;
-                                    closestFraction = fraction;
+                    return 1.0f;
+                }
+                else
+                {
+                    closestPoint = point;
+                    closestNormal = normal;
+                    closestFraction = fraction;
 
-                                    return fraction;
-                                }
-                            });
+                    return fraction;
+                }
+            }
+        );
 
         renderer.DrawLine(from, to);
         renderer.DrawPoint(from, Vec4{ 1, 0, 0, 1 });
@@ -136,8 +138,10 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        if (ImGui::Begin("Shape cast world", NULL,
-                         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
+        if (ImGui::Begin(
+                "Shape cast world", NULL,
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar
+            ))
         {
             ImGui::Checkbox("Closest", &closest);
 

@@ -13,12 +13,14 @@ struct SeparationFunction
         edgeB,
     };
 
-    void Initialize(const ClosestFeatures& closestFeatures,
-                    const Shape* _shapeA,
-                    const Sweep& _sweepA,
-                    const Shape* _shapeB,
-                    const Sweep& _sweepB,
-                    float t1)
+    void Initialize(
+        const ClosestFeatures& closestFeatures,
+        const Shape* _shapeA,
+        const Sweep& _sweepA,
+        const Shape* _shapeB,
+        const Sweep& _sweepB,
+        float t1
+    )
     {
         muliAssert(0 < closestFeatures.count && closestFeatures.count < max_simplex_vertex_count);
 

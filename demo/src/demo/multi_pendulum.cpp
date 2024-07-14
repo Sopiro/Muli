@@ -43,8 +43,9 @@ public:
             }
             else
             {
-                j = world->CreateDistanceJoint(b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 },
-                                               b2->GetPosition() + Vec2{ sizeW / 2, 0 }, -1.0f, f, d, m);
+                j = world->CreateDistanceJoint(
+                    b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 }, b2->GetPosition() + Vec2{ sizeW / 2, 0 }, -1.0f, f, d, m
+                );
             }
 
             b1 = b2;

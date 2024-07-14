@@ -64,11 +64,13 @@ public:
         {
             Vec2 to = cursorPos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
 
-            if (!world->RayCastClosest(cursorPos, to, 0.0f,
-                                       [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
-                                           renderer.DrawPoint(point);
-                                           renderer.DrawLine(cursorPos, point);
-                                       }))
+            if (!world->RayCastClosest(
+                    cursorPos, to, 0.0f,
+                    [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
+                        renderer.DrawPoint(point);
+                        renderer.DrawLine(cursorPos, point);
+                    }
+                ))
             {
                 renderer.DrawLine(cursorPos, to);
             }

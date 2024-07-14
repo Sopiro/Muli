@@ -24,8 +24,9 @@ public:
         for (int32 i = 0; i < 1000; ++i)
         {
             RigidBody* c = world->CreateCapsule(r, r / 2.0f);
-            c->SetPosition(Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            c->SetPosition(
+                Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f, Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f
+            );
             c->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 

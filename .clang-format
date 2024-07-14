@@ -4,7 +4,7 @@
 Language:        Cpp
 # BasedOnStyle:  Microsoft
 AccessModifierOffset: -4 # Originally -2
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent # Originally Align
 AlignArrayOfStructures: None
 AlignConsecutiveMacros: None
 AlignConsecutiveAssignments: None

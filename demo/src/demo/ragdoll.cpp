@@ -60,36 +60,46 @@ public:
             float armStartX = (bodyWidth / 2.0f + armRadius + bodyArmGap);
             float armStartY = (headRadius + neckGap + armRadius);
 
-            RigidBody* rightUpperArm = world->CreateCapsule(Vec2{ headX + armStartX, headY - armStartY },
-                                                            Vec2{ headX + armStartX + armLength, headY - armStartY }, armRadius);
+            RigidBody* rightUpperArm = world->CreateCapsule(
+                Vec2{ headX + armStartX, headY - armStartY }, Vec2{ headX + armStartX + armLength, headY - armStartY }, armRadius
+            );
 
-            RigidBody* rightLowerArm =
-                world->CreateCapsule(Vec2{ headX + armStartX + armLength + armGap, headY - armStartY },
-                                     Vec2{ headX + armStartX + armLength + armGap + armLength, headY - armStartY }, armRadius);
+            RigidBody* rightLowerArm = world->CreateCapsule(
+                Vec2{ headX + armStartX + armLength + armGap, headY - armStartY },
+                Vec2{ headX + armStartX + armLength + armGap + armLength, headY - armStartY }, armRadius
+            );
 
-            RigidBody* leftUpperArm = world->CreateCapsule(Vec2{ headX - armStartX, headY - armStartY },
-                                                           Vec2{ headX - armStartX - armLength, headY - armStartY }, armRadius);
+            RigidBody* leftUpperArm = world->CreateCapsule(
+                Vec2{ headX - armStartX, headY - armStartY }, Vec2{ headX - armStartX - armLength, headY - armStartY }, armRadius
+            );
 
-            RigidBody* leftLowerArm =
-                world->CreateCapsule(Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
-                                     Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius);
+            RigidBody* leftLowerArm = world->CreateCapsule(
+                Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
+                Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius
+            );
 
             {
                 float armMotorTorque = rightUpperArm->GetMass() * 2.0f * Sqrt(scale);
                 float armMotorFrequency = 30.0f;
                 float armMotorDampingRatio = 1.0f;
 
-                world->CreateMotorJoint(body, rightUpperArm, Vec2{ headX + armStartX, headY - armStartY }, motorForce,
-                                        armMotorTorque, armMotorFrequency, armMotorDampingRatio, body->GetMass());
-                world->CreateMotorJoint(rightUpperArm, rightLowerArm,
-                                        Vec2{ headX + armStartX + armLength + armGap, headY - armStartY }, motorForce,
-                                        armMotorTorque, armMotorFrequency, armMotorDampingRatio, rightUpperArm->GetMass());
+                world->CreateMotorJoint(
+                    body, rightUpperArm, Vec2{ headX + armStartX, headY - armStartY }, motorForce, armMotorTorque,
+                    armMotorFrequency, armMotorDampingRatio, body->GetMass()
+                );
+                world->CreateMotorJoint(
+                    rightUpperArm, rightLowerArm, Vec2{ headX + armStartX + armLength + armGap, headY - armStartY }, motorForce,
+                    armMotorTorque, armMotorFrequency, armMotorDampingRatio, rightUpperArm->GetMass()
+                );
 
-                world->CreateMotorJoint(body, leftUpperArm, Vec2{ headX - armStartX, headY - armStartY }, motorForce,
-                                        armMotorTorque, armMotorFrequency, armMotorDampingRatio, body->GetMass());
-                world->CreateMotorJoint(leftUpperArm, leftLowerArm,
-                                        Vec2{ headX - armStartX - armLength - armGap, headY - armStartY }, motorForce,
-                                        armMotorTorque, armMotorFrequency, armMotorDampingRatio, leftUpperArm->GetMass());
+                world->CreateMotorJoint(
+                    body, leftUpperArm, Vec2{ headX - armStartX, headY - armStartY }, motorForce, armMotorTorque,
+                    armMotorFrequency, armMotorDampingRatio, body->GetMass()
+                );
+                world->CreateMotorJoint(
+                    leftUpperArm, leftLowerArm, Vec2{ headX - armStartX - armLength - armGap, headY - armStartY }, motorForce,
+                    armMotorTorque, armMotorFrequency, armMotorDampingRatio, leftUpperArm->GetMass()
+                );
             }
         }
 
@@ -102,36 +112,46 @@ public:
             float legGap = legRadius * 2.0f + bodyLegGap;
             float legStartY = (bodyHeight + headRadius + neckGap + legRadius + bodyLegGap);
 
-            RigidBody* rightUpperLeg = world->CreateCapsule(Vec2{ headX + legStartX, headY - legStartY },
-                                                            Vec2{ headX + legStartX, headY - legStartY - legLength }, legRadius);
+            RigidBody* rightUpperLeg = world->CreateCapsule(
+                Vec2{ headX + legStartX, headY - legStartY }, Vec2{ headX + legStartX, headY - legStartY - legLength }, legRadius
+            );
 
-            RigidBody* rightLowerLeg =
-                world->CreateCapsule(Vec2{ headX + legStartX, headY - legStartY - legLength - legGap },
-                                     Vec2{ headX + legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius);
+            RigidBody* rightLowerLeg = world->CreateCapsule(
+                Vec2{ headX + legStartX, headY - legStartY - legLength - legGap },
+                Vec2{ headX + legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius
+            );
 
-            RigidBody* leftUpperLeg = world->CreateCapsule(Vec2{ headX - legStartX, headY - legStartY },
-                                                           Vec2{ headX - legStartX, headY - legStartY - legLength }, legRadius);
+            RigidBody* leftUpperLeg = world->CreateCapsule(
+                Vec2{ headX - legStartX, headY - legStartY }, Vec2{ headX - legStartX, headY - legStartY - legLength }, legRadius
+            );
 
-            RigidBody* leftLowerLeg =
-                world->CreateCapsule(Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
-                                     Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius);
+            RigidBody* leftLowerLeg = world->CreateCapsule(
+                Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
+                Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius
+            );
 
             {
                 float legMotorTorque = rightUpperLeg->GetMass() * 3.0f * Sqrt(scale);
                 float legMotorFrequency = 30.0f;
                 float legMotorDampingRatio = 1.0f;
 
-                world->CreateMotorJoint(body, rightUpperLeg, Vec2{ headX + legStartX, headY - legStartY }, motorForce,
-                                        legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass());
-                world->CreateMotorJoint(rightUpperLeg, rightLowerLeg,
-                                        Vec2{ headX + legStartX, headY - legStartY - legLength - legGap }, motorForce,
-                                        legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass());
+                world->CreateMotorJoint(
+                    body, rightUpperLeg, Vec2{ headX + legStartX, headY - legStartY }, motorForce, legMotorTorque,
+                    legMotorFrequency, legMotorDampingRatio, body->GetMass()
+                );
+                world->CreateMotorJoint(
+                    rightUpperLeg, rightLowerLeg, Vec2{ headX + legStartX, headY - legStartY - legLength - legGap }, motorForce,
+                    legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass()
+                );
 
-                world->CreateMotorJoint(body, leftUpperLeg, Vec2{ headX - legStartX, headY - legStartY }, motorForce,
-                                        legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass());
-                world->CreateMotorJoint(leftUpperLeg, leftLowerLeg,
-                                        Vec2{ headX - legStartX, headY - legStartY - legLength - legGap }, motorForce,
-                                        legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass());
+                world->CreateMotorJoint(
+                    body, leftUpperLeg, Vec2{ headX - legStartX, headY - legStartY }, motorForce, legMotorTorque,
+                    legMotorFrequency, legMotorDampingRatio, body->GetMass()
+                );
+                world->CreateMotorJoint(
+                    leftUpperLeg, leftLowerLeg, Vec2{ headX - legStartX, headY - legStartY - legLength - legGap }, motorForce,
+                    legMotorTorque, legMotorFrequency, legMotorDampingRatio, body->GetMass()
+                );
             }
         }
     }

@@ -23,8 +23,9 @@ public:
         for (int32 i = 0; i < 500; ++i)
         {
             RigidBody* b = world->CreateCircle(r);
-            b->SetPosition(Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            b->SetPosition(
+                Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f, Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f
+            );
             b->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 

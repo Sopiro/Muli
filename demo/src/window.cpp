@@ -42,8 +42,9 @@ Window::Window(int32 _width, int32 _height, const std::string& _title)
     }
 
     const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    glfwSetWindowMonitor(glfwWindow, NULL, (vidmode->width / 2) - (width / 2), (vidmode->height / 2) - (height / 2), width,
-                         height, GLFW_DONT_CARE);
+    glfwSetWindowMonitor(
+        glfwWindow, NULL, (vidmode->width / 2) - (width / 2), (vidmode->height / 2) - (height / 2), width, height, GLFW_DONT_CARE
+    );
 
     glfwMakeContextCurrent(glfwWindow);
     glfwSwapInterval(0); // Disable vsync

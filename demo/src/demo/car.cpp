@@ -54,10 +54,12 @@ public:
         float motorDampingRatio = 1.0f;
         float motorMass = wheel1->GetMass();
 
-        motor1 = world->CreateMotorJoint(body, wheel1, wheel1->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency,
-                                         motorDampingRatio, motorMass);
-        motor2 = world->CreateMotorJoint(body, wheel2, wheel2->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency,
-                                         motorDampingRatio, motorMass);
+        motor1 = world->CreateMotorJoint(
+            body, wheel1, wheel1->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio, motorMass
+        );
+        motor2 = world->CreateMotorJoint(
+            body, wheel2, wheel2->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio, motorMass
+        );
 
         camera.scale.Set(1.5f);
     }

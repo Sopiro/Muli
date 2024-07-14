@@ -75,11 +75,14 @@ public:
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always,
-                                { 1.0f, 1.0f });
-        ImGui::Begin("notice", NULL,
-                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
+        ImGui::SetNextWindowPos(
+            { Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
+        );
+        ImGui::Begin(
+            "notice", NULL,
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
+                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
+        );
         ImGui::TextColored(ImColor{ 12, 11, 14 }, "Contact normal is pointing from refernce body to incident body");
         ImGui::End();
     }

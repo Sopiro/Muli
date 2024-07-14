@@ -9,13 +9,15 @@ namespace muli
 class LineJoint : public Joint
 {
 public:
-    LineJoint(RigidBody* bodyA,
-              RigidBody* bodyB,
-              Vec2 anchor,
-              Vec2 dir,
-              float frequency = 10.0f,
-              float dampingRatio = 1.0f,
-              float jointMass = -1.0f);
+    LineJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        Vec2 anchor,
+        Vec2 dir,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = -1.0f
+    );
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

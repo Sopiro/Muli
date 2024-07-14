@@ -37,7 +37,8 @@ BatchShader::BatchShader()
         {
             fragColor = f_color;
         }
-    )")
+    )"
+      )
 {
     uniformMap.insert({ "color", glGetUniformLocation(shaderHandle, "color") });
     uniformMap.insert({ "model", glGetUniformLocation(shaderHandle, "model") });

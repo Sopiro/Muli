@@ -68,12 +68,14 @@ public:
         motor_joint,
     };
 
-    Joint(Joint::Type type,
-          RigidBody* bodyA,
-          RigidBody* bodyB,
-          float frequency = default_joint_frequency,
-          float dampingRatio = default_joint_damping_ratio,
-          float jointMass = default_joint_mass);
+    Joint(
+        Joint::Type type,
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        float frequency = default_joint_frequency,
+        float dampingRatio = default_joint_damping_ratio,
+        float jointMass = default_joint_mass
+    );
     virtual ~Joint() noexcept;
 
     virtual bool SolvePositionConstraints(const Timestep& step) override

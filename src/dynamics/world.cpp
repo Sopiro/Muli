@@ -913,8 +913,9 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCa
 
     if (tempCallback.hit)
     {
-        callback->OnHitClosest(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
-                               tempCallback.closestFraction);
+        callback->OnHitClosest(
+            tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestFraction
+        );
         return true;
     }
 
@@ -943,8 +944,10 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
         {
             ShapeCastOutput output;
 
-            bool hit = ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(),
-                                 translation * input.maxFraction, Vec2::zero, &output);
+            bool hit = ShapeCast(
+                shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation * input.maxFraction, Vec2::zero,
+                &output
+            );
             if (hit)
             {
                 return callback->OnHitAny(collider, output.point, output.normal, output.t * input.maxFraction);
@@ -988,18 +991,21 @@ bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2
 
     if (tempCallback.hit)
     {
-        callback->OnHitClosest(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
-                               tempCallback.closestT);
+        callback->OnHitClosest(
+            tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestT
+        );
         return true;
     }
 
     return false;
 }
 
-void World::RayCastAny(const Vec2& from,
-                       const Vec2& to,
-                       float radius,
-                       std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback)
+void World::RayCastAny(
+    const Vec2& from,
+    const Vec2& to,
+    float radius,
+    std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+)
 {
     AABBCastInput input;
     input.from = from;
@@ -1046,7 +1052,8 @@ bool World::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
     float radius,
-    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback)
+    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+)
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -1072,18 +1079,21 @@ bool World::RayCastClosest(
 
     if (tempCallback.hit)
     {
-        callback(tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal,
-                 tempCallback.closestFraction);
+        callback(
+            tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestFraction
+        );
         return true;
     }
 
     return false;
 }
 
-void World::ShapeCastAny(const Shape* shape,
-                         const Transform& tf,
-                         const Vec2& translation,
-                         std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback)
+void World::ShapeCastAny(
+    const Shape* shape,
+    const Transform& tf,
+    const Vec2& translation,
+    std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+)
 {
     AABB aabb;
     shape->ComputeAABB(tf, &aabb);
@@ -1113,8 +1123,10 @@ void World::ShapeCastAny(const Shape* shape,
         {
             ShapeCastOutput output;
 
-            bool hit = ShapeCast(shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(),
-                                 translation * input.maxFraction, Vec2::zero, &output);
+            bool hit = ShapeCast(
+                shape, tf, collider->GetShape(), collider->GetBody()->GetTransform(), translation * input.maxFraction, Vec2::zero,
+                &output
+            );
             if (hit)
             {
                 return callbackFcn(collider, output.point, output.normal, output.t * input.maxFraction);
@@ -1127,10 +1139,12 @@ void World::ShapeCastAny(const Shape* shape,
     contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
-bool World::ShapeCastClosest(const Shape* shape,
-                             const Transform& tf,
-                             const Vec2& translation,
-                             std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback)
+bool World::ShapeCastClosest(
+    const Shape* shape,
+    const Transform& tf,
+    const Vec2& translation,
+    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+)
 {
     struct TempCallback : ShapeCastAnyCallback
     {
@@ -1253,7 +1267,8 @@ RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, Rig
 }
 
 RigidBody* World::CreateCapsule(
-    const Vec2& point1, const Vec2& point2, float radius, RigidBody::Type type, bool resetPosition, float density)
+    const Vec2& point1, const Vec2& point2, float radius, RigidBody::Type type, bool resetPosition, float density
+)
 {
     RigidBody* b = CreateEmptyBody(type);
 
@@ -1341,7 +1356,8 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
 }
 
 RigidBody* World::CreateRegularPolygon(
-    float length, int32 vertexCount, float initialAngle, RigidBody::Type type, float radius, float density)
+    float length, int32 vertexCount, float initialAngle, RigidBody::Type type, float radius, float density
+)
 {
     if (vertexCount < 3)
     {
@@ -1373,7 +1389,8 @@ RigidBody* World::CreateRegularPolygon(
 }
 
 GrabJoint* World::CreateGrabJoint(
-    RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio, float jointMass)
+    RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio, float jointMass
+)
 {
     if (body->world != this)
     {
@@ -1388,7 +1405,8 @@ GrabJoint* World::CreateGrabJoint(
 }
 
 RevoluteJoint* World::CreateRevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1402,14 +1420,16 @@ RevoluteJoint* World::CreateRevoluteJoint(
     return rj;
 }
 
-DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
-                                          RigidBody* bodyB,
-                                          const Vec2& anchorA,
-                                          const Vec2& anchorB,
-                                          float length,
-                                          float frequency,
-                                          float dampingRatio,
-                                          float jointMass)
+DistanceJoint* World::CreateDistanceJoint(
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchorA,
+    const Vec2& anchorB,
+    float length,
+    float frequency,
+    float dampingRatio,
+    float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1424,10 +1444,12 @@ DistanceJoint* World::CreateDistanceJoint(RigidBody* bodyA,
 }
 
 DistanceJoint* World::CreateDistanceJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass
+)
 {
-    return CreateDistanceJoint(bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, frequency, dampingRatio,
-                               jointMass);
+    return CreateDistanceJoint(
+        bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, frequency, dampingRatio, jointMass
+    );
 }
 
 AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
@@ -1445,7 +1467,8 @@ AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float fr
 }
 
 WeldJoint* World::CreateWeldJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1460,7 +1483,8 @@ WeldJoint* World::CreateWeldJoint(
 }
 
 LineJoint* World::CreateLineJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1476,12 +1500,15 @@ LineJoint* World::CreateLineJoint(
 
 LineJoint* World::CreateLineJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
 {
-    return CreateLineJoint(bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency,
-                           dampingRatio, jointMass);
+    return CreateLineJoint(
+        bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency, dampingRatio,
+        jointMass
+    );
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1496,22 +1523,27 @@ PrismaticJoint* World::CreatePrismaticJoint(
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+    RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass
+)
 {
-    return CreatePrismaticJoint(bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()),
-                                frequency, dampingRatio, jointMass);
+    return CreatePrismaticJoint(
+        bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency, dampingRatio,
+        jointMass
+    );
 }
 
-PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
-                                      RigidBody* bodyB,
-                                      const Vec2& anchorA,
-                                      const Vec2& anchorB,
-                                      const Vec2& groundAnchorA,
-                                      const Vec2& groundAnchorB,
-                                      float ratio,
-                                      float frequency,
-                                      float dampingRatio,
-                                      float jointMass)
+PulleyJoint* World::CreatePulleyJoint(
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchorA,
+    const Vec2& anchorB,
+    const Vec2& groundAnchorA,
+    const Vec2& groundAnchorB,
+    float ratio,
+    float frequency,
+    float dampingRatio,
+    float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1526,14 +1558,16 @@ PulleyJoint* World::CreatePulleyJoint(RigidBody* bodyA,
     return pj;
 }
 
-MotorJoint* World::CreateMotorJoint(RigidBody* bodyA,
-                                    RigidBody* bodyB,
-                                    const Vec2& anchor,
-                                    float maxForce,
-                                    float maxTorque,
-                                    float frequency,
-                                    float dampingRatio,
-                                    float jointMass)
+MotorJoint* World::CreateMotorJoint(
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchor,
+    float maxForce,
+    float maxTorque,
+    float frequency,
+    float dampingRatio,
+    float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {

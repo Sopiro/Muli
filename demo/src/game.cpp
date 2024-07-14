@@ -197,9 +197,11 @@ void Game::UpdateUI()
     ImGui::End();
 
     ImGui::SetNextWindowPos({ 0, Window::Get().GetWindowSize().y }, ImGuiCond_Always, ImVec2{ 0.0f, 1.0f });
-    ImGui::Begin("Body info", NULL,
-                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground);
+    ImGui::Begin(
+        "Body info", NULL,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
+    );
     RigidBody* t = demo->GetTargetBody();
 
     if (t)

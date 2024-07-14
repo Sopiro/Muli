@@ -38,8 +38,9 @@ public:
                 b = world->CreateCapsule(r * 1.2f, r * 1.2f / 2.0f);
             }
 
-            b->SetPosition(Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f,
-                           Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f);
+            b->SetPosition(
+                Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f, Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f
+            );
         }
 
         camera.position = { 0.0f, 0.0f };

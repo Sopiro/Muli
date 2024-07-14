@@ -225,30 +225,32 @@ public:
     void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
     bool ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback);
 
-    // clang-format off
     void Query(const Vec2& point, std::function<bool(Collider* collider)> callback) const;
     void Query(const AABB& aabb, std::function<bool(Collider* collider)> callback) const;
     void RayCastAny(
         const Vec2& from,
         const Vec2& to,
         float radius,
-        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback);
+        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    );
     bool RayCastClosest(
         const Vec2& from,
         const Vec2& to,
         float radius,
-        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback);
+        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    );
     void ShapeCastAny(
         const Shape* shape,
         const Transform& tf,
         const Vec2& translation,
-        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback);
+        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+    );
     bool ShapeCastClosest(
         const Shape* shape,
         const Transform& tf,
         const Vec2& translation,
-        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback);
-    // clang-format on
+        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+    );
 
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;

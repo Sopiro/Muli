@@ -122,11 +122,13 @@ public:
     void RayCastAny(
         const Vec2& from,
         const Vec2& to,
-        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback) const;
+        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    ) const;
     bool RayCastClosest(
         const Vec2& from,
         const Vec2& to,
-        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback) const;
+        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    ) const;
     void RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback) const;
     bool RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const;
 
@@ -139,29 +141,37 @@ public:
     Collider* GetColliderList();
     const Collider* GetColliderList() const;
 
-    Collider* CreateCircleCollider(float radius,
-                                   const Vec2& position = Vec2::zero,
-                                   float density = default_density,
-                                   const Material& material = default_material);
-    Collider* CreateBoxCollider(float width,
-                                float height,
-                                float radius = default_radius,
-                                const Vec2& position = Vec2::zero,
-                                float angle = 0.0f,
-                                float density = default_density,
-                                const Material& material = default_material);
-    Collider* CreateCapsuleCollider(float length,
-                                    float radius,
-                                    bool horizontal = false,
-                                    const Vec2& position = Vec2::zero,
-                                    float density = default_density,
-                                    const Material& material = default_material);
-    Collider* CreateCapsuleCollider(const Vec2& p1,
-                                    const Vec2& p2,
-                                    float radius,
-                                    bool resetPosition = false,
-                                    float density = default_density,
-                                    const Material& material = default_material);
+    Collider* CreateCircleCollider(
+        float radius,
+        const Vec2& position = Vec2::zero,
+        float density = default_density,
+        const Material& material = default_material
+    );
+    Collider* CreateBoxCollider(
+        float width,
+        float height,
+        float radius = default_radius,
+        const Vec2& position = Vec2::zero,
+        float angle = 0.0f,
+        float density = default_density,
+        const Material& material = default_material
+    );
+    Collider* CreateCapsuleCollider(
+        float length,
+        float radius,
+        bool horizontal = false,
+        const Vec2& position = Vec2::zero,
+        float density = default_density,
+        const Material& material = default_material
+    );
+    Collider* CreateCapsuleCollider(
+        const Vec2& p1,
+        const Vec2& p2,
+        float radius,
+        bool resetPosition = false,
+        float density = default_density,
+        const Material& material = default_material
+    );
 
     // Callbacks
     BodyDestroyCallback* OnDestroy;

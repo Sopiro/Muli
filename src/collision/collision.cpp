@@ -152,7 +152,8 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
 }
 
 static void FindContactPoints(
-    const Vec2& n, const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+    const Vec2& n, const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold
+)
 {
     Edge edgeA = a->GetFeaturedEdge(tfA, n);
     Edge edgeB = b->GetFeaturedEdge(tfB, -n);

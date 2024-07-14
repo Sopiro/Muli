@@ -307,13 +307,15 @@ bool RayCastCapsule(const Vec2& va, const Vec2& vb, float radius, const RayCastI
 
 extern SupportPoint CSOSupport(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, const Vec2& dir);
 
-bool ShapeCast(const Shape* a,
-               const Transform& tfA,
-               const Shape* b,
-               const Transform& tfB,
-               const Vec2& translationA,
-               const Vec2& translationB,
-               ShapeCastOutput* output)
+bool ShapeCast(
+    const Shape* a,
+    const Transform& tfA,
+    const Shape* b,
+    const Transform& tfB,
+    const Vec2& translationA,
+    const Vec2& translationB,
+    ShapeCastOutput* output
+)
 {
     output->point.SetZero();
     output->normal.SetZero();
