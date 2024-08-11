@@ -54,7 +54,7 @@ set(HEADER_FILES
     ../include/muli/predefined_block_allocator.h
     ../include/muli/fixed_block_allocator.h
     ../include/muli/callbacks.h
-    ../include/muli/convex_hull.h
+    ../include/muli/geometry.h
     ../include/muli/math.h
     ../include/muli/types.h
     ../include/muli/random.h
@@ -66,7 +66,7 @@ set(SOURCE_FILES
     util/linear_allocator.cpp
     util/block_allocator.cpp
     util/predefined_block_allocator.cpp
-    util/convex_hull.cpp
+    util/geometry.cpp
 
     collision/collision.cpp
     collision/simplex.cpp

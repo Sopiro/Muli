@@ -2,7 +2,7 @@
 #include <random>
 
 #include "muli/aabb.h"
-#include "muli/convex_hull.h"
+#include "muli/geometry.h"
 
 namespace muli
 {
