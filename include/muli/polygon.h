@@ -1,6 +1,5 @@
 #pragma once
 
-#include "convex_hull.h"
 #include "shape.h"
 
 namespace muli

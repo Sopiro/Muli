@@ -26,5 +26,6 @@
 
 #include "collision.h"
 #include "distance.h"
+#include "convex_hull.h"
 
 // clang-format on
