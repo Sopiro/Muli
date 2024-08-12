@@ -5,6 +5,49 @@
 namespace muli
 {
 
+static inline int32 GetNext(std::unordered_set<int32>& done, int32 i, int32 count, int32 step = 1)
+{
+    int32 i1 = (i + step) % count;
+
+    while (done.find(i1) != done.end())
+    {
+        i1 = (i1 + 1) % count;
+    }
+
+    return i1;
+}
+
+// Modified Ear-clipping algorithm.
+// Only works for convex shape
+static std::vector<int32> Triangulate(std::span<Vec2> vertices)
+{
+    std::vector<int32> indices;
+    int32 count = int32(vertices.size());
+    indices.reserve((count - 2) * 3);
+
+    std::unordered_set<int32> done;
+
+    int32 prev = count;
+    int32 i0 = 0;
+
+    while (done.size() < count - 2)
+    {
+        int32 i1 = GetNext(done, i0, count);
+        int32 i2 = GetNext(done, i1, count);
+
+        indices.push_back(i0);
+        indices.push_back(i1);
+        indices.push_back(i2);
+
+        done.insert(i1);
+
+        prev = i0;
+        i0 = GetNext(done, i2, count, (count + 1) / 2u);
+    }
+
+    return indices;
+}
+
 std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygonCount)
 {
     const RigidBody* body = collider->GetBody();
@@ -155,47 +198,6 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     default:
         throw std::runtime_error("Not a supported shape");
     }
-}
-
-static inline int32 GetNext(std::unordered_set<int32>& done, int32 i, int32 count, int32 step = 1)
-{
-    int32 i1 = (i + step) % count;
-
-    while (done.find(i1) != done.end())
-    {
-        i1 = (i1 + 1) % count;
-    }
-
-    return i1;
-}
-
-std::vector<int32> Triangulate(std::span<Vec2> vertices)
-{
-    std::vector<int32> indices;
-    int32 count = int32(vertices.size());
-    indices.reserve((count - 2) * 3);
-
-    std::unordered_set<int32> done;
-
-    int32 prev = count;
-    int32 i0 = 0;
-
-    while (done.size() < count - 2)
-    {
-        int32 i1 = GetNext(done, i0, count);
-        int32 i2 = GetNext(done, i1, count);
-
-        indices.push_back(i0);
-        indices.push_back(i1);
-        indices.push_back(i2);
-
-        done.insert(i1);
-
-        prev = i0;
-        i0 = GetNext(done, i2, count, (count + 1) / 2u);
-    }
-
-    return indices;
 }
 
 Vec3 rgb2hsl(float r, float g, float b)

@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <random>
 
-#include "muli/aabb.h"
 #include "muli/geometry.h"
 
 namespace muli
@@ -279,6 +278,147 @@ Circle ComputeCircle(std::span<Vec2> points)
     std::shuffle(copy.begin(), copy.end(), std::mt19937{});
 
     return Welzl(copy, R, n);
+}
+
+// Straight implementation of https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> points)
+{
+    struct TriEdge
+    {
+        Vec2 p0, p1;
+
+        TriEdge() = default;
+        TriEdge(const Vec2& p0, const Vec2& p1)
+            : p0{ p0 }
+            , p1{ p1 }
+        {
+        }
+    };
+
+    struct Tri
+    {
+        Vec2 p0, p1, p2;
+
+        Tri() = default;
+        Tri(const Vec2& p0, const Vec2& p1, const Vec2& p2)
+            : p0{ p0 }
+            , p1{ p1 }
+            , p2{ p2 }
+        {
+        }
+
+        bool HasEdge(const TriEdge& edge) const
+        {
+            if (edge.p0 == p0 && edge.p1 == p1) return true;
+            if (edge.p0 == p1 && edge.p1 == p0) return true;
+
+            if (edge.p0 == p1 && edge.p1 == p2) return true;
+            if (edge.p0 == p2 && edge.p1 == p1) return true;
+
+            if (edge.p0 == p2 && edge.p1 == p0) return true;
+            if (edge.p0 == p0 && edge.p1 == p2) return true;
+
+            return false;
+        }
+
+        bool HasVertex(const Vec2& p) const
+        {
+            return p0 == p || p1 == p || p2 == p;
+        }
+
+        void GetEdges(TriEdge edges[3]) const
+        {
+            edges[0] = TriEdge{ p0, p1 };
+            edges[1] = TriEdge{ p1, p2 };
+            edges[2] = TriEdge{ p2, p0 };
+        }
+    };
+
+    AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
+
+    for (const Vec2& p : points)
+    {
+        bounds = AABB::Union(bounds, p);
+    }
+
+    Vec2 extents = bounds.GetExtents();
+
+    Vec2 p0{ bounds.min.x - extents.x - epsilon, bounds.min.y };
+    Vec2 p1{ bounds.max.x + extents.x + epsilon, bounds.min.y };
+    Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + epsilon };
+
+    Tri super{ p0, p1, p2 };
+
+    std::list<Tri> tris;
+    tris.push_back(super);
+
+    using TriIter = std::list<Tri>::iterator;
+
+    for (const Vec2& p : points)
+    {
+        std::vector<TriIter> badTris;
+
+        for (TriIter t = tris.begin(); t != tris.end(); ++t)
+        {
+            Circle c = ComputeCircle3(t->p0, t->p1, t->p2);
+            if (c.TestPoint(identity, p))
+            {
+                badTris.push_back(t);
+            }
+        }
+
+        std::vector<TriEdge> poly;
+
+        for (const TriIter& t : badTris)
+        {
+            TriEdge edges[3];
+            t->GetEdges(edges);
+
+            for (const TriEdge& e : edges)
+            {
+                bool hasSharedEdge = false;
+                for (const TriIter& other : badTris)
+                {
+                    if (t == other)
+                    {
+                        continue;
+                    }
+
+                    if (other->HasEdge(e))
+                    {
+                        hasSharedEdge = true;
+                    }
+                }
+
+                if (!hasSharedEdge)
+                {
+                    poly.push_back(e);
+                }
+            }
+        }
+
+        for (const TriIter& iter : badTris)
+        {
+            tris.erase(iter);
+        }
+
+        for (const TriEdge& e : poly)
+        {
+            tris.push_back(Tri{ e.p0, e.p1, p });
+        }
+    }
+
+    std::vector<Polygon> res;
+
+    for (const Tri& t : tris)
+    {
+        if (!t.HasVertex(super.p0) && !t.HasVertex(super.p1) && !t.HasVertex(super.p2))
+        {
+            res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        }
+    }
+
+    return res;
 }
 
 } // namespace muli

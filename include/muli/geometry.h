@@ -2,6 +2,7 @@
 
 #include "circle.h"
 #include "common.h"
+#include "polygon.h"
 
 namespace muli
 {
@@ -12,5 +13,8 @@ std::vector<Vec2> ComputeConvexHull(std::span<Vec2> vertices);
 
 // Compute minimum circle containing all points
 Circle ComputeCircle(std::span<Vec2> points);
+
+// Compute delaunay triangles
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> points);
 
 } // namespace muli

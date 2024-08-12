@@ -26,6 +26,7 @@ struct AABB
     Vec2 max;
 
     static AABB Union(const AABB& b1, const AABB& b2);
+    static AABB Union(const AABB& b, const Vec2& p);
 };
 
 inline AABB::AABB(const Vec2& _min, const Vec2& _max)
@@ -80,6 +81,14 @@ inline AABB AABB::Union(const AABB& b1, const AABB& b2)
 {
     Vec2 min = Min(b1.min, b2.min);
     Vec2 max = Max(b1.max, b2.max);
+
+    return AABB{ min, max };
+}
+
+inline AABB AABB::Union(const AABB& b, const Vec2& p)
+{
+    Vec2 min = Min(b.min, p);
+    Vec2 max = Max(b.max, p);
 
     return AABB{ min, max };
 }

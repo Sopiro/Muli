@@ -8,10 +8,6 @@ namespace muli
 
 std::unique_ptr<Mesh> GenerateMesh(const Collider* body, int32 circlePolygonCount = 13);
 
-// Modified Ear-clipping algorithm.
-// Only works for convex shape
-std::vector<int32> Triangulate(std::span<Vec2> vertices);
-
 /*
  * https://gist.github.com/ciembor/1494530
  *

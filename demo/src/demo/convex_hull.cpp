@@ -7,9 +7,12 @@ namespace muli
 
 class ConvexHull : public Demo
 {
+    static inline bool triangulation = false;
+
 public:
     std::vector<Vec2> vertices;
     std::vector<Vec2> convexHull;
+    std::vector<Polygon> triangles;
 
     size_t lastHull;
 
@@ -46,6 +49,7 @@ public:
         {
             convexHull = ComputeConvexHull(vertices);
             lastHull = convexHull.size();
+            triangles = ComputeTriangles(vertices);
         }
     }
 
@@ -55,24 +59,34 @@ public:
         {
             renderer.DrawPoint(vertex);
         }
-
-        for (size_t i = 0; i < convexHull.size(); ++i)
+        if (!triangulation)
         {
-            Vec2& v0 = convexHull[i];
-            Vec2& v1 = convexHull[(i + 1) % convexHull.size()];
-            renderer.DrawLine(v0, v1);
+            for (size_t i = 0; i < convexHull.size(); ++i)
+            {
+                Vec2& v0 = convexHull[i];
+                Vec2& v1 = convexHull[(i + 1) % convexHull.size()];
+                renderer.DrawLine(v0, v1);
+            }
+        }
+        else
+        {
+            for (const Polygon& p : triangles)
+            {
+                renderer.DrawShape(&p, identity, Renderer::DrawMode{});
+            }
         }
     }
 
     void UpdateUI() override
     {
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
-        ImGui::Begin(
-            "Convex hull", NULL,
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
-        );
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Removed vertices: %zu", vertices.size() - convexHull.size());
+
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("ConvexHull", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Checkbox("Triangulation", &triangulation);
+            ImGui::Text("Removed vertices: %zu", vertices.size() - convexHull.size());
+        }
         ImGui::End();
     }
 
