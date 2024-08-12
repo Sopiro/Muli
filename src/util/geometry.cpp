@@ -105,7 +105,7 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertice
     delete[] sorted;
 }
 
-std::vector<Vec2> ComputeConvexHull(std::span<Vec2> vertices)
+std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices)
 {
     if (vertices.size() < 3)
     {
@@ -122,7 +122,7 @@ std::vector<Vec2> ComputeConvexHull(std::span<Vec2> vertices)
     }
     Vec2 bottom = vertices[index];
 
-    std::span<Vec2> sorted = vertices;
+    std::vector<Vec2> sorted(vertices.begin(), vertices.end());
     std::swap(sorted[index], sorted[0]);
 
     std::sort(sorted.begin() + 1, sorted.end(), [&](const Vec2& a, const Vec2& b) -> bool {
@@ -281,7 +281,7 @@ Circle ComputeCircle(std::span<Vec2> points)
 }
 
 // Straight implementation of https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> points)
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, bool removeOutliers)
 {
     struct TriEdge
     {
@@ -326,6 +326,11 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points)
             return p0 == p || p1 == p || p2 == p;
         }
 
+        Vec2 GetCenter() const
+        {
+            return (p0 + p1 + p2) / 3;
+        }
+
         void GetEdges(TriEdge edges[3]) const
         {
             edges[0] = TriEdge{ p0, p1 };
@@ -333,6 +338,45 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points)
             edges[2] = TriEdge{ p2, p0 };
         }
     };
+
+    auto RayCastEdge = [](Vec2 o, Vec2 d, TriEdge edge) {
+        Vec2 e = edge.p1 - edge.p0;
+        Vec2 o2a = edge.p0 - o;
+
+        float c = Cross(d, e);
+
+        if (c == 0)
+        {
+            return false;
+        }
+
+        float t = Cross(o2a, e) / c;
+        float u = Cross(o2a, d) / c;
+
+        return (t >= 0 && u >= 0 && u <= 1);
+    };
+
+    auto Contains = [RayCastEdge](std::vector<TriEdge>& edges, const Vec2& p) {
+        int32 count = 0;
+        for (TriEdge& e : edges)
+        {
+            if (RayCastEdge(p, Vec2(0, 1), e))
+            {
+                ++count;
+            }
+        }
+
+        return count % 2 == 1;
+    };
+
+    std::vector<TriEdge> inputEdges;
+
+    size_t i0 = points.size() - 1;
+    for (size_t i1 = 0; i1 < points.size(); ++i1)
+    {
+        inputEdges.push_back(TriEdge{ points[i0], points[i1] });
+        i0 = i1;
+    }
 
     AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
 
@@ -414,7 +458,10 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points)
     {
         if (!t.HasVertex(super.p0) && !t.HasVertex(super.p1) && !t.HasVertex(super.p2))
         {
-            res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+            if (!removeOutliers || Contains(inputEdges, t.GetCenter()))
+            {
+                res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+            }
         }
     }
 

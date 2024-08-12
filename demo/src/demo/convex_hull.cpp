@@ -49,7 +49,7 @@ public:
         {
             convexHull = ComputeConvexHull(vertices);
             lastHull = convexHull.size();
-            triangles = ComputeTriangles(vertices);
+            triangles = ComputeTriangles(convexHull);
         }
     }
 
@@ -79,8 +79,7 @@ public:
 
     void UpdateUI() override
     {
-
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
 
         if (ImGui::Begin("ConvexHull", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
