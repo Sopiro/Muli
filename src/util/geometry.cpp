@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <list>
 #include <random>
 
 #include "muli/geometry.h"
@@ -272,7 +273,7 @@ static Circle Welzl(const std::vector<Vec2>& P, std::vector<Vec2>& R, int32 n)
 Circle ComputeCircle(std::span<Vec2> points)
 {
     std::vector<Vec2> R;
-    int32 n = points.size();
+    int32 n = int32(points.size());
 
     std::vector<Vec2> copy(points.begin(), points.end());
     std::shuffle(copy.begin(), copy.end(), std::mt19937{});
