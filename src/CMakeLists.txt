@@ -58,6 +58,7 @@ set(HEADER_FILES
     ../include/muli/math.h
     ../include/muli/types.h
     ../include/muli/random.h
+    ../include/muli/hash.h
 )
 
 set(SOURCE_FILES

@@ -16,5 +16,6 @@ Circle ComputeCircle(std::span<Vec2> points);
 
 // Compute delaunay triangles
 std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, bool removeOutliers = false);
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> constraints);
 
 } // namespace muli
