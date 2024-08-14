@@ -517,14 +517,12 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
     Vec2 extents = bounds.GetExtents();
 
     const float margin = 0.1f;
-    Vec2 p0{ bounds.min.x - extents.x - margin, bounds.min.y - margin };
-    Vec2 p1{ bounds.max.x + extents.x + margin, bounds.min.y - margin };
-    Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin };
-
-    Tri super{ p0, p1, p2 };
+    const Vec2 p0{ bounds.min.x - extents.x - margin, bounds.min.y - margin };
+    const Vec2 p1{ bounds.max.x + extents.x + margin, bounds.min.y - margin };
+    const Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin };
 
     std::unordered_set<Tri, Tri::Hasher> tris;
-    tris.insert(super);
+    tris.emplace(p0, p1, p2);
 
     for (const Vec2& p : vertices)
     {
@@ -539,7 +537,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
             }
         }
 
-        std::vector<TriEdge> poly;
+        std::unordered_set<TriEdge, TriEdge::Hasher> poly;
 
         for (const Tri& t : badTris)
         {
@@ -547,24 +545,14 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
             for (const TriEdge& e : edges)
             {
-                bool hasSharedEdge = false;
-                for (const Tri& other : badTris)
+                if (poly.contains(~e))
                 {
-                    if (t == other)
-                    {
-                        continue;
-                    }
-
-                    if (other.HasEdge(e))
-                    {
-                        hasSharedEdge = true;
-                    }
+                    // Remove shared edge
+                    poly.erase(~e);
+                    continue;
                 }
 
-                if (!hasSharedEdge)
-                {
-                    poly.push_back(e);
-                }
+                poly.insert(e);
             }
         }
 
@@ -575,6 +563,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
         for (const TriEdge& e : poly)
         {
+            // Guaranteed to be CCW
             tris.emplace(e.p0, e.p1, p);
         }
     }
@@ -583,9 +572,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
     for (const Tri& t : tris)
     {
-        std::array<TriEdge, 3> triEdges = t.GetEdges();
-
-        for (const TriEdge& e : triEdges)
+        for (const TriEdge& e : t.GetEdges())
         {
             muliAssert(!edge2Tri.contains(e));
             edge2Tri.emplace(e, &t);
@@ -607,9 +594,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
             // Collect all bad edges
             for (const Tri& t : tris)
             {
-                std::array<TriEdge, 3> triEdges = t.GetEdges();
-
-                for (const TriEdge& e : triEdges)
+                for (const TriEdge& e : t.GetEdges())
                 {
                     if (e.Intersect(ce))
                     {
@@ -647,17 +632,13 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
                 if (Cross(p0 - p3, p1 - p0) * s < 0) continue;
 
                 resolved.insert(~be);
-                resolved.insert(be);
+                // resolved.insert(be);
 
                 // Flip edge
-                std::array<TriEdge, 3> triEdges;
-
-                triEdges = t1->GetEdges();
-                for (const TriEdge& e : triEdges)
+                for (const TriEdge& e : t1->GetEdges())
                     edge2Tri.erase(e);
 
-                triEdges = t2->GetEdges();
-                for (const TriEdge& e : triEdges)
+                for (const TriEdge& e : t2->GetEdges())
                     edge2Tri.erase(e);
 
                 tris.erase(*t1);
@@ -666,12 +647,10 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
                 t1 = &(*(tris.emplace(p0, p1, p3).first));
                 t2 = &(*(tris.emplace(p1, p2, p3).first));
 
-                triEdges = t1->GetEdges();
-                for (const TriEdge& e : triEdges)
+                for (const TriEdge& e : t1->GetEdges())
                     edge2Tri.emplace(e, t1);
 
-                triEdges = t2->GetEdges();
-                for (const TriEdge& e : triEdges)
+                for (const TriEdge& e : t2->GetEdges())
                     edge2Tri.emplace(e, t2);
             }
         }
@@ -680,7 +659,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
     std::vector<Polygon> res;
     for (const Tri& t : tris)
     {
-        if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
+        if (t.HasVertex(p0) || t.HasVertex(p1) || t.HasVertex(p2))
         {
             continue;
         }
