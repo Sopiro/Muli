@@ -14,7 +14,8 @@ std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices);
 // Compute minimum circle containing all points
 Circle ComputeCircle(std::span<Vec2> vertices);
 
-// Compute delaunay triangles
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<Vec2> constraints = {}, bool removeOutliers = false);
+// Computes Delaunay triangles
+// Behavior is undefined for self-intersecting outlines or holes
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<Vec2> outline = {}, std::span<Vec2> hole = {});
 
 } // namespace muli

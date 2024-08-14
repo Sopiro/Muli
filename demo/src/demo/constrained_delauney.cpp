@@ -8,11 +8,11 @@ namespace muli
 class ConstrainedDelauney : public Demo
 {
     static inline bool constrained = true;
-    static inline bool removeOutliers = false;
 
 public:
     std::vector<Vec2> vertices;
-    std::vector<Vec2> constraints;
+    std::vector<Vec2> hole;
+    std::vector<Vec2> outline;
 
     std::vector<Polygon> triangles;
 
@@ -40,30 +40,30 @@ public:
         {
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
+                outline.push_back(cursorPos);
                 vertices.push_back(cursorPos);
             }
 
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
             {
-                constraints.push_back(cursorPos);
+                hole.push_back(cursorPos);
+                vertices.push_back(cursorPos);
             }
         }
     }
 
     void Step() override
     {
-        size_t vertexCount = vertices.size() + constraints.size();
+        size_t vertexCount = vertices.size() + hole.size();
         if (vertexCount != lastVertexCount)
         {
             if (constrained)
             {
-                triangles = ComputeTriangles(vertices, constraints, removeOutliers);
+                triangles = ComputeTriangles(vertices, outline, hole);
             }
             else
             {
-                std::vector<Vec2> v(vertices.begin(), vertices.end());
-                v.insert(v.end(), constraints.begin(), constraints.end());
-                triangles = ComputeTriangles(v, {}, removeOutliers);
+                triangles = ComputeTriangles(vertices);
             }
 
             lastVertexCount = vertexCount;
@@ -77,21 +77,29 @@ public:
             renderer.DrawPoint(vertex);
         }
 
-        if (constraints.size() > 0)
+        if (hole.size() > 1)
         {
-            size_t i0 = constraints.size() - 1;
-            for (size_t i1 = 0; i1 < constraints.size(); ++i1)
+            for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
             {
-                renderer.DrawPoint(constraints[i0], Vec4(1, 0, 0, 1));
+                renderer.DrawPoint(hole[i0], Vec4(1, 0, 0, 1));
                 if (constrained)
                 {
                     renderer.SetLineWidth(3);
-                    renderer.DrawLine(constraints[i0], constraints[i1], Vec4(1, 1, 0, 1));
+                    renderer.DrawLine(hole[i0], hole[i1], Vec4(1, 1, 0, 1));
                     renderer.FlushLines();
                     renderer.SetLineWidth(1);
                 }
+            }
+        }
 
-                i0 = i1;
+        if (constrained && outline.size() > 2)
+        {
+            for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
+            {
+                renderer.SetLineWidth(3);
+                renderer.DrawLine(outline[i0], outline[i1], Vec4(0, 1, 0.2f, 1));
+                renderer.FlushLines();
+                renderer.SetLineWidth(1);
             }
         }
 
@@ -108,11 +116,6 @@ public:
         if (ImGui::Begin("Delauney", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (ImGui::Checkbox("Constrained", &constrained))
-            {
-                lastVertexCount = 0;
-            }
-
-            if (ImGui::Checkbox("Remove outliers", &removeOutliers))
             {
                 lastVertexCount = 0;
             }

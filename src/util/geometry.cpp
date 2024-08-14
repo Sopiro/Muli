@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <list>
 #include <random>
-#include <unordered_map>
 
 #include "muli/geometry.h"
 #include "muli/hash.h"
@@ -490,21 +489,46 @@ inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
 }
 
 // https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constraints, bool removeOutliers)
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<Vec2> hole)
 {
     std::vector<TriEdge> constraintEdges;
-    if (constraints.size() > 1)
+    std::vector<TriEdge> outlineEdges;
+    std::vector<TriEdge> holeEdges;
+
+    if (outline.size() > 2)
     {
-        size_t i0 = constraints.size() - 1;
-        for (size_t i1 = 0; i1 < constraints.size(); ++i1)
+        for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
         {
-            constraintEdges.push_back(TriEdge{ constraints[i0], constraints[i1] });
-            i0 = i1;
+            outlineEdges.emplace_back(outline[i0], outline[i1]);
+            constraintEdges.emplace_back(outline[i0], outline[i1]);
         }
     }
 
-    std::vector<Vec2> vertices(v.begin(), v.end());
-    vertices.insert(vertices.end(), constraints.begin(), constraints.end());
+    if (hole.size() > 2)
+    {
+        for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
+        {
+            holeEdges.emplace_back(hole[i0], hole[i1]);
+            constraintEdges.emplace_back(hole[i0], hole[i1]);
+        }
+    }
+
+    struct Vec2Hasher
+    {
+        size_t operator()(const Vec2& v) const
+        {
+            return Hash(v);
+        }
+    };
+
+    std::unordered_set<Vec2, Vec2Hasher> vertices(v.begin(), v.end());
+    vertices.insert(outline.begin(), outline.end());
+    vertices.insert(hole.begin(), hole.end());
+
+    if (vertices.size() < 2)
+    {
+        return {};
+    }
 
     // Prepare super triangle
     AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
@@ -664,10 +688,17 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
             continue;
         }
 
-        if (!removeOutliers || Contains(constraintEdges, t.GetCenter()))
+        if (Contains(holeEdges, t.GetCenter()))
         {
-            res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+            continue;
         }
+
+        if (outlineEdges.size() > 2 && !Contains(outlineEdges, t.GetCenter()))
+        {
+            continue;
+        }
+
+        res.push_back(Polygon{ t.p0, t.p1, t.p2 });
     }
 
     return res;
