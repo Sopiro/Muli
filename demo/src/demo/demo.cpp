@@ -419,13 +419,13 @@ void Demo::EnableCameraControl()
     static Vec2 cursorStart;
     static Vec2 cameraPosStart;
 
-    if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_MIDDLE))
     {
         cameraMove = true;
         cursorStart = Input::GetMousePosition();
         cameraPosStart = camera.position;
     }
-    else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
+    else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
     {
         cameraMove = false;
     }

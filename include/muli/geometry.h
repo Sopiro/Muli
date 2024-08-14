@@ -12,10 +12,9 @@ void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertice
 std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices);
 
 // Compute minimum circle containing all points
-Circle ComputeCircle(std::span<Vec2> points);
+Circle ComputeCircle(std::span<Vec2> vertices);
 
 // Compute delaunay triangles
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, bool removeOutliers = false);
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> constraints);
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<Vec2> constraints = {}, bool removeOutliers = false);
 
 } // namespace muli

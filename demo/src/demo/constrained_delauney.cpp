@@ -8,6 +8,7 @@ namespace muli
 class ConstrainedDelauney : public Demo
 {
     static inline bool constrained = true;
+    static inline bool removeOutliers = false;
 
 public:
     std::vector<Vec2> vertices;
@@ -56,13 +57,13 @@ public:
         {
             if (constrained)
             {
-                triangles = ComputeTriangles(vertices, constraints);
+                triangles = ComputeTriangles(vertices, constraints, removeOutliers);
             }
             else
             {
                 std::vector<Vec2> v(vertices.begin(), vertices.end());
                 v.insert(v.end(), constraints.begin(), constraints.end());
-                triangles = ComputeTriangles(v);
+                triangles = ComputeTriangles(v, {}, removeOutliers);
             }
 
             lastVertexCount = vertexCount;
@@ -78,23 +79,25 @@ public:
 
         if (constraints.size() > 0)
         {
-            for (size_t i = 0; i < constraints.size() - 1; ++i)
+            size_t i0 = constraints.size() - 1;
+            for (size_t i1 = 0; i1 < constraints.size(); ++i1)
             {
-                renderer.DrawPoint(constraints[i], Vec4(1, 0, 0, 1));
+                renderer.DrawPoint(constraints[i0], Vec4(1, 0, 0, 1));
                 if (constrained)
                 {
                     renderer.SetLineWidth(3);
-                    renderer.DrawLine(constraints[i], constraints[i + 1], Vec4(1, 1, 0, 1));
+                    renderer.DrawLine(constraints[i0], constraints[i1], Vec4(1, 1, 0, 1));
                     renderer.FlushLines();
                     renderer.SetLineWidth(1);
                 }
+
+                i0 = i1;
             }
-            renderer.DrawPoint(constraints.back(), Vec4(1, 0, 0, 1));
         }
 
         for (const Polygon& p : triangles)
         {
-            renderer.DrawShape(&p, identity, Renderer::DrawMode{ .fill = false });
+            renderer.DrawShape(&p, identity, Renderer::DrawMode{});
         }
     }
 
@@ -105,6 +108,11 @@ public:
         if (ImGui::Begin("Delauney", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (ImGui::Checkbox("Constrained", &constrained))
+            {
+                lastVertexCount = 0;
+            }
+
+            if (ImGui::Checkbox("Remove outliers", &removeOutliers))
             {
                 lastVertexCount = 0;
             }

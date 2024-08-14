@@ -294,6 +294,19 @@ struct TriEdge
     {
     }
 
+    Vec2& operator[](int32 index)
+    {
+        index %= 2;
+
+        switch (index)
+        {
+        case 0:
+            return p0;
+        default:
+            return p1;
+        }
+    }
+
     bool Intersect(const TriEdge& other) const
     {
         Vec2 d = p1 - p0;
@@ -312,12 +325,12 @@ struct TriEdge
     }
 };
 
-static inline bool operator==(const TriEdge& a, const TriEdge& b)
+inline bool operator==(const TriEdge& a, const TriEdge& b)
 {
     return a.p0 == b.p0 && a.p1 == b.p1;
 }
 
-static inline TriEdge operator~(const TriEdge& e)
+inline TriEdge operator~(const TriEdge& e)
 {
     return TriEdge{ e.p1, e.p0 };
 }
@@ -431,7 +444,7 @@ struct Tri
     }
 };
 
-static inline bool operator==(const Tri& a, const Tri& b)
+inline bool operator==(const Tri& a, const Tri& b)
 {
     return a.p0 == b.p0 && a.p1 == b.p1 && a.p2 == b.p2;
 }
@@ -444,7 +457,7 @@ struct TriHash
     }
 };
 
-static inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
+inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
 {
     Vec2 e = edge.p1 - edge.p0;
     Vec2 o2a = edge.p0 - o;
@@ -462,7 +475,7 @@ static inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
     return (t >= 0 && u >= 0 && u <= 1);
 }
 
-static inline bool Contains(std::vector<TriEdge>& edges, const Vec2& p)
+inline bool Contains(std::vector<TriEdge>& edges, const Vec2& p)
 {
     int32 count = 0;
     for (TriEdge& e : edges)
@@ -476,123 +489,24 @@ static inline bool Contains(std::vector<TriEdge>& edges, const Vec2& p)
     return count % 2 == 1;
 }
 
-// Straight implementation of https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, bool removeOutliers)
-{
-    std::vector<TriEdge> inputEdges;
-
-    size_t i0 = points.size() - 1;
-    for (size_t i1 = 0; i1 < points.size(); ++i1)
-    {
-        inputEdges.push_back(TriEdge{ points[i0], points[i1] });
-        i0 = i1;
-    }
-
-    AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
-
-    for (const Vec2& p : points)
-    {
-        bounds = AABB::Union(bounds, p);
-    }
-
-    Vec2 extents = bounds.GetExtents();
-
-    Vec2 p0{ bounds.min.x - extents.x - epsilon, bounds.min.y };
-    Vec2 p1{ bounds.max.x + extents.x + epsilon, bounds.min.y };
-    Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + epsilon };
-
-    Tri super{ p0, p1, p2 };
-
-    std::list<Tri> tris;
-    tris.push_back(super);
-
-    using TriIter = std::list<Tri>::iterator;
-
-    for (const Vec2& p : points)
-    {
-        std::vector<TriIter> badTris;
-
-        for (TriIter t = tris.begin(); t != tris.end(); ++t)
-        {
-            Circle c = ComputeCircle3(t->p0, t->p1, t->p2);
-            if (c.TestPoint(identity, p))
-            {
-                badTris.push_back(t);
-            }
-        }
-
-        std::vector<TriEdge> poly;
-
-        for (const TriIter& t : badTris)
-        {
-            TriEdge edges[3];
-            t->GetEdges(edges);
-
-            for (const TriEdge& e : edges)
-            {
-                bool hasSharedEdge = false;
-                for (const TriIter& other : badTris)
-                {
-                    if (t == other)
-                    {
-                        continue;
-                    }
-
-                    if (other->HasEdge(e))
-                    {
-                        hasSharedEdge = true;
-                    }
-                }
-
-                if (!hasSharedEdge)
-                {
-                    poly.push_back(e);
-                }
-            }
-        }
-
-        for (const TriIter& iter : badTris)
-        {
-            tris.erase(iter);
-        }
-
-        for (const TriEdge& e : poly)
-        {
-            tris.push_back(Tri{ e.p0, e.p1, p });
-        }
-    }
-
-    std::vector<Polygon> res;
-
-    for (const Tri& t : tris)
-    {
-        if (!t.HasVertex(super.p0) && !t.HasVertex(super.p1) && !t.HasVertex(super.p2))
-        {
-            if (!removeOutliers || Contains(inputEdges, t.GetCenter()))
-            {
-                res.push_back(Polygon{ t.p0, t.p1, t.p2 });
-            }
-        }
-    }
-
-    return res;
-}
-
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> constraints)
+// https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constraints, bool removeOutliers)
 {
     std::vector<TriEdge> constraintEdges;
     if (constraints.size() > 1)
     {
-        for (size_t i0 = 0; i0 < constraints.size() - 1; ++i0)
+        size_t i0 = constraints.size() - 1;
+        for (size_t i1 = 0; i1 < constraints.size(); ++i1)
         {
-            size_t i1 = i0 + 1;
             constraintEdges.push_back(TriEdge{ constraints[i0], constraints[i1] });
+            i0 = i1;
         }
     }
 
-    std::vector<Vec2> vertices(points.begin(), points.end());
+    std::vector<Vec2> vertices(v.begin(), v.end());
     vertices.insert(vertices.end(), constraints.begin(), constraints.end());
 
+    // Prepare super triangle
     AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
 
     for (const Vec2& p : vertices)
@@ -602,9 +516,10 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> co
 
     Vec2 extents = bounds.GetExtents();
 
-    Vec2 p0{ bounds.min.x - extents.x - epsilon, bounds.min.y };
-    Vec2 p1{ bounds.max.x + extents.x + epsilon, bounds.min.y };
-    Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + epsilon };
+    const float margin = 0.1f;
+    Vec2 p0{ bounds.min.x - extents.x - margin, bounds.min.y - margin };
+    Vec2 p1{ bounds.max.x + extents.x + margin, bounds.min.y - margin };
+    Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin };
 
     Tri super{ p0, p1, p2 };
 
@@ -664,8 +579,6 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> co
             tris.insert(Tri{ e.p0, e.p1, p });
         }
     }
-
-    std::erase_if(tris, [&](const Tri& t) { return (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2)); });
 
     std::unordered_map<TriEdge, const Tri*, TriEdgeHash> edge2Tri;
 
@@ -784,7 +697,15 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> points, std::span<Vec2> co
     std::vector<Polygon> res;
     for (const Tri& t : tris)
     {
-        res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
+        {
+            continue;
+        }
+
+        if (!removeOutliers || Contains(constraintEdges, t.GetCenter()))
+        {
+            res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        }
     }
 
     return res;
