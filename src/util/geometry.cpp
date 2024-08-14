@@ -309,6 +309,9 @@ struct TriEdge
 
     bool Intersect(const TriEdge& other) const
     {
+        // Test intersection (p0, p1) vs. (other.p0, other.p1)
+        // Note it's working on open intervals
+
         Vec2 d = p1 - p0;
         if (Cross(d, other.p0 - p0) * Cross(d, other.p1 - p0) >= 0)
         {
@@ -323,6 +326,14 @@ struct TriEdge
 
         return true;
     }
+
+    struct Hasher
+    {
+        size_t operator()(const TriEdge& e) const
+        {
+            return Hash(e);
+        }
+    };
 };
 
 inline bool operator==(const TriEdge& a, const TriEdge& b)
@@ -334,14 +345,6 @@ inline TriEdge operator~(const TriEdge& e)
 {
     return TriEdge{ e.p1, e.p0 };
 }
-
-struct TriEdgeHash
-{
-    size_t operator()(const TriEdge& e) const
-    {
-        return Hash(e);
-    }
-};
 
 struct Tri
 {
@@ -409,11 +412,9 @@ struct Tri
         return (p0 + p1 + p2) / 3;
     }
 
-    void GetEdges(TriEdge edges[3]) const
+    std::array<TriEdge, 3> GetEdges() const
     {
-        edges[0] = TriEdge{ p0, p1 };
-        edges[1] = TriEdge{ p1, p2 };
-        edges[2] = TriEdge{ p2, p0 };
+        return { TriEdge{ p0, p1 }, TriEdge{ p1, p2 }, TriEdge{ p2, p0 } };
     }
 
     TriEdge GetEdge(int32 index) const
@@ -442,20 +443,19 @@ struct Tri
         else
             return -1;
     }
+    struct Hasher
+    {
+        size_t operator()(const Tri& t) const
+        {
+            return Hash(t);
+        }
+    };
 };
 
 inline bool operator==(const Tri& a, const Tri& b)
 {
     return a.p0 == b.p0 && a.p1 == b.p1 && a.p2 == b.p2;
 }
-
-struct TriHash
-{
-    size_t operator()(const Tri& t) const
-    {
-        return Hash(t);
-    }
-};
 
 inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
 {
@@ -475,12 +475,12 @@ inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
     return (t >= 0 && u >= 0 && u <= 1);
 }
 
-inline bool Contains(std::vector<TriEdge>& edges, const Vec2& p)
+inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
 {
     int32 count = 0;
-    for (TriEdge& e : edges)
+    for (const TriEdge& e : edges)
     {
-        if (RayCastEdge(p, Vec2(0, 1), e))
+        if (RayCastEdge(p, Vec2(1, 0), e))
         {
             ++count;
         }
@@ -523,7 +523,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
     Tri super{ p0, p1, p2 };
 
-    std::unordered_set<Tri, TriHash> tris;
+    std::unordered_set<Tri, Tri::Hasher> tris;
     tris.insert(super);
 
     for (const Vec2& p : vertices)
@@ -543,8 +543,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
         for (const Tri& t : badTris)
         {
-            TriEdge edges[3];
-            t.GetEdges(edges);
+            std::array<TriEdge, 3> edges = t.GetEdges();
 
             for (const TriEdge& e : edges)
             {
@@ -576,21 +575,20 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
 
         for (const TriEdge& e : poly)
         {
-            tris.insert(Tri{ e.p0, e.p1, p });
+            tris.emplace(e.p0, e.p1, p);
         }
     }
 
-    std::unordered_map<TriEdge, const Tri*, TriEdgeHash> edge2Tri;
+    std::unordered_map<TriEdge, const Tri*, TriEdge::Hasher> edge2Tri;
 
     for (const Tri& t : tris)
     {
-        TriEdge triEdges[3];
-        t.GetEdges(triEdges);
+        std::array<TriEdge, 3> triEdges = t.GetEdges();
 
         for (const TriEdge& e : triEdges)
         {
             muliAssert(!edge2Tri.contains(e));
-            edge2Tri.insert({ e, &t });
+            edge2Tri.emplace(e, &t);
         }
     }
 
@@ -604,13 +602,12 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
         while (true)
         {
             std::vector<TriEdge> badEdges;
-            std::unordered_set<TriEdge, TriEdgeHash> resolved;
+            std::unordered_set<TriEdge, TriEdge::Hasher> resolved;
 
             // Collect all bad edges
             for (const Tri& t : tris)
             {
-                TriEdge triEdges[3];
-                t.GetEdges(triEdges);
+                std::array<TriEdge, 3> triEdges = t.GetEdges();
 
                 for (const TriEdge& e : triEdges)
                 {
@@ -627,9 +624,8 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
             }
 
             // Resolve all bad edges
-            for (size_t i = 0; i < badEdges.size(); ++i)
+            for (const TriEdge& be : badEdges)
             {
-                const TriEdge& be = badEdges[i];
                 if (resolved.contains(be))
                 {
                     continue;
@@ -638,12 +634,13 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
                 const Tri* t1 = edge2Tri[be];
                 const Tri* t2 = edge2Tri[~be];
 
+                // Build CCW quadrilateral
                 Vec2 p0 = be.p0;
                 Vec2 p1 = (*t2)[t2->GetIndex(p0) + 1];
                 Vec2 p2 = be.p1;
                 Vec2 p3 = (*t1)[t1->GetIndex(p0) - 1];
 
-                // Check convexity
+                // Check convexity and skip if it's concave
                 float s = Cross(p1 - p0, p2 - p1);
                 if (Cross(p2 - p1, p3 - p2) * s < 0) continue;
                 if (Cross(p3 - p2, p0 - p3) * s < 0) continue;
@@ -653,43 +650,29 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> constra
                 resolved.insert(be);
 
                 // Flip edge
-                {
-                    TriEdge triEdges[3];
-                    t1->GetEdges(triEdges);
-                    for (const TriEdge& e : triEdges)
-                    {
-                        edge2Tri.erase(e);
-                    }
-                }
-                {
-                    TriEdge triEdges[3];
-                    t2->GetEdges(triEdges);
-                    for (const TriEdge& e : triEdges)
-                    {
-                        edge2Tri.erase(e);
-                    }
-                }
+                std::array<TriEdge, 3> triEdges;
+
+                triEdges = t1->GetEdges();
+                for (const TriEdge& e : triEdges)
+                    edge2Tri.erase(e);
+
+                triEdges = t2->GetEdges();
+                for (const TriEdge& e : triEdges)
+                    edge2Tri.erase(e);
+
                 tris.erase(*t1);
                 tris.erase(*t2);
 
                 t1 = &(*(tris.emplace(p0, p1, p3).first));
                 t2 = &(*(tris.emplace(p1, p2, p3).first));
-                {
-                    TriEdge triEdges[3];
-                    t1->GetEdges(triEdges);
-                    for (const TriEdge& e : triEdges)
-                    {
-                        edge2Tri.insert({ e, t1 });
-                    }
-                }
-                {
-                    TriEdge triEdges[3];
-                    t2->GetEdges(triEdges);
-                    for (const TriEdge& e : triEdges)
-                    {
-                        edge2Tri.insert({ e, t2 });
-                    }
-                }
+
+                triEdges = t1->GetEdges();
+                for (const TriEdge& e : triEdges)
+                    edge2Tri.emplace(e, t1);
+
+                triEdges = t2->GetEdges();
+                for (const TriEdge& e : triEdges)
+                    edge2Tri.emplace(e, t2);
             }
         }
     }
