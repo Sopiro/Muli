@@ -11,12 +11,15 @@ class ConstrainedDelauney : public Demo
 
 public:
     std::vector<Vec2> vertices;
-    std::vector<Vec2> hole;
     std::vector<Vec2> outline;
+    std::vector<std::vector<Vec2>> holes;
 
     std::vector<Polygon> triangles;
 
     size_t lastVertexCount = 0;
+
+    std::vector<Vec2> currentHole;
+    bool creatingHole = false;
 
     ConstrainedDelauney(Game& game)
         : Demo(game)
@@ -36,17 +39,35 @@ public:
         FindTargetBody();
         EnableCameraControl();
 
+        if (!creatingHole && Input::IsKeyPressed(GLFW_KEY_SPACE))
+        {
+            creatingHole = true;
+        }
+        if (creatingHole && Input::IsKeyReleased(GLFW_KEY_SPACE))
+        {
+            holes.push_back(currentHole);
+
+            creatingHole = false;
+            currentHole.clear();
+            lastVertexCount = 0;
+        }
+
         if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
         {
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                vertices.push_back(cursorPos);
+            }
+
+            if (!creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
             {
                 outline.push_back(cursorPos);
                 vertices.push_back(cursorPos);
             }
 
-            if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+            if (creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
             {
-                hole.push_back(cursorPos);
+                currentHole.push_back(cursorPos);
                 vertices.push_back(cursorPos);
             }
         }
@@ -54,12 +75,12 @@ public:
 
     void Step() override
     {
-        size_t vertexCount = vertices.size() + hole.size();
+        size_t vertexCount = vertices.size();
         if (vertexCount != lastVertexCount)
         {
             if (constrained)
             {
-                triangles = ComputeTriangles(vertices, outline, hole);
+                triangles = ComputeTriangles(vertices, outline, holes);
             }
             else
             {
@@ -77,15 +98,33 @@ public:
             renderer.DrawPoint(vertex);
         }
 
-        if (hole.size() > 1)
+        for (auto& hole : holes)
         {
-            for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
+            if (hole.size() > 1)
             {
-                renderer.DrawPoint(hole[i0], Vec4(1, 0, 0, 1));
+                for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
+                {
+                    renderer.DrawPoint(hole[i0], Vec4(1, 0, 0, 1));
+                    if (constrained)
+                    {
+                        renderer.SetLineWidth(3);
+                        renderer.DrawLine(hole[i0], hole[i1], Vec4(1, 1, 0, 1));
+                        renderer.FlushLines();
+                        renderer.SetLineWidth(1);
+                    }
+                }
+            }
+        }
+
+        if (currentHole.size() > 1)
+        {
+            for (size_t i0 = currentHole.size() - 1, i1 = 0; i1 < currentHole.size(); i0 = i1, ++i1)
+            {
+                renderer.DrawPoint(currentHole[i0], Vec4(1, 0, 0, 1));
                 if (constrained)
                 {
                     renderer.SetLineWidth(3);
-                    renderer.DrawLine(hole[i0], hole[i1], Vec4(1, 1, 0, 1));
+                    renderer.DrawLine(currentHole[i0], currentHole[i1], Vec4(1, 1, 0, 1));
                     renderer.FlushLines();
                     renderer.SetLineWidth(1);
                 }
@@ -96,6 +135,7 @@ public:
         {
             for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
             {
+                renderer.DrawPoint(outline[i0], Vec4(1, 0, 0, 1));
                 renderer.SetLineWidth(3);
                 renderer.DrawLine(outline[i0], outline[i1], Vec4(0, 1, 0.2f, 1));
                 renderer.FlushLines();
@@ -130,7 +170,10 @@ public:
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Left click to create normal vertex\nRight click to create constraint vertex");
+        ImGui::TextColored(
+            ImColor{ 12, 11, 14 },
+            "Left click to create normal vertex\nRight click to create outline\nSpace+Right click to create hole"
+        );
         ImGui::End();
     }
 

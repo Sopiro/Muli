@@ -489,29 +489,11 @@ inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
 }
 
 // https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<Vec2> hole)
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
 {
     std::vector<TriEdge> constraintEdges;
     std::vector<TriEdge> outlineEdges;
     std::vector<TriEdge> holeEdges;
-
-    if (outline.size() > 2)
-    {
-        for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
-        {
-            outlineEdges.emplace_back(outline[i0], outline[i1]);
-            constraintEdges.emplace_back(outline[i0], outline[i1]);
-        }
-    }
-
-    if (hole.size() > 2)
-    {
-        for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
-        {
-            holeEdges.emplace_back(hole[i0], hole[i1]);
-            constraintEdges.emplace_back(hole[i0], hole[i1]);
-        }
-    }
 
     struct Vec2Hasher
     {
@@ -522,10 +504,33 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     };
 
     std::unordered_set<Vec2, Vec2Hasher> vertices(v.begin(), v.end());
-    vertices.insert(outline.begin(), outline.end());
-    vertices.insert(hole.begin(), hole.end());
 
-    if (vertices.size() < 2)
+    if (outline.size() > 2)
+    {
+        for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
+        {
+            outlineEdges.emplace_back(outline[i0], outline[i1]);
+            constraintEdges.emplace_back(outline[i0], outline[i1]);
+        }
+    }
+
+    vertices.insert(outline.begin(), outline.end());
+
+    for (const std::vector<Vec2>& hole : holes)
+    {
+        if (hole.size() > 1)
+        {
+            for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
+            {
+                holeEdges.emplace_back(hole[i0], hole[i1]);
+                constraintEdges.emplace_back(hole[i0], hole[i1]);
+            }
+        }
+
+        vertices.insert(hole.begin(), hole.end());
+    }
+
+    if (vertices.size() < 3)
     {
         return {};
     }
