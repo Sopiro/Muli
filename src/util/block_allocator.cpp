@@ -32,7 +32,7 @@ void* BlockAllocator::Allocate(int32 size)
         return muli::Alloc(size);
     }
 
-    muliAssert(0 < size && size <= max_block_size);
+    MuliAssert(0 < size && size <= max_block_size);
 
     int32 blockSize = size;
     int32 index = size / block_unit;
@@ -46,7 +46,7 @@ void* BlockAllocator::Allocate(int32 size)
         --index;
     }
 
-    muliAssert(0 <= index && index <= block_size_count);
+    MuliAssert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
@@ -111,7 +111,7 @@ void BlockAllocator::Free(void* p, int32 size)
         --index;
     }
 
-    muliAssert(0 <= index && index <= block_size_count);
+    MuliAssert(0 <= index && index <= block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -123,7 +123,7 @@ void BlockAllocator::Free(void* p, int32 size)
         int32 chunkSize = chunk->capacity * chunk->blockSize;
         if (chunk->blockSize != blockSize)
         {
-            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunkSize <= (int8*)p);
+            MuliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunkSize <= (int8*)p);
         }
         else
         {
@@ -137,9 +137,9 @@ void BlockAllocator::Free(void* p, int32 size)
         chunk = chunk->next;
     }
 
-    muliAssert(found);
+    MuliAssert(found);
 #else
-    muliNotUsed(blockSize);
+    MuliNotUsed(blockSize);
 #endif
 
     Block* block = (Block*)p;

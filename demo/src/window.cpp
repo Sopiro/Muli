@@ -12,7 +12,7 @@ Window::Window(int32 _width, int32 _height, const std::string& _title)
     : width{ _width }
     , height{ _height }
 {
-    muliAssert(window == nullptr);
+    MuliAssert(window == nullptr);
     window = this;
 
     puts("Initialize glfw");

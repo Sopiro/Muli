@@ -50,7 +50,7 @@ RigidBody::~RigidBody() noexcept
 
 Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Material& _material)
 {
-    muliAssert(world != nullptr);
+    MuliAssert(world != nullptr);
     if (world == nullptr)
     {
         return nullptr;
@@ -61,7 +61,7 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
 
 #if 1
     // Shape radius(skin) must be greater than or equal to linear_slop * 2.0 for stable CCD
-    muliAssert(_shape->radius >= linear_slop * 2.0f);
+    MuliAssert(_shape->radius >= linear_slop * 2.0f);
 #endif
 
     Collider* collider = new (mem) Collider;
@@ -85,8 +85,8 @@ void RigidBody::DestroyCollider(Collider* collider)
         return;
     }
 
-    muliAssert(collider->body == this);
-    muliAssert(colliderCount > 0);
+    MuliAssert(collider->body == this);
+    MuliAssert(colliderCount > 0);
 
     // Remove collider from collider list
     Collider** c = &colliderList;
@@ -147,7 +147,7 @@ Collider* RigidBody::CreateCapsuleCollider(
 
 bool RigidBody::TestPoint(const Vec2& p) const
 {
-    muliAssert(colliderCount > 0);
+    MuliAssert(colliderCount > 0);
 
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -162,7 +162,7 @@ bool RigidBody::TestPoint(const Vec2& p) const
 
 Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
 {
-    muliAssert(colliderCount > 0);
+    MuliAssert(colliderCount > 0);
 
     Vec2 cp0 = colliderList->GetClosestPoint(p);
     if (cp0 == p)

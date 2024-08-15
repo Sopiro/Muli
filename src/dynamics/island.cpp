@@ -62,7 +62,7 @@ void Island::Solve()
             (Dot(b->linearVelocity, b->linearVelocity) > settings.rest_linear_tolerance) || (b->torque * b->torque > 0.0f) ||
             (Dot(b->force, b->force) > 0.0f))
         {
-            muliAssert(sleeping == false);
+            MuliAssert(sleeping == false);
             awakeIsland = true;
         }
         else

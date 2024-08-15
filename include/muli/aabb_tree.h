@@ -105,36 +105,36 @@ private:
 
 inline bool AABBTree::TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const
 {
-    muliAssert(0 <= nodeA && nodeA < nodeCapacity);
-    muliAssert(0 <= nodeB && nodeB < nodeCapacity);
+    MuliAssert(0 <= nodeA && nodeA < nodeCapacity);
+    MuliAssert(0 <= nodeB && nodeB < nodeCapacity);
 
     return nodes[nodeA].aabb.TestOverlap(nodes[nodeB].aabb);
 }
 
 inline const AABB& AABBTree::GetAABB(NodeProxy node) const
 {
-    muliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].aabb;
 }
 
 inline void AABBTree::ClearMoved(NodeProxy node) const
 {
-    muliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(0 <= node && node < nodeCapacity);
 
     nodes[node].moved = false;
 }
 
 inline bool AABBTree::WasMoved(NodeProxy node) const
 {
-    muliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].moved;
 }
 
 inline Data* AABBTree::GetData(NodeProxy node) const
 {
-    muliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].data;
 }

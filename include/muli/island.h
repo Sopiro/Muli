@@ -40,20 +40,20 @@ private:
 
 inline void Island::Add(RigidBody* body)
 {
-    muliAssert(bodyCount < bodyCapacity);
+    MuliAssert(bodyCount < bodyCapacity);
     body->islandIndex = bodyCount;
     bodies[bodyCount++] = body;
 }
 
 inline void Island::Add(Contact* contact)
 {
-    muliAssert(contactCount < contactCapacity);
+    MuliAssert(contactCount < contactCapacity);
     contacts[contactCount++] = contact;
 }
 
 inline void Island::Add(Joint* joint)
 {
-    muliAssert(jointCount < jointCapacity);
+    MuliAssert(jointCount < jointCapacity);
     joints[jointCount++] = joint;
 }
 

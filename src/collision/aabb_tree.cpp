@@ -52,7 +52,7 @@ AABBTree::AABBTree(AABBTree&& other) noexcept
 
 AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
 {
-    muliAssert(this != &other);
+    MuliAssert(this != &other);
 
     muli::Free(nodes);
 
@@ -77,8 +77,8 @@ AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
 
 NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 {
-    muliAssert(0 <= leaf && leaf < nodeCapacity);
-    muliAssert(nodes[leaf].IsLeaf());
+    MuliAssert(0 <= leaf && leaf < nodeCapacity);
+    MuliAssert(nodes[leaf].IsLeaf());
 
     if (root == nullNode)
     {
@@ -236,13 +236,13 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 
 void AABBTree::RemoveLeaf(NodeProxy leaf)
 {
-    muliAssert(0 <= leaf && leaf < nodeCapacity);
-    muliAssert(nodes[leaf].IsLeaf());
+    MuliAssert(0 <= leaf && leaf < nodeCapacity);
+    MuliAssert(nodes[leaf].IsLeaf());
 
     NodeProxy parent = nodes[leaf].parent;
     if (parent == nullNode) // node is root
     {
-        muliAssert(root == leaf);
+        MuliAssert(root == leaf);
         root = nullNode;
         return;
     }
@@ -311,8 +311,8 @@ NodeProxy AABBTree::CreateNode(Data* data, const AABB& aabb)
 
 bool AABBTree::MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove)
 {
-    muliAssert(0 <= node && node < nodeCapacity);
-    muliAssert(nodes[node].IsLeaf());
+    MuliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(nodes[node].IsLeaf());
 
     const AABB& treeAABB = nodes[node].aabb;
     if (treeAABB.Contains(aabb) && forceMove == false)
@@ -357,8 +357,8 @@ bool AABBTree::MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, boo
 
 void AABBTree::RemoveNode(NodeProxy node)
 {
-    muliAssert(0 <= node && node < nodeCapacity);
-    muliAssert(nodes[node].IsLeaf());
+    MuliAssert(0 <= node && node < nodeCapacity);
+    MuliAssert(nodes[node].IsLeaf());
 
     RemoveLeaf(node);
     FreeNode(node);
@@ -688,7 +688,7 @@ NodeProxy AABBTree::AllocateNode()
 {
     if (freeList == nullNode)
     {
-        muliAssert(nodeCount == nodeCapacity);
+        MuliAssert(nodeCount == nodeCapacity);
 
         // Grow the node pool
         Node* oldNodes = nodes;
@@ -723,8 +723,8 @@ NodeProxy AABBTree::AllocateNode()
 
 void AABBTree::FreeNode(NodeProxy node)
 {
-    muliAssert(0 <= node && node <= nodeCapacity);
-    muliAssert(0 < nodeCount);
+    MuliAssert(0 <= node && node <= nodeCapacity);
+    MuliAssert(0 < nodeCount);
 
     nodes[node].parent = node;
     nodes[node].next = freeList;

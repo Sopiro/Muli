@@ -13,12 +13,12 @@ StackAllocator::StackAllocator()
 
 StackAllocator::~StackAllocator()
 {
-    muliAssert(index == 0 && entryCount == 0);
+    MuliAssert(index == 0 && entryCount == 0);
 }
 
 void* StackAllocator::Allocate(int32 size)
 {
-    muliAssert(entryCount < max_stack_entries && "Increase the maxStackEntries");
+    MuliAssert(entryCount < max_stack_entries && "Increase the maxStackEntries");
 
     StackEntry* entry = entries + entryCount;
     entry->size = size;
@@ -48,12 +48,12 @@ void* StackAllocator::Allocate(int32 size)
 
 void StackAllocator::Free(void* p, int32 size)
 {
-    muliNotUsed(size);
-    muliAssert(entryCount > 0);
+    MuliNotUsed(size);
+    MuliAssert(entryCount > 0);
 
     StackEntry* entry = entries + entryCount - 1;
-    muliAssert(entry->data == p);
-    muliAssert(entry->size == size);
+    MuliAssert(entry->data == p);
+    MuliAssert(entry->size == size);
 
     if (entry->mallocUsed)
     {

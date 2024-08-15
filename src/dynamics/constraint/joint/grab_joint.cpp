@@ -48,7 +48,7 @@ void GrabJoint::Prepare(const Timestep& step)
 
 void GrabJoint::SolveVelocityConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

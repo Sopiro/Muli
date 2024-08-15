@@ -45,7 +45,7 @@ public:
 
     GrowableArray& operator=(const GrowableArray& other)
     {
-        muliAssert(this != &other);
+        MuliAssert(this != &other);
 
         if (array != stackArray)
         {
@@ -91,7 +91,7 @@ public:
 
     GrowableArray& operator=(GrowableArray&& other) noexcept
     {
-        muliAssert(this != &other);
+        MuliAssert(this != &other);
 
         if (array != stackArray)
         {
@@ -150,7 +150,7 @@ public:
 
     T PopBack()
     {
-        muliAssert(count > 0);
+        MuliAssert(count > 0);
         --count;
         return array[count];
     }
@@ -163,7 +163,7 @@ public:
     // O(n)
     void Insert(int32 index, const T& data)
     {
-        muliAssert(index <= count);
+        MuliAssert(index <= count);
 
         if (count == capacity)
         {

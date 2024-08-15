@@ -90,7 +90,7 @@ void PulleyJoint::Prepare(const Timestep& step)
 
 void PulleyJoint::SolveVelocityConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

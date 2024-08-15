@@ -43,7 +43,7 @@ public:
             break;
 
         default:
-            muliAssert(false);
+            MuliAssert(false);
             break;
         }
 

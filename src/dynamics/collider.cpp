@@ -54,7 +54,7 @@ void Collider::Destroy(Allocator* allocator)
         allocator->Free(shape, sizeof(Polygon));
         break;
     default:
-        muliAssert(false);
+        MuliAssert(false);
         break;
     }
 

@@ -46,7 +46,7 @@ private:
 
 inline Vec2 Polygon::GetVertex(int32 id) const
 {
-    muliAssert(0 <= id && id < vertexCount);
+    MuliAssert(0 <= id && id < vertexCount);
     return vertices[id];
 }
 

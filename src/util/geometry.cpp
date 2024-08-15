@@ -604,7 +604,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     {
         for (const TriEdge& e : t.GetEdges())
         {
-            muliAssert(!edge2Tri.contains(e));
+            MuliAssert(!edge2Tri.contains(e));
             edge2Tri.emplace(e, &t);
         }
     }

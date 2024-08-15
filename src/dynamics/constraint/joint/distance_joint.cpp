@@ -62,7 +62,7 @@ void DistanceJoint::Prepare(const Timestep& step)
 
 void DistanceJoint::SolveVelocityConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

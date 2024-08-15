@@ -23,7 +23,7 @@ Vec2 Simplex::GetSearchDirection() const
         return ao * d1 - ab * d2;
     }
     default:
-        muliAssert(false);
+        MuliAssert(false);
         return Vec2::zero;
     }
 }
@@ -44,7 +44,7 @@ Vec2 Simplex::GetClosestPoint() const
         return Vec2::zero;
 
     default:
-        muliAssert(false);
+        MuliAssert(false);
         return Vec2::zero;
     }
 }
@@ -81,7 +81,7 @@ void Simplex::GetWitnessPoint(Vec2* pointA, Vec2* pointB)
     }
 
     default:
-        muliAssert(false);
+        MuliAssert(false);
     }
 }
 

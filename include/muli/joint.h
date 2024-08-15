@@ -80,7 +80,7 @@ public:
 
     virtual bool SolvePositionConstraints(const Timestep& step) override
     {
-        muliNotUsed(step);
+        MuliNotUsed(step);
         return true;
     }
 

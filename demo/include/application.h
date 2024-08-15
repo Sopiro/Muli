@@ -36,7 +36,7 @@ private:
 
 inline std::unique_ptr<Application> Application::Create(int32 width, int32 height, std::string title)
 {
-    muliAssert(app == nullptr);
+    MuliAssert(app == nullptr);
 
     app = new Application(width, height, std::move(title));
     return std::unique_ptr<Application>(app);

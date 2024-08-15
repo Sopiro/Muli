@@ -31,7 +31,7 @@ Renderer::Renderer()
 
     if (initialized == false)
     {
-        muliAssert(circle_count % 4 == 0);
+        MuliAssert(circle_count % 4 == 0);
 
         constexpr float angle = pi * 2.0f / circle_count;
         for (int32 i = 0; i < circle_count; ++i)
@@ -240,7 +240,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         }
         break;
         default:
-            muliAssert(false);
+            MuliAssert(false);
             break;
         }
     }
@@ -410,7 +410,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         }
         break;
         default:
-            muliAssert(false);
+            MuliAssert(false);
             break;
         }
     }
@@ -575,7 +575,7 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         }
         break;
         default:
-            muliAssert(false);
+            MuliAssert(false);
             break;
         }
     }

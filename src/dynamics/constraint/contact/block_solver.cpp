@@ -88,7 +88,7 @@ void BlockSolver::Solve()
     ContactSolver::Jacobian j2 = nc2->j;
 
     Vec2 a{ nc1->impulse, nc2->impulse }; // old total impulse
-    muliAssert(a.x >= 0.0f && a.y >= 0.0f);
+    MuliAssert(a.x >= 0.0f && a.y >= 0.0f);
 
     // clang-format off
     // (Velocity constraint) Normal velocity: Jv = 0
@@ -176,7 +176,7 @@ void BlockSolver::Solve()
 // How did you reach here?! something went wrong!
 // You can sometimes reach here because of floating point errors :(
 #if 0
-        muliAssert(false);
+        MuliAssert(false);
 #endif
 
 solved:

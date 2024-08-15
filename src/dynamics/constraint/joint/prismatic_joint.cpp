@@ -80,7 +80,7 @@ void PrismaticJoint::Prepare(const Timestep& step)
 
 void PrismaticJoint::SolveVelocityConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     // Compute corrective impulse: Pc
     // Pc = J^t · λ (λ: lagrangian multiplier)

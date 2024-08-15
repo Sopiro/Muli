@@ -26,7 +26,7 @@ public:
 
     void* Allocate(int32 size = blockSize) override
     {
-        muliAssert(size == blockSize);
+        MuliAssert(size == blockSize);
 
         if (size > blockSize)
         {
@@ -35,7 +35,7 @@ public:
 
         if (freeList == nullptr)
         {
-            muliAssert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
+            MuliAssert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
 
             blockCapacity += blockCapacity / 2;
             Block* blocks = (Block*)muli::Alloc(blockCapacity * blockSize);
@@ -71,7 +71,7 @@ public:
 
     void Free(void* p, int32 size = blockSize) override
     {
-        muliAssert(0 < blockCount && 0 < chunkCount);
+        MuliAssert(0 < blockCount && 0 < chunkCount);
 
         if (size > blockSize)
         {
@@ -94,7 +94,7 @@ public:
             chunk = chunk->next;
         }
 
-        muliAssert(found);
+        MuliAssert(found);
 #endif
 
         Block* block = (Block*)p;

@@ -105,7 +105,7 @@ void Mesh::Draw(GLenum drawMode) const
         break;
 
     default:
-        muliAssert(false && "Not a supported draw mode");
+        MuliAssert(false && "Not a supported draw mode");
         break;
     }
 

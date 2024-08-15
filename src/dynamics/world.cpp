@@ -22,9 +22,9 @@ World::World(const WorldSettings& _settings)
     , stepComplete{ true }
 {
     // Assertions for stable CCD
-    muliAssert(toi_position_solver_threshold < linear_slop * 2.0f);
-    muliAssert(default_radius >= toi_position_solver_threshold);
-    muliAssert(position_solver_threshold > toi_position_solver_threshold);
+    MuliAssert(toi_position_solver_threshold < linear_slop * 2.0f);
+    MuliAssert(default_radius >= toi_position_solver_threshold);
+    MuliAssert(position_solver_threshold > toi_position_solver_threshold);
 }
 
 World::~World() noexcept
@@ -42,12 +42,12 @@ void World::Reset()
         Destroy(b0);
     }
 
-    muliAssert(bodyList == nullptr);
-    muliAssert(bodyListTail == nullptr);
-    muliAssert(jointList == nullptr);
-    muliAssert(bodyCount == 0);
-    muliAssert(jointCount == 0);
-    muliAssert(blockAllocator.GetBlockCount() == 0);
+    MuliAssert(bodyList == nullptr);
+    MuliAssert(bodyListTail == nullptr);
+    MuliAssert(jointList == nullptr);
+    MuliAssert(bodyCount == 0);
+    MuliAssert(jointCount == 0);
+    MuliAssert(blockAllocator.GetBlockCount() == 0);
 
     destroyBodyBuffer.clear();
     destroyJointBuffer.clear();
@@ -137,7 +137,7 @@ void World::Solve()
                     continue;
                 }
 
-                muliAssert(stackPointer < bodyCount);
+                MuliAssert(stackPointer < bodyCount);
                 stack[stackPointer++] = other;
                 other->flag |= RigidBody::flag_island;
             }
@@ -171,7 +171,7 @@ void World::Solve()
                     continue;
                 }
 
-                muliAssert(stackPointer < bodyCount);
+                MuliAssert(stackPointer < bodyCount);
                 stack[stackPointer++] = other;
                 other->flag |= RigidBody::flag_island;
             }
@@ -194,14 +194,14 @@ void World::Solve()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
-        muliAssert(body->sweep.alpha0 == 0.0f);
+        MuliAssert(body->sweep.alpha0 == 0.0f);
 
         if ((body->flag & RigidBody::flag_island) == 0)
         {
             continue;
         }
 
-        muliAssert(body->type != RigidBody::Type::static_body);
+        MuliAssert(body->type != RigidBody::Type::static_body);
 
         // Clear island flag
         body->flag &= ~RigidBody::flag_island;
@@ -269,7 +269,7 @@ float World::SolveTOI()
 
                 RigidBody::Type typeA = bodyA->type;
                 RigidBody::Type typeB = bodyB->type;
-                muliAssert(typeA == RigidBody::Type::dynamic_body || typeB == RigidBody::Type::dynamic_body);
+                MuliAssert(typeA == RigidBody::Type::dynamic_body || typeB == RigidBody::Type::dynamic_body);
 
                 bool activeA = bodyA->IsSleeping() == false && typeA != RigidBody::Type::static_body;
                 bool activeB = bodyB->IsSleeping() == false && typeB != RigidBody::Type::static_body;
@@ -304,7 +304,7 @@ float World::SolveTOI()
                     bodyB->sweep.Advance(alpha0);
                 }
 
-                muliAssert(alpha0 < 1.0f);
+                MuliAssert(alpha0 < 1.0f);
 
                 TOIOutput output;
                 ComputeTimeOfImpact(colliderA->shape, bodyA->sweep, colliderB->shape, bodyB->sweep, 1.0f, &output);
@@ -329,7 +329,7 @@ float World::SolveTOI()
                     break;
 
                 default:
-                    muliAssert(false);
+                    MuliAssert(false);
                     break;
                 }
 #endif
@@ -524,7 +524,7 @@ float World::SolveTOI()
         }
     }
 
-    muliAssert(stepComplete == true);
+    MuliAssert(stepComplete == true);
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
@@ -589,7 +589,7 @@ float World::Step(float dt)
 
 void World::Destroy(RigidBody* body)
 {
-    muliAssert(body->world == this);
+    MuliAssert(body->world == this);
 
     Collider* c = body->colliderList;
     while (c)
@@ -718,7 +718,7 @@ void World::Query(const Vec2& point, std::function<bool(Collider* collider)> cal
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
-            muliNotUsed(node);
+            MuliNotUsed(node);
 
             // Body was destroyed while querying
             if (collider->body == nullptr)
@@ -755,7 +755,7 @@ void World::Query(const AABB& aabb, std::function<bool(Collider* collider)> call
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
-            muliNotUsed(node);
+            MuliNotUsed(node);
 
             // Body was destroyed while querying
             if (collider->body == nullptr)
@@ -784,7 +784,7 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
-            muliNotUsed(node);
+            MuliNotUsed(node);
 
             // Body was destroyed while querying
             if (collider->body == nullptr)
@@ -825,7 +825,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
 
         bool QueryCallback(NodeProxy node, Collider* collider)
         {
-            muliNotUsed(node);
+            MuliNotUsed(node);
 
             // Body was destroyed while querying
             if (collider->body == nullptr)
@@ -1179,7 +1179,7 @@ bool World::ShapeCastClosest(
 
 RigidBody* World::DuplicateBody(RigidBody* body)
 {
-    muliAssert(body->world == this);
+    MuliAssert(body->world == this);
     if (body->world != this)
     {
         return nullptr;
@@ -1664,7 +1664,7 @@ void World::FreeJoint(Joint* joint)
         blockAllocator.Free(joint, sizeof(MotorJoint));
         break;
     default:
-        muliAssert(false);
+        MuliAssert(false);
         break;
     }
 }

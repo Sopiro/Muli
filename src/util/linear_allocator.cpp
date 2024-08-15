@@ -65,7 +65,7 @@ void* LinearAllocator::Allocate(int32 size)
 
 void LinearAllocator::Free(void* p, int32 size)
 {
-    muliNotUsed(size);
+    MuliNotUsed(size);
     assert(entryCount > 0);
 
     MemoryEntry* entry = entries + (entryCount - 1);

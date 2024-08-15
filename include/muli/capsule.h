@@ -47,13 +47,13 @@ inline Shape* Capsule::Clone(Allocator* allocator) const
 
 inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
-    muliNotUsed(dir);
+    MuliNotUsed(dir);
     return Edge{ Mul(transform, va), Mul(transform, vb), 0, 1 };
 }
 
 inline Vec2 Capsule::GetVertex(int32 id) const
 {
-    muliAssert(id == 0 || id == 1);
+    MuliAssert(id == 0 || id == 1);
     return id == 0 ? va : vb;
 }
 

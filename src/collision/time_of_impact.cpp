@@ -22,7 +22,7 @@ struct SeparationFunction
         float t1
     )
     {
-        muliAssert(0 < closestFeatures.count && closestFeatures.count < max_simplex_vertex_count);
+        MuliAssert(0 < closestFeatures.count && closestFeatures.count < max_simplex_vertex_count);
 
         shapeA = _shapeA;
         shapeB = _shapeB;
@@ -160,7 +160,7 @@ struct SeparationFunction
             return separation;
         }
         default:
-            muliAssert(false);
+            MuliAssert(false);
             return 0.0f;
         }
     }
@@ -209,7 +209,7 @@ struct SeparationFunction
             return separation;
         }
         default:
-            muliAssert(false);
+            MuliAssert(false);
             return 0.0f;
         }
     }
@@ -246,7 +246,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
     float radii = shapeA->GetRadius() + shapeB->GetRadius();
     float target = Max(linear_slop, radii - position_solver_threshold);
     float tolerance = 0.1f * linear_slop;
-    muliAssert(target > tolerance);
+    MuliAssert(target > tolerance);
 
     float t1 = 0.0f;
     int32 iteration = 0;

@@ -161,13 +161,13 @@ inline int32 Contact::GetContactCount() const
 
 inline float Contact::GetNormalImpulse(int32 index) const
 {
-    muliAssert(index == 0 || index == 1);
+    MuliAssert(index == 0 || index == 1);
     return normalSolvers[index].impulse;
 }
 
 inline float Contact::GetTangentImpulse(int32 index) const
 {
-    muliAssert(index == 0 || index == 1);
+    MuliAssert(index == 0 || index == 1);
     return tangentSolvers[index].impulse;
 }
 

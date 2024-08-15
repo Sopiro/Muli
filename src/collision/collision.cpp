@@ -529,7 +529,7 @@ bool Collide(const Shape* a, const Transform& tfA, const Shape* b, const Transfo
 
     if (shapeB > shapeA)
     {
-        muliAssert(collide_function_map[shapeB][shapeA] != nullptr);
+        MuliAssert(collide_function_map[shapeB][shapeA] != nullptr);
 
         bool collide = collide_function_map[shapeB][shapeA](b, tfB, a, tfA, manifold);
         manifold->featureFlipped = !manifold->featureFlipped;
@@ -538,7 +538,7 @@ bool Collide(const Shape* a, const Transform& tfA, const Shape* b, const Transfo
     }
     else
     {
-        muliAssert(collide_function_map[shapeA][shapeB] != nullptr);
+        MuliAssert(collide_function_map[shapeA][shapeB] != nullptr);
 
         return collide_function_map[shapeA][shapeB](a, tfA, b, tfB, manifold);
     }

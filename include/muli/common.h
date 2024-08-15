@@ -18,8 +18,8 @@
 #include "math.h"
 #include "types.h"
 
-#define muliAssert(A) assert(A)
-#define muliNotUsed(x) ((void)(x))
+#define MuliAssert(A) assert(A)
+#define MuliNotUsed(x) ((void)(x))
 
 namespace muli
 {

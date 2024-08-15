@@ -312,7 +312,7 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
         i0 = i1;
     }
 
-    muliAssert(inertia > 0.0f);
+    MuliAssert(inertia > 0.0f);
 
     outMassData->inertia = outMassData->mass * (inertia + Length2(center));
     outMassData->centerOfMass = center;
@@ -448,7 +448,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         i0 = i1;
     }
 
-    muliAssert(0.0f <= near && near <= input.maxFraction);
+    MuliAssert(0.0f <= near && near <= input.maxFraction);
 
     if (index >= 0)
     {

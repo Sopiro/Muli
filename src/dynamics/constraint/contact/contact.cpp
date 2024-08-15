@@ -19,7 +19,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB)
     , toiCount{ 0 }
     , toi{ 0.0f }
 {
-    muliAssert(colliderA->GetType() >= colliderB->GetType());
+    MuliAssert(colliderA->GetType() >= colliderB->GetType());
 
     manifold.contactCount = 0;
 
@@ -29,7 +29,7 @@ Contact::Contact(Collider* _colliderA, Collider* _colliderB)
     surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
 
     collideFunction = collide_function_map[colliderA->GetType()][colliderB->GetType()];
-    muliAssert(collideFunction != nullptr);
+    MuliAssert(collideFunction != nullptr);
 }
 
 void Contact::Update()
@@ -137,7 +137,7 @@ void Contact::Prepare(const Timestep& step)
 
 void Contact::SolveVelocityConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     // Solve tangential constraint first
     for (int32 i = 0; i < manifold.contactCount; ++i)
@@ -161,7 +161,7 @@ void Contact::SolveVelocityConstraints(const Timestep& step)
 
 bool Contact::SolvePositionConstraints(const Timestep& step)
 {
-    muliNotUsed(step);
+    MuliNotUsed(step);
 
     bool solved = true;
 

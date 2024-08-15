@@ -36,37 +36,37 @@ public:
 
     virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact)
     {
-        muliNotUsed(me);
-        muliNotUsed(other);
-        muliNotUsed(contact);
+        MuliNotUsed(me);
+        MuliNotUsed(other);
+        MuliNotUsed(contact);
     }
 
     virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact)
     {
-        muliNotUsed(me);
-        muliNotUsed(other);
-        muliNotUsed(contact);
+        MuliNotUsed(me);
+        MuliNotUsed(other);
+        MuliNotUsed(contact);
     }
 
     virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact)
     {
-        muliNotUsed(me);
-        muliNotUsed(other);
-        muliNotUsed(contact);
+        MuliNotUsed(me);
+        MuliNotUsed(other);
+        MuliNotUsed(contact);
     }
 
     virtual void OnPreSolve(Collider* me, Collider* other, Contact* contact)
     {
-        muliNotUsed(me);
-        muliNotUsed(other);
-        muliNotUsed(contact);
+        MuliNotUsed(me);
+        MuliNotUsed(other);
+        MuliNotUsed(contact);
     }
 
     virtual void OnPostSolve(Collider* me, Collider* other, Contact* contact)
     {
-        muliNotUsed(me);
-        muliNotUsed(other);
-        muliNotUsed(contact);
+        MuliNotUsed(me);
+        MuliNotUsed(other);
+        MuliNotUsed(contact);
     }
 };
 

@@ -35,7 +35,7 @@ struct Simplex
 
 inline void Simplex::AddVertex(const SupportPoint& vertex)
 {
-    muliAssert(count != max_simplex_vertex_count);
+    MuliAssert(count != max_simplex_vertex_count);
 
     vertices[count++] = vertex;
 }

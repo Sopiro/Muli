@@ -17,7 +17,7 @@ ContactManager::ContactManager(World* _world)
 
 ContactManager::~ContactManager()
 {
-    muliAssert(contactList == nullptr);
+    MuliAssert(contactList == nullptr);
 }
 
 void ContactManager::EvaluateContacts()
@@ -64,8 +64,8 @@ void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
     RigidBody* bodyA = colliderA->body;
     RigidBody* bodyB = colliderB->body;
 
-    muliAssert(bodyA != bodyB);
-    muliAssert(colliderA->GetType() >= colliderB->GetType());
+    MuliAssert(bodyA != bodyB);
+    MuliAssert(colliderA->GetType() >= colliderB->GetType());
 
     if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
     {

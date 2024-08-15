@@ -344,7 +344,7 @@ bool ShapeCast(
 
     while (iteration < maxIterations && v.Length() - target > tolerance)
     {
-        muliAssert(simplex.count < 3);
+        MuliAssert(simplex.count < 3);
 
         // Get CSO support point in search direction(-v)
         idA = a->GetSupport(MulT(tfA.rotation, -v));

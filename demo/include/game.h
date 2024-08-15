@@ -92,7 +92,7 @@ inline Renderer& Game::GetRenderer()
 
 inline void Game::OnColliderDestroy(Collider* me)
 {
-    muliNotUsed(me);
+    MuliNotUsed(me);
 }
 
 } // namespace muli

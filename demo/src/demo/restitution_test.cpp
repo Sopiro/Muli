@@ -42,7 +42,7 @@ public:
                 b = world->CreateCapsule(size * 0.8f, size * 0.8f * 0.5f);
                 break;
             default:
-                muliAssert(false);
+                MuliAssert(false);
                 break;
             }
 

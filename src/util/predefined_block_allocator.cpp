@@ -32,7 +32,7 @@ void* PredefinedBlockAllocator::Allocate(int32 size)
     }
 
     int32 index = sizeMap.values[size];
-    muliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
+    MuliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
 
     if (freeList[index] == nullptr)
     {
@@ -83,10 +83,10 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         return;
     }
 
-    muliAssert(0 < size && size <= sizeMap.MaxBlockSize());
+    MuliAssert(0 < size && size <= sizeMap.MaxBlockSize());
 
     int32 index = sizeMap.values[size];
-    muliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
+    MuliAssert(0 <= index && index <= sizeMap.BlockSizeCount());
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -99,7 +99,7 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         int32 currentChunkSize = chunk->blockSize * chunk->capacity;
         if (chunk->blockSize != blockSize)
         {
-            muliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + currentChunkSize <= (int8*)p);
+            MuliAssert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + currentChunkSize <= (int8*)p);
         }
         else
         {
@@ -113,7 +113,7 @@ void PredefinedBlockAllocator::Free(void* p, int32 size)
         chunk = chunk->next;
     }
 
-    muliAssert(found);
+    MuliAssert(found);
 #endif
 
     Block* block = (Block*)p;
