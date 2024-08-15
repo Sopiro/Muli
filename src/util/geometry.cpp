@@ -476,6 +476,7 @@ inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
 
 inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
 {
+    // TODO: Utilize BVH to accelerate raycasting
     int32 count = 0;
     for (const TriEdge& e : edges)
     {
@@ -610,7 +611,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
 
     for (const TriEdge& ce : constraintEdges)
     {
-        if (edge2Tri.contains(ce) || edge2Tri.contains(~ce))
+        if (edge2Tri.contains(ce))
         {
             continue;
         }
@@ -656,12 +657,11 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
 
                 // Check convexity and skip if it's concave
                 float s = Cross(p1 - p0, p2 - p1);
-                if (Cross(p2 - p1, p3 - p2) * s < 0) continue;
-                if (Cross(p3 - p2, p0 - p3) * s < 0) continue;
-                if (Cross(p0 - p3, p1 - p0) * s < 0) continue;
+                if (s * Cross(p2 - p1, p3 - p2) < 0) continue;
+                if (s * Cross(p3 - p2, p0 - p3) < 0) continue;
+                if (s * Cross(p0 - p3, p1 - p0) < 0) continue;
 
                 resolved.insert(~be);
-                // resolved.insert(be);
 
                 // Flip edge
                 for (const TriEdge& e : t1->GetEdges())
@@ -688,16 +688,19 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     std::vector<Polygon> res;
     for (const Tri& t : tris)
     {
+        // Discard triangle containing super triangle vertices
         if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
         {
             continue;
         }
 
+        // Discard triangle lies inside the hole
         if (Contains(holeEdges, t.GetCenter()))
         {
             continue;
         }
 
+        // Discard triangle lies outside the outline
         if (outlineEdges.size() > 2 && !Contains(outlineEdges, t.GetCenter()))
         {
             continue;
