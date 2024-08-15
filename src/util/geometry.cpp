@@ -546,12 +546,12 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     Vec2 extents = bounds.GetExtents();
 
     const float margin = 0.1f;
-    const Vec2 p0{ bounds.min.x - extents.x - margin, bounds.min.y - margin };
-    const Vec2 p1{ bounds.max.x + extents.x + margin, bounds.min.y - margin };
-    const Vec2 p2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin };
+    Tri super{ Vec2{ bounds.min.x - extents.x - margin, bounds.min.y - margin },
+               Vec2{ bounds.max.x + extents.x + margin, bounds.min.y - margin },
+               Vec2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin } };
 
     std::unordered_set<Tri, Tri::Hasher> tris;
-    tris.emplace(p0, p1, p2);
+    tris.insert(super);
 
     for (const Vec2& p : vertices)
     {
@@ -688,7 +688,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     std::vector<Polygon> res;
     for (const Tri& t : tris)
     {
-        if (t.HasVertex(p0) || t.HasVertex(p1) || t.HasVertex(p2))
+        if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
         {
             continue;
         }
