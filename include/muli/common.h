@@ -4,7 +4,11 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cfloat>
+#include <cmath>
+#include <cstdint>
 #include <cstring>
+#include <format>
 #include <functional>
 #include <iostream>
 #include <limits>

@@ -24,35 +24,13 @@ public:
     virtual void UpdateUI() {}
     virtual void Render() {}
 
-    virtual void OnJointDestroy(Joint* me) override
-    {
-        cursorJoint = nullptr;
-    }
+    virtual void OnJointDestroy(Joint* me) override;
 
-    World& GetWorld()
-    {
-        return *world;
-    }
-
-    WorldSettings& GetWorldSettings()
-    {
-        return settings;
-    }
-
-    Camera& GetCamera()
-    {
-        return camera;
-    }
-
-    RigidBody* GetTargetBody()
-    {
-        return targetBody;
-    }
-
-    Collider* GetTargetCollider()
-    {
-        return targetCollider;
-    }
+    World& GetWorld();
+    WorldSettings& GetWorldSettings();
+    Camera& GetCamera();
+    RigidBody* GetTargetBody();
+    Collider* GetTargetCollider();
 
 protected:
     void FindTargetBody();
@@ -80,6 +58,36 @@ protected:
     Collider* targetCollider;
     GrabJoint* cursorJoint;
 };
+
+inline void Demo::OnJointDestroy(Joint* me)
+{
+    cursorJoint = nullptr;
+}
+
+inline World& Demo::GetWorld()
+{
+    return *world;
+}
+
+inline WorldSettings& Demo::GetWorldSettings()
+{
+    return settings;
+}
+
+inline Camera& Demo::GetCamera()
+{
+    return camera;
+}
+
+inline RigidBody* Demo::GetTargetBody()
+{
+    return targetBody;
+}
+
+inline Collider* Demo::GetTargetCollider()
+{
+    return targetCollider;
+}
 
 typedef Demo* DemoCreateFunction(Game& game);
 

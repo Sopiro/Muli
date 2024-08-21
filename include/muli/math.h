@@ -3,12 +3,6 @@
 
 #pragma once
 
-#include <assert.h>
-#include <float.h>
-#include <limits>
-#include <math.h>
-#include <stdint.h>
-
 #include "types.h"
 
 namespace muli
@@ -163,6 +157,11 @@ struct Vec2
         return Vec2{ -y, x };
     }
 
+    std::string ToString() const
+    {
+        return std::format("{:.4f}\t{:.4f}", x, y);
+    }
+
     static const Vec2 zero;
 };
 
@@ -310,6 +309,11 @@ struct Vec3
         return length;
     }
 
+    std::string ToString() const
+    {
+        return std::format("{:.4f}\t{:.4f}\t{:.4f}", x, y, z);
+    }
+
     static const Vec3 zero;
 };
 
@@ -427,6 +431,11 @@ struct Vec4
     void operator/=(float s)
     {
         operator*=(1.0f / s);
+    }
+
+    std::string ToString() const
+    {
+        return std::format("{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}", x, y, z, w);
     }
 
     static const Vec4 zero;
@@ -564,14 +573,41 @@ struct Quat
         w = 1.0f;
     }
 
-    static inline Quat FromEuler(float x, float y, float z)
+    Vec3 ToEuler() const
     {
-        float cr = cosf(x * 0.5f);
-        float sr = sinf(x * 0.5f);
-        float cp = cosf(y * 0.5f);
-        float sp = sinf(y * 0.5f);
-        float cy = cosf(z * 0.5f);
-        float sy = sinf(z * 0.5f);
+        // Roll (x-axis)
+        float sinr_cosp = 2 * (w * x + y * z);
+        float cosr_cosp = 1 - 2 * (x * x + y * y);
+        float roll = std::atan2(sinr_cosp, cosr_cosp);
+
+        // Pitch (y-axis)
+        float sinp = 2 * (w * y - z * x);
+        float pitch;
+        if (std::abs(sinp) >= 1)
+        {
+            pitch = std::copysign(pi / 2, sinp); // use 90 degrees if out of range
+        }
+        else
+        {
+            pitch = std::asin(sinp);
+        }
+
+        // Yaw (z-axis)
+        float siny_cosp = 2 * (w * z + x * y);
+        float cosy_cosp = 1 - 2 * (y * y + z * z);
+        float yaw = std::atan2(siny_cosp, cosy_cosp);
+
+        return Vec3{ roll, pitch, yaw };
+    }
+
+    static inline Quat FromEuler(const Vec3& euler_angles)
+    {
+        float cr = std::cos(euler_angles.x * 0.5f);
+        float sr = std::sin(euler_angles.x * 0.5f);
+        float cp = std::cos(euler_angles.y * 0.5f);
+        float sp = std::sin(euler_angles.y * 0.5f);
+        float cy = std::cos(euler_angles.z * 0.5f);
+        float sy = std::sin(euler_angles.z * 0.5f);
 
         Quat q;
         q.w = cr * cp * cy + sr * sp * sy;
@@ -580,6 +616,11 @@ struct Quat
         q.z = cr * cp * sy - sr * sp * cy;
 
         return q;
+    }
+
+    std::string ToString() const
+    {
+        return std::format("{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}", x, y, z, w);
     }
 
     float x, y, z, w;
@@ -593,16 +634,24 @@ struct Mat2
 
     Mat2() = default;
 
-    Mat2(Identity)
-        : Mat2(1.0f)
+    constexpr Mat2(Identity)
+        : Mat2(1)
     {
     }
 
-    Mat2(float v)
+    constexpr explicit Mat2(float v)
     {
         // clang-format off
-        ex.x = v;       ey.x = 0.0f;
-        ex.y = 0.0f;    ey.y = v;
+        ex.x = v;   ey.x = 0;
+        ex.y = 0;   ey.y = v;
+        // clang-format on
+    }
+
+    constexpr explicit Mat2(const Vec2& v)
+    {
+        // clang-format off
+        ex.x = v.x; ey.x = 0;
+        ex.y = 0;   ey.y = v.y;
         // clang-format on
     }
 
@@ -667,6 +716,11 @@ struct Mat2
     {
         return ex.x * ey.y - ey.x * ex.y;
     }
+
+    std::string ToString() const
+    {
+        return std::format("{:.4f}\t{:.4f}\n{:.4f}\t{:.4f}", ex.x, ey.x, ex.y, ey.y);
+    }
 };
 
 struct Mat3
@@ -675,17 +729,26 @@ struct Mat3
 
     Mat3() = default;
 
-    Mat3(Identity)
-        : Mat3(1.0f)
+    constexpr Mat3(Identity)
+        : Mat3(1)
     {
     }
 
-    Mat3(float v)
+    constexpr explicit Mat3(float v)
     {
         // clang-format off
-        ex.x = v;       ey.x = 0.0f;    ez.x = 0.0f;
-        ex.y = 0.0f;    ey.y = v;       ez.y = 0.0f;
-        ex.z = 0.0f;    ey.z = 0.0f;    ez.z = v;
+        ex.x = v;   ey.x = 0;   ez.x = 0;
+        ex.y = 0;   ey.y = v;   ez.y = 0;
+        ex.z = 0;   ey.z = 0;   ez.z = v;
+        // clang-format on
+    }
+
+    constexpr explicit Mat3(const Vec3& v)
+    {
+        // clang-format off
+        ex.x = v.x; ey.x = 0;   ez.x = 0;
+        ex.y = 0;   ey.y = v.y; ez.y = 0;
+        ex.z = 0;   ey.z = 0;   ez.z = v.z;
         // clang-format on
     }
 
@@ -695,6 +758,8 @@ struct Mat3
         , ez{ c3 }
     {
     }
+
+    Mat3(const Quat& q);
 
     Vec3& operator[](int32 i)
     {
@@ -733,10 +798,17 @@ struct Mat3
     }
 
     Mat3 GetInverse() const;
-    Mat3 Scale(float x, float y);
+    Mat3 Scale(const Vec2& s);
     Mat3 Rotate(float z);
-    Mat3 Translate(float x, float y);
-    Mat3 Translate(const Vec2& v);
+    Mat3 Translate(const Vec2& t);
+
+    std::string ToString() const
+    {
+        return std::format(
+            "{:.4f}\t{:.4f}\t{:.4f}\n{:.4f}\t{:.4f}\t{:.4f}\n{:.4f}\t{:.4f}\t{:.4f}\n", ex.x, ey.x, ez.x, ex.y, ey.y, ez.y, ex.z,
+            ey.z, ez.z
+        );
+    }
 };
 
 struct Mat4
@@ -745,20 +817,28 @@ struct Mat4
 
     Mat4() = default;
 
-    Mat4(Identity)
+    constexpr Mat4(Identity)
         : Mat4(1.0f)
     {
     }
 
-    Mat4(const Transform& t);
-
-    Mat4(float v)
+    constexpr Mat4(float v)
     {
         // clang-format off
         ex.x = v;       ey.x = 0.0f;    ez.x = 0.0f;    ew.x = 0.0f;
         ex.y = 0.0f;    ey.y = v;       ez.y = 0.0f;    ew.y = 0.0f;
         ex.z = 0.0f;    ey.z = 0.0f;    ez.z = v;       ew.z = 0.0f;
         ex.w = 0.0f;    ey.w = 0.0f;    ez.w = 0.0f;    ew.w = v;
+        // clang-format on
+    }
+
+    constexpr explicit Mat4(const Vec4& v)
+    {
+        // clang-format off
+        ex.x = v.x; ey.x = 0;   ez.x = 0;   ew.x = 0;
+        ex.y = 0;   ey.y = v.y; ez.y = 0;   ew.y = 0;
+        ex.z = 0;   ey.z = 0;   ez.z = v.z; ew.z = 0;
+        ex.w = 0;   ey.w = 0;   ez.w = 0;   ew.w = v.w;
         // clang-format on
     }
 
@@ -769,6 +849,16 @@ struct Mat4
         , ew{ c4 }
     {
     }
+
+    constexpr Mat4(const Mat3& r, const Vec3& p)
+        : ex{ r.ex, 0 }
+        , ey{ r.ey, 0 }
+        , ez{ r.ez, 0 }
+        , ew{ p, 1 }
+    {
+    }
+
+    Mat4(const Transform& t);
 
     Vec4& operator[](int32 i)
     {
@@ -810,10 +900,21 @@ struct Mat4
     }
 
     Mat4 GetInverse();
-    Mat4 Scale(float x, float y, float z);
-    Mat4 Rotate(float x, float y, float z);
-    Mat4 Translate(float x, float y, float z);
-    Mat4 Translate(const Vec3& v);
+    Mat4 Scale(const Vec3& s);
+    Mat4 Rotate(const Vec3& r);
+    Mat4 Translate(const Vec3& t);
+
+    static Mat4 Orth(float left, float right, float bottom, float top, float zNear, float zFar);
+    static Mat4 Perspective(float fovY, float aspect, float zNear, float zFar);
+
+    std::string ToString() const
+    {
+        return std::format(
+            "{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\n{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\n{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\n{:."
+            "4f}\t{:.4f}\t{:.4f}\t{:.4f}\n",
+            ex.x, ey.x, ez.x, ew.x, ex.y, ey.y, ez.y, ew.y, ex.z, ey.z, ez.z, ew.z, ex.w, ey.w, ez.w, ew.w
+        );
+    }
 };
 
 // Describes 2d orientation
@@ -1277,19 +1378,40 @@ inline Mat4 MulT(const Mat4& a, const Mat4& b)
     return Mat4{ c1, c2, c3, c4 };
 }
 
-inline Mat4 Orth(float left, float right, float bottom, float top, float zNear, float zFar)
+inline Mat4 Mat4::Orth(float left, float right, float bottom, float top, float z_near, float z_far)
 {
-    Mat4 t{ 1.0f };
+    Mat4 t{ identity };
 
     // Scale
-    t.ex.x = 2.0f / (right - left);
-    t.ey.y = 2.0f / (top - bottom);
-    t.ez.z = 2.0f / (zFar - zNear);
+    t.ex.x = 2 / (right - left);
+    t.ey.y = 2 / (top - bottom);
+    t.ez.z = 2 / (z_far - z_near);
 
     // Translation
     t.ew.x = -(right + left) / (right - left);
     t.ew.y = -(top + bottom) / (top - bottom);
-    t.ew.z = -(zFar + zNear) / (zFar - zNear);
+    t.ew.z = -(z_far + z_near) / (z_far - z_near);
+
+    return t;
+}
+
+inline Mat4 Mat4::Perspective(float vertical_fov, float aspect_ratio, float z_near, float z_far)
+{
+    Mat4 t{ identity };
+
+    float tan_half_fov = std::tan(vertical_fov / 2);
+
+    // Scale
+    t.ex.x = 1 / (aspect_ratio * tan_half_fov);
+    t.ey.y = 1 / tan_half_fov;
+    t.ez.z = -(z_far + z_near) / (z_far - z_near);
+    t.ez.w = -1; // Needed for perspective division
+
+    // Translation (for z-axis)
+    t.ew.z = -(2 * z_far * z_near) / (z_far - z_near);
+
+    // No translation in x or y
+    t.ew.w = 0;
 
     return t;
 }

@@ -46,12 +46,37 @@ Quat::Quat(const Vec3& dir, const Vec3& up)
     *this = Quat{ rotation };
 }
 
-Mat3 Mat3::Scale(float x, float y)
+Mat3::Mat3(const Quat& q)
+{
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
+    float xz = q.x * q.z;
+    float xy = q.x * q.y;
+    float yz = q.y * q.z;
+    float wx = q.w * q.x;
+    float wy = q.w * q.y;
+    float wz = q.w * q.z;
+
+    ex.x = 1 - 2 * (yy + zz);
+    ex.y = 2 * (xy + wz);
+    ex.z = 2 * (xz - wy);
+
+    ey.x = 2 * (xy - wz);
+    ey.y = 1 - 2 * (xx + zz);
+    ey.z = 2 * (yz + wx);
+
+    ez.x = 2 * (xz + wy);
+    ez.y = 2 * (yz - wx);
+    ez.z = 1 - 2 * (xx + yy);
+}
+
+Mat3 Mat3::Scale(const Vec2& s)
 {
     Mat3 t;
 
-    t.ex = ex * x;
-    t.ey = ey * y;
+    t.ex = ex * s.x;
+    t.ey = ey * s.y;
     t.ez = ez;
 
     return t;
@@ -71,20 +96,6 @@ Mat3 Mat3::Rotate(float z)
     // clang-format on
 
     return Mul(*this, t);
-}
-
-Mat3 Mat3::Translate(float x, float y)
-{
-    Mat3 t;
-
-    t.ex = ex;
-    t.ey = ey;
-
-    t.ez.x = ex.x * x + ey.x * y + ez.x;
-    t.ez.y = ex.y * x + ey.y * y + ez.y;
-    t.ez.z = ez.z;
-
-    return t;
 }
 
 Mat3 Mat3::Translate(const Vec2& v)
@@ -157,26 +168,26 @@ Mat4::Mat4(const Transform& t)
     ew.w = 1.0f;
 }
 
-Mat4 Mat4::Scale(float x, float y, float z)
+Mat4 Mat4::Scale(const Vec3& s)
 {
     Mat4 t;
 
-    t.ex = ex * x;
-    t.ey = ey * y;
-    t.ez = ez * z;
+    t.ex = ex * s.x;
+    t.ey = ey * s.y;
+    t.ez = ez * s.z;
     t.ew = ew;
 
     return t;
 }
 
-Mat4 Mat4::Rotate(float x, float y, float z)
+Mat4 Mat4::Rotate(const Vec3& r)
 {
-    float sinX = sinf(x);
-    float cosX = cosf(x);
-    float sinY = sinf(y);
-    float cosY = cosf(y);
-    float sinZ = sinf(z);
-    float cosZ = cosf(z);
+    float sinX = sinf(r.x);
+    float cosX = cosf(r.x);
+    float sinY = sinf(r.y);
+    float cosY = cosf(r.y);
+    float sinZ = sinf(r.z);
+    float cosZ = cosf(r.z);
 
     Mat4 t;
 
@@ -201,22 +212,6 @@ Mat4 Mat4::Rotate(float x, float y, float z)
     t.ew.w = 1.0f;
 
     return Mul(*this, t);
-}
-
-Mat4 Mat4::Translate(float x, float y, float z)
-{
-    Mat4 t;
-
-    t.ex = ex;
-    t.ey = ey;
-    t.ez = ez;
-
-    t.ew.x = ex.x * x + ey.x * y + ez.x * z + ew.x;
-    t.ew.y = ex.y * x + ey.y * y + ez.y * z + ew.y;
-    t.ew.z = ex.z * x + ey.z * y + ez.z * z + ew.z;
-    t.ew.w = ew.w;
-
-    return t;
 }
 
 Mat4 Mat4::Translate(const Vec3& v)

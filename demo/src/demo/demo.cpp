@@ -37,19 +37,16 @@ void Demo::UpdateInput()
     FindTargetBody();
     EnableKeyboardShortcut();
 
-    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+    EnableCameraControl();
+
+    if (!EnablePolygonCreate())
     {
-        EnableCameraControl();
+        EnableBodyCreate();
+        EnableBodyRemove();
 
-        if (!EnablePolygonCreate())
+        if (!EnableAddForce())
         {
-            EnableBodyCreate();
-            EnableBodyRemove();
-
-            if (!EnableAddForce())
-            {
-                EnableBodyGrab();
-            }
+            EnableBodyGrab();
         }
     }
 }
@@ -99,7 +96,7 @@ void Demo::EnableBodyCreate()
         targetBody->Sleep();
     }
 
-    if (!targetCollider && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (!targetCollider && !ImGui::GetIO().WantCaptureMouse && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
         {
@@ -409,7 +406,9 @@ void Demo::EnableKeyboardShortcut()
 
 void Demo::EnableCameraControl()
 {
-    if (Input::GetMouseScroll().y != 0)
+    bool hover = ImGui::GetIO().WantCaptureMouse;
+
+    if (!hover && Input::GetMouseScroll().y != 0)
     {
         camera.scale *= Input::GetMouseScroll().y < 0 ? 1.1f : 1.0f / 1.1f;
         camera.scale = Clamp(camera.scale, Vec2{ 0.1f }, Vec2{ max_value });
@@ -419,13 +418,13 @@ void Demo::EnableCameraControl()
     static Vec2 cursorStart;
     static Vec2 cameraPosStart;
 
-    if (!cameraMove && Input::IsMousePressed(GLFW_MOUSE_BUTTON_MIDDLE))
+    if (!cameraMove && !hover && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
         cameraMove = true;
         cursorStart = Input::GetMousePosition();
         cameraPosStart = camera.position;
     }
-    else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_MIDDLE))
+    else if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_RIGHT))
     {
         cameraMove = false;
     }

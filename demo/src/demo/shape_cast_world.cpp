@@ -111,26 +111,24 @@ public:
         EnableBodyRemove();
 
         static bool pressed = false;
+        bool hover = ImGui::GetIO().WantCaptureMouse;
 
-        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+        EnableCameraControl();
+
+        if (!pressed && !hover && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            EnableCameraControl();
+            from = cursorPos;
+            pressed = true;
+        }
 
-            if (!pressed && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                from = cursorPos;
-                pressed = true;
-            }
+        if (pressed && Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            to = cursorPos;
+        }
 
-            if (pressed && Input::IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                to = cursorPos;
-            }
-
-            if (pressed && Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                pressed = false;
-            }
+        if (pressed && Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            pressed = false;
         }
     }
 

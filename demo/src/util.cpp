@@ -200,6 +200,14 @@ std::unique_ptr<Mesh> GenerateMesh(const Collider* collider, int32 circlePolygon
     }
 }
 
+/*
+ * https://gist.github.com/ciembor/1494530
+ *
+ * Converts an RGB color value to HSL. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes r, g, and b are contained in the set [0, 255] and
+ * returns HSL in the set [0, 1].
+ */
 Vec3 rgb2hsl(float r, float g, float b)
 {
     r /= 255.0f;
@@ -235,7 +243,11 @@ Vec3 rgb2hsl(float r, float g, float b)
     return res;
 }
 
-float hue2rgb(float p, float q, float t)
+/*
+ * Converts an HUE to r, g or b.
+ * returns float in the set [0, 1].
+ */
+static float hue2rgb(float p, float q, float t)
 {
     if (t < 0.0f)
         t += 1.0f;
@@ -252,6 +264,12 @@ float hue2rgb(float p, float q, float t)
     return p;
 }
 
+/*
+ * Converts an HSL color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes h, s, and l are contained in the set [0, 1] and
+ * returns RGB in the set [0, 1].
+ */
 Vec3 hsl2rgb(float h, float s, float l)
 {
     Vec3 res;

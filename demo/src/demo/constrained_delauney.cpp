@@ -39,11 +39,11 @@ public:
         FindTargetBody();
         EnableCameraControl();
 
-        if (!creatingHole && Input::IsKeyPressed(GLFW_KEY_SPACE))
+        if (!creatingHole && Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
         {
             creatingHole = true;
         }
-        if (creatingHole && Input::IsKeyReleased(GLFW_KEY_SPACE))
+        if (creatingHole && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
             holes.push_back(currentHole);
 
@@ -52,20 +52,20 @@ public:
             lastVertexCount = 0;
         }
 
-        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+        if (!ImGui::GetIO().WantCaptureMouse)
         {
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
                 vertices.push_back(cursorPos);
             }
 
-            if (!creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+            if (!creatingHole && Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
                 outline.push_back(cursorPos);
                 vertices.push_back(cursorPos);
             }
 
-            if (creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+            if (creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
                 currentHole.push_back(cursorPos);
                 vertices.push_back(cursorPos);

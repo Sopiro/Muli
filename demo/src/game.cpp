@@ -461,7 +461,8 @@ void Game::UpdateProjectionMatrix()
     Vec2 windowSize = Window::Get().GetWindowSize();
     windowSize /= 100.0f;
 
-    Mat4 projMatrix = Orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
+    Mat4 projMatrix =
+        Mat4::Orth(-windowSize.x / 2.0f, windowSize.x / 2.0f, -windowSize.y / 2.0f, windowSize.y / 2.0f, 0.0f, 1.0f);
     renderer.SetProjectionMatrix(projMatrix);
 }
 

@@ -34,7 +34,7 @@ public:
         FindTargetBody();
         EnableCameraControl();
 
-        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+        if (!ImGui::GetIO().WantCaptureMouse)
         {
             if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
