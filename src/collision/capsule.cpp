@@ -3,13 +3,13 @@
 namespace muli
 {
 
-Capsule::Capsule(float _length, float _radius, bool _horizontal, const Vec2& _center)
-    : Shape(capsule, _radius)
-    , length{ _length }
+Capsule::Capsule(float length, float radius, bool horizontal, const Vec2& position)
+    : Shape(capsule, radius)
+    , length{ length }
 {
     area = length * radius * 2.0f + pi * radius * radius;
 
-    if (_horizontal)
+    if (horizontal)
     {
         va = Vec2{ -length / 2.0f, 0.0f };
         vb = Vec2{ length / 2.0f, 0.0f };
@@ -20,7 +20,7 @@ Capsule::Capsule(float _length, float _radius, bool _horizontal, const Vec2& _ce
         vb = Vec2{ 0.0f, length / 2.0f };
     }
 
-    center = _center;
+    center = position;
 
     va += center;
     vb += center;

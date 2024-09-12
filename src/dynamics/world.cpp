@@ -9,8 +9,8 @@
 namespace muli
 {
 
-World::World(const WorldSettings& _settings)
-    : settings{ _settings }
+World::World(const WorldSettings& settings)
+    : settings{ settings }
     , contactManager{ this }
     , bodyList{ nullptr }
     , bodyListTail{ nullptr }

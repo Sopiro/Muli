@@ -5,14 +5,14 @@
 namespace muli
 {
 
-Joint::Joint(Joint::Type _type, RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, float _dampingRatio, float _jointMass)
-    : Constraint(_bodyA, _bodyB)
+Joint::Joint(Joint::Type type, RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+    : Constraint(bodyA, bodyB)
     , OnDestroy{ nullptr }
     , UserData{ nullptr }
-    , type{ _type }
+    , type{ type }
     , flagIsland{ false }
 {
-    SetParameters(_frequency, _dampingRatio, _jointMass);
+    SetParameters(frequency, dampingRatio, jointMass);
 }
 
 Joint::~Joint() noexcept

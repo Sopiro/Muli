@@ -11,10 +11,10 @@ namespace muli
 bool block_solve = true;
 extern CollideFunction* collide_function_map[Shape::Type::shape_count][Shape::Type::shape_count];
 
-Contact::Contact(Collider* _colliderA, Collider* _colliderB)
-    : Constraint(_colliderA->body, _colliderB->body)
-    , colliderA{ _colliderA }
-    , colliderB{ _colliderB }
+Contact::Contact(Collider* colliderA, Collider* colliderB)
+    : Constraint(colliderA->body, colliderB->body)
+    , colliderA{ colliderA }
+    , colliderB{ colliderB }
     , flag{ 0 }
     , toiCount{ 0 }
     , toi{ 0.0f }

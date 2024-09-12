@@ -6,11 +6,11 @@
 namespace muli
 {
 
-Island::Island(World* _world, int32 _bodyCapacity, int32 _contactCapacity, int32 _jointCapacity)
-    : world{ _world }
-    , bodyCapacity{ _bodyCapacity }
-    , contactCapacity{ _contactCapacity }
-    , jointCapacity{ _jointCapacity }
+Island::Island(World* world, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity)
+    : world{ world }
+    , bodyCapacity{ bodyCapacity }
+    , contactCapacity{ contactCapacity }
+    , jointCapacity{ jointCapacity }
     , bodyCount{ 0 }
     , contactCount{ 0 }
     , jointCount{ 0 }

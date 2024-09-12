@@ -6,9 +6,9 @@ namespace muli
 
 extern void InitializeDetectionFunctionMap();
 
-ContactManager::ContactManager(World* _world)
-    : world{ _world }
-    , broadPhase{ _world, this }
+ContactManager::ContactManager(World* world)
+    : world{ world }
+    , broadPhase{ world, this }
     , contactList{ nullptr }
     , contactCount{ 0 }
 {

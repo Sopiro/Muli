@@ -5,10 +5,10 @@
 namespace muli
 {
 
-Demo::Demo(Game& _game)
-    : game{ _game }
-    , renderer{ _game.GetRenderer() }
-    , options{ _game.GetDebugOptions() }
+Demo::Demo(Game& game)
+    : game{ game }
+    , renderer{ game.GetRenderer() }
+    , options{ game.GetDebugOptions() }
     , targetBody{ nullptr }
     , targetCollider{ nullptr }
     , cursorJoint{ nullptr }

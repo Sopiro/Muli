@@ -4,8 +4,8 @@
 namespace muli
 {
 
-Game::Game(Application& _app)
-    : app{ _app }
+Game::Game(Application& app)
+    : app{ app }
     , demoCount{ demos.size() }
     , demoIndex{ demos.size() }
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "format.h"
 
 namespace muli
 {
@@ -22,6 +23,8 @@ struct AABB
     bool TestRay(const Vec2& from, const Vec2& to, float tMin, float tMax, Vec2 margin = Vec2::zero) const;
     float RayCast(const Vec2& from, const Vec2& to, float tMin, float tMax, Vec2 margin = Vec2::zero) const;
 
+    std::string ToString() const;
+
     Vec2 min;
     Vec2 max;
 
@@ -29,9 +32,9 @@ struct AABB
     static AABB Union(const AABB& b, const Vec2& p);
 };
 
-inline AABB::AABB(const Vec2& _min, const Vec2& _max)
-    : min{ _min }
-    , max{ _max }
+inline AABB::AABB(const Vec2& min, const Vec2& max)
+    : min{ min }
+    , max{ max }
 {
 }
 
@@ -75,6 +78,11 @@ inline bool AABB::TestOverlap(const AABB& other) const
     if (min.y > other.max.y || max.y < other.min.y) return false;
 
     return true;
+}
+
+inline std::string AABB::ToString() const
+{
+    return FormatString("min: %s\nmax: %s", min.ToString().c_str(), max.ToString().c_str());
 }
 
 inline AABB AABB::Union(const AABB& b1, const AABB& b2)

@@ -63,10 +63,10 @@ protected:
     float area;
 };
 
-inline Shape::Shape(Type _type, float _radius)
-    : type{ _type }
+inline Shape::Shape(Type type, float radius)
+    : type{ type }
     , center{ 0.0f }
-    , radius{ _radius }
+    , radius{ radius }
 {
 #if 0
     // Radius must be greater than or equal to linear_slop * 2.0 for stable CCD

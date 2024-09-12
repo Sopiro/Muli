@@ -8,10 +8,10 @@
 namespace muli
 {
 
-RigidBody::RigidBody(RigidBody::Type _type)
+RigidBody::RigidBody(RigidBody::Type type)
     : OnDestroy{ nullptr }
     , UserData{ nullptr }
-    , type{ _type }
+    , type{ type }
     , transform{ identity }
     , sweep{ identity }
     , force{ 0.0f }

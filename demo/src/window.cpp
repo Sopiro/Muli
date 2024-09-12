@@ -8,9 +8,9 @@ static void glfw_error_callback(int32 error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-Window::Window(int32 _width, int32 _height, const std::string& _title)
-    : width{ _width }
-    , height{ _height }
+Window::Window(int32 width, int32 height, const std::string& title)
+    : width{ width }
+    , height{ height }
 {
     MuliAssert(window == nullptr);
     window = this;
@@ -33,7 +33,7 @@ Window::Window(int32 _width, int32 _height, const std::string& _title)
 
     glfwWindowHint(GLFW_SAMPLES, 4); // 4xMSAA
 
-    glfwWindow = glfwCreateWindow(width, height, _title.c_str(), nullptr, nullptr);
+    glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!glfwWindow)
     {
         printf("%s\n", "failed to create glfw window");

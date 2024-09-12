@@ -4,9 +4,9 @@
 namespace muli
 {
 
-Constraint::Constraint(RigidBody* _bodyA, RigidBody* _bodyB)
-    : bodyA{ _bodyA }
-    , bodyB{ _bodyB }
+Constraint::Constraint(RigidBody* bodyA, RigidBody* bodyB)
+    : bodyA{ bodyA }
+    , bodyB{ bodyB }
     , beta{ 0.0f }
     , gamma{ 0.0f }
 {
