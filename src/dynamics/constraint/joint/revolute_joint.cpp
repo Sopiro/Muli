@@ -5,13 +5,13 @@ namespace muli
 {
 
 RevoluteJoint::RevoluteJoint(
-    RigidBody* _bodyA, RigidBody* _bodyB, const Vec2& _anchor, float _frequency, float _dampingRatio, float _jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass
 )
-    : Joint(revolute_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+    : Joint(revolute_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchor);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchor);
+    localAnchorA = MulT(bodyA->GetTransform(), anchor);
+    localAnchorB = MulT(bodyB->GetTransform(), anchor);
 }
 
 void RevoluteJoint::Prepare(const Timestep& step)

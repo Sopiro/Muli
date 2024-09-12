@@ -5,22 +5,22 @@ namespace muli
 {
 
 LineJoint::LineJoint(
-    RigidBody* _bodyA, RigidBody* _bodyB, Vec2 _anchor, Vec2 _dir, float _frequency, float _dampingRatio, float _jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
 )
-    : Joint(line_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+    : Joint(line_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchor);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchor);
+    localAnchorA = MulT(bodyA->GetTransform(), anchor);
+    localAnchorB = MulT(bodyB->GetTransform(), anchor);
 
-    if (_dir.Length2() < epsilon)
+    if (dir.Length2() < epsilon)
     {
-        Vec2 d = MulT(bodyA->GetRotation(), Normalize(_bodyB->GetPosition() - _bodyA->GetPosition()));
+        Vec2 d = MulT(bodyA->GetRotation(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()));
         localYAxis = Cross(1.0f, d);
     }
     else
     {
-        localYAxis = MulT(bodyA->GetRotation(), Cross(1.0f, Normalize(_dir)));
+        localYAxis = MulT(bodyA->GetRotation(), Cross(1.0f, Normalize(dir)));
     }
 }
 

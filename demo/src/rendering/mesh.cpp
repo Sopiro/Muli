@@ -3,10 +3,10 @@
 namespace muli
 {
 
-Mesh::Mesh(std::vector<Vec3> _vertices, std::vector<Vec2> _texCoords, std::vector<int32> _indices)
-    : vertices{ std::move(_vertices) }
-    , texCoords{ std::move(_texCoords) }
-    , indices{ std::move(_indices) }
+Mesh::Mesh(std::vector<Vec3> inVertices, std::vector<Vec2> inTexCoords, std::vector<int32> inIndices)
+    : vertices{ std::move(inVertices) }
+    , texCoords{ std::move(inTexCoords) }
+    , indices{ std::move(inIndices) }
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBOv);

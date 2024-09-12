@@ -4,13 +4,13 @@
 namespace muli
 {
 
-Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition, float _radius)
-    : Shape(polygon, _radius)
+Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition, float radius)
+    : Shape(polygon, radius)
 {
-    if (_vertexCount > max_local_polygon_vertices)
+    if (inVertexCount > max_local_polygon_vertices)
     {
-        vertices = (Vec2*)muli::Alloc(_vertexCount * sizeof(Vec2));
-        normals = (Vec2*)muli::Alloc(_vertexCount * sizeof(Vec2));
+        vertices = (Vec2*)muli::Alloc(inVertexCount * sizeof(Vec2));
+        normals = (Vec2*)muli::Alloc(inVertexCount * sizeof(Vec2));
     }
     else
     {
@@ -18,7 +18,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
         normals = localNormals;
     }
 
-    ComputeConvexHull(_vertices, _vertexCount, vertices, &vertexCount);
+    ComputeConvexHull(inVertices, inVertexCount, vertices, &vertexCount);
 
     int32 i0 = vertexCount - 1;
     for (int32 i1 = 0; i1 < vertexCount; ++i1)
@@ -46,7 +46,7 @@ Polygon::Polygon(const Vec2* _vertices, int32 _vertexCount, bool _resetPosition,
 
     area += pi * radius * radius; // corner arc
 
-    if (_resetPosition)
+    if (resetPosition)
     {
         for (int32 i = 0; i < vertexCount; ++i)
         {
@@ -61,8 +61,8 @@ Polygon::Polygon(std::initializer_list<Vec2> vertices, bool resetPosition, float
 {
 }
 
-Polygon::Polygon(float width, float height, float _radius, const Vec2& position, float angle)
-    : Shape(polygon, _radius)
+Polygon::Polygon(float width, float height, float radius, const Vec2& position, float angle)
+    : Shape(polygon, radius)
 {
     vertices = localVertices;
     normals = localNormals;
@@ -87,8 +87,8 @@ Polygon::Polygon(float width, float height, float _radius, const Vec2& position,
     area = width * height;
 }
 
-Polygon::Polygon(float size, float _radius, const Vec2& position, float angle)
-    : Polygon(size, size, _radius, position, angle)
+Polygon::Polygon(float size, float radius, const Vec2& position, float angle)
+    : Polygon(size, size, radius, position, angle)
 {
 }
 

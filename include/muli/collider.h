@@ -132,9 +132,9 @@ inline float Collider::GetMass() const
     return shape->area * density;
 }
 
-inline void Collider::SetMass(float _mass)
+inline void Collider::SetMass(float newMass)
 {
-    density = _mass / shape->area;
+    density = newMass / shape->area;
     body->ResetMassData();
 }
 
@@ -143,9 +143,9 @@ inline float Collider::GetDensity() const
     return density;
 }
 
-inline void Collider::SetDensity(float _density)
+inline void Collider::SetDensity(float newDensity)
 {
-    density = _density;
+    density = newDensity;
     body->ResetMassData();
 }
 
@@ -154,9 +154,9 @@ inline const Material& Collider::GetMaterial() const
     return material;
 }
 
-inline void Collider::SetMaterial(const Material& _material)
+inline void Collider::SetMaterial(const Material& newMaterial)
 {
-    material = _material;
+    material = newMaterial;
 }
 
 inline float Collider::GetFriction() const
@@ -164,9 +164,9 @@ inline float Collider::GetFriction() const
     return material.friction;
 }
 
-inline void Collider::SetFriction(float _friction)
+inline void Collider::SetFriction(float newFriction)
 {
-    material.friction = _friction;
+    material.friction = newFriction;
 }
 
 inline float Collider::GetRestitution() const
@@ -174,9 +174,9 @@ inline float Collider::GetRestitution() const
     return material.restitution;
 }
 
-inline void Collider::SetRestitution(float _restitution)
+inline void Collider::SetRestitution(float newRestitution)
 {
-    material.restitution = _restitution;
+    material.restitution = newRestitution;
 }
 
 inline float Collider::GetRestitutionTreshold() const
@@ -184,9 +184,9 @@ inline float Collider::GetRestitutionTreshold() const
     return material.restitutionTreshold;
 }
 
-inline void Collider::SetRestitutionTreshold(float _treshold)
+inline void Collider::SetRestitutionTreshold(float newRestitutionTreshold)
 {
-    material.restitutionTreshold = _treshold;
+    material.restitutionTreshold = newRestitutionTreshold;
 }
 
 inline float Collider::GetSurfaceSpeed() const
@@ -194,9 +194,9 @@ inline float Collider::GetSurfaceSpeed() const
     return material.surfaceSpeed;
 }
 
-inline void Collider::SetSurfaceSpeed(float _surfaceSpeed)
+inline void Collider::SetSurfaceSpeed(float newSurfaceSpeed)
 {
-    material.surfaceSpeed = _surfaceSpeed;
+    material.surfaceSpeed = newSurfaceSpeed;
 }
 
 inline const CollisionFilter& Collider::GetFilter() const
@@ -204,9 +204,9 @@ inline const CollisionFilter& Collider::GetFilter() const
     return filter;
 }
 
-inline void Collider::SetFilter(const CollisionFilter& _filter)
+inline void Collider::SetFilter(const CollisionFilter& newCollisionFilter)
 {
-    filter = _filter;
+    filter = newCollisionFilter;
 }
 
 inline bool Collider::IsEnabled() const
@@ -214,9 +214,9 @@ inline bool Collider::IsEnabled() const
     return enabled;
 }
 
-inline void Collider::SetEnabled(bool _enabled)
+inline void Collider::SetEnabled(bool newEnabled)
 {
-    enabled = _enabled;
+    enabled = newEnabled;
 }
 
 inline AABB Collider::GetAABB() const

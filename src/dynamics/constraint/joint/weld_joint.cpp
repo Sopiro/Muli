@@ -6,14 +6,12 @@ namespace muli
 
 // Revolute joint + Angle joint
 
-WeldJoint::WeldJoint(
-    RigidBody* _bodyA, RigidBody* _bodyB, const Vec2& _anchor, float _frequency, float _dampingRatio, float _jointMass
-)
-    : Joint(weld_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+WeldJoint::WeldJoint(RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass)
+    : Joint(weld_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchor);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchor);
+    localAnchorA = MulT(bodyA->GetTransform(), anchor);
+    localAnchorB = MulT(bodyB->GetTransform(), anchor);
 
     angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
 }

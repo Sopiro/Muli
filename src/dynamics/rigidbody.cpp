@@ -48,7 +48,7 @@ RigidBody::~RigidBody() noexcept
     world = nullptr;
 }
 
-Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Material& _material)
+Collider* RigidBody::CreateCollider(Shape* shape, float density, const Material& material)
 {
     MuliAssert(world != nullptr);
     if (world == nullptr)
@@ -61,11 +61,11 @@ Collider* RigidBody::CreateCollider(Shape* _shape, float _density, const Materia
 
 #if 1
     // Shape radius(skin) must be greater than or equal to linear_slop * 2.0 for stable CCD
-    MuliAssert(_shape->radius >= linear_slop * 2.0f);
+    MuliAssert(shape->radius >= linear_slop * 2.0f);
 #endif
 
     Collider* collider = new (mem) Collider;
-    collider->Create(allocator, this, _shape, _density, _material);
+    collider->Create(allocator, this, shape, density, material);
 
     collider->next = colliderList;
     colliderList = collider;

@@ -15,20 +15,20 @@ struct SeparationFunction
 
     void Initialize(
         const ClosestFeatures& closestFeatures,
-        const Shape* _shapeA,
-        const Sweep& _sweepA,
-        const Shape* _shapeB,
-        const Sweep& _sweepB,
+        const Shape* inShapeA,
+        const Sweep& inSweepA,
+        const Shape* inShapeB,
+        const Sweep& inSweepB,
         float t1
     )
     {
         MuliAssert(0 < closestFeatures.count && closestFeatures.count < max_simplex_vertex_count);
 
-        shapeA = _shapeA;
-        shapeB = _shapeB;
+        shapeA = inShapeA;
+        shapeB = inShapeB;
 
-        sweepA = _sweepA;
-        sweepB = _sweepB;
+        sweepA = inSweepA;
+        sweepB = inSweepB;
 
         Transform tfA, tfB;
         sweepA.GetTransform(t1, &tfA);

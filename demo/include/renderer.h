@@ -104,16 +104,16 @@ inline void Renderer::FlushAll()
     if (pointCount > 0) FlushPoints();
 }
 
-inline void Renderer::SetProjectionMatrix(const Mat4& _projMatrix)
+inline void Renderer::SetProjectionMatrix(const Mat4& newProjMatrix)
 {
     shader->Use();
-    shader->SetProjectionMatrix(_projMatrix);
+    shader->SetProjectionMatrix(newProjMatrix);
 }
 
-inline void Renderer::SetViewMatrix(const Mat4& _viewMatrix)
+inline void Renderer::SetViewMatrix(const Mat4& newViewMatrix)
 {
     shader->Use();
-    shader->SetViewMatrix(_viewMatrix);
+    shader->SetViewMatrix(newViewMatrix);
 }
 
 inline void Renderer::DrawPoint(const Vertex& v)

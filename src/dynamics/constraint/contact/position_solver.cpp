@@ -5,9 +5,9 @@
 namespace muli
 {
 
-void PositionSolver::Prepare(Contact* _contact, int32 index)
+void PositionSolver::Prepare(Contact* inContact, int32 index)
 {
-    contact = _contact;
+    contact = inContact;
 
     Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
     Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };

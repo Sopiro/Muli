@@ -4,8 +4,8 @@
 namespace muli
 {
 
-AngleJoint::AngleJoint(RigidBody* _bodyA, RigidBody* _bodyB, float _frequency, float _dampingRatio, float _jointMass)
-    : Joint(angle_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+AngleJoint::AngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+    : Joint(angle_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
     angleOffset = bodyB->sweep.a - bodyA->sweep.a;

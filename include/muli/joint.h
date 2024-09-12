@@ -134,9 +134,9 @@ inline float Joint::GetFrequency() const
     return frequency;
 }
 
-inline void Joint::SetFrequency(float _frequency)
+inline void Joint::SetFrequency(float newFrequency)
 {
-    SetParameters(_frequency, dampingRatio, jointMass);
+    SetParameters(newFrequency, dampingRatio, jointMass);
 }
 
 inline float Joint::GetDampingRatio() const
@@ -144,9 +144,9 @@ inline float Joint::GetDampingRatio() const
     return dampingRatio;
 }
 
-inline void Joint::SetDampingRatio(float _dampingRatio)
+inline void Joint::SetDampingRatio(float newDampingRatio)
 {
-    SetParameters(frequency, _dampingRatio, jointMass);
+    SetParameters(frequency, newDampingRatio, jointMass);
 }
 
 inline float Joint::GetJointMass() const
@@ -154,9 +154,9 @@ inline float Joint::GetJointMass() const
     return jointMass;
 }
 
-inline void Joint::SetJointMass(float _jointMass)
+inline void Joint::SetJointMass(float newJointMass)
 {
-    SetParameters(frequency, dampingRatio, _jointMass);
+    SetParameters(frequency, dampingRatio, newJointMass);
 }
 
 inline bool Joint::IsSolid() const

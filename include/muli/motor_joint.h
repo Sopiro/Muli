@@ -13,8 +13,8 @@ public:
         RigidBody* bodyA,
         RigidBody* bodyB,
         const Vec2& anchor,
-        float maxForce = 1000.0f,
-        float maxTorque = 1000.0f,
+        float maxJointForce = 1000.0f,
+        float maxJointTorque = 1000.0f,
         float frequency = -1.0f,
         float dampingRatio = 1.0f,
         float jointMass = 1.0f
@@ -74,9 +74,9 @@ inline float MotorJoint::GetMaxForce() const
     return maxForce;
 }
 
-inline void MotorJoint::SetMaxForce(float _maxForce)
+inline void MotorJoint::SetMaxForce(float newMaxForce)
 {
-    maxForce = _maxForce;
+    maxForce = newMaxForce;
 }
 
 inline float MotorJoint::GetMaxTorque() const
@@ -84,9 +84,9 @@ inline float MotorJoint::GetMaxTorque() const
     return maxTorque;
 }
 
-inline void MotorJoint::SetMaxTorque(float _maxTorque)
+inline void MotorJoint::SetMaxTorque(float newMaxTorque)
 {
-    maxTorque = _maxTorque;
+    maxTorque = newMaxTorque;
 }
 
 inline const Vec2& MotorJoint::GetLinearOffset() const
@@ -94,9 +94,9 @@ inline const Vec2& MotorJoint::GetLinearOffset() const
     return linearOffset;
 }
 
-inline void MotorJoint::SetLinearOffset(const Vec2& _linearOffset)
+inline void MotorJoint::SetLinearOffset(const Vec2& newLinearOffset)
 {
-    linearOffset = _linearOffset;
+    linearOffset = newLinearOffset;
 }
 
 inline float MotorJoint::GetAngularOffset() const
@@ -104,9 +104,9 @@ inline float MotorJoint::GetAngularOffset() const
     return angularOffset;
 }
 
-inline void MotorJoint::SetAngularOffset(float _angularOffset)
+inline void MotorJoint::SetAngularOffset(float newAngularOffset)
 {
-    angularOffset = _angularOffset;
+    angularOffset = newAngularOffset;
 }
 
 } // namespace muli

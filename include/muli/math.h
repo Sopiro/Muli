@@ -58,10 +58,10 @@ struct Vec2
         y = s;
     }
 
-    void Set(float _x, float _y)
+    void Set(float nx, float ny)
     {
-        x = _x;
-        y = _y;
+        x = nx;
+        y = ny;
     }
 
     float operator[](int32 i) const
@@ -209,11 +209,11 @@ struct Vec3
         z = s;
     }
 
-    void Set(float _x, float _y, float _z)
+    void Set(float nx, float ny, float nz)
     {
-        x = _x;
-        y = _y;
-        z = _z;
+        x = nx;
+        y = ny;
+        z = nz;
     }
 
     float operator[](int32 i) const
@@ -366,12 +366,12 @@ struct Vec4
         w = s;
     }
 
-    void Set(float _x, float _y, float _z, float _w)
+    void Set(float nx, float ny, float nz, float nw)
     {
-        x = _x;
-        y = _y;
-        z = _z;
-        w = _w;
+        x = nx;
+        y = ny;
+        z = nz;
+        w = nw;
     }
 
     float operator[](int32 i) const
@@ -975,10 +975,10 @@ struct Transform
     {
     }
 
-    void Set(const Vec2& _position, const Rotation& _rotation)
+    void Set(const Vec2& newPosition, const Rotation& newRotation)
     {
-        position = _position;
-        rotation = _rotation;
+        position = newPosition;
+        rotation = newRotation;
     }
 
     void SetIdentity()
@@ -1509,15 +1509,15 @@ inline Vec3 Max(const Vec3& a, const Vec3& b)
     return Vec3(Max(a.x, b.x), Max(a.y, b.y), Max(a.z, b.z));
 }
 
-inline Vec2 Clamp(const Vec2& a, const Vec2& _min, const Vec2& _max)
+inline Vec2 Clamp(const Vec2& a, const Vec2& min, const Vec2& max)
 {
-    return Max(_min, Min(a, _max));
+    return Max(min, Min(a, max));
 }
 
 template <typename T>
-inline T Clamp(T v, T _min, T _max)
+inline T Clamp(T v, T min, T max)
 {
-    return Max(_min, Min(v, _max));
+    return Max(min, Min(v, max));
 }
 
 inline float Floor(float s)

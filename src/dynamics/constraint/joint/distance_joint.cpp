@@ -5,21 +5,21 @@ namespace muli
 {
 
 DistanceJoint::DistanceJoint(
-    RigidBody* _bodyA,
-    RigidBody* _bodyB,
-    const Vec2& _anchorA,
-    const Vec2& _anchorB,
-    float _length,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchorA,
+    const Vec2& anchorB,
+    float jointLength,
+    float frequency,
+    float dampingRatio,
+    float jointMass
 )
-    : Joint(distance_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+    : Joint(distance_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchorA);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchorB);
-    length = _length < 0.0f ? Length(_anchorB - _anchorA) : _length;
+    localAnchorA = MulT(bodyA->GetTransform(), anchorA);
+    localAnchorB = MulT(bodyB->GetTransform(), anchorB);
+    length = jointLength < 0.0f ? Length(anchorB - anchorA) : jointLength;
 }
 
 void DistanceJoint::Prepare(const Timestep& step)

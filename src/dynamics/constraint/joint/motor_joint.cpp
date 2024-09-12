@@ -5,28 +5,28 @@ namespace muli
 {
 
 MotorJoint::MotorJoint(
-    RigidBody* _bodyA,
-    RigidBody* _bodyB,
-    const Vec2& _anchor,
-    float _maxForce,
-    float _maxTorque,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchor,
+    float maxJointForce,
+    float maxJointTorque,
+    float frequency,
+    float dampingRatio,
+    float jointMass
 )
-    : Joint(motor_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+    : Joint(motor_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , linearImpulseSum{ 0.0f }
     , angularImpulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchor);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchor);
+    localAnchorA = MulT(bodyA->GetTransform(), anchor);
+    localAnchorB = MulT(bodyB->GetTransform(), anchor);
     angleOffset = bodyB->GetAngle() - bodyA->GetAngle();
 
     linearOffset.SetZero();
     angularOffset = 0.0f;
 
-    maxForce = _maxForce < 0 ? max_value : Clamp<float>(_maxForce, 0.0f, max_value);
-    maxTorque = _maxTorque < 0 ? max_value : Clamp<float>(_maxTorque, 0.0f, max_value);
+    maxForce = maxJointForce < 0 ? max_value : Clamp<float>(maxJointForce, 0.0f, max_value);
+    maxTorque = maxJointTorque < 0 ? max_value : Clamp<float>(maxJointTorque, 0.0f, max_value);
 }
 
 void MotorJoint::Prepare(const Timestep& step)

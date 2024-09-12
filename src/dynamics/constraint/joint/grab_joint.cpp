@@ -5,13 +5,13 @@ namespace muli
 {
 
 GrabJoint::GrabJoint(
-    RigidBody* _body, const Vec2& _anchor, const Vec2& _target, float _frequency, float _dampingRatio, float _jointMass
+    RigidBody* body, const Vec2& anchor, const Vec2& targetPosition, float frequency, float dampingRatio, float jointMass
 )
-    : Joint(grab_joint, _body, _body, _frequency, _dampingRatio, _jointMass)
+    : Joint(grab_joint, body, body, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchor = MulT(_body->GetTransform(), _anchor);
-    target = _target;
+    localAnchor = MulT(body->GetTransform(), anchor);
+    target = targetPosition;
 }
 
 void GrabJoint::Prepare(const Timestep& step)

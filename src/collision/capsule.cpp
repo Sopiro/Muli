@@ -26,8 +26,8 @@ Capsule::Capsule(float length, float radius, bool horizontal, const Vec2& positi
     vb += center;
 }
 
-Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosition)
-    : Shape(capsule, _radius)
+Capsule::Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition)
+    : Shape(capsule, radius)
 {
     Vec2 a2b = p2 - p1;
     length = a2b.Length();
@@ -37,7 +37,7 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float _radius, bool _resetPosit
     vb = p2;
     center = (p1 + p2) * 0.5f;
 
-    if (_resetPosition)
+    if (resetPosition)
     {
         va -= center;
         vb -= center;

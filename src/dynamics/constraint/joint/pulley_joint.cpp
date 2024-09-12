@@ -5,27 +5,27 @@ namespace muli
 {
 
 PulleyJoint::PulleyJoint(
-    RigidBody* _bodyA,
-    RigidBody* _bodyB,
-    const Vec2& _anchorA,
-    const Vec2& _anchorB,
-    const Vec2& _groundAnchorA,
-    const Vec2& _groundAnchorB,
-    float _ratio,
-    float _frequency,
-    float _dampingRatio,
-    float _jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchorA,
+    const Vec2& anchorB,
+    const Vec2& inGroundAnchorA,
+    const Vec2& inGroundAnchorB,
+    float pulleyRatio,
+    float frequency,
+    float dampingRatio,
+    float jointMass
 )
-    : Joint(pulley_joint, _bodyA, _bodyB, _frequency, _dampingRatio, _jointMass)
+    : Joint(pulley_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    localAnchorA = MulT(bodyA->GetTransform(), _anchorA);
-    localAnchorB = MulT(bodyB->GetTransform(), _anchorB);
-    groundAnchorA = _groundAnchorA;
-    groundAnchorB = _groundAnchorB;
+    localAnchorA = MulT(bodyA->GetTransform(), anchorA);
+    localAnchorB = MulT(bodyB->GetTransform(), anchorB);
+    groundAnchorA = inGroundAnchorA;
+    groundAnchorB = inGroundAnchorB;
 
-    ratio = _ratio;
-    length = Dist(_anchorA, _groundAnchorA) + Dist(_anchorB, _groundAnchorB);
+    ratio = pulleyRatio;
+    length = Dist(anchorA, groundAnchorA) + Dist(anchorB, groundAnchorB);
 }
 
 void PulleyJoint::Prepare(const Timestep& step)

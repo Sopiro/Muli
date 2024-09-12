@@ -36,9 +36,9 @@ inline const Mat4& BatchShader::GetViewMatrix() const
     return viewMatrix;
 }
 
-inline void BatchShader::SetViewMatrix(const Mat4& _viewMatrix)
+inline void BatchShader::SetViewMatrix(const Mat4& newViewMatrix)
 {
-    viewMatrix = _viewMatrix;
+    viewMatrix = newViewMatrix;
     glUniformMatrix4fv(uniformMap["view"], 1, GL_FALSE, &viewMatrix[0][0]);
 }
 
@@ -47,9 +47,9 @@ inline const Mat4& BatchShader::GetProjectionMatrix() const
     return projMatrix;
 }
 
-inline void BatchShader::SetProjectionMatrix(const Mat4& _projMatrix)
+inline void BatchShader::SetProjectionMatrix(const Mat4& newProjMatrix)
 {
-    projMatrix = _projMatrix;
+    projMatrix = newProjMatrix;
     glUniformMatrix4fv(uniformMap["proj"], 1, GL_FALSE, &projMatrix[0][0]);
 }
 
