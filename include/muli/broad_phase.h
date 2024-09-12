@@ -45,9 +45,9 @@ private:
     void UnBufferMove(NodeProxy node);
 };
 
-inline bool BroadPhase::TestOverlap(Collider* colliderA, Collider* colliderB) const
+inline bool BroadPhase::TestOverlap(Collider* inColliderA, Collider* inColliderB) const
 {
-    return tree.TestOverlap(colliderA->node, colliderB->node);
+    return tree.TestOverlap(inColliderA->node, inColliderB->node);
 }
 
 } // namespace muli
