@@ -5,9 +5,15 @@ namespace muli
 {
 
 LineJoint::LineJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchor,
+    const Vec2& dir,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
 )
-    : Joint(line_joint, bodyA, bodyB, frequency, dampingRatio, jointMass)
+    : Joint(line_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchor);

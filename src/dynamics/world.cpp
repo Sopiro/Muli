@@ -1389,7 +1389,7 @@ RigidBody* World::CreateRegularPolygon(
 }
 
 GrabJoint* World::CreateGrabJoint(
-    RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio, float jointMass
+    RigidBody* body, const Vec2& anchor, const Vec2& target, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     if (body->world != this)
@@ -1398,14 +1398,14 @@ GrabJoint* World::CreateGrabJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(GrabJoint));
-    GrabJoint* gj = new (mem) GrabJoint(body, anchor, target, frequency, dampingRatio, jointMass);
+    GrabJoint* gj = new (mem) GrabJoint(body, anchor, target, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(gj);
     return gj;
 }
 
 RevoluteJoint* World::CreateRevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1414,7 +1414,7 @@ RevoluteJoint* World::CreateRevoluteJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(RevoluteJoint));
-    RevoluteJoint* rj = new (mem) RevoluteJoint(bodyA, bodyB, anchor, frequency, dampingRatio, jointMass);
+    RevoluteJoint* rj = new (mem) RevoluteJoint(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(rj);
     return rj;
@@ -1426,8 +1426,8 @@ DistanceJoint* World::CreateDistanceJoint(
     const Vec2& anchorA,
     const Vec2& anchorB,
     float length,
-    float frequency,
-    float dampingRatio,
+    float jointFrequency,
+    float jointDampingRatio,
     float jointMass
 )
 {
@@ -1437,22 +1437,25 @@ DistanceJoint* World::CreateDistanceJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
-    DistanceJoint* dj = new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, frequency, dampingRatio, jointMass);
+    DistanceJoint* dj =
+        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(dj);
     return dj;
 }
 
 DistanceJoint* World::CreateDistanceJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float length, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, float length, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     return CreateDistanceJoint(
-        bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, frequency, dampingRatio, jointMass
+        bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, jointFrequency, jointDampingRatio, jointMass
     );
 }
 
-AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+AngleJoint* World::CreateAngleJoint(
+    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass
+)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1460,14 +1463,14 @@ AngleJoint* World::CreateAngleJoint(RigidBody* bodyA, RigidBody* bodyB, float fr
     }
 
     void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
-    AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, frequency, dampingRatio, jointMass);
+    AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(aj);
     return aj;
 }
 
 WeldJoint* World::CreateWeldJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1476,14 +1479,20 @@ WeldJoint* World::CreateWeldJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(WeldJoint));
-    WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, anchor, frequency, dampingRatio, jointMass);
+    WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(wj);
     return wj;
 }
 
 LineJoint* World::CreateLineJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchor,
+    const Vec2& dir,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1492,22 +1501,30 @@ LineJoint* World::CreateLineJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(LineJoint));
-    LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, frequency, dampingRatio, jointMass);
+    LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(lj);
     return lj;
 }
 
-LineJoint* World::CreateLineJoint(RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass)
+LineJoint* World::CreateLineJoint(
+    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass
+)
 {
     return CreateLineJoint(
-        bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency, dampingRatio,
-        jointMass
+        bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), jointFrequency,
+        jointDampingRatio, jointMass
     );
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchor,
+    const Vec2& dir,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1516,19 +1533,19 @@ PrismaticJoint* World::CreatePrismaticJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(PrismaticJoint));
-    PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, frequency, dampingRatio, jointMass);
+    PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(pj);
     return pj;
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float frequency, float dampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     return CreatePrismaticJoint(
-        bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), frequency, dampingRatio,
-        jointMass
+        bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), jointFrequency,
+        jointDampingRatio, jointMass
     );
 }
 
@@ -1540,8 +1557,8 @@ PulleyJoint* World::CreatePulleyJoint(
     const Vec2& groundAnchorA,
     const Vec2& groundAnchorB,
     float ratio,
-    float frequency,
-    float dampingRatio,
+    float jointFrequency,
+    float jointDampingRatio,
     float jointMass
 )
 {
@@ -1551,8 +1568,9 @@ PulleyJoint* World::CreatePulleyJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(PulleyJoint));
-    PulleyJoint* pj = new (mem)
-        PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, frequency, dampingRatio, jointMass);
+    PulleyJoint* pj = new (mem) PulleyJoint(
+        bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, jointFrequency, jointDampingRatio, jointMass
+    );
 
     AddJoint(pj);
     return pj;
@@ -1564,8 +1582,8 @@ MotorJoint* World::CreateMotorJoint(
     const Vec2& anchor,
     float maxForce,
     float maxTorque,
-    float frequency,
-    float dampingRatio,
+    float jointFrequency,
+    float jointDampingRatio,
     float jointMass
 )
 {
@@ -1575,7 +1593,8 @@ MotorJoint* World::CreateMotorJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(MotorJoint));
-    MotorJoint* mj = new (mem) MotorJoint(bodyA, bodyB, anchor, maxForce, maxTorque, frequency, dampingRatio, jointMass);
+    MotorJoint* mj =
+        new (mem) MotorJoint(bodyA, bodyB, anchor, maxForce, maxTorque, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(mj);
     return mj;
