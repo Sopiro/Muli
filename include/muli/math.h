@@ -641,6 +641,7 @@ struct Mat2
     }
 
     constexpr explicit Mat2(float v)
+        : ex{ v, 0 }, ey{ 0, v }
     {
         // clang-format off
         ex.x = v;   ey.x = 0;
@@ -649,6 +650,7 @@ struct Mat2
     }
 
     constexpr explicit Mat2(const Vec2& v)
+        : ex{ v.x, 0 }, ey{ 0, v.y }
     {
         // clang-format off
         ex.x = v.x; ey.x = 0;
@@ -736,6 +738,7 @@ struct Mat3
     }
 
     constexpr explicit Mat3(float v)
+        : ex{ v, 0, 0 }, ey{ 0, v, 0 }, ez{ 0, 0, v }
     {
         // clang-format off
         ex.x = v;   ey.x = 0;   ez.x = 0;
@@ -745,6 +748,7 @@ struct Mat3
     }
 
     constexpr explicit Mat3(const Vec3& v)
+        : ex{ v.x, 0, 0 }, ey{ 0, v.y, 0 }, ez{ 0, 0, v.z }
     {
         // clang-format off
         ex.x = v.x; ey.x = 0;   ez.x = 0;
@@ -823,6 +827,7 @@ struct Mat4
     }
 
     constexpr Mat4(float v)
+        : ex{ v, 0, 0, 0 }, ey{ 0, v, 0, 0 }, ez{ 0, 0, v, 0 }, ew{ 0, 0, 0, v }
     {
         // clang-format off
         ex.x = v;       ey.x = 0.0f;    ez.x = 0.0f;    ew.x = 0.0f;
@@ -833,6 +838,7 @@ struct Mat4
     }
 
     constexpr explicit Mat4(const Vec4& v)
+        : ex{ v.x, 0, 0, 0 }, ey{ 0, v.y, 0, 0 }, ez{ 0, 0, v.z, 0 }, ew{ 0, 0, 0, v.w }
     {
         // clang-format off
         ex.x = v.x; ey.x = 0;   ez.x = 0;   ew.x = 0;
