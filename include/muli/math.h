@@ -601,14 +601,14 @@ struct Quat
         return Vec3{ roll, pitch, yaw };
     }
 
-    static inline Quat FromEuler(const Vec3& euler_angles)
+    static inline Quat FromEuler(const Vec3& eulerAngles)
     {
-        float cr = std::cos(euler_angles.x * 0.5f);
-        float sr = std::sin(euler_angles.x * 0.5f);
-        float cp = std::cos(euler_angles.y * 0.5f);
-        float sp = std::sin(euler_angles.y * 0.5f);
-        float cy = std::cos(euler_angles.z * 0.5f);
-        float sy = std::sin(euler_angles.z * 0.5f);
+        float cr = std::cos(eulerAngles.x * 0.5f);
+        float sr = std::sin(eulerAngles.x * 0.5f);
+        float cp = std::cos(eulerAngles.y * 0.5f);
+        float sp = std::sin(eulerAngles.y * 0.5f);
+        float cy = std::cos(eulerAngles.z * 0.5f);
+        float sy = std::sin(eulerAngles.z * 0.5f);
 
         Quat q;
         q.w = cr * cp * cy + sr * sp * sy;

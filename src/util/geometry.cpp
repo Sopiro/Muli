@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <list>
 #include <random>
 
 #include "muli/geometry.h"
@@ -295,6 +294,21 @@ struct TriEdge
 
     Vec2& operator[](int32 index)
     {
+        MuliAssert(index > 0);
+        index %= 2;
+
+        switch (index)
+        {
+        case 0:
+            return p0;
+        default:
+            return p1;
+        }
+    }
+
+    const Vec2& operator[](int32 index) const
+    {
+        MuliAssert(index > 0);
         index %= 2;
 
         switch (index)
@@ -359,6 +373,7 @@ struct Tri
 
     Vec2& operator[](int32 index)
     {
+        MuliAssert(index > 0);
         index %= 3;
 
         switch (index)
@@ -374,6 +389,7 @@ struct Tri
 
     const Vec2& operator[](int32 index) const
     {
+        MuliAssert(index > 0);
         index %= 3;
 
         switch (index)
@@ -442,6 +458,7 @@ struct Tri
         else
             return -1;
     }
+
     struct Hasher
     {
         size_t operator()(const Tri& t) const
