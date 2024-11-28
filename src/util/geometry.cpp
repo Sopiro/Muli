@@ -198,7 +198,7 @@ std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices)
     return s;
 }
 
-static Circle ComputeCircle2(const Vec2& a, const Vec2& b)
+static inline Circle ComputeCircle2(const Vec2& a, const Vec2& b)
 {
     Vec2 center{ (a.x + b.x) / 2, (a.y + b.y) / 2 };
     float radius = Dist(a, b) / 2;
@@ -206,7 +206,7 @@ static Circle ComputeCircle2(const Vec2& a, const Vec2& b)
     return Circle{ radius, center };
 }
 
-static Circle ComputeCircle3(const Vec2& a, const Vec2& b, const Vec2& c)
+static inline Circle ComputeCircle3(const Vec2& a, const Vec2& b, const Vec2& c)
 {
     // Solve linear equations to find circumcircle
     float d = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
@@ -226,7 +226,7 @@ static Circle ComputeCircle3(const Vec2& a, const Vec2& b, const Vec2& c)
 // Compute minimum circle containing all points
 // P: original all vertices
 // R: vertices (n <= 3) to define minimum circle
-static Circle Welzl(const std::vector<Vec2>& P, std::vector<Vec2>& R, int32 n)
+static inline Circle Welzl(const std::vector<Vec2>& P, std::vector<Vec2>& R, int32 n)
 {
     if (n == 0 || R.size() == 3)
     {
@@ -349,12 +349,12 @@ struct TriEdge
     };
 };
 
-inline bool operator==(const TriEdge& a, const TriEdge& b)
+static inline bool operator==(const TriEdge& a, const TriEdge& b)
 {
     return a.p0 == b.p0 && a.p1 == b.p1;
 }
 
-inline TriEdge operator~(const TriEdge& e)
+static inline TriEdge operator~(const TriEdge& e)
 {
     return TriEdge{ e.p1, e.p0 };
 }
@@ -468,12 +468,12 @@ struct Tri
     };
 };
 
-inline bool operator==(const Tri& a, const Tri& b)
+static inline bool operator==(const Tri& a, const Tri& b)
 {
     return a.p0 == b.p0 && a.p1 == b.p1 && a.p2 == b.p2;
 }
 
-inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
+static inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
 {
     Vec2 e = edge.p1 - edge.p0;
     Vec2 o2a = edge.p0 - o;
@@ -491,7 +491,7 @@ inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
     return (t >= 0 && u >= 0 && u <= 1);
 }
 
-inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
+static inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
 {
     // TODO: Utilize BVH to accelerate raycasting
     int32 count = 0;
@@ -506,7 +506,8 @@ inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
     return count % 2 == 1;
 }
 
-// https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
+// The Bowyer–Watson algorithm (https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
+// + Brute force constraint resolution
 std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
 {
     std::vector<TriEdge> constraintEdges;
@@ -521,6 +522,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
         }
     };
 
+    // Collect all vertices
     std::unordered_set<Vec2, Vec2Hasher> vertices(v.begin(), v.end());
 
     if (outline.size() > 2)
@@ -554,7 +556,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     }
 
     // Prepare super triangle
-    AABB bounds(Vec2{ max_value, max_value }, -Vec2{ max_value, max_value });
+    AABB bounds{ Vec2{ max_value, max_value }, -Vec2{ max_value, max_value } };
 
     for (const Vec2& p : vertices)
     {
@@ -682,10 +684,14 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
 
                 // Flip edge
                 for (const TriEdge& e : t1->GetEdges())
+                {
                     edge2Tri.erase(e);
+                }
 
                 for (const TriEdge& e : t2->GetEdges())
+                {
                     edge2Tri.erase(e);
+                }
 
                 tris.erase(*t1);
                 tris.erase(*t2);
@@ -694,15 +700,21 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
                 t2 = &(*(tris.emplace(p1, p2, p3).first));
 
                 for (const TriEdge& e : t1->GetEdges())
+                {
                     edge2Tri.emplace(e, t1);
+                }
 
                 for (const TriEdge& e : t2->GetEdges())
+                {
                     edge2Tri.emplace(e, t2);
+                }
             }
+
+            // Repeat until there are no bad edges
         }
     }
 
-    std::vector<Polygon> res;
+    std::vector<Polygon> polygons;
     for (const Tri& t : tris)
     {
         // Discard triangle containing super triangle vertices
@@ -723,10 +735,10 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
             continue;
         }
 
-        res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        polygons.push_back(Polygon{ t.p0, t.p1, t.p2 });
     }
 
-    return res;
+    return polygons;
 }
 
 } // namespace muli

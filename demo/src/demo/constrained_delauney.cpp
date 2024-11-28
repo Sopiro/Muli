@@ -171,7 +171,7 @@ public:
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
         ImGui::TextColored(
-            ImColor{ 12, 11, 14 }, "Left click to create normal vertex\nShift+click to create outline\nCtrl+click to create hole"
+            ImColor{ 12, 11, 14 }, "Left click to create normal vertex\nShift click to create outline\nCtrl click to create hole"
         );
         ImGui::End();
     }

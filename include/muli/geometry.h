@@ -15,7 +15,7 @@ std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices);
 Circle ComputeCircle(std::span<Vec2> vertices);
 
 // Compute Delaunay triangles
-// Behavior is undefined for self-intersecting outline or holes
+// Behavior is undefined for self-intersecting outline and holes
 std::vector<Polygon> ComputeTriangles(
     std::span<Vec2> vertices, std::span<Vec2> outline = {}, std::span<std::vector<Vec2>> hole = {}
 );
