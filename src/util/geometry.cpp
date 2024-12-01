@@ -741,4 +741,9 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     return polygons;
 }
 
+std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline)
+{
+    return ComputeTriangles({}, outline, {});
+}
+
 } // namespace muli
