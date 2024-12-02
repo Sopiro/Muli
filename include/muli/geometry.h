@@ -20,6 +20,8 @@ std::vector<Polygon> ComputeTriangles(
     std::span<Vec2> vertices, std::span<Vec2> outline = {}, std::span<std::vector<Vec2>> hole = {}
 );
 
+// Compute convex polygon set from concave outline
+// There must be no duplicate vertices!
 std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline);
 
 } // namespace muli
