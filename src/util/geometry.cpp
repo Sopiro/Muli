@@ -294,7 +294,7 @@ struct TriEdge
 
     Vec2& operator[](int32 index)
     {
-        MuliAssert(index > 0);
+        MuliAssert(index >= 0);
         index %= 2;
 
         switch (index)
@@ -308,7 +308,7 @@ struct TriEdge
 
     const Vec2& operator[](int32 index) const
     {
-        MuliAssert(index > 0);
+        MuliAssert(index >= 0);
         index %= 2;
 
         switch (index)
@@ -373,7 +373,7 @@ struct Tri
 
     Vec2& operator[](int32 index)
     {
-        MuliAssert(index > 0);
+        MuliAssert(index >= 0);
         index %= 3;
 
         switch (index)
@@ -389,7 +389,7 @@ struct Tri
 
     const Vec2& operator[](int32 index) const
     {
-        MuliAssert(index > 0);
+        MuliAssert(index >= 0);
         index %= 3;
 
         switch (index)
@@ -504,6 +504,133 @@ static inline bool Contains(const std::vector<TriEdge>& edges, const Vec2& p)
     }
 
     return count % 2 == 1;
+}
+
+struct Poly
+{
+    std::vector<Vec2> v;
+
+    Poly() = default;
+
+    Poly(const Tri& tri)
+    {
+        v.push_back(tri.p0);
+        v.push_back(tri.p1);
+        v.push_back(tri.p2);
+    }
+
+    Vec2& operator[](int32 index)
+    {
+        MuliAssert(index > 0);
+        index %= 3;
+
+        return v[index];
+    }
+
+    const Vec2& operator[](int32 index) const
+    {
+        MuliAssert(index >= 0);
+        index %= 3;
+
+        return v[index];
+    }
+
+    TriEdge GetEdge(int32 index) const
+    {
+        index %= v.size();
+
+        return TriEdge(v[index], v[(index + 1) % v.size()]);
+    }
+
+    int32 NumVertices() const
+    {
+        return v.size();
+    }
+
+    int32 GetIndex(const Vec2& p) const
+    {
+        for (int32 i = 0; i < NumVertices(); ++i)
+        {
+            if (v[i] == p)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    bool IsConvex() const
+    {
+        int32 count = v.size();
+        for (int32 i0 = count - 1, i1 = 0; i1 < count; i0 = i1, ++i1)
+        {
+            Vec2 e0 = v[i1] - v[i0];
+            Vec2 e1 = v[(i1 + 1) % count] - v[i1];
+
+            if (Cross(e0, e1) <= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    struct Hasher
+    {
+        size_t operator()(const Poly& p) const
+        {
+            return HashBuffer(p.v.data(), p.v.size() * sizeof(Vec2));
+        }
+    };
+};
+
+static inline bool operator==(const Poly& a, const Poly& b)
+{
+    if (a.NumVertices() != b.NumVertices())
+    {
+        return false;
+    }
+
+    for (int32 i = 0; i < a.NumVertices(); ++i)
+    {
+        if (a[i] != b[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
+{
+    Poly merged;
+
+    int32 b0 = p1.GetIndex(e.p0);
+    int32 b1 = (b0 + 1) % p1.NumVertices();
+
+    for (int32 i = (b1 + 1) % p1.NumVertices(); i != b0;)
+    {
+        merged.v.push_back(p1[i]);
+        i = (i + 1) % p1.NumVertices();
+    }
+
+    merged.v.push_back(e.p0);
+
+    int32 m1 = p2.GetIndex(e.p1);
+    int32 m0 = (m1 + 1) % p2.NumVertices();
+
+    for (int32 i = (m0 + 1) % p2.NumVertices(); i != m1;)
+    {
+        merged.v.push_back(p2[i]);
+        i = (i + 1) % p2.NumVertices();
+    }
+
+    merged.v.push_back(e.p1);
+
+    return merged;
 }
 
 // The Bowyer–Watson algorithm (https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
@@ -672,7 +799,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
                 Vec2 p0 = be.p0;
                 Vec2 p1 = (*t2)[t2->GetIndex(p0) + 1];
                 Vec2 p2 = be.p1;
-                Vec2 p3 = (*t1)[t1->GetIndex(p0) - 1];
+                Vec2 p3 = (*t1)[t1->GetIndex(p0) + 2];
 
                 // Check convexity and skip if it's concave
                 float s = Cross(p1 - p0, p2 - p1);
@@ -871,7 +998,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                 Vec2 p0 = be.p0;
                 Vec2 p1 = (*t2)[t2->GetIndex(p0) + 1];
                 Vec2 p2 = be.p1;
-                Vec2 p3 = (*t1)[t1->GetIndex(p0) - 1];
+                Vec2 p3 = (*t1)[t1->GetIndex(p0) + 2];
 
                 // Check convexity and skip if it's concave
                 float s = Cross(p1 - p0, p2 - p1);
@@ -913,7 +1040,8 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
         }
     }
 
-    std::vector<Polygon> polygons;
+    std::unordered_set<Poly, Poly::Hasher> polys;
+
     for (const Tri& t : tris)
     {
         // Discard triangle containing super triangle vertices
@@ -928,10 +1056,66 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
             continue;
         }
 
-        polygons.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        polys.emplace(t);
     }
 
-    return polygons;
+    edge2Tri.clear();
+    std::unordered_map<TriEdge, const Poly*, TriEdge::Hasher> edge2Poly;
+
+    while (true)
+    {
+    restart:
+        for (const Poly& p : polys)
+        {
+            // Loop over all edges
+            for (int32 i = 0; i < p.NumVertices(); ++i)
+            {
+                TriEdge e = p.GetEdge(i);
+
+                if (!edge2Poly.contains(~e))
+                {
+                    edge2Poly.emplace(e, &p);
+                    continue;
+                }
+
+                const Poly* other = edge2Poly[~e];
+
+                Poly merged = Merge(*other, p, ~e);
+                if (!merged.IsConvex())
+                {
+                    edge2Poly.emplace(e, &p);
+                    continue;
+                }
+
+                for (int32 j = i - 1; j >= 0; --j)
+                {
+                    edge2Poly.erase(p.GetEdge(j));
+                }
+                polys.erase(p);
+
+                for (int32 j = 0; j < other->NumVertices(); ++j)
+                {
+                    edge2Poly.erase(other->GetEdge(j));
+                }
+                polys.erase(*other);
+
+                polys.insert(merged);
+                goto restart;
+            }
+        }
+
+        break;
+    }
+
+    std::cout << polys.size() << std::endl;
+
+    std::vector<Polygon> res;
+    for (const Poly& p : polys)
+    {
+        res.emplace_back(p.v.data(), p.NumVertices());
+    }
+
+    return res;
 }
 
 } // namespace muli

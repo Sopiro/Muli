@@ -22,13 +22,12 @@ public:
         FindTargetBody();
         EnableCameraControl();
 
-        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            outline.push_back(cursorPos);
-        }
-
         if (!ImGui::GetIO().WantCaptureMouse)
         {
+            if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                outline.push_back(cursorPos);
+            }
         }
     }
 
