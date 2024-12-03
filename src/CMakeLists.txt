@@ -67,22 +67,21 @@ set(SOURCE_FILES
     util/linear_allocator.cpp
     util/block_allocator.cpp
     util/predefined_block_allocator.cpp
-    util/geometry.cpp
 
-    collision/collision.cpp
-    collision/simplex.cpp
-    collision/polytope.cpp
-    collision/raycast.cpp
-    collision/distance.cpp
-    collision/time_of_impact.cpp
-
+    geometry/circle.cpp
+    geometry/capsule.cpp
+    geometry/polygon.cpp
+    geometry/geometry.cpp
+    geometry/raycast.cpp
+    
     collision/aabb.cpp
     collision/aabb_tree.cpp
     collision/broad_phase.cpp
-
-    collision/circle.cpp
-    collision/capsule.cpp
-    collision/polygon.cpp
+    collision/simplex.cpp
+    collision/polytope.cpp
+    collision/collision.cpp
+    collision/distance.cpp
+    collision/time_of_impact.cpp
 
     dynamics/world.cpp
     dynamics/collider.cpp
