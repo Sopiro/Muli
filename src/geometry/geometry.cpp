@@ -344,7 +344,7 @@ struct TriEdge
     {
         size_t operator()(const TriEdge& e) const
         {
-            return Hash(e);
+            return Hash(e.p0, e.p1);
         }
     };
 };
@@ -1056,6 +1056,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                     edge2Poly.emplace(e, &p);
                     continue;
                 }
+                // Current polygon contains sharing edge
 
                 Poly* other = edge2Poly[~e];
 
@@ -1065,12 +1066,13 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                     edge2Poly.emplace(e, &p);
                     continue;
                 }
+                // Merged polygon is convex, so we replace it with the merged one
 
                 for (int32 j = i - 1; j >= 0; --j)
                 {
                     edge2Poly.erase(p.GetEdge(j));
                 }
-                polys[index] = polys.back();
+                polys[index] = std::move(polys.back());
                 polys.pop_back();
 
                 for (int32 j = 0; j < other->VertexCount(); ++j)

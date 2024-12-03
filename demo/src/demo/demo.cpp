@@ -39,7 +39,7 @@ void Demo::UpdateInput()
 
     EnableCameraControl();
 
-    if (!EnablePolygonCreate())
+    if (!EnablePolygonCreateDecomposition())
     {
         EnableBodyCreate();
         EnableBodyRemove();
@@ -111,15 +111,6 @@ void Demo::EnableBodyCreate()
         }
     }
 
-    if (targetCollider && !cursorJoint && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
-    {
-        targetBody->DestroyCollider(targetCollider);
-        if (targetBody->GetColliderCount() == 0)
-        {
-            world->Destroy(targetBody);
-        }
-    }
-
     if (create)
     {
         renderer.DrawPoint(mStart);
@@ -139,7 +130,7 @@ void Demo::EnableBodyCreate()
     }
 }
 
-bool Demo::EnablePolygonCreate()
+bool Demo::EnablePolygonCreateConvexHull()
 {
     static Vec2 mStart;
     static bool creating = false;
@@ -233,10 +224,129 @@ bool Demo::EnablePolygonCreate()
     return creating;
 }
 
+bool Demo::EnablePolygonCreateDecomposition()
+{
+    static Vec2 mStart;
+    static bool creating = false;
+    static bool staticBody;
+    static std::vector<Vec2> points;
+    static std::vector<Polygon> poly;
+
+    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+        {
+            mStart = cursorPos;
+            creating = true;
+            staticBody = false;
+        }
+        else if (Input::IsKeyDown(GLFW_KEY_LEFT_ALT))
+        {
+            mStart = cursorPos;
+            creating = true;
+            staticBody = true;
+        }
+    }
+
+    if (creating)
+    {
+        if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            points.push_back(cursorPos);
+        }
+
+        for (int32 i0 = points.size() - 1, i1 = 0; i1 < points.size(); i0 = i1, ++i1)
+        {
+            renderer.DrawPoint(points[i0]);
+            renderer.DrawLine(points[i0], points[i1]);
+        }
+
+        if (points.size() < 3)
+        {
+            renderer.DrawLine(points.back(), cursorPos);
+        }
+
+        auto create_body = [&](RigidBody::Type type) {
+            RigidBody* b;
+
+            switch (points.size())
+            {
+            case 1:
+            {
+                float r = Max(0.1f, Dist(points.back(), cursorPos));
+                b = world->CreateCircle(r, type);
+                b->SetPosition(points[0]);
+                break;
+            }
+            case 2:
+            {
+                float r = Max(0.05f, Dist(points.back(), cursorPos));
+                b = world->CreateCapsule(points[0], points[1], r, type, false);
+                break;
+            }
+            default:
+            {
+                b = world->CreateEmptyBody(type);
+                poly = ComputeDecomposition(points);
+
+                for (Shape& s : poly)
+                {
+                    b->CreateCollider(&s);
+                }
+                break;
+            }
+            }
+
+            b->SetContinuous(settings.continuous);
+
+            creating = false;
+            points.clear();
+        };
+
+        if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
+        {
+            create_body(RigidBody::Type::dynamic_body);
+        }
+        else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
+        {
+            create_body(RigidBody::Type::static_body);
+        }
+    }
+
+    return creating;
+}
+
 void Demo::EnableBodyRemove()
 {
+    static bool removeBody = false;
     static bool draging = false;
     static Vec2 mStart;
+    static std::unordered_set<RigidBody*> destroySet;
+
+    if (!removeBody && Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
+    {
+        removeBody = true;
+    }
+    if (removeBody && Input::IsKeyReleased(GLFW_KEY_LEFT_SHIFT))
+    {
+        removeBody = false;
+    }
+
+    if (targetCollider && !cursorJoint && Input::IsMousePressed(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        if (removeBody)
+        {
+            world->Destroy(targetBody);
+        }
+        else
+        {
+            targetBody->DestroyCollider(targetCollider);
+            if (targetBody->GetColliderCount() == 0)
+            {
+                world->Destroy(targetBody);
+            }
+        }
+    }
 
     if (!draging && Input::IsMousePressed(GLFW_MOUSE_BUTTON_MIDDLE))
     {
@@ -277,15 +387,30 @@ void Demo::EnableBodyRemove()
             {
                 Collider* c = colliders[i];
                 RigidBody* b = c->GetBody();
-                b->DestroyCollider(c);
 
+                if (removeBody)
+                {
+                    destroySet.insert(b);
+                    continue;
+                }
+
+                b->DestroyCollider(c);
                 if (b->GetColliderCount() == 0)
                 {
                     world->Destroy(b);
                 }
             }
 
+            if (removeBody)
+            {
+                for (RigidBody* b : destroySet)
+                {
+                    world->Destroy(b);
+                }
+            }
+
             draging = false;
+            destroySet.clear();
         }
     }
 }

@@ -114,7 +114,7 @@ public:
     {
         FindTargetBody();
         EnableKeyboardShortcut();
-        EnablePolygonCreate();
+        EnablePolygonCreateDecomposition();
         EnableBodyRemove();
 
         static bool pressed = false;

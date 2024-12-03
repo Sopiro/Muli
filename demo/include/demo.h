@@ -36,7 +36,8 @@ protected:
     void FindTargetBody();
     void EnableKeyboardShortcut();
     void EnableBodyCreate();
-    bool EnablePolygonCreate();
+    bool EnablePolygonCreateConvexHull();
+    bool EnablePolygonCreateDecomposition();
     void EnableBodyRemove();
     bool EnableAddForce();
     bool EnableBodyGrab();
