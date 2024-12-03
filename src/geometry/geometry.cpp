@@ -542,14 +542,14 @@ struct Poly
         return TriEdge(v[index], v[(index + 1) % v.size()]);
     }
 
-    int32 NumVertices() const
+    int32 VertexCount() const
     {
         return int32(v.size());
     }
 
     int32 GetIndex(const Vec2& p) const
     {
-        for (int32 i = 0; i < NumVertices(); ++i)
+        for (int32 i = 0; i < VertexCount(); ++i)
         {
             if (v[i] == p)
             {
@@ -562,7 +562,7 @@ struct Poly
 
     bool IsConvex() const
     {
-        int32 count = NumVertices();
+        int32 count = VertexCount();
         if (count < 3)
         {
             return false;
@@ -588,22 +588,22 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
     Poly merged;
 
     int32 i0 = p1.GetIndex(e.p1);
-    int32 i1 = (i0 - 1 + p1.NumVertices()) % p1.NumVertices();
+    int32 i1 = (i0 - 1 + p1.VertexCount()) % p1.VertexCount();
 
-    for (int32 i = i0; i != i1; i = (i + 1) % p1.NumVertices())
+    for (int32 i = i0; i != i1; i = (i + 1) % p1.VertexCount())
     {
         merged.v.push_back(p1[i]);
     }
 
     i0 = p2.GetIndex(e.p0);
-    i1 = (i0 - 1 + p2.NumVertices()) % p2.NumVertices();
+    i1 = (i0 - 1 + p2.VertexCount()) % p2.VertexCount();
 
-    for (int32 i = i0; i != i1; i = (i + 1) % p2.NumVertices())
+    for (int32 i = i0; i != i1; i = (i + 1) % p2.VertexCount())
     {
         merged.v.push_back(p2[i]);
     }
 
-    MuliAssert(merged.NumVertices() == (p1.NumVertices() + p2.NumVertices() - 2));
+    MuliAssert(merged.VertexCount() == (p1.VertexCount() + p2.VertexCount() - 2));
 
     return merged;
 }
@@ -816,7 +816,9 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
         }
     }
 
-    std::vector<Polygon> polygons;
+    std::vector<Polygon> res;
+    res.reserve(tris.size());
+
     for (const Tri& t : tris)
     {
         // Discard triangle containing super triangle vertices
@@ -837,10 +839,10 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
             continue;
         }
 
-        polygons.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        res.push_back(Polygon{ t.p0, t.p1, t.p2 });
     }
 
-    return polygons;
+    return res;
 }
 
 std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
@@ -1016,6 +1018,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
     }
 
     std::vector<Poly> polys;
+    polys.reserve(tris.size());
 
     for (const Tri& t : tris)
     {
@@ -1044,7 +1047,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
         {
             Poly& p = polys[index];
 
-            for (int32 i = 0; i < p.NumVertices(); ++i)
+            for (int32 i = 0; i < p.VertexCount(); ++i)
             {
                 TriEdge e = p.GetEdge(i);
 
@@ -1070,14 +1073,14 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                 polys[index] = polys.back();
                 polys.pop_back();
 
-                for (int32 j = 0; j < other->NumVertices(); ++j)
+                for (int32 j = 0; j < other->VertexCount(); ++j)
                 {
                     edge2Poly.erase(other->GetEdge(j));
                 }
                 *other = std::move(polys.back());
                 polys.pop_back();
 
-                polys.push_back(merged);
+                polys.push_back(std::move(merged));
                 goto repeat;
             }
         }
@@ -1086,9 +1089,11 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
     }
 
     std::vector<Polygon> res;
+    res.reserve(polys.size());
+
     for (const Poly& p : polys)
     {
-        res.emplace_back(p.v.data(), p.NumVertices());
+        res.emplace_back(p.v.data(), p.VertexCount());
     }
 
     return res;

@@ -20,13 +20,10 @@ Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition
 
     ComputeConvexHull(inVertices, inVertexCount, vertices, &vertexCount);
 
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         center += vertices[i0];
         normals[i0] = Normalize(Cross(vertices[i1] - vertices[i0], 1.0f));
-
-        i0 = i1;
     }
     center *= 1.0f / vertexCount;
 
@@ -252,8 +249,7 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
     float numerator = 0.0f;
     float denominator = 0.0f;
 
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         Vec2 v0 = vertices[i0] - center;
         Vec2 v1 = vertices[i1] - center;
@@ -262,8 +258,6 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
 
         numerator += crs * (Dot(v1, v1) + Dot(v1, v0) + Dot(v0, v0));
         denominator += crs;
-
-        i0 = i1;
     }
 
     inertia = (numerator) / (denominator * 6.0f);
@@ -272,8 +266,7 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
     float r2 = radius * radius;
     float invArea = 1.0f / area;
 
-    i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         Vec2 v0 = vertices[i0] - center;
         Vec2 v1 = vertices[i1] - center;
@@ -289,13 +282,10 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
         float d2 = mid.Length2();
 
         inertia += (rectInertia + d2) * areaFraction;
-
-        i0 = i1;
     }
 
     // Consider corner arc inertia
-    i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         Vec2 n0 = normals[i0];
         Vec2 n1 = normals[i1];
@@ -308,8 +298,6 @@ void Polygon::ComputeMass(float density, MassData* outMassData) const
         float d2 = v1.Length2();
 
         inertia += (arcInertia + d2) * areaFraction;
-
-        i0 = i1;
     }
 
     MuliAssert(inertia > 0.0f);
@@ -344,8 +332,7 @@ bool Polygon::TestPoint(const Transform& transform, const Vec2& q) const
     int32 index = 0;
     float maxSeparation = -max_value;
 
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         Vec2 n0 = normals[i0];
         float separation = Dot(n0, localQ - vertices[i0]);
@@ -359,8 +346,6 @@ bool Polygon::TestPoint(const Transform& transform, const Vec2& q) const
             maxSeparation = separation;
             index = i0;
         }
-
-        i0 = i1;
     }
 
     // Totally inside
@@ -409,8 +394,7 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
 
     int32 index = -1;
 
-    int32 i0 = vertexCount - 1;
-    for (int32 i1 = 0; i1 < vertexCount; ++i1)
+    for (int32 i0 = vertexCount - 1, i1 = 0; i1 < vertexCount; i0 = i1, ++i1)
     {
         Vec2 normal = normals[i0];
         Vec2 v = vertices[i0] + normal * offset;
@@ -444,8 +428,6 @@ bool Polygon::RayCast(const Transform& transform, const RayCastInput& input, Ray
         {
             return false;
         }
-
-        i0 = i1;
     }
 
     MuliAssert(0.0f <= near && near <= input.maxFraction);
