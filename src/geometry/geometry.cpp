@@ -569,11 +569,9 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 
 // The Bowyer–Watson algorithm (https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
 // + Brute force constraint resolution
-static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
+static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<std::vector<Vec2>> constraints)
 {
     std::vector<TriEdge> constraintEdges;
-    std::vector<TriEdge> outlineEdges;
-    std::vector<TriEdge> holeEdges;
 
     struct Vec2Hasher
     {
@@ -586,24 +584,12 @@ static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<Vec2> 
     // Collect all vertices
     std::unordered_set<Vec2, Vec2Hasher> vertices(v.begin(), v.end());
 
-    if (outline.size() > 2)
-    {
-        for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
-        {
-            outlineEdges.emplace_back(outline[i0], outline[i1]);
-            constraintEdges.emplace_back(outline[i0], outline[i1]);
-        }
-    }
-
-    vertices.insert(outline.begin(), outline.end());
-
-    for (const std::vector<Vec2>& hole : holes)
+    for (const std::vector<Vec2>& hole : constraints)
     {
         if (hole.size() > 1)
         {
             for (size_t i0 = hole.size() - 1, i1 = 0; i1 < hole.size(); i0 = i1, ++i1)
             {
-                holeEdges.emplace_back(hole[i0], hole[i1]);
                 constraintEdges.emplace_back(hole[i0], hole[i1]);
             }
         }
@@ -786,14 +772,8 @@ static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<Vec2> 
             continue;
         }
 
-        // Discard triangle lies inside the hole
-        if (Contains(holeEdges, t.GetCenter()))
-        {
-            continue;
-        }
-
-        // Discard triangle lies outside the outline
-        if (outlineEdges.size() > 2 && !Contains(outlineEdges, t.GetCenter()))
+        // Discard triangle lies outside the shape
+        if (constraintEdges.size() > 0 && !Contains(constraintEdges, t.GetCenter()))
         {
             continue;
         }
@@ -804,9 +784,9 @@ static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<Vec2> 
     return res;
 }
 
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<std::vector<Vec2>> constraints)
 {
-    std::vector<Tri> triangles = ComputeTriangulation(v, outline, holes);
+    std::vector<Tri> triangles = ComputeTriangulation(vertices, constraints);
 
     std::vector<Polygon> res;
     res.reserve(triangles.size());
@@ -819,9 +799,9 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     return res;
 }
 
-std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
+std::vector<Polygon> ComputeDecomposition(std::span<std::vector<Vec2>> constraints)
 {
-    std::vector<Tri> triangles = ComputeTriangulation({}, outline, holes);
+    std::vector<Tri> triangles = ComputeTriangulation({}, constraints);
     std::vector<Poly> polys(triangles.begin(), triangles.end());
 
     std::unordered_map<TriEdge, Poly*, TriEdge::Hasher> edge2Poly;

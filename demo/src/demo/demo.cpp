@@ -287,7 +287,7 @@ bool Demo::EnablePolygonCreateDecomposition()
             default:
             {
                 b = world->CreateEmptyBody(type);
-                poly = ComputeDecomposition(points);
+                poly = ComputeDecomposition({ &points, 1 });
 
                 for (Shape& s : poly)
                 {

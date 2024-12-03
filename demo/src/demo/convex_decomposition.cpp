@@ -8,7 +8,6 @@ namespace muli
 class ConvexDecomposition : public Demo
 {
 public:
-    std::vector<Vec2> outline;
     std::vector<std::vector<Vec2>> holes;
 
     std::vector<Polygon> triangles;
@@ -40,16 +39,9 @@ public:
 
         if (!ImGui::GetIO().WantCaptureMouse)
         {
-            if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+            if (creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
-                if (creatingHole)
-                {
-                    currentHole.push_back(cursorPos);
-                }
-                else
-                {
-                    outline.push_back(cursorPos);
-                }
+                currentHole.push_back(cursorPos);
             }
         }
     }
@@ -58,7 +50,7 @@ public:
     {
         if (Input::IsKeyPressed(GLFW_KEY_SPACE))
         {
-            triangles = ComputeDecomposition(outline, holes);
+            triangles = ComputeDecomposition(holes);
         }
     }
 
@@ -98,20 +90,6 @@ public:
             renderer.FlushLines();
         }
 
-        renderer.SetLineWidth(3);
-        for (int32 i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
-        {
-            renderer.DrawLine(outline[i0], outline[i1], Vec4(0, 1, 0.2f, 1));
-        }
-        renderer.FlushLines();
-        renderer.SetLineWidth(1);
-        for (int32 i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
-        {
-            renderer.DrawPoint(outline[i0], Vec4(1, 0, 0, 1));
-            renderer.DrawLine(outline[i0], outline[i1]);
-        }
-        renderer.FlushLines();
-
         for (const Polygon& p : triangles)
         {
             renderer.DrawShape(&p, identity, Renderer::DrawMode{});
@@ -125,7 +103,7 @@ public:
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Left click to create outline\nPress space to run decomposition");
+        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Ctrl click to create constraint edges\nPress space to run decomposition");
         ImGui::End();
     }
 

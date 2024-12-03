@@ -15,14 +15,11 @@ std::vector<Vec2> ComputeConvexHull(std::span<const Vec2> vertices);
 Circle ComputeCircle(std::span<Vec2> vertices);
 
 // Compute Delaunay triangles
-// Behavior is undefined for self-intersecting outline and holes
-std::vector<Polygon> ComputeTriangles(
-    std::span<Vec2> vertices, std::span<Vec2> outline = {}, std::span<std::vector<Vec2>> hole = {}
-);
+// Behavior is undefined for self-intersecting constraints
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<std::vector<Vec2>> constraints = {});
 
-// Compute convex polygon set from concave outline
-// There must be no duplicate vertices!
-// Behavior is undefined for self-intersecting outline
-std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline, std::span<std::vector<Vec2>> hole = {});
+// Compute convex polygon set from concave outlines
+// Behavior is undefined for self-intersecting constraints
+std::vector<Polygon> ComputeDecomposition(std::span<std::vector<Vec2>> constraints);
 
 } // namespace muli

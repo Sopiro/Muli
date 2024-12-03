@@ -11,7 +11,6 @@ class ConstrainedDelauney : public Demo
 
 public:
     std::vector<Vec2> vertices;
-    std::vector<Vec2> outline;
     std::vector<std::vector<Vec2>> holes;
 
     std::vector<Polygon> triangles;
@@ -59,12 +58,6 @@ public:
                 vertices.push_back(cursorPos);
             }
 
-            if (!creatingHole && Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                outline.push_back(cursorPos);
-                vertices.push_back(cursorPos);
-            }
-
             if (creatingHole && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
             {
                 currentHole.push_back(cursorPos);
@@ -80,7 +73,7 @@ public:
         {
             if (constrained)
             {
-                triangles = ComputeTriangles(vertices, outline, holes);
+                triangles = ComputeTriangles(vertices, holes);
             }
             else
             {
@@ -133,18 +126,6 @@ public:
             renderer.SetLineWidth(1);
         }
 
-        if (constrained && outline.size() > 2)
-        {
-            for (size_t i0 = outline.size() - 1, i1 = 0; i1 < outline.size(); i0 = i1, ++i1)
-            {
-                renderer.DrawPoint(outline[i0], Vec4(1, 0, 0, 1));
-                renderer.SetLineWidth(3);
-                renderer.DrawLine(outline[i0], outline[i1], Vec4(0, 1, 0.2f, 1));
-                renderer.FlushLines();
-                renderer.SetLineWidth(1);
-            }
-        }
-
         for (const Polygon& p : triangles)
         {
             renderer.DrawShape(&p, identity, Renderer::DrawMode{});
@@ -172,9 +153,7 @@ public:
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
-        ImGui::TextColored(
-            ImColor{ 12, 11, 14 }, "Left click to create normal vertex\nShift click to create outline\nCtrl click to create hole"
-        );
+        ImGui::TextColored(ImColor{ 12, 11, 14 }, "Left click to create normal vertex\nCtrl click to create constraint edges");
         ImGui::End();
     }
 
