@@ -283,56 +283,39 @@ Circle ComputeCircle(std::span<Vec2> points)
 
 struct TriEdge
 {
-    Vec2 p0, p1;
+    Vec2 v[2];
 
     TriEdge() = default;
-    TriEdge(const Vec2& p0, const Vec2& p1)
-        : p0{ p0 }
-        , p1{ p1 }
+    TriEdge(const Vec2& v0, const Vec2& v1)
+        : v{ v0, v1 }
     {
     }
 
     Vec2& operator[](int32 index)
     {
-        MuliAssert(index >= 0);
-        index %= 2;
-
-        switch (index)
-        {
-        case 0:
-            return p0;
-        default:
-            return p1;
-        }
+        MuliAssert(0 <= index && index < 2);
+        return v[index];
     }
 
     const Vec2& operator[](int32 index) const
     {
-        MuliAssert(index >= 0);
-        index %= 2;
-
-        switch (index)
-        {
-        case 0:
-            return p0;
-        default:
-            return p1;
-        }
+        MuliAssert(0 <= index && index < 2);
+        return v[index];
     }
 
     bool Intersect(const TriEdge& other) const
     {
-        // Test intersection (p0, p1) vs. (other.p0, other.p1)
+        // Test intersection (v0, v1) vs. (other.v0, other.v1)
         // Note it's working on open intervals
 
-        Vec2 d = p1 - p0;
-        if (Cross(d, other.p0 - p0) * Cross(d, other.p1 - p0) >= 0)
+        Vec2 d = v[1] - v[0];
+        if (Cross(d, other[0] - v[0]) * Cross(d, other[1] - v[0]) >= 0)
         {
             return false;
         }
-        d = other.p1 - other.p0;
+        d = other[1] - other[0];
 
-        if (Cross(d, p0 - other.p0) * Cross(d, p1 - other.p0) >= 0)
+        if (Cross(d, v[0] - other[0]) * Cross(d, v[1] - other[0]) >= 0)
         {
             return false;
         }
@@ -344,92 +327,70 @@ struct TriEdge
     {
         size_t operator()(const TriEdge& e) const
         {
-            return Hash(e.p0, e.p1);
+            return Hash(e[0], e[1]);
         }
     };
 };
 
 static inline bool operator==(const TriEdge& a, const TriEdge& b)
 {
-    return a.p0 == b.p0 && a.p1 == b.p1;
+    return a[0] == b[0] && a[1] == b[1];
 }
 
 static inline TriEdge operator~(const TriEdge& e)
 {
-    return TriEdge{ e.p1, e.p0 };
+    return TriEdge{ e[1], e[0] };
 }
 
 struct Tri
 {
-    Vec2 p0, p1, p2;
+    Vec2 v[3];
 
     Tri() = default;
-    Tri(const Vec2& p0, const Vec2& p1, const Vec2& p2)
-        : p0{ p0 }
-        , p1{ p1 }
-        , p2{ p2 }
+    Tri(const Vec2& v0, const Vec2& v1, const Vec2& v2)
+        : v{ v0, v1, v2 }
     {
     }
 
     Vec2& operator[](int32 index)
     {
-        MuliAssert(index >= 0);
-        index %= 3;
-
-        switch (index)
-        {
-        case 0:
-            return p0;
-        case 1:
-            return p1;
-        default:
-            return p2;
-        }
+        MuliAssert(0 <= index && index < 3);
+        return v[index];
     }
 
     const Vec2& operator[](int32 index) const
     {
-        MuliAssert(index >= 0);
-        index %= 3;
-
-        switch (index)
-        {
-        case 0:
-            return p0;
-        case 1:
-            return p1;
-        default:
-            return p2;
-        }
+        MuliAssert(0 <= index && index < 3);
+        return v[index];
     }
 
     bool HasEdge(const TriEdge& edge) const
     {
-        if (edge.p0 == p0 && edge.p1 == p1) return true;
-        if (edge.p0 == p1 && edge.p1 == p0) return true;
+        if (edge[0] == v[0] && edge[1] == v[1]) return true;
+        if (edge[0] == v[1] && edge[1] == v[0]) return true;
 
-        if (edge.p0 == p1 && edge.p1 == p2) return true;
-        if (edge.p0 == p2 && edge.p1 == p1) return true;
+        if (edge[0] == v[1] && edge[1] == v[2]) return true;
+        if (edge[0] == v[2] && edge[1] == v[1]) return true;
 
-        if (edge.p0 == p2 && edge.p1 == p0) return true;
-        if (edge.p0 == p0 && edge.p1 == p2) return true;
+        if (edge[0] == v[2] && edge[1] == v[0]) return true;
+        if (edge[0] == v[0] && edge[1] == v[2]) return true;
 
         return false;
     }
 
     bool HasVertex(const Vec2& p) const
     {
-        return p0 == p || p1 == p || p2 == p;
+        return v[0] == p || v[1] == p || v[2] == p;
     }
 
     Vec2 GetCenter() const
     {
-        return (p0 + p1 + p2) / 3;
+        return (v[0] + v[1] + v[2]) / 3;
     }
 
     std::array<TriEdge, 3> GetEdges() const
     {
-        return { TriEdge{ p0, p1 }, TriEdge{ p1, p2 }, TriEdge{ p2, p0 } };
+        return { TriEdge{ v[0], v[1] }, TriEdge{ v[1], v[2] }, TriEdge{ v[2], v[0] } };
     }
 
     TriEdge GetEdge(int32 index) const
@@ -439,21 +400,21 @@ struct Tri
         switch (index)
         {
         case 0:
-            return TriEdge(p0, p1);
+            return TriEdge(v[0], v[1]);
         case 1:
-            return TriEdge(p1, p2);
+            return TriEdge(v[1], v[2]);
         default:
-            return TriEdge(p2, p0);
+            return TriEdge(v[2], v[0]);
         }
     }
 
     int32 GetIndex(const Vec2& p) const
     {
-        if (p == p0)
+        if (p == v[0])
             return 0;
-        else if (p == p1)
+        else if (p == v[1])
             return 1;
-        else if (p == p2)
+        else if (p == v[2])
             return 2;
         else
             return -1;
@@ -470,13 +431,13 @@ struct Tri
 
 static inline bool operator==(const Tri& a, const Tri& b)
 {
-    return a.p0 == b.p0 && a.p1 == b.p1 && a.p2 == b.p2;
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }
 
 static inline bool RayCastEdge(Vec2 o, Vec2 d, const TriEdge& edge)
 {
-    Vec2 e = edge.p1 - edge.p0;
-    Vec2 o2a = edge.p0 - o;
+    Vec2 e = edge[1] - edge[0];
+    Vec2 o2a = edge[0] - o;
 
     float c = Cross(d, e);
 
@@ -513,10 +474,8 @@ struct Poly
     Poly() = default;
 
     Poly(const Tri& tri)
+        : v{ tri[0], tri[1], tri[2] }
     {
-        v.push_back(tri.p0);
-        v.push_back(tri.p1);
-        v.push_back(tri.p2);
     }
 
     Vec2& operator[](int32 index)
@@ -587,7 +546,7 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 {
     Poly merged;
 
-    int32 i0 = p1.GetIndex(e.p1);
+    int32 i0 = p1.GetIndex(e[1]);
     int32 i1 = (i0 - 1 + p1.VertexCount()) % p1.VertexCount();
 
     for (int32 i = i0; i != i1; i = (i + 1) % p1.VertexCount())
@@ -595,7 +554,7 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
         merged.v.push_back(p1[i]);
     }
 
-    i0 = p2.GetIndex(e.p0);
+    i0 = p2.GetIndex(e[0]);
     i1 = (i0 - 1 + p2.VertexCount()) % p2.VertexCount();
 
     for (int32 i = i0; i != i1; i = (i + 1) % p2.VertexCount())
@@ -610,7 +569,7 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 
 // The Bowyer–Watson algorithm (https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
 // + Brute force constraint resolution
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
+static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
 {
     std::vector<TriEdge> constraintEdges;
     std::vector<TriEdge> outlineEdges;
@@ -681,7 +640,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
 
         for (const Tri& t : tris)
         {
-            Circle c = ComputeCircle3(t.p0, t.p1, t.p2);
+            Circle c = ComputeCircle3(t[0], t[1], t[2]);
             if (c.TestPoint(identity, p))
             {
                 badTris.push_back(t);
@@ -715,7 +674,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
         for (const TriEdge& e : poly)
         {
             // Guaranteed to be CCW
-            tris.emplace(e.p0, e.p1, p);
+            tris.emplace(e[0], e[1], p);
         }
     }
 
@@ -771,16 +730,16 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
                 const Tri* t2 = edge2Tri[~be];
 
                 // Build CCW quadrilateral
-                Vec2 p0 = be.p0;
-                Vec2 p1 = (*t2)[t2->GetIndex(p0) + 1];
-                Vec2 p2 = be.p1;
-                Vec2 p3 = (*t1)[t1->GetIndex(p0) + 2];
+                Vec2 v0 = be[0];
+                Vec2 v1 = (*t2)[(t2->GetIndex(v0) + 1) % 3];
+                Vec2 p2 = be[1];
+                Vec2 p3 = (*t1)[(t1->GetIndex(v0) + 2) % 3];
 
                 // Check convexity and skip if it's concave
-                float s = Cross(p1 - p0, p2 - p1);
-                if (s * Cross(p2 - p1, p3 - p2) < 0) continue;
-                if (s * Cross(p3 - p2, p0 - p3) < 0) continue;
-                if (s * Cross(p0 - p3, p1 - p0) < 0) continue;
+                float s = Cross(v1 - v0, p2 - v1);
+                if (s * Cross(p2 - v1, p3 - p2) < 0) continue;
+                if (s * Cross(p3 - p2, v0 - p3) < 0) continue;
+                if (s * Cross(v0 - p3, v1 - v0) < 0) continue;
 
                 resolved.insert(~be);
 
@@ -798,8 +757,8 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
                 tris.erase(*t1);
                 tris.erase(*t2);
 
-                t1 = &(*(tris.emplace(p0, p1, p3).first));
-                t2 = &(*(tris.emplace(p1, p2, p3).first));
+                t1 = &(*(tris.emplace(v0, v1, p3).first));
+                t2 = &(*(tris.emplace(v1, p2, p3).first));
 
                 for (const TriEdge& e : t1->GetEdges())
                 {
@@ -816,13 +775,13 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
         }
     }
 
-    std::vector<Polygon> res;
+    std::vector<Tri> res;
     res.reserve(tris.size());
 
     for (const Tri& t : tris)
     {
         // Discard triangle containing super triangle vertices
-        if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
+        if (t.HasVertex(super[0]) || t.HasVertex(super[1]) || t.HasVertex(super[2]))
         {
             continue;
         }
@@ -839,7 +798,22 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
             continue;
         }
 
-        res.push_back(Polygon{ t.p0, t.p1, t.p2 });
+        res.emplace_back(t[0], t[1], t[2]);
+    }
+
+    return res;
+}
+
+std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
+{
+    std::vector<Tri> triangles = ComputeTriangulation(v, outline, holes);
+
+    std::vector<Polygon> res;
+    res.reserve(triangles.size());
+
+    for (const Tri& t : triangles)
+    {
+        res.emplace_back(t.v, 3);
     }
 
     return res;
@@ -847,18 +821,8 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
 
 std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
 {
-    auto tris = ComputeTriangles({}, outline, holes);
-
-    std::vector<Poly> polys;
-    polys.reserve(tris.size());
-
-    for (const Polygon& tri : tris)
-    {
-        Poly& p = polys.emplace_back();
-        p.v.push_back(tri.GetVertex(0));
-        p.v.push_back(tri.GetVertex(1));
-        p.v.push_back(tri.GetVertex(2));
-    }
+    std::vector<Tri> triangles = ComputeTriangulation({}, outline, holes);
+    std::vector<Poly> polys(triangles.begin(), triangles.end());
 
     std::unordered_map<TriEdge, Poly*, TriEdge::Hasher> edge2Poly;
 
