@@ -109,10 +109,11 @@ public:
                     {
                         renderer.SetLineWidth(3);
                         renderer.DrawLine(hole[i0], hole[i1], Vec4(1, 1, 0, 1));
-                        renderer.FlushLines();
-                        renderer.SetLineWidth(1);
                     }
                 }
+
+                renderer.FlushLines();
+                renderer.SetLineWidth(1);
             }
         }
 
@@ -125,10 +126,11 @@ public:
                 {
                     renderer.SetLineWidth(3);
                     renderer.DrawLine(currentHole[i0], currentHole[i1], Vec4(1, 1, 0, 1));
-                    renderer.FlushLines();
-                    renderer.SetLineWidth(1);
                 }
             }
+
+            renderer.FlushLines();
+            renderer.SetLineWidth(1);
         }
 
         if (constrained && outline.size() > 2)

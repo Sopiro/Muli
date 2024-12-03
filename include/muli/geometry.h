@@ -23,6 +23,6 @@ std::vector<Polygon> ComputeTriangles(
 // Compute convex polygon set from concave outline
 // There must be no duplicate vertices!
 // Behavior is undefined for self-intersecting outline
-std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline);
+std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline, std::span<std::vector<Vec2>> hole = {});
 
 } // namespace muli

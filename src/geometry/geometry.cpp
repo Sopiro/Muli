@@ -845,199 +845,21 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> v, std::span<Vec2> outline
     return res;
 }
 
-std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
+std::vector<Polygon> ComputeDecomposition(std::span<Vec2> outline, std::span<std::vector<Vec2>> holes)
 {
-    if (vertices.size() < 3)
-    {
-        return {};
-    }
-
-    std::vector<TriEdge> constraintEdges;
-    for (size_t i0 = vertices.size() - 1, i1 = 0; i1 < vertices.size(); i0 = i1, ++i1)
-    {
-        constraintEdges.emplace_back(vertices[i0], vertices[i1]);
-    }
-
-    // Prepare super triangle
-    AABB bounds{ Vec2{ max_value, max_value }, -Vec2{ max_value, max_value } };
-
-    for (const Vec2& p : vertices)
-    {
-        bounds = AABB::Union(bounds, p);
-    }
-
-    Vec2 extents = bounds.GetExtents();
-
-    const float margin = 0.1f;
-    Tri super{ Vec2{ bounds.min.x - extents.x - margin, bounds.min.y - margin },
-               Vec2{ bounds.max.x + extents.x + margin, bounds.min.y - margin },
-               Vec2{ bounds.min.x + extents.x / 2, bounds.max.y + extents.y + margin } };
-
-    std::unordered_set<Tri, Tri::Hasher> tris;
-    tris.insert(super);
-
-    for (const Vec2& p : vertices)
-    {
-        std::vector<Tri> badTris;
-
-        for (const Tri& t : tris)
-        {
-            Circle c = ComputeCircle3(t.p0, t.p1, t.p2);
-            if (c.TestPoint(identity, p))
-            {
-                badTris.push_back(t);
-            }
-        }
-
-        std::unordered_set<TriEdge, TriEdge::Hasher> poly;
-
-        for (const Tri& t : badTris)
-        {
-            std::array<TriEdge, 3> edges = t.GetEdges();
-
-            for (const TriEdge& e : edges)
-            {
-                if (poly.contains(~e))
-                {
-                    // Remove shared edge
-                    poly.erase(~e);
-                    continue;
-                }
-
-                poly.insert(e);
-            }
-        }
-
-        for (const Tri& t : badTris)
-        {
-            tris.erase(t);
-        }
-
-        for (const TriEdge& e : poly)
-        {
-            // Guaranteed to be CCW
-            tris.emplace(e.p0, e.p1, p);
-        }
-    }
-
-    std::unordered_map<TriEdge, const Tri*, TriEdge::Hasher> edge2Tri;
-
-    for (const Tri& t : tris)
-    {
-        for (const TriEdge& e : t.GetEdges())
-        {
-            MuliAssert(!edge2Tri.contains(e));
-            edge2Tri.emplace(e, &t);
-        }
-    }
-
-    for (const TriEdge& ce : constraintEdges)
-    {
-        if (edge2Tri.contains(ce))
-        {
-            continue;
-        }
-
-        while (true)
-        {
-            std::vector<TriEdge> badEdges;
-            std::unordered_set<TriEdge, TriEdge::Hasher> resolved;
-
-            // Collect all bad edges
-            for (const Tri& t : tris)
-            {
-                for (const TriEdge& e : t.GetEdges())
-                {
-                    if (e.Intersect(ce))
-                    {
-                        badEdges.push_back(e);
-                    }
-                }
-            }
-
-            if (badEdges.size() == 0)
-            {
-                break;
-            }
-
-            // Resolve all bad edges
-            for (const TriEdge& be : badEdges)
-            {
-                if (resolved.contains(be))
-                {
-                    continue;
-                }
-
-                const Tri* t1 = edge2Tri[be];
-                const Tri* t2 = edge2Tri[~be];
-
-                // Build CCW quadrilateral
-                Vec2 p0 = be.p0;
-                Vec2 p1 = (*t2)[t2->GetIndex(p0) + 1];
-                Vec2 p2 = be.p1;
-                Vec2 p3 = (*t1)[t1->GetIndex(p0) + 2];
-
-                // Check convexity and skip if it's concave
-                float s = Cross(p1 - p0, p2 - p1);
-                if (s * Cross(p2 - p1, p3 - p2) < 0) continue;
-                if (s * Cross(p3 - p2, p0 - p3) < 0) continue;
-                if (s * Cross(p0 - p3, p1 - p0) < 0) continue;
-
-                resolved.insert(~be);
-
-                // Flip edge
-                for (const TriEdge& e : t1->GetEdges())
-                {
-                    edge2Tri.erase(e);
-                }
-
-                for (const TriEdge& e : t2->GetEdges())
-                {
-                    edge2Tri.erase(e);
-                }
-
-                tris.erase(*t1);
-                tris.erase(*t2);
-
-                t1 = &(*(tris.emplace(p0, p1, p3).first));
-                t2 = &(*(tris.emplace(p1, p2, p3).first));
-
-                for (const TriEdge& e : t1->GetEdges())
-                {
-                    edge2Tri.emplace(e, t1);
-                }
-
-                for (const TriEdge& e : t2->GetEdges())
-                {
-                    edge2Tri.emplace(e, t2);
-                }
-            }
-
-            // Repeat until there are no bad edges
-        }
-    }
+    auto tris = ComputeTriangles({}, outline, holes);
 
     std::vector<Poly> polys;
     polys.reserve(tris.size());
 
-    for (const Tri& t : tris)
+    for (const Polygon& tri : tris)
     {
-        // Discard triangle containing super triangle vertices
-        if (t.HasVertex(super.p0) || t.HasVertex(super.p1) || t.HasVertex(super.p2))
-        {
-            continue;
-        }
-
-        // Discard triangle lies outside the outline
-        if (constraintEdges.size() > 2 && !Contains(constraintEdges, t.GetCenter()))
-        {
-            continue;
-        }
-
-        polys.emplace_back(t);
+        Poly& p = polys.emplace_back();
+        p.v.push_back(tri.GetVertex(0));
+        p.v.push_back(tri.GetVertex(1));
+        p.v.push_back(tri.GetVertex(2));
     }
 
-    edge2Tri.clear();
     std::unordered_map<TriEdge, Poly*, TriEdge::Hasher> edge2Poly;
 
     while (true)
@@ -1068,17 +890,11 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                 }
                 // Merged polygon is convex, so we replace it with the merged one
 
-                for (int32 j = i - 1; j >= 0; --j)
-                {
-                    edge2Poly.erase(p.GetEdge(j));
-                }
+                edge2Poly.clear();
+
                 polys[index] = std::move(polys.back());
                 polys.pop_back();
 
-                for (int32 j = 0; j < other->VertexCount(); ++j)
-                {
-                    edge2Poly.erase(other->GetEdge(j));
-                }
                 *other = std::move(polys.back());
                 polys.pop_back();
 
