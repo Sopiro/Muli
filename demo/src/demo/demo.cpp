@@ -230,6 +230,7 @@ bool Demo::EnablePolygonCreateDecomposition()
     static bool creating = false;
     static bool staticBody;
     static std::vector<Vec2> points;
+    static std::vector<std::vector<Vec2>> constraints;
     static std::vector<Polygon> poly;
 
     if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -248,6 +249,12 @@ bool Demo::EnablePolygonCreateDecomposition()
         }
     }
 
+    if (creating && Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
+    {
+        constraints.push_back(std::move(points));
+        points.clear();
+    }
+
     if (creating)
     {
         if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -255,19 +262,18 @@ bool Demo::EnablePolygonCreateDecomposition()
             points.push_back(cursorPos);
         }
 
-        for (int32 i0 = points.size() - 1, i1 = 0; i1 < points.size(); i0 = i1, ++i1)
-        {
-            renderer.DrawPoint(points[i0]);
-            renderer.DrawLine(points[i0], points[i1]);
-        }
-
-        if (points.size() < 3)
+        if (points.size() == 2)
         {
             renderer.DrawLine(points.back(), cursorPos);
         }
 
         auto create_body = [&](RigidBody::Type type) {
             RigidBody* b;
+
+            if (constraints.size() > 0)
+            {
+                goto createpoly;
+            }
 
             switch (points.size())
             {
@@ -286,14 +292,15 @@ bool Demo::EnablePolygonCreateDecomposition()
             }
             default:
             {
+            createpoly:
                 b = world->CreateEmptyBody(type);
-                poly = ComputeDecomposition({ &points, 1 });
+                constraints.push_back(std::move(points));
+                poly = ComputeDecomposition(constraints);
 
                 for (Shape& s : poly)
                 {
                     b->CreateCollider(&s);
                 }
-                break;
             }
             }
 
@@ -301,6 +308,7 @@ bool Demo::EnablePolygonCreateDecomposition()
 
             creating = false;
             points.clear();
+            constraints.clear();
         };
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
@@ -310,6 +318,21 @@ bool Demo::EnablePolygonCreateDecomposition()
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
             create_body(RigidBody::Type::static_body);
+        }
+    }
+
+    for (int32 i0 = points.size() - 1, i1 = 0; i1 < points.size(); i0 = i1, ++i1)
+    {
+        renderer.DrawPoint(points[i0]);
+        renderer.DrawLine(points[i0], points[i1]);
+    }
+
+    for (auto& p : constraints)
+    {
+        for (int32 i0 = p.size() - 1, i1 = 0; i1 < p.size(); i0 = i1, ++i1)
+        {
+            renderer.DrawPoint(p[i0]);
+            renderer.DrawLine(p[i0], p[i1]);
         }
     }
 
