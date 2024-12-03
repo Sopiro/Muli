@@ -581,33 +581,7 @@ struct Poly
 
         return true;
     }
-
-    struct Hasher
-    {
-        size_t operator()(const Poly& p) const
-        {
-            return HashBuffer(p.v.data(), p.v.size() * sizeof(Vec2));
-        }
-    };
 };
-
-static inline bool operator==(const Poly& a, const Poly& b)
-{
-    if (a.NumVertices() != b.NumVertices())
-    {
-        return false;
-    }
-
-    for (int32 i = 0; i < a.NumVertices(); ++i)
-    {
-        if (a[i] != b[i])
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 {
@@ -1041,7 +1015,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
         }
     }
 
-    std::unordered_set<Poly, Poly::Hasher> polys;
+    std::vector<Poly> polys;
 
     for (const Tri& t : tris)
     {
@@ -1057,17 +1031,19 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
             continue;
         }
 
-        polys.emplace(t);
+        polys.emplace_back(t);
     }
 
     edge2Tri.clear();
-    std::unordered_map<TriEdge, const Poly*, TriEdge::Hasher> edge2Poly;
+    std::unordered_map<TriEdge, Poly*, TriEdge::Hasher> edge2Poly;
 
     while (true)
     {
     repeat:
-        for (const Poly& p : polys)
+        for (size_t index = 0; index < polys.size(); ++index)
         {
+            Poly& p = polys[index];
+
             for (int32 i = 0; i < p.NumVertices(); ++i)
             {
                 TriEdge e = p.GetEdge(i);
@@ -1078,7 +1054,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                     continue;
                 }
 
-                const Poly* other = edge2Poly[~e];
+                Poly* other = edge2Poly[~e];
 
                 Poly merged = Merge(*other, p, ~e);
                 if (!merged.IsConvex())
@@ -1091,15 +1067,17 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                 {
                     edge2Poly.erase(p.GetEdge(j));
                 }
-                polys.erase(p);
+                polys[index] = polys.back();
+                polys.pop_back();
 
                 for (int32 j = 0; j < other->NumVertices(); ++j)
                 {
                     edge2Poly.erase(other->GetEdge(j));
                 }
-                polys.erase(*other);
+                *other = std::move(polys.back());
+                polys.pop_back();
 
-                polys.insert(merged);
+                polys.push_back(merged);
                 goto repeat;
             }
         }
