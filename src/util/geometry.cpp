@@ -522,7 +522,7 @@ struct Poly
     Vec2& operator[](int32 index)
     {
         MuliAssert(index > 0);
-        index %= 3;
+        index %= v.size();
 
         return v[index];
     }
@@ -530,7 +530,7 @@ struct Poly
     const Vec2& operator[](int32 index) const
     {
         MuliAssert(index >= 0);
-        index %= 3;
+        index %= v.size();
 
         return v[index];
     }
@@ -563,6 +563,11 @@ struct Poly
     bool IsConvex() const
     {
         int32 count = v.size();
+        if (count < 3)
+        {
+            return false;
+        }
+
         for (int32 i0 = count - 1, i1 = 0; i1 < count; i0 = i1, ++i1)
         {
             Vec2 e0 = v[i1] - v[i0];
@@ -608,27 +613,23 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 {
     Poly merged;
 
-    int32 b0 = p1.GetIndex(e.p0);
-    int32 b1 = (b0 + 1) % p1.NumVertices();
+    int32 i0 = p1.GetIndex(e.p1);
+    int32 i1 = (i0 - 1 + p1.NumVertices()) % p1.NumVertices();
 
-    for (int32 i = (b1 + 1) % p1.NumVertices(); i != b0;)
+    for (int32 i = i0; i != i1; i = (i + 1) % p1.NumVertices())
     {
         merged.v.push_back(p1[i]);
-        i = (i + 1) % p1.NumVertices();
     }
 
-    merged.v.push_back(e.p0);
+    i0 = p2.GetIndex(e.p0);
+    i1 = (i0 - 1 + p2.NumVertices()) % p2.NumVertices();
 
-    int32 m1 = p2.GetIndex(e.p1);
-    int32 m0 = (m1 + 1) % p2.NumVertices();
-
-    for (int32 i = (m0 + 1) % p2.NumVertices(); i != m1;)
+    for (int32 i = i0; i != i1; i = (i + 1) % p2.NumVertices())
     {
         merged.v.push_back(p2[i]);
-        i = (i + 1) % p2.NumVertices();
     }
 
-    merged.v.push_back(e.p1);
+    MuliAssert(merged.NumVertices() == (p1.NumVertices() + p2.NumVertices() - 2));
 
     return merged;
 }
@@ -1106,8 +1107,6 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
 
         break;
     }
-
-    std::cout << polys.size() << std::endl;
 
     std::vector<Polygon> res;
     for (const Poly& p : polys)
