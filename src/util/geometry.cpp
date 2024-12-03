@@ -1065,10 +1065,9 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
 
     while (true)
     {
-    restart:
+    repeat:
         for (const Poly& p : polys)
         {
-            // Loop over all edges
             for (int32 i = 0; i < p.NumVertices(); ++i)
             {
                 TriEdge e = p.GetEdge(i);
@@ -1101,7 +1100,7 @@ std::vector<Polygon> ComputeDecomposition(std::span<Vec2> vertices)
                 polys.erase(*other);
 
                 polys.insert(merged);
-                goto restart;
+                goto repeat;
             }
         }
 

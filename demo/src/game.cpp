@@ -19,8 +19,8 @@ Game::Game(Application& app)
 
     sort_demos(demos);
 
-    // InitDemo(0);
-    InitDemo(demoCount - 1);
+    InitDemo(0);
+    // InitDemo(demoCount - 1);
     // InitDemo(42); // Logo
 }
 
