@@ -544,7 +544,7 @@ struct Poly
 
     int32 NumVertices() const
     {
-        return v.size();
+        return int32(v.size());
     }
 
     int32 GetIndex(const Vec2& p) const
@@ -562,7 +562,7 @@ struct Poly
 
     bool IsConvex() const
     {
-        int32 count = v.size();
+        int32 count = NumVertices();
         if (count < 3)
         {
             return false;
