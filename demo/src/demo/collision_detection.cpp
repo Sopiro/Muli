@@ -36,7 +36,7 @@ public:
     {
         // ImGui::ShowDemoWindow();
 
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
+        ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
         if (ImGui::Begin("Collision detection", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::SetNextItemWidth(100);
@@ -76,7 +76,7 @@ public:
         ImGui::End();
 
         ImGui::SetNextWindowPos(
-            { Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
+            { Window::Get()->GetWindowSize().x - 5, Window::Get()->GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
         );
         ImGui::Begin(
             "notice", NULL,

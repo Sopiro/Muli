@@ -12,14 +12,16 @@ class Input final
 public:
     Input() = delete;
 
-    static void Init();
     static void Update();
+
     static bool IsKeyDown(int32 key);
     static bool IsKeyPressed(int32 key);
     static bool IsKeyReleased(int32 key);
+
     static bool IsMouseDown(int32 button);
     static bool IsMousePressed(int32 button);
     static bool IsMouseReleased(int32 button);
+
     static Vec2 GetMousePosition();
     static Vec2 GetMouseAcceleration();
     static Vec2 GetMouseScroll();
@@ -27,27 +29,18 @@ public:
 private:
     friend class Window;
 
-    static inline std::array<bool, GLFW_KEY_LAST + 1> last_keys;
-    static inline std::array<bool, GLFW_KEY_LAST + 1> curr_keys;
+    inline static std::array<bool, GLFW_KEY_LAST + 1> last_keys = { 0 };
+    inline static std::array<bool, GLFW_KEY_LAST + 1> curr_keys = { 0 };
 
-    static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> last_btns;
-    static inline std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> curr_btns;
+    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> last_btns = { 0 };
+    inline static std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> curr_btns = { 0 };
 
-    static inline Vec2 curr_mouse_pos = Vec2::zero;
-    static inline Vec2 last_mouse_pos = Vec2::zero;
-    static inline Vec2 mouse_acceleration = Vec2::zero;
+    inline static Vec2 curr_mouse_pos{ 0 };
+    inline static Vec2 last_mouse_pos{ 0 };
+    inline static Vec2 mouse_acceleration{ 0 };
 
-    static inline Vec2 mouse_scroll = Vec2::zero;
+    inline static Vec2 mouse_scroll{ 0 };
 };
-
-inline void Input::Init()
-{
-    last_keys.fill(false);
-    curr_keys.fill(false);
-
-    last_btns.fill(false);
-    curr_btns.fill(false);
-}
 
 inline void Input::Update()
 {
@@ -104,5 +97,4 @@ inline Vec2 Input::GetMouseScroll()
 {
     return mouse_scroll;
 }
-
 } // namespace muli

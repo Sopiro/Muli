@@ -13,8 +13,7 @@ Demo::Demo(Game& game)
     , targetCollider{ nullptr }
     , cursorJoint{ nullptr }
 {
-    dt = 1.0f / Window::Get().GetRefreshRate();
-    screenBounds = Window::Get().GetWindowSize() * 0.01f;
+    screenBounds = Window::Get()->GetWindowSize() * 0.01f;
 
     // dt = 1.0f / 60.0f;
     settings.world_bounds.min.y = -30.0f;

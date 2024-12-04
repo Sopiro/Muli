@@ -1,16 +1,17 @@
 #include "game.h"
-#include "application.h"
+#include "window.h"
+
+extern void SetTickRate(int32 frameRate);
 
 namespace muli
 {
 
-Game::Game(Application& app)
-    : app{ app }
-    , demoCount{ demos.size() }
+Game::Game()
+    : demoCount{ demos.size() }
     , demoIndex{ demos.size() }
 {
     UpdateProjectionMatrix();
-    Window::Get().SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
+    Window::Get()->SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
         glViewport(0, 0, width, height);
         UpdateProjectionMatrix();
     });
@@ -40,6 +41,7 @@ void Game::Update(float dt)
     time += dt;
 
     UpdateInput();
+    demo->dt = dt;
     demo->Step();
     UpdateUI();
 }
@@ -103,11 +105,11 @@ void Game::UpdateUI()
                     if (ImGui::Button("Restart")) InitDemo(demoIndex);
                 }
 
-                static int32 f = Window::Get().GetRefreshRate();
+                static int32 f = Window::Get()->GetRefreshRate();
                 ImGui::SetNextItemWidth(150);
-                if (ImGui::SliderInt("Frame rate", &f, 30, 300))
+                if (ImGui::SliderInt("Tickrate", &f, 30, 300))
                 {
-                    app.SetFrameRate(f);
+                    SetTickRate(f);
                 }
                 ImGui::Separator();
 
@@ -196,7 +198,7 @@ void Game::UpdateUI()
 
     ImGui::End();
 
-    ImGui::SetNextWindowPos({ 0, Window::Get().GetWindowSize().y }, ImGuiCond_Always, ImVec2{ 0.0f, 1.0f });
+    ImGui::SetNextWindowPos({ 0, Window::Get()->GetWindowSize().y }, ImGuiCond_Always, ImVec2{ 0.0f, 1.0f });
     ImGui::Begin(
         "Body info", NULL,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
@@ -458,7 +460,7 @@ void Game::Render()
 
 void Game::UpdateProjectionMatrix()
 {
-    Vec2 windowSize = Window::Get().GetWindowSize();
+    Vec2 windowSize = Window::Get()->GetWindowSize();
     windowSize /= 100.0f;
 
     Mat4 projMatrix =

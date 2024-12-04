@@ -133,9 +133,9 @@ set_target_properties(muli PROPERTIES
 )
 
 if(MSVC)
-    target_compile_options(muli PRIVATE /W4 /WX)
+    target_compile_options(muli PRIVATE /W4 /WX /wd4819)
 else()
-    target_compile_options(muli PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers)
+    target_compile_options(muli PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 install(

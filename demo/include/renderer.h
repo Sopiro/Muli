@@ -89,7 +89,11 @@ private:
 
 inline void Renderer::SetPointSize(float size) const
 {
+#ifndef __EMSCRIPTEN__
     glPointSize(size);
+#else
+    MuliNotUsed(size);
+#endif
 }
 
 inline void Renderer::SetLineWidth(float lineWidth) const
@@ -220,7 +224,7 @@ inline void Renderer::DrawAABB(const AABB& aabb)
 inline Vec2 Renderer::Pick(Vec2 worldPos) const
 {
     // Viewport space
-    Vec2 windowSize = Window::Get().GetWindowSize();
+    Vec2 windowSize = Window::Get()->GetWindowSize();
 
     worldPos.y = windowSize.y - worldPos.y - 1;
     worldPos.x /= windowSize.x;

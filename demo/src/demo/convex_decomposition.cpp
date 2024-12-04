@@ -96,7 +96,7 @@ public:
         }
 
         ImGui::SetNextWindowPos(
-            { Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
+            { Window::Get()->GetWindowSize().x - 5, Window::Get()->GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
         );
         ImGui::Begin(
             "DecompositionHelp", NULL,

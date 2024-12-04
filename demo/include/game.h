@@ -10,13 +10,11 @@
 namespace muli
 {
 
-class Application;
-
 class Game final : NonCopyable,
                    ColliderDestroyCallback
 {
 public:
-    Game(Application& app);
+    Game();
     ~Game() noexcept;
 
     void Update(float dt);
@@ -32,8 +30,6 @@ public:
     void PrevDemo();
 
 private:
-    Application& app;
-
     Renderer renderer;
 
     float time = 0.0f;

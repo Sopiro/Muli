@@ -56,7 +56,7 @@ public:
 
     void UpdateUI() override
     {
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
+        ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
         if (ImGui::Begin("Resitution test", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {

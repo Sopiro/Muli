@@ -33,6 +33,8 @@ public:
     Collider* GetTargetCollider();
 
 protected:
+    friend class Game;
+
     void FindTargetBody();
     void EnableKeyboardShortcut();
     void EnableBodyCreate();

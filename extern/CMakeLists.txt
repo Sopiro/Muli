@@ -6,10 +6,16 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(glad)
 
 # glfw
-option(GLFW_BUILD_EXAMPLES OFF)
-option(GLFW_BUILD_TESTS OFF)
-option(GLFW_BUILD_DOCS OFF)
-add_subdirectory(glfw)
+if(NOT EMSCRIPTEN)
+    option(GLFW_BUILD_EXAMPLES OFF)
+    option(GLFW_BUILD_TESTS OFF)
+    option(GLFW_BUILD_DOCS OFF)
+    add_subdirectory(glfw)
+endif()
+
+if(MSVC)
+    target_compile_options(glfw PRIVATE /wd4819)
+endif()
 
 # imgui 
 file(GLOB IMGUI_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h)
@@ -33,5 +39,9 @@ set_target_properties(imgui PROPERTIES
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )
+
+if(MSVC)
+    target_compile_options(imgui PRIVATE /wd4819)
+endif()
 
 target_link_libraries(imgui glfw)

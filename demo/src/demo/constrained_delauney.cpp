@@ -134,7 +134,7 @@ public:
 
     void UpdateUI() override
     {
-        ImGui::SetNextWindowPos({ Window::Get().GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
+        ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
 
         if (ImGui::Begin("Delauney", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
@@ -146,7 +146,7 @@ public:
         ImGui::End();
 
         ImGui::SetNextWindowPos(
-            { Window::Get().GetWindowSize().x - 5, Window::Get().GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
+            { Window::Get()->GetWindowSize().x - 5, Window::Get()->GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
         );
         ImGui::Begin(
             "DelauneyHelp", NULL,
