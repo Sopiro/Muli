@@ -2,13 +2,14 @@
 
 #include "camera.h"
 #include "common.h"
-#include "demo.h"
 #include "input.h"
 #include "options.h"
 #include "renderer.h"
 
 namespace muli
 {
+
+class Demo;
 
 class Game final : NonCopyable,
                    ColliderDestroyCallback
@@ -29,9 +30,13 @@ public:
     void NextDemo();
     void PrevDemo();
 
+    float GetWindowScale() const;
+    void SetWindowScale(float newScale);
+
 private:
     Renderer renderer;
 
+    float scale = 0.01f;
     float time = 0.0f;
 
     size_t demoCount;
@@ -79,6 +84,16 @@ inline void Game::PrevDemo()
 {
     newIndex = (demoIndex - 1 + demoCount) % demoCount;
     restart = true;
+}
+
+inline float Game::GetWindowScale() const
+{
+    return scale;
+}
+
+inline void Game::SetWindowScale(float newScale)
+{
+    scale = newScale;
 }
 
 inline Renderer& Game::GetRenderer()

@@ -1,5 +1,4 @@
 #include "demo.h"
-#include "game.h"
 #include "window.h"
 
 namespace muli
@@ -13,7 +12,7 @@ Demo::Demo(Game& game)
     , targetCollider{ nullptr }
     , cursorJoint{ nullptr }
 {
-    screenBounds = Window::Get()->GetWindowSize() * 0.01f;
+    screenBounds = Window::Get()->GetWindowSize() * game.GetWindowScale();
 
     // dt = 1.0f / 60.0f;
     settings.world_bounds.min.y = -30.0f;
@@ -579,8 +578,8 @@ void Demo::EnableCameraControl()
     if (cameraMove)
     {
         Vec2 dist = Input::GetMousePosition() - cursorStart;
-        dist.x *= 0.01f * -camera.scale.x;
-        dist.y *= 0.01f * camera.scale.y;
+        dist.x *= game.GetWindowScale() * -camera.scale.x;
+        dist.y *= game.GetWindowScale() * camera.scale.y;
         camera.position = cameraPosStart + dist;
     }
 }

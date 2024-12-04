@@ -1,5 +1,4 @@
 #include "demo.h"
-#include "game.h"
 #include "window.h"
 
 namespace muli

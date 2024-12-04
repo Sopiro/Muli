@@ -2,6 +2,7 @@
 
 #include "camera.h"
 #include "common.h"
+#include "game.h"
 #include "input.h"
 #include "muli/random.h"
 #include "options.h"
@@ -9,7 +10,6 @@
 namespace muli
 {
 
-class Game;
 class Renderer;
 struct DebugOptions;
 

@@ -45,7 +45,7 @@ constexpr float aabb_multiplier = 3.0f;
 // Instead, it is advisable to use the default_radius as the minimum radius.
 constexpr float minimum_radius = linear_slop * 2.0f;
 constexpr float default_radius = linear_slop * 2.5f;
-constexpr float default_density = 12.5f;
+constexpr float default_density = 1.0f;
 constexpr float default_friction = 0.5f;
 constexpr float default_restitution = 0.0f;
 constexpr float default_restitution_treshold = 2.0f; // m/s
