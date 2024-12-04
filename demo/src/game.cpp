@@ -1,6 +1,8 @@
 #include "game.h"
 #include "window.h"
 
+#include <ctime>
+
 extern void SetTickRate(int32 frameRate);
 
 namespace muli
