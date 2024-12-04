@@ -70,28 +70,31 @@ void Demo::EnableBodyCreate()
     static bool create_circle;
     static Vec2 mStart;
 
-    if (Input::IsKeyDown(GLFW_KEY_1))
+    if (!ImGui::GetIO().WantCaptureKeyboard)
     {
-        RigidBody* b = world->CreateBox(0.5f);
-        b->SetPosition(cursorPos);
-    }
-    if (Input::IsKeyDown(GLFW_KEY_2))
-    {
-        RigidBody* b = world->CreateCircle(0.25f);
-        b->SetPosition(cursorPos);
-    }
-    if (Input::IsKeyDown(GLFW_KEY_3))
-    {
-        RigidBody* b = world->CreateCapsule(0.5f, 0.25f);
-        b->SetPosition(cursorPos);
-    }
-    if (Input::IsKeyDown(GLFW_KEY_4) && targetBody)
-    {
-        RigidBody* b = world->DuplicateBody(targetBody);
-    }
-    if (Input::IsKeyDown(GLFW_KEY_5) && targetBody)
-    {
-        targetBody->Sleep();
+        if (Input::IsKeyDown(GLFW_KEY_1))
+        {
+            RigidBody* b = world->CreateBox(0.5f);
+            b->SetPosition(cursorPos);
+        }
+        if (Input::IsKeyDown(GLFW_KEY_2))
+        {
+            RigidBody* b = world->CreateCircle(0.25f);
+            b->SetPosition(cursorPos);
+        }
+        if (Input::IsKeyDown(GLFW_KEY_3))
+        {
+            RigidBody* b = world->CreateCapsule(0.5f, 0.25f);
+            b->SetPosition(cursorPos);
+        }
+        if (Input::IsKeyDown(GLFW_KEY_4) && targetBody)
+        {
+            RigidBody* b = world->DuplicateBody(targetBody);
+        }
+        if (Input::IsKeyDown(GLFW_KEY_5) && targetBody)
+        {
+            targetBody->Sleep();
+        }
     }
 
     if (!targetCollider && !ImGui::GetIO().WantCaptureMouse && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -136,7 +139,7 @@ bool Demo::EnablePolygonCreateConvexHull()
     static std::vector<Vec2> points;
     static std::vector<Vec2> hull;
 
-    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (!ImGui::GetIO().WantCaptureMouse && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
         {
@@ -231,7 +234,7 @@ bool Demo::EnablePolygonCreateDecomposition()
     static std::vector<std::vector<Vec2>> constraints;
     static std::vector<Polygon> poly;
 
-    if (Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
+    if (!ImGui::GetIO().WantCaptureMouse && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
         {

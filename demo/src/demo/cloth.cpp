@@ -52,12 +52,12 @@ public:
                 if (j + 1 < rows)
                 {
                     RigidBody* c10 = circles[j + 1][i];
-                    world->CreateDistanceJoint(c00, c10, -1.0f, f, d, 1.0f);
+                    world->CreateDistanceJoint(c00, c10, -1.0f, f, d, c00->GetMass());
                 }
                 if (i + 1 < cols)
                 {
                     RigidBody* c01 = circles[j][i + 1];
-                    world->CreateDistanceJoint(c00, c01, -1.0f, f, d, 1.0f);
+                    world->CreateDistanceJoint(c00, c01, -1.0f, f, d, c00->GetMass());
                 }
             }
         }

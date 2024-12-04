@@ -11,10 +11,10 @@ public:
     {
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
 
-        RigidBody* b = world->CreateBox(0.6f);
-        b->SetPosition(-6.0f, 10.0f);
+        RigidBody* b = world->CreateBox(0.3f);
+        b->SetPosition(-3.0f, 5.0f);
 
-        world->CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 10.0f }, -1.0f);
+        world->CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);
     }
 
     static Demo* Create(Game& game)

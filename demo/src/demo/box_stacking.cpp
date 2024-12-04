@@ -13,9 +13,9 @@ public:
     BoxStacking(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(1000.0f, 0.4f, true, RigidBody::Type::static_body);
 
-        float size = 0.3f;
+        float size = 0.6f;
         float gap = 0.05f;
         float start = 0.2f + size / 2.0f + gap;
 
@@ -25,13 +25,10 @@ public:
             b->SetPosition(Rand(-error, error), start + i * (size + gap));
         }
 
-        if (count > 15)
-        {
-            float h = count * (size + gap) - gap;
+        float h = Max(25, count) * (size + gap) - gap;
 
-            camera.position.Set(0.0f, h / 2.0f);
-            camera.scale.Set(h / screenBounds.y);
-        }
+        camera.position.Set(0.0f, h / 2.0f);
+        camera.scale.Set(h / screenBounds.y);
     }
 
     void UpdateUI() override

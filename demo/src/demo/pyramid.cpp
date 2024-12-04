@@ -12,9 +12,9 @@ public:
     Pyramid(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(1000.0f, 0.4f, true, RigidBody::Type::static_body);
 
-        float boxSize = 0.4f;
+        float boxSize = 3.0f;
         float xGap = 0.03f * boxSize / 0.5f;
         float yGap = 0.03f * boxSize / 0.5f;
         float xStart = -(rows - 1.0f) * (boxSize + xGap) / 2.0f;
@@ -29,13 +29,10 @@ public:
             }
         }
 
-        if (rows > 15)
-        {
-            float w = rows * (boxSize + xGap) - xGap;
+        float w = Max(15, rows) * (boxSize + xGap) - xGap;
 
-            camera.position.Set(0.0f, (w * 1.1f) / 2.0f);
-            camera.scale.Set(w / 6.5f);
-        }
+        camera.position.Set(0.0f, w / 2.0f);
+        camera.scale.Set(w * game.GetWindowScale() * 15);
     }
 
     void UpdateUI() override

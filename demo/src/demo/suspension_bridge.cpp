@@ -38,14 +38,14 @@ public:
         if (selection == 0)
         {
             j = world->CreateRevoluteJoint(
-                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f
+                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f, b1->GetMass()
             );
         }
         else
         {
             j = world->CreateDistanceJoint(
                 pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
-                b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f
+                b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f, b1->GetMass()
             );
         }
 
@@ -56,13 +56,15 @@ public:
 
             if (selection == 0)
             {
-                j = world->CreateRevoluteJoint(b1, b2, (b1->GetPosition() + b2->GetPosition()) / 2.0f, frequency, 1.0f);
+                j = world->CreateRevoluteJoint(
+                    b1, b2, (b1->GetPosition() + b2->GetPosition()) / 2.0f, frequency, 1.0f, b2->GetMass()
+                );
             }
             else
             {
                 j = world->CreateDistanceJoint(
                     b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, b2->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f },
-                    -1.0f, frequency, 1.0f
+                    -1.0f, frequency, 1.0f, b2->GetMass()
                 );
             }
 
@@ -75,14 +77,14 @@ public:
         if (selection == 0)
         {
             j = world->CreateRevoluteJoint(
-                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f
+                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f, b1->GetMass()
             );
         }
         else
         {
             j = world->CreateDistanceJoint(
                 pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
-                b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f
+                b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f, b1->GetMass()
             );
         }
 
@@ -94,17 +96,17 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Once, { 1.0f, 0.0f });
 
-        // if (ImGui::Begin("Suspension bridge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        // {
-        //     ImGui::Text("Joint type");
-        //     ImGui::PushID(0);
-        //     if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
-        //     {
-        //         game.RestartDemo();
-        //     }
-        //     ImGui::PopID();
-        // }
-        // ImGui::End();
+        if (ImGui::Begin("Suspension bridge", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Joint type");
+            ImGui::PushID(0);
+            if (ImGui::ListBox("", &selection, items, IM_ARRAYSIZE(items)))
+            {
+                game.RestartDemo();
+            }
+            ImGui::PopID();
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)
