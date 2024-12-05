@@ -13,8 +13,6 @@ Demo::Demo(Game& game)
     , cursorJoint{ nullptr }
 {
     screenBounds = Window::Get()->GetWindowSize() * game.GetWindowScale();
-
-    // dt = 1.0f / 60.0f;
     settings.world_bounds.min.y = -30.0f;
 
     world = new World(settings);
@@ -22,6 +20,8 @@ Demo::Demo(Game& game)
     camera.scale.Set(1.0f);
     camera.rotation = 0.0f;
     camera.position.Set(0.0f, screenBounds.y / 2.0f);
+
+    dt = game.GetFixedDeltaTime();
 }
 
 Demo::~Demo()

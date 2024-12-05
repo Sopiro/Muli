@@ -4,15 +4,23 @@
 
 #include <ctime>
 
-extern void SetTickRate(int32 frameRate);
+extern int32 GetFrameRate();
+extern void SetFrameRate(int32);
+
+extern int32 GetUpdateRate();
+extern void SetUpdateRate(int32);
 
 namespace muli
 {
 
 Game::Game()
-    : demoCount{ demos.size() }
+    : scale{ 0.01f }
+    , time{ 0.0f }
+    , demoCount{ demos.size() }
     , demoIndex{ demos.size() }
 {
+    fixedDeltaTime = 1.0f / Window::Get()->GetRefreshRate();
+
     UpdateProjectionMatrix();
     Window::Get()->SetFramebufferSizeChangeCallback([&](int32 width, int32 height) -> void {
         glViewport(0, 0, width, height);
@@ -33,7 +41,7 @@ Game::~Game() noexcept
     delete demo;
 }
 
-void Game::Update(float dt)
+void Game::Update(float deltaTime)
 {
     if (restart)
     {
@@ -41,12 +49,15 @@ void Game::Update(float dt)
         restart = false;
     }
 
+    dt = deltaTime;
     time += dt;
-
-    UpdateInput();
-    demo->dt = dt;
-    demo->Step();
     UpdateUI();
+    UpdateInput();
+}
+
+void Game::FixedUpdate()
+{
+    demo->Step();
 }
 
 void Game::UpdateInput()
@@ -69,7 +80,7 @@ void Game::UpdateUI()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 2, 2 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 450 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 240, 470 }, ImGuiCond_Once);
 
     static bool collapsed = false;
     if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT)) collapsed = !collapsed;
@@ -108,11 +119,18 @@ void Game::UpdateUI()
                     if (ImGui::Button("Restart")) InitDemo(demoIndex);
                 }
 
-                static int32 f = Window::Get()->GetRefreshRate();
-                ImGui::SetNextItemWidth(150);
-                if (ImGui::SliderInt("Tickrate", &f, 30, 300))
+                static int32 fps = GetFrameRate();
+                static int32 ups = GetUpdateRate();
+
+                ImGui::SetNextItemWidth(120);
+                if (ImGui::SliderInt("Frame rate", &fps, 30, 300))
                 {
-                    SetTickRate(f);
+                    SetFrameRate(fps);
+                }
+                ImGui::SetNextItemWidth(120);
+                if (ImGui::SliderInt("Update rate", &ups, 30, 300))
+                {
+                    SetUpdateRate(ups);
                 }
                 ImGui::Separator();
 
@@ -172,7 +190,7 @@ void Game::UpdateUI()
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 23 * ImGui::GetTextLineHeightWithSpacing() }))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 24 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
                     for (int32 i = 0; i < demoCount; ++i)
                     {

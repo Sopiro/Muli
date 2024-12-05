@@ -9,23 +9,44 @@
 
 using namespace muli;
 
-Window* window;
-Game* game;
-float frameTime;
-float deltaTime;
-Vec3 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f };
+static Window* window;
+static Game* game;
 
-void SetTickRate(int32 tickRate)
+static int32 frameRate;
+static int32 updateRate;
+static float targetFrameTime;
+static float targetUpdateTime;
+
+static Vec3 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f };
+
+int32 GetFrameRate()
 {
-    tickRate = std::clamp<int32>(tickRate, 30, 300);
-    frameTime = 1.0f / tickRate;
+    return frameRate;
+}
+
+void SetFrameRate(int32 newFrameRate)
+{
+    frameRate = Clamp(newFrameRate, 30, 300);
+    targetFrameTime = 1.0f / frameRate;
+}
+
+int32 GetUpdateRate()
+{
+    return updateRate;
+}
+
+void SetUpdateRate(int32 newUpdateRate)
+{
+    updateRate = Clamp(newUpdateRate, 30, 300);
+    targetUpdateTime = 1.0f / updateRate;
+
+    game->SetFixedDeltaTime(targetUpdateTime);
 }
 
 void Init()
 {
 #ifdef __EMSCRIPTEN__
     window = Window::Init(1280, 720, "Muli Engine Demo");
-    SetTickRate(60);
 #else
     window = Window::Init(1600, 900, "Muli Engine Demo");
 #endif
@@ -40,6 +61,9 @@ void Init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     game = new Game();
+
+    SetFrameRate(window->GetRefreshRate());
+    SetUpdateRate(window->GetRefreshRate());
 }
 
 void Terminate()
@@ -47,12 +71,39 @@ void Terminate()
     delete game;
 }
 
-void Update()
+void MainLoop()
 {
-    window->BeginFrame(clearColor);
-    game->Update(frameTime);
-    game->Render();
-    window->EndFrame();
+    static float frameTime = 0;
+    static float updateTime = 0;
+    static auto lastTime = std::chrono::steady_clock::now();
+
+    auto currentTime = std::chrono::steady_clock::now();
+
+    std::chrono::duration<float> duration = currentTime - lastTime;
+    float elapsed = duration.count();
+    lastTime = currentTime;
+
+    frameTime += elapsed;
+    updateTime += elapsed;
+
+    if (updateTime > targetUpdateTime)
+    {
+        game->FixedUpdate();
+
+        updateTime -= targetUpdateTime;
+    }
+
+    if (frameTime > targetFrameTime)
+    {
+        window->BeginFrame(clearColor);
+        {
+            game->Update(frameTime);
+            game->Render();
+        }
+        window->EndFrame();
+
+        frameTime -= targetFrameTime;
+    }
 }
 
 int main(int argc, char** argv)
@@ -65,24 +116,11 @@ int main(int argc, char** argv)
     Init();
 
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(Update, 0, 1);
+    emscripten_set_main_loop(MainLoop, 0, 1);
 #else
-    auto lastTime = std::chrono::steady_clock::now();
-    SetTickRate(window->GetRefreshRate());
-
     while (!window->ShouldClose())
     {
-        auto currentTime = std::chrono::steady_clock::now();
-        std::chrono::duration<float> duration = currentTime - lastTime;
-        float elapsed = duration.count();
-        lastTime = currentTime;
-
-        deltaTime += elapsed;
-        if (deltaTime > frameTime)
-        {
-            Update();
-            deltaTime -= frameTime;
-        }
+        MainLoop();
     }
 #endif
 

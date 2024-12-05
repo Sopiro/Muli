@@ -19,6 +19,7 @@ public:
     ~Game() noexcept;
 
     void Update(float dt);
+    void FixedUpdate();
     void Render();
 
     Vec2 GetWorldCursorPosition() const;
@@ -33,17 +34,24 @@ public:
     float GetWindowScale() const;
     void SetWindowScale(float newScale);
 
+    float GetFixedDeltaTime() const;
+    void SetFixedDeltaTime(float fixedDeltaTime);
+
 private:
     Renderer renderer;
 
-    float scale = 0.01f;
-    float time = 0.0f;
+    float scale;
+    float fixedDeltaTime;
+    float time;
+    float dt;
 
     size_t demoCount;
     size_t newIndex;
     size_t demoIndex;
+
     Demo* demo = nullptr;
     bool restart = false;
+
     DebugOptions options;
 
     void UpdateProjectionMatrix();
@@ -94,6 +102,16 @@ inline float Game::GetWindowScale() const
 inline void Game::SetWindowScale(float newScale)
 {
     scale = newScale;
+}
+
+inline float Game::GetFixedDeltaTime() const
+{
+    return fixedDeltaTime;
+}
+
+inline void Game::SetFixedDeltaTime(float newFixedDeltaTime)
+{
+    fixedDeltaTime = newFixedDeltaTime;
 }
 
 inline Renderer& Game::GetRenderer()
