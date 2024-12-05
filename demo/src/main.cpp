@@ -17,7 +17,7 @@ static int32 updateRate;
 static float targetFrameTime;
 static float targetUpdateTime;
 
-static Vec3 clearColor{ 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f };
+static Vec3 clearColor = { 190.0f / 255.0f, 220.0f / 255.0f, 230.0f / 255.0f };
 
 int32 GetFrameRate()
 {

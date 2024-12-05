@@ -26,9 +26,8 @@ class Renderer final : NonCopyable
 
     static constexpr inline int32 max_vertex_count = 1024 * 3;
 
-    static constexpr inline Vec4 color_transparent{ 0.0f, 0.0f, 0.0f, 0.0f };
-    static constexpr inline Vec4 color_white{ 1.0f, 1.0f, 1.0f, 0.8f };
-    static constexpr inline Vec4 default_color{ 0.0f, 0.0f, 0.0f, 1.0f };
+    static constexpr inline Vec4 default_white{ 1.0f, 1.0f, 1.0f, 0.8f };
+    static constexpr inline Vec4 default_black{ 0.0f, 0.0f, 0.0f, 0.9f };
 
 public:
     Renderer();
@@ -41,11 +40,11 @@ public:
     void SetViewMatrix(const Mat4& viewMatrix);
 
     void DrawPoint(const Vertex& v);
-    void DrawPoint(const Vec2& p, const Vec4& color = default_color);
+    void DrawPoint(const Vec2& p, const Vec4& color = default_black);
     void DrawLine(const Vertex& v1, const Vertex& v2);
-    void DrawLine(const Vec2& p1, const Vec2& p2, const Vec4& color = default_color);
+    void DrawLine(const Vec2& p1, const Vec2& p2, const Vec4& color = default_black);
     void DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3);
-    void DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color = default_color);
+    void DrawTriangle(const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec4& color = default_black);
     void DrawAABB(const AABB& aabb);
 
     struct DrawMode
