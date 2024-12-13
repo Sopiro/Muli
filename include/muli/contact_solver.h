@@ -40,7 +40,7 @@ private:
     float bias;
     float m;              // effective mass
 
-    float impulse = 0.0f; // impluse sum
+    float impulse = 0.0f; // impulse sum
     float impulseSave = 0.0f;
 };
 

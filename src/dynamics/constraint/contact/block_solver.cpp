@@ -59,8 +59,8 @@ void BlockSolver::Solve()
         vn1 = 0 and vn2 = 0, x1 = 0 and x2 = 0, x1 = 0 and vn2 = 0, x2 = 0 and vn1 = 0 need to be tested. The first valid
         solution that satisfies the problem is chosen.
 
-        In order to acontactount of the acontactumulated impulse 'a' (because of the iterative nature of the solver which only
-        requires that the acontactumulated impulse is clamped and not the incremental impulse) we change the impulse variable
+        In order to account of the accumulated impulse 'a' (because of the iterative nature of the solver which only
+        requires that the accumulated impulse is clamped and not the incremental impulse) we change the impulse variable
         (x_i).
 
         Substitute:
