@@ -1,21 +1,19 @@
-#include "muli/block_solver.h"
 #include "muli/contact.h"
+#include "muli/contact_solver.h"
 
 namespace muli
 {
 
-void BlockSolver::Prepare(Contact* contact)
+void BlockSolver::Prepare(const Contact* c)
 {
-    c = contact;
-
     // Compute Jacobian J and effective mass M
     // J = [-n, -ra1 × n, n, rb1 × n
     //      -n, -ra2 × n, n, rb2 × n]
     // K = (J · M^-1 · J^t)
     // M = K^-1
 
-    ContactSolver::Jacobian j1 = c->normalSolvers[0].j;
-    ContactSolver::Jacobian j2 = c->normalSolvers[1].j;
+    ContactJacobian j1 = c->normalSolvers[0].j;
+    ContactJacobian j2 = c->normalSolvers[1].j;
 
     float imA = c->b1->invMass;
     float imB = c->b2->invMass;
@@ -40,7 +38,7 @@ void BlockSolver::Prepare(Contact* contact)
 
 // Solve two contact constraints simultaneously
 // https://www.gdcvault.com/play/1020603/Physics-for-Game-Programmers-Understanding
-void BlockSolver::Solve()
+void BlockSolver::Solve(Contact* c)
 {
     /*
         The comments below are copied from Box2D::b2_contact_solver.cpp
@@ -81,11 +79,11 @@ void BlockSolver::Solve()
         b' = b - A * a;
     */
 
-    ContactSolver* nc1 = &c->normalSolvers[0];
-    ContactSolver* nc2 = &c->normalSolvers[1];
+    ContactSolverNormal* nc1 = &c->normalSolvers[0];
+    ContactSolverNormal* nc2 = &c->normalSolvers[1];
 
-    ContactSolver::Jacobian j1 = nc1->j;
-    ContactSolver::Jacobian j2 = nc2->j;
+    ContactJacobian j1 = nc1->j;
+    ContactJacobian j2 = nc2->j;
 
     Vec2 a{ nc1->impulse, nc2->impulse }; // old total impulse
     MuliAssert(a.x >= 0.0f && a.y >= 0.0f);

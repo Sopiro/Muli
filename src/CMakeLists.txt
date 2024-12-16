@@ -39,7 +39,6 @@ set(HEADER_FILES
     ../include/muli/contact.h
     ../include/muli/position_solver.h
     ../include/muli/contact_solver.h
-    ../include/muli/block_solver.h
 
     ../include/muli/island.h
     ../include/muli/world.h

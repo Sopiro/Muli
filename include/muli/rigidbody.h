@@ -188,7 +188,8 @@ protected:
     friend class Collider;
 
     friend class Contact;
-    friend class ContactSolver;
+    friend class ContactSolverNormal;
+    friend class ContactSolverTangent;
     friend class BlockSolver;
     friend class PositionSolver;
 

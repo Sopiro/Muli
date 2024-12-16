@@ -1,6 +1,5 @@
 #pragma once
 
-#include "block_solver.h"
 #include "collision.h"
 #include "constraint.h"
 #include "contact_solver.h"
@@ -54,7 +53,8 @@ private:
     friend class Island;
     friend class ContactManager;
     friend class BroadPhase;
-    friend class ContactSolver;
+    friend class ContactSolverNormal;
+    friend class ContactSolverTangent;
     friend class BlockSolver;
     friend class PositionSolver;
 
@@ -98,8 +98,8 @@ private:
     ContactManifold manifold;
 
     // TODO: Integrate decoupled solvers into SolveVelocityConstraints() and SolvePositionConstraints() for optimization
-    ContactSolver normalSolvers[max_contact_point_count];
-    ContactSolver tangentSolvers[max_contact_point_count];
+    ContactSolverNormal normalSolvers[max_contact_point_count];
+    ContactSolverTangent tangentSolvers[max_contact_point_count];
     PositionSolver positionSolvers[max_contact_point_count];
     BlockSolver blockSolver;
 

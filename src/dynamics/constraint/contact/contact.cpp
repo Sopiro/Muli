@@ -1,5 +1,4 @@
 #include "muli/contact.h"
-#include "muli/block_solver.h"
 #include "muli/callbacks.h"
 #include "muli/contact_solver.h"
 #include "muli/settings.h"
@@ -124,8 +123,8 @@ void Contact::Prepare(const Timestep& step)
 {
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        normalSolvers[i].Prepare(this, ContactSolver::Type::normal, manifold.contactNormal, i, step);
-        tangentSolvers[i].Prepare(this, ContactSolver::Type::tangent, manifold.contactTangent, i, step);
+        normalSolvers[i].Prepare(this, manifold.contactNormal, i, step);
+        tangentSolvers[i].Prepare(this, manifold.contactTangent, i, step);
         positionSolvers[i].Prepare(this, i);
     }
 
@@ -142,20 +141,20 @@ void Contact::SolveVelocityConstraints(const Timestep& step)
     // Solve tangential constraint first
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        tangentSolvers[i].Solve(&normalSolvers[i]);
+        tangentSolvers[i].Solve(this, normalSolvers + i);
     }
 
     if (manifold.contactCount == 1 || block_solve == false || blockSolver.enabled == false)
     {
         for (int32 i = 0; i < manifold.contactCount; ++i)
         {
-            normalSolvers[i].Solve();
+            normalSolvers[i].Solve(this);
         }
     }
     else
     {
         // Solve two contact constraints simultaneously (2-Contact LCP solver)
-        blockSolver.Solve();
+        blockSolver.Solve(this);
     }
 }
 
