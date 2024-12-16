@@ -190,7 +190,7 @@ void Island::Solve()
         {
             Contact* c = contacts[j];
 
-            bool solved = c->SolvePositionConstraints();
+            bool solved = c->SolvePositionConstraints(step);
             if (solved == false)
             {
                 c->b1->Awake();
@@ -202,7 +202,7 @@ void Island::Solve()
 #endif
         for (int32 j = 0; j < jointCount; ++j)
         {
-            jointSolved &= joints[j]->SolvePositionConstraints();
+            jointSolved &= joints[j]->SolvePositionConstraints(step);
         }
 #endif
         if (contactSolved && jointSolved)
