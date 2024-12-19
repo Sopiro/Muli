@@ -54,10 +54,8 @@ public:
         settings.apply_gravity = false;
     }
 
-    void Step() override
+    void Render() override
     {
-        Demo::Step();
-
         float angleDelta = pi * 2.0f / count;
         for (float angle = 0.0f; angle < pi * 2.0f; angle += angleDelta)
         {

@@ -25,11 +25,6 @@ public:
         world->CreateCapsule(Vec2{ -3.0f, 4.8f }, Vec2{ -3.0f, 5.2f }, 0.1f, RigidBody::Type::static_body);
     }
 
-    void Step() override
-    {
-        Demo::Step();
-    }
-
     static Demo* Create(Game& game)
     {
         return new PrismaticJointTest(game);

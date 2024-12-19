@@ -43,8 +43,8 @@ public:
 
     void Step() override
     {
-        Demo::Step();
         motor->SetAngularOffset(arm1->GetAngle() + 4.5f * dt);
+        Demo::Step();
     }
 
     static Demo* Create(Game& game)

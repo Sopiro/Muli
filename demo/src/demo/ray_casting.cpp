@@ -35,10 +35,8 @@ public:
         settings.sleeping = false;
     }
 
-    void Step() override
+    void Render() override
     {
-        Demo::Step();
-
         bool hit = false;
         Vec2 closestPoint;
         Vec2 closestNormal;

@@ -43,10 +43,7 @@ public:
                 currentHole.push_back(cursorPos);
             }
         }
-    }
 
-    void Step() override
-    {
         if (Input::IsKeyPressed(GLFW_KEY_SPACE))
         {
             triangles = ComputeDecomposition(holes);

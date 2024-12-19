@@ -38,7 +38,6 @@ public:
 
     void Step() override
     {
-        Demo::Step();
         motor->SetAngularOffset(windmill->GetAngle() + DegToRad(speed) * dt);
         motor->SetMaxForce(force);
         motor->SetMaxTorque(torque);
@@ -53,6 +52,8 @@ public:
 
             t = game.GetTime();
         }
+
+        Demo::Step();
     }
 
     void UpdateUI() override

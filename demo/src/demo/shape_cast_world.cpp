@@ -43,10 +43,8 @@ public:
         UpdateShape();
     }
 
-    void Step() override
+    void Render() override
     {
-        Demo::Step();
-
         bool hit = false;
         float closestFraction;
         Vec2 closestPoint;

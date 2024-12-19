@@ -142,8 +142,6 @@ public:
 
     void Step() override
     {
-        Demo::Step();
-
         float t1 = game.GetTime();
         if (count < 100 && t0 + 0.3f < t1)
         {
@@ -151,6 +149,8 @@ public:
             t0 = t1;
             ++count;
         }
+
+        Demo::Step();
     }
 
     static Demo* Create(Game& game)

@@ -64,9 +64,9 @@ public:
         camera.scale.Set(1.5f);
     }
 
-    void Step() override
+    void UpdateInput() override
     {
-        Demo::Step();
+        Demo::UpdateInput();
 
         if (Input::IsKeyDown(GLFW_KEY_D))
         {
