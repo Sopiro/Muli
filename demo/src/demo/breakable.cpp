@@ -15,6 +15,7 @@ public:
         : Demo(game)
     {
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        ground->GetColliderList()->ContactListener = this;
 
         b = world->CreateEmptyBody();
 
@@ -22,9 +23,6 @@ public:
         Polygon t2({ Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 1.0f }, Vec2{ 0.75f, 1.5f } });
         c1 = b->CreateCollider(&t1);
         c2 = b->CreateCollider(&t2);
-
-        c1->ContactListener = this;
-        c2->ContactListener = this;
 
         b->SetPosition(0.0f, 5.0f);
         b->SetAngularVelocity(Rand(-10.0f, 10.0f));
@@ -35,36 +33,32 @@ public:
         return new Breakable(game);
     }
 
-    bool broke = false;
-
     virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) override {}
     virtual void OnContactTouching(Collider* me, Collider* other, Contact* contact) override {}
     virtual void OnContactEnd(Collider* me, Collider* other, Contact* contact) override {}
     virtual void OnPreSolve(Collider* me, Collider* other, Contact* contact) override
     {
-        if (broke)
+        static int32 broke;
+        RigidBody* b = other->GetBody();
+        if (b->GetColliderCount() == 1 || b->UserData == &broke)
         {
             return;
         }
 
-        Polygon t1({ Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 1.0f }, Vec2{ -0.75f, 1.5f } });
-        Polygon t2({ Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 1.0f }, Vec2{ 0.75f, 1.5f } });
+        Collider* c = b->GetColliderList();
+        while (c)
+        {
+            RigidBody* e = world->CreateEmptyBody();
+            e->CreateCollider(c->GetShape(), c->GetDensity(), c->GetMaterial());
+            e->SetTransform(b->GetTransform());
+            e->SetLinearVelocity(b->GetLinearVelocity());
+            e->SetAngularVelocity(b->GetAngularVelocity());
 
-        RigidBody* b1 = world->CreateEmptyBody();
-        RigidBody* b2 = world->CreateEmptyBody();
-        b1->CreateCollider(&t1);
-        b2->CreateCollider(&t2);
+            c = c->GetNext();
+        }
 
-        b1->SetTransform(b->GetTransform());
-        b2->SetTransform(b->GetTransform());
-        b1->SetLinearVelocity(b->GetLinearVelocity());
-        b1->SetAngularVelocity(b->GetAngularVelocity());
-        b2->SetLinearVelocity(b->GetLinearVelocity());
-        b2->SetAngularVelocity(b->GetAngularVelocity());
-
+        b->UserData = &broke;
         world->BufferDestroy(b);
-
-        broke = true;
     }
 
     virtual void OnPostSolve(Collider* me, Collider* other, Contact* contact) override {}
