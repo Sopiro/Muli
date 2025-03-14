@@ -1639,6 +1639,30 @@ inline Vec3 PolarToCart(float phi, float theta, float r)
     return Vec3{ x * r, y * r, z * r };
 }
 
+template <typename T>
+inline T CatmullRom(const T& point1, const T& point2, const T& point3, const T& point4, float t)
+{
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    return 0.5f * ((2 * point2) + (-point1 + point3) * t + (2 * point1 - 5 * point2 + 4 * point3 - point4) * t2 +
+                   (-point1 + 3 * point2 - 3 * point3 + point4) * t3);
+}
+
+template <typename T>
+inline T Hermite(const T& point1, const T& point2, const T& tangent1, const T& tangent2, float t)
+{
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    float h00 = 2 * t3 - 3 * t2 + 1;
+    float h10 = t3 - 2 * t2 + t;
+    float h01 = -2 * t3 + 3 * t2;
+    float h11 = t3 - t2;
+
+    return h00 * point1 + h10 * tangent1 + h01 * point2 + h11 * tangent2;
+}
+
 inline void Sweep::GetTransform(float beta, Transform* transform) const
 {
     transform->position = (1.0f - beta) * c0 + beta * c;
