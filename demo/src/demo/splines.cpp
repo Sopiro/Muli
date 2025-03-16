@@ -17,11 +17,13 @@ public:
     {
     }
 
+    bool mirrorEndPoints = true;
+
     std::vector<Vec2> points;
     int32 pointSamples = 10;
 
-    int32 draw_index = 2;
-    int32 spline_index = 0;
+    int32 drawIndex = 2;
+    int32 splineIndex = 0;
 
     float tension = 0;
 
@@ -44,6 +46,15 @@ public:
         if (points.size() > 2)
         {
             points.push_back(points.back());
+            if (mirrorEndPoints)
+            {
+                Vec2 d = points[1] - points[2];
+                points[0] += d;
+
+                d = points[points.size() - 2] - points[points.size() - 3];
+                points[points.size() - 1] += d;
+            }
+
             for (int j = 0; j < points.size() - 3; ++j)
             {
                 Vec2 t0;
@@ -52,7 +63,7 @@ public:
                     float t = i / float(pointSamples);
 
                     Vec2 t1;
-                    switch (spline_index)
+                    switch (splineIndex)
                     {
                     case 0:
                         t1 = SplineCatmullRom(points[j + 0], points[j + 1], points[j + 2], points[j + 3], t);
@@ -66,22 +77,27 @@ public:
                     default:
                         break;
                     }
-                    if (draw_index != 1)
+                    if (drawIndex != 1)
                     {
                         renderer.DrawPoint(t1);
                     }
 
-                    if (draw_index > 0)
+                    if (drawIndex > 0)
                     {
                         if (i != 0) renderer.DrawLine(t0, t1);
                         t0 = t1;
                     }
                 }
             }
+
+            if (mirrorEndPoints)
+            {
+                points[0] = points[1];
+            }
             points.pop_back();
         }
 
-        if (draw_index != 1)
+        if (drawIndex != 1)
         {
             for (int i = 0; i < points.size(); ++i)
             {
@@ -96,16 +112,17 @@ public:
 
         if (ImGui::Begin("Splines", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
+            ImGui::Checkbox("Mirror endpoints", &mirrorEndPoints);
             ImGui::Text("Point samples");
             ImGui::SliderInt("##Point samples", &pointSamples, 1, 100);
 
             ImGui::Text("Draw mode");
-            ImGui::Combo("##Draw mode", &draw_index, drawmodes, num_drawmodes);
+            ImGui::Combo("##Draw mode", &drawIndex, drawmodes, num_drawmodes);
             ImGui::Text("Spline");
-            ImGui::Combo("##Spline", &spline_index, splines, num_splines);
+            ImGui::Combo("##Spline", &splineIndex, splines, num_splines);
 
             ImGui::Separator();
-            if (spline_index == 1)
+            if (splineIndex == 1)
             {
                 ImGui::Text("tension");
                 ImGui::SliderFloat("##tension", &tension, 0, 1);
