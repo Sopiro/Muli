@@ -27,5 +27,6 @@
 #include "collision.h"
 #include "distance.h"
 #include "geometry.h"
+#include "spline.h"
 
 // clang-format on
