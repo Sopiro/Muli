@@ -8,6 +8,8 @@ static const char* drawmodes[num_drawmodes] = { "Points", "Lines", "Points + Lin
 
 static const int32 num_splines = 3;
 static const char* splines[num_splines] = { "Catmull-Rom Spline", "Cardinal Spline", "Uniform B-Spline" };
+static int32 drawIndex = 2;
+static int32 splineIndex = 0;
 
 class Splines : public Demo
 {
@@ -21,9 +23,6 @@ public:
 
     std::vector<Vec2> points;
     int32 pointSamples = 10;
-
-    int32 drawIndex = 2;
-    int32 splineIndex = 0;
 
     float tension = 0;
 

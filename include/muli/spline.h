@@ -5,6 +5,8 @@
 namespace muli
 {
 
+// Cubic Splines
+
 template <typename T>
 inline T SplineHermite(const T& p0, const T& p2, const T& t0, const T& t1, float t)
 {
@@ -44,12 +46,12 @@ inline T SplineUniformBasis(const T& p0, const T& p1, const T& p2, const T& p3, 
     float t2 = t * t;
     float t3 = t * t2;
 
-    float b0 = ((1.0f - t) * (1.0f - t) * (1.0f - t)) / 6.0f;
-    float b1 = (3.0f * t3 - 6.0f * t2 + 4.0f) / 6.0f;
-    float b2 = (-3.0f * t3 + 3.0f * t2 + 3.0f * t + 1.0f) / 6.0f;
-    float b3 = t3 / 6.0f;
+    float b0 = ((1 - t) * (1 - t) * (1 - t));
+    float b1 = (3 * t3 - 6 * t2 + 4);
+    float b2 = (-3 * t3 + 3 * t2 + 3 * t + 1.0f);
+    float b3 = t3;
 
-    return b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3;
+    return (b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3) / 6.0f;
 }
 
 } // namespace muli
