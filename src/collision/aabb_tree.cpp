@@ -499,7 +499,7 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -524,7 +524,7 @@ void AABBTree::Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> ca
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -559,7 +559,7 @@ void AABBTree::Query(const AABB& aabb, std::function<bool(NodeProxy, Data*)> cal
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -602,7 +602,7 @@ void AABBTree::AABBCast(const AABBCastInput& input, std::function<float(const AA
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() > 0)

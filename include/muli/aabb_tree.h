@@ -156,7 +156,7 @@ void AABBTree::Traverse(T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -182,7 +182,7 @@ void AABBTree::Query(const Vec2& point, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -218,7 +218,7 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
@@ -262,7 +262,7 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 256> stack;
+    GrowableArray<NodeProxy, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() > 0)
