@@ -17,7 +17,7 @@
   - Collision filtering
   - Dynamic AABB tree broadphase
   - Dynamic tree accelerated raycast, shapecast and world query
-  - Easy-to-use collision detection and distance funtions
+  - Easy-to-use collision detection and distance functions
   
 ### Physics Simulation
   - Continuous physics simulation (Time of impact solver and sub-stepping)  
@@ -34,7 +34,6 @@
   - OpenGL based demo framework
   - Cross platform library
   - Intuitive and straightforward API
-  - Utilizes specialized memory allocators
   
 ## Example
 
@@ -66,14 +65,14 @@ int main()
 - Install [CMake](https://cmake.org/install/)
 - Ensure CMake is in the system `PATH`
 - Clone the repository `git clone --recursive https://github.com/Sopiro/Muli`
-- Run CMake build script depend on your system
+- Run CMake build script depending on your system
   - Visual Studio: Run `build.bat`
   - Otherwise: Run `build.sh`
 - You can find the executable demo in the `build/bin`
 
 ## Installation
 
-You can install the library using this commands
+You can install the library using these commands
 
 ``` bat
 mkdir build
