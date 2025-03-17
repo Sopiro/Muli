@@ -32,8 +32,6 @@ protected:
     virtual Shape* Clone(Allocator* allocator) const override;
 
 private:
-    float length;
-
     Vec2 va;
     Vec2 vb;
 };
@@ -70,7 +68,7 @@ inline int32 Capsule::GetSupport(const Vec2& localDir) const
 
 inline float Capsule::GetLength() const
 {
-    return length;
+    return Dist(va, vb);
 }
 
 inline const Vec2& Capsule::GetVertexA() const

@@ -5,7 +5,6 @@ namespace muli
 
 Capsule::Capsule(float length, float radius, bool horizontal, const Vec2& position)
     : Shape(capsule, radius)
-    , length{ length }
 {
     area = length * radius * 2.0f + pi * radius * radius;
 
@@ -30,7 +29,8 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPositio
     : Shape(capsule, radius)
 {
     Vec2 a2b = p2 - p1;
-    length = a2b.Length();
+
+    float length = a2b.Length();
     area = length * radius * 2.0f + pi * radius * radius;
 
     va = p1;
@@ -49,6 +49,7 @@ void Capsule::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;
 
+    float length = Dist(va, vb);
     float height = radius * 2.0f;
     float invArea = 1.0f / area;
 

@@ -4,6 +4,8 @@
 namespace muli
 {
 
+extern void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
+
 Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition, float radius)
     : Shape(polygon, radius)
 {

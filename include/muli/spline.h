@@ -48,7 +48,7 @@ inline T SplineUniformBasis(const T& p0, const T& p1, const T& p2, const T& p3, 
 
     float b0 = ((1 - t) * (1 - t) * (1 - t));
     float b1 = (3 * t3 - 6 * t2 + 4);
-    float b2 = (-3 * t3 + 3 * t2 + 3 * t + 1.0f);
+    float b2 = (-3 * t3 + 3 * t2 + 3 * t + 1);
     float b3 = t3;
 
     return (b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3) / 6.0f;
