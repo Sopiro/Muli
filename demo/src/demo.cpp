@@ -263,7 +263,7 @@ bool Demo::EnablePolygonCreateDecomposition()
             points.push_back(cursorPos);
         }
 
-        if (points.size() <= 2)
+        if (0 < points.size() && points.size() <= 2)
         {
             renderer.DrawLine(points.back(), cursorPos);
         }
