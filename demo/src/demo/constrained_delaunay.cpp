@@ -4,7 +4,7 @@
 namespace muli
 {
 
-class ConstrainedDelauney : public Demo
+class ConstrainedDelaunay : public Demo
 {
     static inline bool constrained = true;
 
@@ -19,7 +19,7 @@ public:
     std::vector<Vec2> currentHole;
     bool creatingHole = false;
 
-    ConstrainedDelauney(Game& game)
+    ConstrainedDelaunay(Game& game)
         : Demo(game)
     {
         float range = 3.0f;
@@ -135,7 +135,7 @@ public:
     {
         ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
 
-        if (ImGui::Begin("Delauney", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::Begin("Delaunay", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (ImGui::Checkbox("Constrained", &constrained))
             {
@@ -148,7 +148,7 @@ public:
             { Window::Get()->GetWindowSize().x - 5, Window::Get()->GetWindowSize().y - 5 }, ImGuiCond_Always, { 1.0f, 1.0f }
         );
         ImGui::Begin(
-            "DelauneyHelp", NULL,
+            "DelaunayHelp", NULL,
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
@@ -158,10 +158,10 @@ public:
 
     static Demo* Create(Game& game)
     {
-        return new ConstrainedDelauney(game);
+        return new ConstrainedDelaunay(game);
     }
 };
 
-static int index = register_demo("Constrained delauney", ConstrainedDelauney::Create, 53);
+static int index = register_demo("Constrained delaunay", ConstrainedDelaunay::Create, 53);
 
 } // namespace muli
