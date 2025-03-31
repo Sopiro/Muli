@@ -3,8 +3,12 @@
 namespace muli
 {
 
+static float speed = pi / 2;
+
 class KinematicBody : public Demo
 {
+    RigidBody* k;
+
 public:
     KinematicBody(Game& game)
         : Demo(game)
@@ -29,13 +33,27 @@ public:
             b->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 
-        RigidBody* k = world->CreateCapsule(size * 0.9f, 0.15f, true, RigidBody::Type::kinematic_body);
-        k->SetAngularVelocity(pi / 2.0f);
-        k = world->CreateCapsule(size * 0.9f, 0.15f, false, RigidBody::Type::kinematic_body);
-        k->SetAngularVelocity(pi / 2.0f);
+        k = world->CreateCapsule(size * 0.9f, 0.15f, true, RigidBody::Type::kinematic_body);
+        k->CreateCapsuleCollider(size * 0.9f, 0.15f, false);
+        k->SetAngularVelocity(speed);
 
         camera.position = { 0.0f, 0.0f };
         camera.scale = { 3.f, 3.f };
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("Kinematic", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            if (ImGui::SliderFloat("Speed", &speed, 0, 10))
+            {
+                k->Awake();
+                k->SetAngularVelocity(speed);
+            }
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)
