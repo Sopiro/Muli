@@ -138,8 +138,6 @@ void Game::UpdateUI()
 
                 ImGui::Separator();
 
-                // ImGui::ColorEdit4("Background color", &app.clearColor.x);
-                // ImGui::Separator();
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
