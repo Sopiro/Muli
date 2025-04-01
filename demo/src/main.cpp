@@ -90,7 +90,7 @@ void MainLoop()
     {
         game->FixedUpdate();
 
-        updateTime = 0;
+        updateTime -= targetUpdateTime;
     }
 
     if (frameTime > targetFrameTime)
@@ -102,7 +102,7 @@ void MainLoop()
         }
         window->EndFrame();
 
-        frameTime = 0;
+        frameTime -= targetFrameTime;
     }
 }
 
