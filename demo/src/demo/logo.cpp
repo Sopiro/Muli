@@ -39,6 +39,7 @@ public:
         b->CreateCapsuleCollider(Vec2{ 2.5f + offset, 0.0f }, Vec2{ 2.5f + offset, 2.0f }, radius);
 
         b->SetPosition(0.0f, 4.0f);
+        b->SetContinuous(true);
 
         for (int32 i = 0; i < 100; ++i)
         {
@@ -54,7 +55,7 @@ public:
             b->SetPosition(pos);
             b->SetRotation(angle);
             UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
-            // b->SetContinuous(true);
+            b->SetContinuous(true);
         }
     }
 
