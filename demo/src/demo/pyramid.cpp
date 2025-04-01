@@ -12,13 +12,14 @@ public:
     Pyramid(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(1000.0f, 0.4f, true, RigidBody::Type::static_body);
+        float l = 0.5f;
+        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, RigidBody::Type::static_body);
 
         float boxSize = 3.0f;
         float xGap = 0.03f * boxSize / 0.5f;
         float yGap = 0.03f * boxSize / 0.5f;
         float xStart = -(rows - 1.0f) * (boxSize + xGap) / 2.0f;
-        float yStart = 0.2f + boxSize / 2.0f + yGap;
+        float yStart = l + boxSize / 2.0f;
 
         for (int32 y = 0; y < rows; ++y)
         {

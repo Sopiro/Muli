@@ -13,11 +13,12 @@ public:
     BoxStacking(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(1000.0f, 0.4f, true, RigidBody::Type::static_body);
+        float l = 0.5f;
+        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, RigidBody::Type::static_body);
 
-        float size = 0.6f;
-        float gap = 0.05f;
-        float start = 0.2f + size / 2.0f + gap;
+        float size = 1.0f;
+        float gap = 0.03f;
+        float start = l + size / 2.0f + gap;
 
         for (int32 i = 0; i < count; ++i)
         {
