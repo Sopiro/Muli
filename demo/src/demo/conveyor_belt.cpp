@@ -4,9 +4,10 @@
 namespace muli
 {
 
+static float speed = 2.0f;
+
 class ConveyorBelt : public Demo
 {
-    static inline float speed = 2.0f;
 
 public:
     ConveyorBelt(Game& game)
@@ -17,20 +18,20 @@ public:
 
         b = world->CreateBox(3.0f, 0.2f, RigidBody::Type::static_body);
         b->SetPosition(-4.0f, 5.0f);
-        b->SetSurfaceSpeed(speed);
+        b->SetSurfaceSpeed(-speed);
 
         b = world->CreateBox(5.5f, 0.2f, RigidBody::Type::static_body);
         b->SetPosition(0.5f, 4.0f);
         b->SetRotation(0.2f);
-        b->SetSurfaceSpeed(speed);
+        b->SetSurfaceSpeed(-speed);
 
         RigidBody* br = world->CreateBox(3.5f, 0.2f, RigidBody::Type::static_body);
         br->SetPosition(4.55f, 1.0f);
-        br->SetSurfaceSpeed(-speed);
+        br->SetSurfaceSpeed(speed);
 
         RigidBody* bl = world->CreateBox(2.0f, 0.2f, RigidBody::Type::static_body);
         bl->SetPosition(-4.55f, 1.0f);
-        bl->SetSurfaceSpeed(-speed);
+        bl->SetSurfaceSpeed(speed);
 
         float xStart = -3.3f;
         float yStart = 1.05f;
@@ -65,7 +66,7 @@ public:
     void Step() override
     {
         float currentTime = game.GetTime();
-        if (!options.pause && currentTime - lastTime > 0.5f)
+        if (!options.pause && currentTime - lastTime > 1.0f)
         {
             RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
             c->SetPosition(Rand(-5.5f, -3.0f), 7.0f);

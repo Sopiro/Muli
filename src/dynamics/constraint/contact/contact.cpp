@@ -25,7 +25,7 @@ Contact::Contact(Collider* colliderA, Collider* colliderB)
     friction = MixFriction(colliderA->GetFriction(), colliderB->GetFriction());
     restitution = MixRestitution(colliderA->GetRestitution(), colliderB->GetRestitution());
     restitutionThreshold = MixRestitutionTreshold(colliderA->GetRestitutionTreshold(), colliderB->GetRestitutionTreshold());
-    surfaceSpeed = colliderB->GetSurfaceSpeed() - colliderA->GetSurfaceSpeed();
+    surfaceSpeed = colliderB->GetSurfaceSpeed() + colliderA->GetSurfaceSpeed();
 
     collideFunction = collide_function_map[colliderA->GetType()][colliderB->GetType()];
     MuliAssert(collideFunction != nullptr);
