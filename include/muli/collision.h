@@ -4,12 +4,14 @@
 #include "simplex.h"
 
 /*
- *           \        /         ↑ <- Contact normal
+ *           \   A    /         ↑ <- Contact normal
  *            \      /          |
  *    ---------\----/-------------------------------  <- Reference edge
  *              \  /
- *               \/  <- Incident point(Contact point)
+ *        B      \/  <- Incident point(Contact point)
  *
+ *    A: Incident body
+ *    B: Reference body
  */
 
 namespace muli

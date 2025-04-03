@@ -27,7 +27,7 @@ void GrabJoint::Prepare(const Timestep& step)
     // J = [I, skew(r)]
     // M = (J · M^-1 · J^t)^-1
 
-    r = Mul(bodyA->GetRotation(), localAnchor - bodyA->motion.localCenter);
+    r = Mul(bodyA->GetRotation(), localAnchor - bodyA->GetLocalCenter());
     Vec2 p = bodyA->motion.c + r;
 
     Mat2 k;

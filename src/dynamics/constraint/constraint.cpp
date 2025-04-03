@@ -10,7 +10,7 @@ Constraint::Constraint(RigidBody* bodyA, RigidBody* bodyB)
     , beta{ 0.0f }
     , gamma{ 0.0f }
 {
-    assert(bodyA->GetWorld() == bodyB->GetWorld());
+    MuliAssert(bodyA->GetWorld() == bodyB->GetWorld());
 }
 
 } // namespace muli

@@ -22,8 +22,8 @@ void RevoluteJoint::Prepare(const Timestep& step)
     // J = [-I, -skew(ra), I, skew(rb)]
     // M = (J · M^-1 · J^t)^-1
 
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());
 
     Mat2 k;
 

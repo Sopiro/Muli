@@ -38,8 +38,8 @@ void MotorJoint::Prepare(const Timestep& step)
     //     [ 0,        -1, 0,        1] // Angle
     // M = (J · M^-1 · J^t)^-1
 
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());
 
     Mat2 k0;
 

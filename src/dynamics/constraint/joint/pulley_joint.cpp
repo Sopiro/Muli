@@ -38,8 +38,8 @@ void PulleyJoint::Prepare(const Timestep& step)
     //   = iMa + iIa * (ra×ua)^2 + ratio*(iMb + iIb * (rb×ub)^2)
     // M = K^-1
 
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());
 
     ua = (bodyA->motion.c + ra) - groundAnchorA;
     ub = (bodyB->motion.c + rb) - groundAnchorB;

@@ -29,8 +29,8 @@ void WeldJoint::Prepare(const Timestep& step)
     // M = K^-1
 
     // Find k matrix here: https://dyn4j.org/2010/12/weld-constraint/
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());
 
     Mat3 k;
 

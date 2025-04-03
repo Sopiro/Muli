@@ -213,6 +213,10 @@ void ContactManager::UpdateCollider(Collider* collider, const Transform& tf0, co
     shape->ComputeAABB(tf1, &aabb1);
 
     Vec2 prediction = aabb1.GetCenter() - aabb0.GetCenter();
+#if 0
+    aabb0.min += prediction;
+    aabb0.max += prediction;
+#endif
     aabb1.min += prediction;
     aabb1.max += prediction;
 

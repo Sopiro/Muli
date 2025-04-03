@@ -30,8 +30,8 @@ void DistanceJoint::Prepare(const Timestep& step)
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // M = (J · M^-1 · J^t)^-1
 
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());
 
     Vec2 pa = bodyA->motion.c + ra;
     Vec2 pb = bodyB->motion.c + rb;

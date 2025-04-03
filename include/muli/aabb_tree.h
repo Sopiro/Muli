@@ -19,11 +19,11 @@ inline float SurfaceArea(const AABB& aabb)
 #endif
 }
 
-typedef int32 NodeProxy;
-typedef Collider Data;
-
 class AABBTree
 {
+    using NodeProxy = int32;
+    using Data = Collider;
+
 public:
     static constexpr inline int32 nullNode = -1;
 
@@ -132,7 +132,7 @@ inline bool AABBTree::WasMoved(NodeProxy node) const
     return nodes[node].moved;
 }
 
-inline Data* AABBTree::GetData(NodeProxy node) const
+inline AABBTree::Data* AABBTree::GetData(NodeProxy node) const
 {
     MuliAssert(0 <= node && node < nodeCapacity);
 

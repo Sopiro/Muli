@@ -32,8 +32,7 @@ protected:
     virtual Shape* Clone(Allocator* allocator) const override;
 
 private:
-    Vec2 va;
-    Vec2 vb;
+    Vec2 va, vb;
 };
 
 inline Shape* Capsule::Clone(Allocator* allocator) const
