@@ -39,7 +39,7 @@ public:
     void SetTransform(const Transform& transform);
     void SetTransform(const Vec2& pos, float angle);
 
-    const Sweep& GetSweep() const;
+    const Motion& GetMotion() const;
     const Vec2& GetLocalCenter() const;
 
     const Vec2& GetPosition() const;
@@ -216,7 +216,7 @@ protected:
     Type type;
 
     Transform transform;   // transform relative to the body origin
-    Sweep sweep;           // swept motion of rigid body used for CCD
+    Motion motion;         // swept motion of rigid body used for CCD
 
     Vec2 force;            // N
     float torque;          // N⋅m
@@ -273,23 +273,23 @@ inline void RigidBody::SetTransform(const Vec2& newPos, float newAngle)
     transform.position = newPos;
     transform.rotation = newAngle;
 
-    sweep.c = Mul(transform, sweep.localCenter);
-    sweep.a = newAngle;
+    motion.c = Mul(transform, motion.localCenter);
+    motion.a = newAngle;
 
-    sweep.c0 = sweep.c;
-    sweep.a0 = sweep.a;
+    motion.c0 = motion.c;
+    motion.a0 = motion.a;
 
     SynchronizeColliders();
 }
 
-inline const Sweep& RigidBody::GetSweep() const
+inline const Motion& RigidBody::GetMotion() const
 {
-    return sweep;
+    return motion;
 }
 
 inline const Vec2& RigidBody::GetLocalCenter() const
 {
-    return sweep.localCenter;
+    return motion.localCenter;
 }
 
 inline const Vec2& RigidBody::GetPosition() const
@@ -305,8 +305,8 @@ inline void RigidBody::SetPosition(const Vec2& pos)
 inline void RigidBody::SetPosition(float x, float y)
 {
     transform.position.Set(x, y);
-    sweep.c = Mul(transform, sweep.localCenter);
-    sweep.c0 = sweep.c;
+    motion.c = Mul(transform, motion.localCenter);
+    motion.c0 = motion.c;
 
     SynchronizeColliders();
 }
@@ -319,8 +319,8 @@ inline const Rotation& RigidBody::GetRotation() const
 inline void RigidBody::SetRotation(const Rotation& newRotation)
 {
     transform.rotation = newRotation;
-    sweep.a = transform.rotation.GetAngle();
-    sweep.a0 = sweep.a;
+    motion.a = transform.rotation.GetAngle();
+    motion.a0 = motion.a;
 
     SynchronizeColliders();
 }
@@ -328,15 +328,15 @@ inline void RigidBody::SetRotation(const Rotation& newRotation)
 inline void RigidBody::SetRotation(float newAngle)
 {
     transform.rotation = newAngle;
-    sweep.a = newAngle;
-    sweep.a0 = sweep.a;
+    motion.a = newAngle;
+    motion.a0 = motion.a;
 
     SynchronizeColliders();
 }
 
 inline float RigidBody::GetAngle() const
 {
-    return sweep.a;
+    return motion.a;
 }
 
 inline float RigidBody::GetMass() const
@@ -351,7 +351,7 @@ inline float RigidBody::GetInertia() const
 
 inline float RigidBody::GetInertiaLocalOrigin() const
 {
-    return inertia + mass * Length2(sweep.localCenter);
+    return inertia + mass * Length2(motion.localCenter);
 }
 
 inline float RigidBody::GetLinearDamping() const
@@ -454,7 +454,7 @@ inline void RigidBody::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, b
     if (IsSleeping() == false)
     {
         force += inForce;
-        torque += Cross(worldPoint - sweep.c, inForce);
+        torque += Cross(worldPoint - motion.c, inForce);
     }
 }
 
@@ -473,7 +473,7 @@ inline void RigidBody::ApplyForceLocal(const Vec2& localPoint, const Vec2& inFor
     if (IsSleeping() == false)
     {
         force += inForce;
-        torque += Cross(localPoint - sweep.localCenter, inForce);
+        torque += Cross(localPoint - motion.localCenter, inForce);
     }
 }
 
@@ -510,7 +510,7 @@ inline void RigidBody::ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& im
     if (IsSleeping() == false)
     {
         linearVelocity += invMass * impulse;
-        angularVelocity += invInertia * Cross(worldPoint - sweep.c, impulse);
+        angularVelocity += invInertia * Cross(worldPoint - motion.c, impulse);
     }
 }
 
@@ -529,7 +529,7 @@ inline void RigidBody::ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec
     if (IsSleeping() == false)
     {
         linearVelocity += invMass * impulse;
-        angularVelocity += invInertia * Cross(localPoint - sweep.localCenter, impulse);
+        angularVelocity += invInertia * Cross(localPoint - motion.localCenter, impulse);
     }
 }
 
@@ -560,17 +560,17 @@ inline void RigidBody::Translate(float dx, float dy)
 {
     transform.position.x += dx;
     transform.position.y += dy;
-    sweep.c = Mul(transform, sweep.localCenter);
-    sweep.c0 = sweep.c;
+    motion.c = Mul(transform, motion.localCenter);
+    motion.c0 = motion.c;
 
     SynchronizeColliders();
 }
 
 inline void RigidBody::Rotate(float a)
 {
-    sweep.a += a;
-    sweep.a0 = sweep.a;
-    transform.rotation = sweep.a;
+    motion.a += a;
+    motion.a0 = motion.a;
+    transform.rotation = motion.a;
 
     SynchronizeColliders();
 }
@@ -721,22 +721,22 @@ inline int32 RigidBody::GetColliderCount() const
 
 inline void RigidBody::SynchronizeTransform()
 {
-    transform.rotation = sweep.a;
+    transform.rotation = motion.a;
     // Shift to origin
-    transform.position = sweep.c - Mul(transform.rotation, sweep.localCenter);
+    transform.position = motion.c - Mul(transform.rotation, motion.localCenter);
 }
 
 // Advance to the new safe time
-// c0 = c = sweep(alpha)
-// a0 = a = sweep(alpha)
+// c0 = c = motion(alpha)
+// a0 = a = motion(alpha)
 inline void RigidBody::Advance(float alpha)
 {
-    sweep.Advance(alpha);
-    sweep.c = sweep.c0;
-    sweep.a = sweep.a0;
+    motion.Advance(alpha);
+    motion.c = motion.c0;
+    motion.a = motion.a0;
 
-    transform.rotation = sweep.a;
-    transform.position = sweep.c - Mul(transform.rotation, sweep.localCenter);
+    transform.rotation = motion.a;
+    transform.position = motion.c - Mul(transform.rotation, motion.localCenter);
 }
 
 } // namespace muli

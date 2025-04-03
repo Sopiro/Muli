@@ -29,8 +29,8 @@ void WeldJoint::Prepare(const Timestep& step)
     // M = K^-1
 
     // Find k matrix here: https://dyn4j.org/2010/12/weld-constraint/
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->sweep.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->sweep.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
 
     Mat3 k;
 
@@ -53,11 +53,11 @@ void WeldJoint::Prepare(const Timestep& step)
 
     m = k.GetInverse();
 
-    Vec2 pa = bodyA->sweep.c + ra;
-    Vec2 pb = bodyB->sweep.c + rb;
+    Vec2 pa = bodyA->motion.c + ra;
+    Vec2 pb = bodyB->motion.c + rb;
 
     Vec2 error01 = pb - pa;
-    float error2 = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
+    float error2 = bodyB->motion.a - bodyA->motion.a - angleOffset;
 
     bias.Set(error01.x, error01.y, error2);
     bias *= beta * step.inv_dt;

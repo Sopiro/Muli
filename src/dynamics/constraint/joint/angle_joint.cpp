@@ -8,7 +8,7 @@ AngleJoint::AngleJoint(RigidBody* bodyA, RigidBody* bodyB, float jointFrequency,
     : Joint(angle_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
-    angleOffset = bodyB->sweep.a - bodyA->sweep.a;
+    angleOffset = bodyB->motion.a - bodyA->motion.a;
 }
 
 void AngleJoint::Prepare(const Timestep& step)
@@ -26,7 +26,7 @@ void AngleJoint::Prepare(const Timestep& step)
         m = 1.0f / k;
     }
 
-    float error = bodyB->sweep.a - bodyA->sweep.a - angleOffset;
+    float error = bodyB->motion.a - bodyA->motion.a - angleOffset;
     bias = error * beta * step.inv_dt;
 
     if (step.warm_starting)

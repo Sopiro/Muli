@@ -175,10 +175,10 @@ bool Contact::SolvePositionConstraints(const Timestep& step)
         solved &= positionSolvers[i].Solve();
     }
 
-    b1->sweep.c += b1->invMass * cLinearImpulseA;
-    b1->sweep.a += b1->invInertia * cAngularImpulseA;
-    b2->sweep.c += b2->invMass * cLinearImpulseB;
-    b2->sweep.a += b2->invInertia * cAngularImpulseB;
+    b1->motion.c += b1->invMass * cLinearImpulseA;
+    b1->motion.a += b1->invInertia * cAngularImpulseA;
+    b2->motion.c += b2->invMass * cLinearImpulseB;
+    b2->motion.a += b2->invInertia * cAngularImpulseB;
 
     return solved;
 }
@@ -202,13 +202,13 @@ bool Contact::SolveTOIPositionConstraints()
     // TOI index == 0 or 1
     if (b1->islandIndex < 2)
     {
-        b1->sweep.c += b1->invMass * cLinearImpulseA;
-        b1->sweep.a += b1->invInertia * cAngularImpulseA;
+        b1->motion.c += b1->invMass * cLinearImpulseA;
+        b1->motion.a += b1->invInertia * cAngularImpulseA;
     }
     if (b2->islandIndex < 2)
     {
-        b2->sweep.c += b2->invMass * cLinearImpulseB;
-        b2->sweep.a += b2->invInertia * cAngularImpulseB;
+        b2->motion.c += b2->invMass * cLinearImpulseB;
+        b2->motion.a += b2->invInertia * cAngularImpulseB;
     }
 
     return solved;

@@ -12,8 +12,8 @@ void ContactSolverNormal::Prepare(const Contact* c, const Vec2& normal, int32 in
     // M = (J · M^-1 · J^t)^-1
 
     Vec2 point = c->manifold.contactPoints[index].p;
-    Vec2 ra = point - c->b1->sweep.c;
-    Vec2 rb = point - c->b2->sweep.c;
+    Vec2 ra = point - c->b1->motion.c;
+    Vec2 rb = point - c->b2->motion.c;
 
     // Setup jacobian
     j.va = -normal;
@@ -102,8 +102,8 @@ void ContactSolverTangent::Prepare(const Contact* c, const Vec2& tangent, int32 
     // M = (J · M^-1 · J^t)^-1
 
     Vec2 point = c->manifold.contactPoints[index].p;
-    Vec2 ra = point - c->b1->sweep.c;
-    Vec2 rb = point - c->b2->sweep.c;
+    Vec2 ra = point - c->b1->motion.c;
+    Vec2 rb = point - c->b2->motion.c;
 
     // Setup jacobian
     j.va = -tangent;

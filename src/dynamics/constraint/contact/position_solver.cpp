@@ -9,8 +9,8 @@ void PositionSolver::Prepare(Contact* inContact, int32 index)
 {
     contact = inContact;
 
-    Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
-    Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
+    Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
+    Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };
 
     localPlainPoint = MulT(tfA, contact->manifold.referencePoint.p);
     localClipPoint = MulT(tfB, contact->manifold.contactPoints[index].p);
@@ -19,8 +19,8 @@ void PositionSolver::Prepare(Contact* inContact, int32 index)
 
 bool PositionSolver::Solve()
 {
-    Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
-    Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
+    Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
+    Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };
 
     Vec2 planePoint = Mul(tfA, localPlainPoint);
     Vec2 clipPoint = Mul(tfB, localClipPoint); // penetration point
@@ -61,8 +61,8 @@ bool PositionSolver::Solve()
 
 bool PositionSolver::SolveTOI()
 {
-    Transform tfA{ contact->b1->sweep.c, contact->b1->sweep.a };
-    Transform tfB{ contact->b2->sweep.c, contact->b2->sweep.a };
+    Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
+    Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };
 
     Vec2 planePoint = Mul(tfA, localPlainPoint);
     Vec2 clipPoint = Mul(tfB, localClipPoint); // penetration point

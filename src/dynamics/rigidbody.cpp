@@ -13,7 +13,7 @@ RigidBody::RigidBody(RigidBody::Type type)
     , UserData{ nullptr }
     , type{ type }
     , transform{ identity }
-    , sweep{ identity }
+    , motion{ identity }
     , force{ 0.0f }
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
@@ -331,8 +331,8 @@ void RigidBody::SetType(RigidBody::Type newType)
     {
         linearVelocity.SetZero();
         angularVelocity = 0.0f;
-        sweep.c0 = sweep.c;
-        sweep.a0 = sweep.a;
+        motion.c0 = motion.c;
+        motion.a0 = motion.a;
         SynchronizeColliders();
     }
 
@@ -481,12 +481,12 @@ void RigidBody::ResetMassData()
         invInertia = 0.0f;
     }
 
-    Vec2 oldPosition = sweep.c;
-    sweep.localCenter = localCenter;
-    sweep.c = Mul(transform, sweep.localCenter);
-    sweep.c0 = sweep.c;
+    Vec2 oldPosition = motion.c;
+    motion.localCenter = localCenter;
+    motion.c = Mul(transform, motion.localCenter);
+    motion.c0 = motion.c;
 
-    linearVelocity += Cross(angularVelocity, sweep.c - oldPosition);
+    linearVelocity += Cross(angularVelocity, motion.c - oldPosition);
 }
 
 void RigidBody::SynchronizeColliders()
@@ -502,7 +502,7 @@ void RigidBody::SynchronizeColliders()
     {
         // Transform at previus step
         Transform tf0;
-        sweep.GetTransform(0.0f, &tf0);
+        motion.GetTransform(0.0f, &tf0);
 
         for (Collider* collider = colliderList; collider; collider = collider->next)
         {

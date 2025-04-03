@@ -41,8 +41,8 @@ void Island::Solve()
         RigidBody* b = bodies[i];
 
         // Save positions for continuous collision
-        b->sweep.c0 = b->sweep.c;
-        b->sweep.a0 = b->sweep.a;
+        b->motion.c0 = b->motion.c;
+        b->motion.a0 = b->motion.a;
 
         // All bodies on this island are resting more than sleep time, but flags are not set
         if (sleeping)
@@ -149,8 +149,8 @@ void Island::Solve()
         b->force.SetZero();
         b->torque = 0.0f;
 
-        b->sweep.c += b->linearVelocity * step.dt;
-        b->sweep.a += b->angularVelocity * step.dt;
+        b->motion.c += b->linearVelocity * step.dt;
+        b->motion.a += b->angularVelocity * step.dt;
 
         if (settings.world_bounds.TestPoint(b->GetPosition()) == false)
         {
@@ -257,10 +257,10 @@ void Island::SolveTOI(float dt)
         }
     }
 
-    bodies[toi_index_1]->sweep.c0 = bodies[toi_index_1]->sweep.c;
-    bodies[toi_index_1]->sweep.a0 = bodies[toi_index_1]->sweep.a;
-    bodies[toi_index_2]->sweep.c0 = bodies[toi_index_2]->sweep.c;
-    bodies[toi_index_2]->sweep.a0 = bodies[toi_index_2]->sweep.a;
+    bodies[toi_index_1]->motion.c0 = bodies[toi_index_1]->motion.c;
+    bodies[toi_index_1]->motion.a0 = bodies[toi_index_1]->motion.a;
+    bodies[toi_index_2]->motion.c0 = bodies[toi_index_2]->motion.c;
+    bodies[toi_index_2]->motion.a0 = bodies[toi_index_2]->motion.a;
 
     for (int32 i = 0; i < step.velocity_iterations; ++i)
     {
@@ -288,8 +288,8 @@ void Island::SolveTOI(float dt)
     {
         RigidBody* b = bodies[i];
 
-        b->sweep.c += b->linearVelocity * dt;
-        b->sweep.a += b->angularVelocity * dt;
+        b->motion.c += b->linearVelocity * dt;
+        b->motion.a += b->angularVelocity * dt;
         b->SynchronizeTransform();
     }
 

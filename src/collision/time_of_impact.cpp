@@ -16,9 +16,9 @@ struct SeparationFunction
     void Initialize(
         const ClosestFeatures& closestFeatures,
         const Shape* inShapeA,
-        const Sweep& inSweepA,
+        const Motion& inMotionA,
         const Shape* inShapeB,
-        const Sweep& inSweepB,
+        const Motion& inMotionB,
         float t1
     )
     {
@@ -27,12 +27,12 @@ struct SeparationFunction
         shapeA = inShapeA;
         shapeB = inShapeB;
 
-        sweepA = inSweepA;
-        sweepB = inSweepB;
+        motionA = inMotionA;
+        motionB = inMotionB;
 
         Transform tfA, tfB;
-        sweepA.GetTransform(t1, &tfA);
-        sweepB.GetTransform(t1, &tfB);
+        motionA.GetTransform(t1, &tfA);
+        motionB.GetTransform(t1, &tfB);
 
         int32 count = closestFeatures.count;
         const Point* featuresA = closestFeatures.featuresA;
@@ -102,8 +102,8 @@ struct SeparationFunction
     float FindMinSeparation(float t, int32* idA, int32* idB) const
     {
         Transform tfA, tfB;
-        sweepA.GetTransform(t, &tfA);
-        sweepB.GetTransform(t, &tfB);
+        motionA.GetTransform(t, &tfA);
+        motionB.GetTransform(t, &tfB);
 
         switch (type)
         {
@@ -168,8 +168,8 @@ struct SeparationFunction
     float ComputeSeparation(int32 idA, int32 idB, float t) const
     {
         Transform tfA, tfB;
-        sweepA.GetTransform(t, &tfA);
-        sweepB.GetTransform(t, &tfB);
+        motionA.GetTransform(t, &tfA);
+        motionB.GetTransform(t, &tfB);
 
         switch (type)
         {
@@ -216,8 +216,8 @@ struct SeparationFunction
 
     const Shape* shapeA;
     const Shape* shapeB;
-    Sweep sweepA;
-    Sweep sweepB;
+    Motion motionA;
+    Motion motionB;
     Type type;
     Vec2 localPoint;
     Vec2 axis;
@@ -225,13 +225,13 @@ struct SeparationFunction
 
 static constexpr int32 max_iterations = 20;
 
-void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB, Sweep sweepB, float tMax, TOIOutput* output)
+void ComputeTimeOfImpact(const Shape* shapeA, Motion motionA, const Shape* shapeB, Motion motionB, float tMax, TOIOutput* output)
 {
     output->state = TOIOutput::unknown;
     output->t = tMax;
 
-    sweepA.Normalize();
-    sweepB.Normalize();
+    motionA.Normalize();
+    motionB.Normalize();
 
     /*
         target        = radii - linear_slop * 3.0 (discrete position solver threshold)
@@ -258,8 +258,8 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
     while (true)
     {
         Transform tfA, tfB;
-        sweepA.GetTransform(t1, &tfA);
-        sweepB.GetTransform(t1, &tfB);
+        motionA.GetTransform(t1, &tfA);
+        motionB.GetTransform(t1, &tfB);
 
         // Get the initial separation and closest features
         float distance = GetClosestFeatures(shapeA, tfA, shapeB, tfB, &cf);
@@ -285,7 +285,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
 
         // Initialize the separating axis
         SeparationFunction fcn;
-        fcn.Initialize(cf, shapeA, sweepA, shapeB, sweepB, t1);
+        fcn.Initialize(cf, shapeA, motionA, shapeB, motionB, t1);
 
         // Compute the time of impact on the separating axis
         // We do this by successively resolving the deepest point
@@ -313,7 +313,7 @@ void ComputeTimeOfImpact(const Shape* shapeA, Sweep sweepA, const Shape* shapeB,
             // -tolerance < s2 - target < tolerance
             if (s2 > target - tolerance)
             {
-                // Advance the sweeps
+                // Advance the motions
                 // Repeat the algorithm in domain [ new_t , t_max ]
                 t1 = t2;
                 break;

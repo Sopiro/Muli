@@ -21,7 +21,7 @@ struct Mat3;
 struct Mat4;
 struct Rotation;
 struct Transform;
-struct Sweep;
+struct Motion;
 
 enum Identity
 {
@@ -980,11 +980,11 @@ struct Transform
 };
 
 // Describes the swept motion of rigid body
-struct Sweep
+struct Motion
 {
-    Sweep() = default;
+    Motion() = default;
 
-    Sweep(Identity)
+    Motion(Identity)
         : localCenter{ 0.0f }
         , c0{ 0.0f }
         , c{ 0.0f }
@@ -994,10 +994,10 @@ struct Sweep
     {
     }
 
-    // Get the interpolated transform at time beta, where alpha0 <= beta <= alpha
+    // Returns the interpolated transform at time beta, where alpha0 <= beta <= alpha
     void GetTransform(float beta, Transform* transform) const;
 
-    // Advance the sweep forward, yielding a new initial state.
+    // Advance the motion forward, yielding a new initial state.
     void Advance(float alpha);
 
     // Normalize an angle in radians to be between -pi and pi
@@ -1639,7 +1639,7 @@ inline Vec3 PolarToCart(float phi, float theta, float r)
     return Vec3{ x * r, y * r, z * r };
 }
 
-inline void Sweep::GetTransform(float beta, Transform* transform) const
+inline void Motion::GetTransform(float beta, Transform* transform) const
 {
     transform->position = (1.0f - beta) * c0 + beta * c;
     float angle = (1.0f - beta) * a0 + beta * a;
@@ -1649,7 +1649,7 @@ inline void Sweep::GetTransform(float beta, Transform* transform) const
     transform->position -= Mul(transform->rotation, localCenter);
 }
 
-inline void Sweep::Advance(float alpha)
+inline void Motion::Advance(float alpha)
 {
     // alpha0 < alpha < 1.0f
     assert(alpha0 < 1.0f);
@@ -1659,10 +1659,10 @@ inline void Sweep::Advance(float alpha)
     alpha0 = alpha;
 }
 
-inline void Sweep::Normalize()
+inline void Motion::Normalize()
 {
-    float pi2 = 2.0f * pi;
-    float d = pi2 * Floor(a0 / pi2);
+    constexpr float two_pi = 2 * pi;
+    float d = two_pi * Floor(a0 / two_pi);
     a0 -= d;
     a -= d;
 }

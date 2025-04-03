@@ -22,8 +22,8 @@ void RevoluteJoint::Prepare(const Timestep& step)
     // J = [-I, -skew(ra), I, skew(rb)]
     // M = (J · M^-1 · J^t)^-1
 
-    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->sweep.localCenter);
-    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->sweep.localCenter);
+    ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->motion.localCenter);
+    rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->motion.localCenter);
 
     Mat2 k;
 
@@ -39,8 +39,8 @@ void RevoluteJoint::Prepare(const Timestep& step)
 
     m = k.GetInverse();
 
-    Vec2 pa = bodyA->sweep.c + ra;
-    Vec2 pb = bodyB->sweep.c + rb;
+    Vec2 pa = bodyA->motion.c + ra;
+    Vec2 pb = bodyB->motion.c + rb;
 
     Vec2 error = pb - pa;
     bias = error * beta * step.inv_dt;

@@ -194,7 +194,7 @@ void World::Solve()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
-        MuliAssert(body->sweep.alpha0 == 0.0f);
+        MuliAssert(body->motion.alpha0 == 0.0f);
 
         if ((body->flag & RigidBody::flag_island) == 0)
         {
@@ -291,23 +291,23 @@ float World::SolveTOI()
 
                 // Compute the TOI for this contact
 
-                // Put the sweeps onto the same time interval
-                float alpha0 = bodyA->sweep.alpha0;
-                if (bodyA->sweep.alpha0 < bodyB->sweep.alpha0)
+                // Put the motions onto the same time interval
+                float alpha0 = bodyA->motion.alpha0;
+                if (bodyA->motion.alpha0 < bodyB->motion.alpha0)
                 {
-                    alpha0 = bodyB->sweep.alpha0;
-                    bodyA->sweep.Advance(alpha0);
+                    alpha0 = bodyB->motion.alpha0;
+                    bodyA->motion.Advance(alpha0);
                 }
-                else if (bodyA->sweep.alpha0 > bodyB->sweep.alpha0)
+                else if (bodyA->motion.alpha0 > bodyB->motion.alpha0)
                 {
-                    alpha0 = bodyA->sweep.alpha0;
-                    bodyB->sweep.Advance(alpha0);
+                    alpha0 = bodyA->motion.alpha0;
+                    bodyB->motion.Advance(alpha0);
                 }
 
                 MuliAssert(alpha0 < 1.0f);
 
                 TOIOutput output;
-                ComputeTimeOfImpact(colliderA->shape, bodyA->sweep, colliderB->shape, bodyB->sweep, 1.0f, &output);
+                ComputeTimeOfImpact(colliderA->shape, bodyA->motion, colliderB->shape, bodyB->motion, 1.0f, &output);
 
 #if 0
                 switch (output.state)
@@ -370,8 +370,8 @@ float World::SolveTOI()
         RigidBody* bodyA = colliderA->body;
         RigidBody* bodyB = colliderB->body;
 
-        Sweep save1 = bodyA->sweep;
-        Sweep save2 = bodyB->sweep;
+        Motion save1 = bodyA->motion;
+        Motion save2 = bodyB->motion;
 
         bodyA->Advance(minAlpha);
         bodyB->Advance(minAlpha);
@@ -384,10 +384,10 @@ float World::SolveTOI()
         // Contact disabled by the user or no contact points found
         if (minContact->IsEnabled() == false || minContact->IsTouching() == false)
         {
-            // Restore the sweeps
+            // Restore the motions
             minContact->SetEnabled(false); // Prevent duplicate
-            bodyA->sweep = save1;
-            bodyB->sweep = save2;
+            bodyA->motion = save1;
+            bodyB->motion = save2;
             bodyA->SynchronizeTransform();
             bodyB->SynchronizeTransform();
             continue;
@@ -448,7 +448,7 @@ float World::SolveTOI()
                     continue;
                 }
 
-                Sweep save = other->sweep;
+                Motion save = other->motion;
 
                 // Tentatively advance the body to the TOI
                 if ((other->flag & RigidBody::flag_island) == 0)
@@ -462,7 +462,7 @@ float World::SolveTOI()
                 // Contact disabled by the user or no contact points found
                 if (contact->IsEnabled() == false || contact->IsTouching() == false)
                 {
-                    other->sweep = save;
+                    other->motion = save;
                     other->SynchronizeTransform();
                     continue;
                 }
@@ -528,7 +528,7 @@ float World::SolveTOI()
 
     for (RigidBody* body = bodyList; body; body = body->next)
     {
-        body->sweep.alpha0 = 0.0f;
+        body->motion.alpha0 = 0.0f;
         body->flag &= ~RigidBody::flag_island;
     }
 
