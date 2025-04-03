@@ -98,6 +98,6 @@ public:
     }
 };
 
-static int index = register_demo("Cloth", Cloth::Create, 25);
+// static int index = register_demo("Cloth", Cloth::Create, 25);
 
 } // namespace muli

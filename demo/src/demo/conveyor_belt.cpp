@@ -5,6 +5,7 @@ namespace muli
 {
 
 static float speed = 2.0f;
+static bool spawn_bodies = true;
 
 class ConveyorBelt : public Demo
 {
@@ -66,7 +67,7 @@ public:
     void Step() override
     {
         float currentTime = game.GetTime();
-        if (!options.pause && currentTime - lastTime > 1.0f)
+        if (spawn_bodies && !options.pause && currentTime - lastTime > 1.0f)
         {
             RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
             c->SetPosition(Rand(-5.5f, -3.0f), 7.0f);
@@ -83,7 +84,9 @@ public:
 
         if (ImGui::Begin("Conbeyor belt", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::SliderFloat("Surface speed", &speed, 0.0f, 10.0f, "%.2f m/s");
+            ImGui::Text("Surface speed");
+            ImGui::SliderFloat("##Surface speed", &speed, 0.0f, 10.0f, "%.2f m/s");
+            ImGui::Checkbox("Spawn bodies", &spawn_bodies);
         }
         ImGui::End();
     }

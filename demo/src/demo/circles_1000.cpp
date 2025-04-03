@@ -3,8 +3,13 @@
 namespace muli
 {
 
+static bool rotate = false;
+static float speed = 0.5f;
+
 class Circles1000 : public Demo
 {
+    RigidBody* frame;
+
 public:
     Circles1000(Game& game)
         : Demo(game)
@@ -14,10 +19,12 @@ public:
         float wallWidth = 0.4f;
         float wallRadius = wallWidth / 2.0f;
 
-        world->CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, RigidBody::Type::static_body);
-        world->CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, RigidBody::Type::static_body);
-        world->CreateCapsule(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius, RigidBody::Type::static_body);
-        world->CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, RigidBody::Type::static_body);
+        frame = world->CreateEmptyBody(RigidBody::Type::kinematic_body);
+
+        frame->CreateCapsuleCollider(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius);
+        frame->CreateCapsuleCollider(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius);
+        frame->CreateCapsuleCollider(Vec2{ halfSize, halfSize }, Vec2{ -halfSize, halfSize }, wallRadius);
+        frame->CreateCapsuleCollider(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius);
 
         float r = 0.22f;
 
@@ -32,6 +39,27 @@ public:
 
         camera.position = { 0.0f, 0.0f };
         camera.scale = { 3.f, 3.f };
+
+        frame->SetAngularVelocity(speed * rotate);
+    }
+
+    void UpdateUI() override
+    {
+        ImGui::SetNextWindowPos({ Window::Get()->GetWindowSize().x - 5, 5 }, ImGuiCond_Always, { 1.0f, 0.0f });
+
+        if (ImGui::Begin("Circles 1000", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            if (ImGui::Checkbox("Rotate frame", &rotate))
+            {
+                frame->SetAngularVelocity(speed * rotate);
+            }
+
+            if (ImGui::SliderFloat("Speed", &speed, 0.0f, 3.14f, "%.2f rad/s"))
+            {
+                frame->SetAngularVelocity(speed * rotate);
+            }
+        }
+        ImGui::End();
     }
 
     static Demo* Create(Game& game)

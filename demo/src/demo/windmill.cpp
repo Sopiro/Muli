@@ -4,12 +4,13 @@
 namespace muli
 {
 
+static bool create_bodies = true;
+static float speed = 270.0f;
+static float force = 1000.0f;
+static float torque = 100.0f;
+
 class Windmill : public Demo
 {
-    static inline bool obstacles = true;
-    static inline float speed = 270.0f;
-    static inline float force = 1000.0f;
-    static inline float torque = 100.0f;
 
 public:
     MotorJoint* motor;
@@ -44,7 +45,7 @@ public:
 
         if (!options.pause && game.GetTime() > t + 0.2f)
         {
-            if (obstacles)
+            if (create_bodies)
             {
                 RigidBody* c = world->CreateRegularPolygon(0.18f, (int32)Rand(3, 8));
                 c->SetPosition(RandVec2(Vec2{ -2.0f, 6.0f }, Vec2{ 2.0f, 6.0f }));
@@ -62,7 +63,7 @@ public:
 
         if (ImGui::Begin("Windmill", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::Checkbox("Create obstacles", &obstacles);
+            ImGui::Checkbox("Create bodies", &create_bodies);
             ImGui::SliderFloat("Speed", &speed, -3600.0f, 3600.0f, "%.2f deg/s");
             ImGui::SliderFloat("Motor force", &force, 0.0f, 10000.0f, "%.2f N");
             ImGui::SliderFloat("Motor torque", &torque, 0.0f, 10000.0f, "%.2f Nm");
