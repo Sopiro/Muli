@@ -83,14 +83,15 @@ void MainLoop()
     float elapsed = duration.count();
     lastTime = currentTime;
 
-    frameTime += elapsed;
-    updateTime += elapsed;
-
     if (updateTime > targetUpdateTime)
     {
         game->FixedUpdate();
 
         updateTime -= targetUpdateTime;
+    }
+    else
+    {
+        updateTime += elapsed;
     }
 
     if (frameTime > targetFrameTime)
@@ -103,6 +104,10 @@ void MainLoop()
         window->EndFrame();
 
         frameTime -= targetFrameTime;
+    }
+    else
+    {
+        frameTime += elapsed;
     }
 }
 

@@ -280,10 +280,10 @@ float World::SolveTOI()
                     continue;
                 }
 
-                bool collideA = bodyA->IsContinuous() || typeA != RigidBody::Type::dynamic_body;
-                bool collideB = bodyB->IsContinuous() || typeB != RigidBody::Type::dynamic_body;
+                bool collideA = bodyA->IsContinuous() || typeA == RigidBody::Type::static_body;
+                bool collideB = bodyB->IsContinuous() || typeB == RigidBody::Type::static_body;
 
-                // Discard non-continuous dynamic vs. non-continuous dynamic case
+                // Discard non-continuous dynamic|kinematic vs. non-continuous dynamic|kinematic case
                 if (collideA == false && collideB == false)
                 {
                     continue;
