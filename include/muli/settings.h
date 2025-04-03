@@ -84,7 +84,7 @@ struct WorldSettings
     bool continuous = true;
     bool sub_stepping = false;
 
-    AABB world_bounds{ Vec2{ -max_value, -max_value }, Vec2{ max_value, max_value } };
+    AABB world_bounds{ Vec2{ -1e6f }, Vec2{ 1e6f } };
 
     mutable Timestep step;
 };
