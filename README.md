@@ -12,29 +12,32 @@
   - Continuous collision detection (Bilateral advancement by Erin Catto of box2d)
   - Shapes: circle, capsule and convex polygon
   - Support for rounded polygons
-  - Multiple shapes attached to a single body
+  - Multiple colliders attached to single body
   - Dynamic, static and kinematic bodies
   - Collision filtering
   - Dynamic AABB tree broadphase
-  - Dynamic tree accelerated raycast, shapecast and world query
+  - Accelerated raycast, shapecast and area query
   - Easy-to-use collision detection and distance functions
   
 ### Physics Simulation
+  - PGS Solver with separate position solver
   - Continuous physics simulation (Time of impact solver and sub-stepping)  
+  - Stable stacking with 2-contact LCP solver (Block solver)
   - Efficient and persistent contact management from box2d
   - Constraint islanding and sleeping
-  - Stable stacking with 2-contact LCP solver (Block solver)
-  - Decoupled position correction iteration
   - Contact callbacks: begin, touching, end, pre-solve, post-solve and destroy event
   - Physics material: friction, restitution and surface speed
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute and weld
   
 ### ETC
-  - 50+ Demos
-  - OpenGL based demo framework
-  - Cross platform library
-  - Intuitive and straightforward API
-  
+  - Cross platform library (C++20)
+  - Intuitive and straightforward API design
+
+### Demo
+  - 50+ interactive Demos
+  - OpenGL based cross platform demo framework
+  - WebAssembly powered web [demo](https://sopiro.github.io/muli-wasm/)
+
 ## Example
 
 ``` c++
@@ -89,10 +92,6 @@ find_package(muli REQUIRED)
 
 target_link_libraries(your-project PRIVATE muli::muli)
 ```
-
-## Todo
-- Implement position solve step for joints  
-- Multithreading
 
 ## References
 Here are some great resources to learn how to build a physics engine!
