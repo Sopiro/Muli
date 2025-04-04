@@ -20,16 +20,16 @@
   - Easy-to-use collision detection and distance functions
   
 ### Physics Simulation
-  - PGS Solver with separate position solver
   - Continuous physics simulation (Time of impact solver and sub-stepping)  
+  - PGS Solver with separate position solver
   - Stable stacking with 2-contact LCP solver (Block solver)
   - Efficient and persistent contact management from box2d
   - Constraint islanding and sleeping
-  - Contact callbacks: begin, touching, end, pre-solve, post-solve and destroy event
+  - Contact callbacks: begin, touching, end, pre-solve, post-solve and destroy
   - Physics material: friction, restitution and surface speed
   - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute and weld
   
-### ETC
+### Others
   - Cross platform library (C++20)
   - Intuitive and straightforward API design
 
@@ -85,7 +85,7 @@ cmake --build . --config Release
 cmake --install . --prefix "installation-path"
 ```
 
-Assuming you've added "installation-path" to your system `PATH`, you can now integrate the library into your project
+Assuming you've added `"installation-path"` to your system `PATH`, you can now integrate the library into your project
 
 ``` cmake
 find_package(muli REQUIRED)
