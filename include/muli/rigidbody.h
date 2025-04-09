@@ -29,7 +29,7 @@ public:
         dynamic_body,
     };
 
-    RigidBody(RigidBody::Type type);
+    RigidBody(RigidBody::Type type, const Transform& tf);
     ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;
@@ -134,7 +134,9 @@ public:
 
     // Collider factory functions
 
-    Collider* CreateCollider(Shape* shape, float density = default_density, const Material& material = default_material);
+    Collider* CreateCollider(
+        Shape* shape, const Transform& tf = identity, float density = default_density, const Material& material = default_material
+    );
     void DestroyCollider(Collider* collider);
 
     int32 GetColliderCount() const;
@@ -142,17 +144,13 @@ public:
     const Collider* GetColliderList() const;
 
     Collider* CreateCircleCollider(
-        float radius,
-        const Vec2& position = Vec2::zero,
-        float density = default_density,
-        const Material& material = default_material
+        float radius, const Transform& tf = identity, float density = default_density, const Material& material = default_material
     );
     Collider* CreateBoxCollider(
         float width,
         float height,
         float radius = default_radius,
-        const Vec2& position = Vec2::zero,
-        float angle = 0.0f,
+        const Transform& tf = identity,
         float density = default_density,
         const Material& material = default_material
     );
@@ -160,7 +158,7 @@ public:
         float length,
         float radius,
         bool horizontal = false,
-        const Vec2& position = Vec2::zero,
+        const Transform& tf = identity,
         float density = default_density,
         const Material& material = default_material
     );
@@ -169,6 +167,7 @@ public:
         const Vec2& p2,
         float radius,
         bool resetPosition = false,
+        const Transform& tf = identity,
         float density = default_density,
         const Material& material = default_material
     );

@@ -9,7 +9,7 @@ public:
     SingleBox(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         RigidBody* box = world->CreateBox(0.4f);
         box->SetPosition(0.0f, 5.0f);

@@ -8,9 +8,11 @@ namespace muli
 class Capsule : public Shape
 {
 public:
-    Capsule(float length, float radius, bool horizontal = false, const Vec2& position = Vec2::zero);
-    Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false);
+    Capsule(float length, float radius, bool horizontal = false, const Transform& tf = identity);
+    Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false, const Transform& tf = identity);
     ~Capsule() = default;
+
+    Capsule(const Capsule& other, const Transform& tf);
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -29,16 +31,21 @@ public:
     const Vec2& GetVertexB() const;
 
 protected:
-    virtual Shape* Clone(Allocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator, const Transform& tf) const override;
 
 private:
     Vec2 va, vb;
 };
 
-inline Shape* Capsule::Clone(Allocator* allocator) const
+inline Capsule::Capsule(const Capsule& other, const Transform& tf)
+    : Capsule(other.va, other.vb, other.radius, false, tf)
+{
+}
+
+inline Shape* Capsule::Clone(Allocator* allocator, const Transform& tf) const
 {
     void* mem = allocator->Allocate(sizeof(Capsule));
-    Capsule* shape = new (mem) Capsule(*this);
+    Capsule* shape = new (mem) Capsule(*this, tf);
     return shape;
 }
 

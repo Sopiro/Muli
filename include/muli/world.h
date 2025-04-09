@@ -49,13 +49,18 @@ public:
 
     // clang-format off
     // Factory functions for bodies
-    RigidBody* DuplicateBody(RigidBody* body);
-
-    RigidBody* CreateEmptyBody(
-        RigidBody::Type type = RigidBody::Type::dynamic_body
+    RigidBody* DuplicateBody(
+        RigidBody* body,
+        const Transform& tf = identity
     );
+    RigidBody* CreateEmptyBody(
+        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        const Transform& tf = identity
+    );
+
     RigidBody* CreateCircle(
         float radius,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float density = default_density
     );
@@ -63,6 +68,7 @@ public:
         float length,
         float radius,
         bool horizontal = false,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float density = default_density
     );
@@ -70,12 +76,14 @@ public:
         const Vec2& point1,
         const Vec2& point2,
         float radius,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         bool resetPosition = false,
         float density = default_density
     );
     RigidBody* CreatePolygon(
         std::span<Vec2> vertices,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         bool resetCenter = true,
         float radius = default_radius,
@@ -83,6 +91,7 @@ public:
     );
     RigidBody* CreateBox(
         float size,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float radius = default_radius,
         float density = default_density
@@ -90,6 +99,7 @@ public:
     RigidBody* CreateBox(
         float width,
         float height,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float radius = default_radius,
         float density = default_density
@@ -97,6 +107,7 @@ public:
     RigidBody* CreateRandomConvexPolygon(
         float length,
         int32 vertexCount = 0,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float radius = default_radius,
         float density = default_density
@@ -105,6 +116,7 @@ public:
         float length,
         int32 vertexCount = 0,
         float initialAngle = 0,
+        const Transform& tf = identity,
         RigidBody::Type type = RigidBody::Type::dynamic_body,
         float radius = default_radius,
         float density = default_density

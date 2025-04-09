@@ -69,9 +69,9 @@ public:
         camera.position.Set(0.0f, h / 2.0f);
         camera.scale.Set(h2 / screenBounds.y * 2);
 
-        p1 = world->CreateCapsule(l, r, true, RigidBody::kinematic_body);
+        p1 = world->CreateCapsule(l, r, true, identity, RigidBody::kinematic_body);
         p1->SetPosition({ 0, -offset });
-        p2 = world->CreateCapsule(l, r, true, RigidBody::kinematic_body);
+        p2 = world->CreateCapsule(l, r, true, identity, RigidBody::kinematic_body);
         p2->SetPosition({ 0, h + size + 2 * gap + offset });
 
         p1->SetLinearVelocity({ 0, speed });

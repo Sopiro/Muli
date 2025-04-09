@@ -30,10 +30,12 @@ Collider::~Collider()
     next = nullptr;
 }
 
-void Collider::Create(Allocator* allocator, RigidBody* inBody, Shape* inShape, float inDensity, const Material& inMaterial)
+void Collider::Create(
+    Allocator* allocator, RigidBody* inBody, Shape* inShape, const Transform& tf, float inDensity, const Material& inMaterial
+)
 {
     body = inBody;
-    shape = inShape->Clone(allocator);
+    shape = inShape->Clone(allocator, tf);
     density = inDensity;
     material = inMaterial;
 }

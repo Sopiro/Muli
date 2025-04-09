@@ -14,7 +14,7 @@ public:
         : Demo(game)
     {
         float l = 0.5f;
-        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, identity, RigidBody::Type::static_body);
 
         float size = 1.0f;
         float gap = 0.03f;

@@ -8,13 +8,24 @@ namespace muli
 class Polygon : public Shape
 {
 public:
-    Polygon(const Vec2* vertices, int32 vertexCount, bool resetPosition = false, float radius = default_radius);
-    Polygon(std::initializer_list<Vec2> vertices, bool resetPosition = false, float radius = default_radius);
-    Polygon(float width, float height, float radius = default_radius, const Vec2& position = Vec2::zero, float angle = 0.0f);
-    Polygon(float size, float radius = default_radius, const Vec2& position = Vec2::zero, float angle = 0.0f);
+    Polygon(
+        const Vec2* vertices,
+        int32 vertexCount,
+        bool resetPosition = false,
+        float radius = default_radius,
+        const Transform& tf = identity
+    );
+    Polygon(
+        std::initializer_list<Vec2> vertices,
+        bool resetPosition = false,
+        float radius = default_radius,
+        const Transform& tf = identity
+    );
+    Polygon(float width, float height, float radius = default_radius, const Transform& tf = identity);
+    Polygon(float size, float radius = default_radius, const Transform& tf = identity);
     ~Polygon();
 
-    Polygon(const Polygon& other);
+    Polygon(const Polygon& other, const Transform& tf);
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -33,7 +44,7 @@ public:
     float GetArea() const;
 
 protected:
-    virtual Shape* Clone(Allocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator, const Transform& tf) const override;
 
     Vec2* vertices;
     Vec2* normals;

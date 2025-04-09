@@ -3,7 +3,7 @@
 namespace muli
 {
 
-Capsule::Capsule(float length, float radius, bool horizontal, const Vec2& position)
+Capsule::Capsule(float length, float radius, bool horizontal, const Transform& tf)
     : Shape(capsule, radius)
 {
     area = length * radius * 2.0f + pi * radius * radius;
@@ -19,13 +19,13 @@ Capsule::Capsule(float length, float radius, bool horizontal, const Vec2& positi
         vb = Vec2{ 0.0f, length / 2.0f };
     }
 
-    center = position;
+    center = tf.position;
 
-    va += center;
-    vb += center;
+    va = Mul(tf, va);
+    vb = Mul(tf, vb);
 }
 
-Capsule::Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition)
+Capsule::Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, const Transform& tf)
     : Shape(capsule, radius)
 {
     Vec2 a2b = p2 - p1;
@@ -43,6 +43,10 @@ Capsule::Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPositio
         vb -= center;
         center.SetZero();
     }
+
+    va = Mul(tf, va);
+    vb = Mul(tf, vb);
+    center = Mul(tf, center);
 }
 
 void Capsule::ComputeMass(float density, MassData* outMassData) const

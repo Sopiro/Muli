@@ -74,7 +74,9 @@ private:
     Collider();
     ~Collider();
 
-    void Create(Allocator* allocator, RigidBody* body, Shape* shape, float density, const Material& material);
+    void Create(
+        Allocator* allocator, RigidBody* body, Shape* shape, const Transform& tf, float density, const Material& material
+    );
     void Destroy(Allocator* allocator);
 
     RigidBody* body;

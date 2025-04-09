@@ -951,6 +951,12 @@ struct Transform
     {
     }
 
+    Transform(const Vec2& position)
+        : position{ position }
+        , rotation{ identity }
+    {
+    }
+
     Transform(const Vec2& position, const Rotation& rotation)
         : position{ position }
         , rotation{ rotation }
@@ -990,6 +996,16 @@ struct Motion
         , c{ 0.0f }
         , a0{ 0.0f }
         , a{ 0.0f }
+        , alpha0{ 0.0f }
+    {
+    }
+
+    Motion(const Transform& tf)
+        : localCenter{ 0.0f }
+        , c0{ tf.position }
+        , c{ c0 }
+        , a0{ tf.rotation.GetAngle() }
+        , a{ a0 }
         , alpha0{ 0.0f }
     {
     }
@@ -1417,6 +1433,14 @@ inline Vec2 MulT(const Rotation& r, const Vec2& v)
     return Vec2{ r.c * v.x + r.s * v.y, -r.s * v.x + r.c * v.y };
 }
 
+inline Rotation Mul(const Rotation& a, const Rotation& b)
+{
+    Rotation r;
+    r.s = a.c * b.c - a.s * b.s;
+    r.c = a.s * b.c + a.c * b.s;
+    return r;
+}
+
 // Transform a vector: simplified matrix multiplication
 inline Vec2 Mul(const Transform& t, const Vec2& v)
 {
@@ -1435,6 +1459,11 @@ inline Vec2 MulT(const Transform& t, const Vec2& v)
     float y = (-t.rotation.s * px + t.rotation.c * py);
 
     return Vec2{ x, y };
+}
+
+inline Transform Mul(const Transform& a, const Transform& b)
+{
+    return Transform(a.position + Mul(a.rotation, b.position), Mul(a.rotation, b.rotation));
 }
 
 // Generals

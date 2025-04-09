@@ -3,11 +3,11 @@
 namespace muli
 {
 
-Circle::Circle(float radius, const Vec2& position)
+Circle::Circle(float radius, const Transform& tf)
     : Shape(circle, radius)
 {
     area = radius * radius * pi;
-    center = position;
+    center = tf.position;
 }
 
 inline void Circle::ComputeMass(float density, MassData* outMassData) const

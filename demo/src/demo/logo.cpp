@@ -9,7 +9,7 @@ public:
     Logo(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         RigidBody* b = world->CreateEmptyBody();
 
@@ -51,7 +51,7 @@ public:
 
             float angle = Rand(0.0f, pi);
 
-            b = world->CreateRandomConvexPolygon(size, 6, RigidBody::Type::dynamic_body, r);
+            b = world->CreateRandomConvexPolygon(size, 6, identity, RigidBody::Type::dynamic_body, r);
             b->SetPosition(pos);
             b->SetRotation(angle);
             UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);

@@ -188,19 +188,19 @@ bool Demo::EnablePolygonCreateConvexHull()
             case 1:
             {
                 float r = Max(0.1f, Dist(hull.back(), cursorPos));
-                b = world->CreateCircle(r, type);
+                b = world->CreateCircle(r, identity, type);
                 b->SetPosition(hull[0]);
                 break;
             }
             case 2:
             {
                 float r = Max(0.05f, Dist(hull.back(), cursorPos));
-                b = world->CreateCapsule(hull[0], hull[1], r, type, false);
+                b = world->CreateCapsule(hull[0], hull[1], r, identity, type, false);
                 break;
             }
             default:
             {
-                b = world->CreatePolygon(hull, type, false);
+                b = world->CreatePolygon(hull, identity, type, false);
                 break;
             }
             }
@@ -281,26 +281,34 @@ bool Demo::EnablePolygonCreateDecomposition()
             case 1:
             {
                 float r = Max(0.1f, Dist(points.back(), cursorPos));
-                b = world->CreateCircle(r, type);
+                b = world->CreateCircle(r, identity, type);
                 b->SetPosition(points[0]);
                 break;
             }
             case 2:
             {
                 float r = Max(0.05f, Dist(points.back(), cursorPos));
-                b = world->CreateCapsule(points[0], points[1], r, type, false);
+                b = world->CreateCapsule(points[0], points[1], r, identity, type, false);
                 break;
             }
             default:
             {
             createpoly:
-                b = world->CreateEmptyBody(type);
+
+                Vec2 center = Vec2::zero;
+                for (Vec2& p : points)
+                {
+                    center += p;
+                }
+                center /= points.size();
+
+                b = world->CreateEmptyBody(type, center);
                 constraints.push_back(std::move(points));
                 poly = ComputeDecomposition(constraints);
 
-                for (Shape& s : poly)
+                for (Polygon& p : poly)
                 {
-                    b->CreateCollider(&s);
+                    b->CreateCollider(&p, -center);
                 }
             }
             }

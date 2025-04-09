@@ -12,7 +12,7 @@ public:
     LineOfSight(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         int32 count = 10;
         float size = 7.0f;
@@ -40,7 +40,7 @@ public:
                 }
                 else
                 {
-                    b = world->CreateRandomConvexPolygon(0.15f, 0, RigidBody::Type::dynamic_body, 0.05f);
+                    b = world->CreateRandomConvexPolygon(0.15f, 0, identity, RigidBody::Type::dynamic_body, 0.05f);
                     UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
                 }
 

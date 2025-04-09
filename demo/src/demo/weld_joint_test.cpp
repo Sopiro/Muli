@@ -16,11 +16,12 @@ public:
     WeldJointTest(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         float wallX = -3.0f;
         float wallRadius = 0.2f;
-        RigidBody* wall = world->CreateCapsule(Vec2{ wallX, 0.0f }, Vec2{ wallX, 5.0f }, wallRadius, RigidBody::static_body);
+        RigidBody* wall =
+            world->CreateCapsule(Vec2{ wallX, 0.0f }, Vec2{ wallX, 5.0f }, wallRadius, identity, RigidBody::static_body);
 
         int32 count = 8;
         float xStart = wallX + wallRadius;

@@ -1177,7 +1177,7 @@ bool World::ShapeCastClosest(
     return false;
 }
 
-RigidBody* World::DuplicateBody(RigidBody* body)
+RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
 {
     MuliAssert(body->world == this);
     if (body->world != this)
@@ -1189,7 +1189,7 @@ RigidBody* World::DuplicateBody(RigidBody* body)
 
     for (Collider* collider = body->colliderList; collider; collider = collider->next)
     {
-        Collider* c = b->CreateCollider(collider->GetShape(), collider->GetDensity(), collider->GetMaterial());
+        Collider* c = b->CreateCollider(collider->GetShape(), identity, collider->GetDensity(), collider->GetMaterial());
 
         c->SetFilter(collider->GetFilter());
         c->SetEnabled(collider->IsEnabled());
@@ -1198,7 +1198,7 @@ RigidBody* World::DuplicateBody(RigidBody* body)
         c->ContactListener = collider->ContactListener;
     }
 
-    b->SetTransform(body->transform);
+    b->SetTransform(Mul(body->transform, tf));
 
     b->SetLinearVelocity(body->linearVelocity);
     b->SetAngularDamping(body->angularVelocity);
@@ -1222,10 +1222,10 @@ RigidBody* World::DuplicateBody(RigidBody* body)
     return b;
 }
 
-RigidBody* World::CreateEmptyBody(RigidBody::Type type)
+RigidBody* World::CreateEmptyBody(RigidBody::Type type, const Transform& tf)
 {
     void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* body = new (mem) RigidBody(type);
+    RigidBody* body = new (mem) RigidBody(type, tf);
 
     body->world = this;
 
@@ -1246,35 +1246,43 @@ RigidBody* World::CreateEmptyBody(RigidBody::Type type)
     return body;
 }
 
-RigidBody* World::CreateCircle(float radius, RigidBody::Type type, float density)
+RigidBody* World::CreateCircle(float radius, const Transform& tf, RigidBody::Type type, float density)
 {
     RigidBody* b = CreateEmptyBody(type);
 
     Circle circle{ radius };
-    b->CreateCollider(&circle, density);
-
-    return b;
-}
-
-RigidBody* World::CreateCapsule(float length, float radius, bool horizontal, RigidBody::Type type, float density)
-{
-    RigidBody* b = CreateEmptyBody(type);
-
-    Capsule capsule{ length, radius, horizontal };
-    b->CreateCollider(&capsule, density);
+    b->CreateCollider(&circle, tf, density);
 
     return b;
 }
 
 RigidBody* World::CreateCapsule(
-    const Vec2& point1, const Vec2& point2, float radius, RigidBody::Type type, bool resetPosition, float density
+    float length, float radius, bool horizontal, const Transform& tf, RigidBody::Type type, float density
+)
+{
+    RigidBody* b = CreateEmptyBody(type);
+
+    Capsule capsule{ length, radius, horizontal };
+    b->CreateCollider(&capsule, tf, density);
+
+    return b;
+}
+
+RigidBody* World::CreateCapsule(
+    const Vec2& point1,
+    const Vec2& point2,
+    float radius,
+    const Transform& tf,
+    RigidBody::Type type,
+    bool resetPosition,
+    float density
 )
 {
     RigidBody* b = CreateEmptyBody(type);
 
     Vec2 center = (point1 + point2) * 0.5f;
     Capsule capsule{ point1, point2, radius, true };
-    b->CreateCollider(&capsule, density);
+    b->CreateCollider(&capsule, tf, density);
 
     if (resetPosition == false)
     {
@@ -1284,12 +1292,14 @@ RigidBody* World::CreateCapsule(
     return b;
 }
 
-RigidBody* World::CreatePolygon(std::span<Vec2> vertices, RigidBody::Type type, bool resetPosition, float radius, float density)
+RigidBody* World::CreatePolygon(
+    std::span<Vec2> vertices, const Transform& tf, RigidBody::Type type, bool resetPosition, float radius, float density
+)
 {
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon(vertices.data(), int32(vertices.size()), true, radius);
-    b->CreateCollider(&polygon, density);
+    b->CreateCollider(&polygon, tf, density);
 
     Vec2 center{ 0.0f };
     for (size_t i = 0; i < vertices.size(); ++i)
@@ -1306,23 +1316,25 @@ RigidBody* World::CreatePolygon(std::span<Vec2> vertices, RigidBody::Type type, 
     return b;
 }
 
-RigidBody* World::CreateBox(float width, float height, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateBox(float width, float height, const Transform& tf, RigidBody::Type type, float radius, float density)
 {
     RigidBody* b = CreateEmptyBody(type);
 
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     Polygon box{ vertices, 4, true, radius };
-    b->CreateCollider(&box, density);
+    b->CreateCollider(&box, tf, density);
 
     return b;
 }
 
-RigidBody* World::CreateBox(float size, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateBox(float size, const Transform& tf, RigidBody::Type type, float radius, float density)
 {
-    return CreateBox(size, size, type, radius, density);
+    return CreateBox(size, size, tf, type, radius, density);
 }
 
-RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, RigidBody::Type type, float radius, float density)
+RigidBody* World::CreateRandomConvexPolygon(
+    float length, int32 vertexCount, const Transform& tf, RigidBody::Type type, float radius, float density
+)
 {
     if (vertexCount < 3)
     {
@@ -1350,13 +1362,13 @@ RigidBody* World::CreateRandomConvexPolygon(float length, int32 vertexCount, Rig
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon, density);
+    b->CreateCollider(&polygon, tf, density);
 
     return b;
 }
 
 RigidBody* World::CreateRegularPolygon(
-    float length, int32 vertexCount, float initialAngle, RigidBody::Type type, float radius, float density
+    float length, int32 vertexCount, float initialAngle, const Transform& tf, RigidBody::Type type, float radius, float density
 )
 {
     if (vertexCount < 3)
@@ -1383,7 +1395,7 @@ RigidBody* World::CreateRegularPolygon(
     RigidBody* b = CreateEmptyBody(type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon, density);
+    b->CreateCollider(&polygon, tf, density);
 
     return b;
 }

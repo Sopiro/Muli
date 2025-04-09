@@ -12,11 +12,11 @@ public:
     Crank(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         float radius = 0.1f;
 
-        arm1 = world->CreateCapsule(Vec2{ 0.0f, 1.0f }, Vec2{ 0.5f, 1.0f }, radius, RigidBody::Type::dynamic_body);
+        arm1 = world->CreateCapsule(Vec2{ 0.0f, 1.0f }, Vec2{ 0.5f, 1.0f }, radius, identity, RigidBody::Type::dynamic_body);
 
         RigidBody* arm2 = world->CreateCapsule(Vec2{ 0.5f, 1.0f }, Vec2{ 0.0f, 2.0f }, radius);
         world->CreateRevoluteJoint(arm1, arm2, Vec2{ 0.5f, 1.0f });

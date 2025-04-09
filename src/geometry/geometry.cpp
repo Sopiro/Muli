@@ -234,7 +234,7 @@ static inline Circle Welzl(const std::vector<Vec2>& P, std::vector<Vec2>& R, int
         switch (R.size())
         {
         case 0:
-            return Circle{ 0, { 0, 0 } };
+            return Circle{ 0 };
         case 1:
             return Circle{ 0, R[0] };
         case 2:

@@ -13,7 +13,7 @@ public:
     SuspensionBridge(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         float groundStart = 0.2f;
 
@@ -25,7 +25,7 @@ public:
         float sizeX = 0.5f;
         float sizeY = sizeX * 0.25f;
 
-        RigidBody* pillar = world->CreateBox(pillarWidth, yStart, RigidBody::Type::static_body);
+        RigidBody* pillar = world->CreateBox(pillarWidth, yStart, identity, RigidBody::Type::static_body);
         pillar->SetPosition(xStart, yStart / 2 + 0.2f);
 
         RigidBody* b1 = world->CreateBox(sizeX, sizeY);
@@ -71,7 +71,7 @@ public:
             b1 = b2;
         }
 
-        pillar = world->CreateBox(pillarWidth, yStart, RigidBody::Type::static_body);
+        pillar = world->CreateBox(pillarWidth, yStart, identity, RigidBody::Type::static_body);
         pillar->SetPosition(-xStart, yStart / 2.0f + 0.2f);
 
         if (selection == 0)

@@ -54,7 +54,7 @@ protected:
     friend class Collider;
     friend class RigidBody;
 
-    virtual Shape* Clone(Allocator* allocator) const = 0;
+    virtual Shape* Clone(Allocator* allocator, const Transform& tf) const = 0;
 
     Type type;
 

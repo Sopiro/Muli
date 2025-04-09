@@ -8,8 +8,10 @@ namespace muli
 class Circle : public Shape
 {
 public:
-    Circle(float radius, const Vec2& center = Vec2::zero);
+    Circle(float radius, const Transform& tf = identity);
     ~Circle() = default;
+
+    Circle(const Circle& other, const Transform& tf);
 
     virtual void ComputeMass(float density, MassData* outMassData) const override;
     virtual void ComputeAABB(const Transform& transform, AABB* outAABB) const override;
@@ -24,13 +26,18 @@ public:
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const override;
 
 protected:
-    virtual Shape* Clone(Allocator* allocator) const override;
+    virtual Shape* Clone(Allocator* allocator, const Transform& tf) const override;
 };
 
-inline Shape* Circle::Clone(Allocator* allocator) const
+inline Circle::Circle(const Circle& other, const Transform& tf)
+    : Circle(other.radius, Mul(tf, other.center))
+{
+}
+
+inline Shape* Circle::Clone(Allocator* allocator, const Transform& tf) const
 {
     void* mem = allocator->Allocate(sizeof(Circle));
-    Circle* shape = new (mem) Circle(*this);
+    Circle* shape = new (mem) Circle(*this, tf);
     return shape;
 }
 

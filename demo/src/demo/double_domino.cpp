@@ -12,7 +12,7 @@ public:
         : Demo(game)
     {
         float l = 0.2f;
-        RigidBody* ground = world->CreateCapsule(1000.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(1000.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         float boxWidth = 1.0f;
         float boxHeight = boxWidth * 4;

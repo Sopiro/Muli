@@ -8,12 +8,12 @@
 namespace muli
 {
 
-RigidBody::RigidBody(RigidBody::Type type)
+RigidBody::RigidBody(RigidBody::Type type, const Transform& tf)
     : OnDestroy{ nullptr }
     , UserData{ nullptr }
     , type{ type }
-    , transform{ identity }
-    , motion{ identity }
+    , transform{ tf }
+    , motion{ tf }
     , force{ 0.0f }
     , torque{ 0.0f }
     , linearVelocity{ 0.0f }
@@ -48,7 +48,7 @@ RigidBody::~RigidBody() noexcept
     world = nullptr;
 }
 
-Collider* RigidBody::CreateCollider(Shape* shape, float density, const Material& material)
+Collider* RigidBody::CreateCollider(Shape* shape, const Transform& tf, float density, const Material& material)
 {
     MuliAssert(world != nullptr);
     if (world == nullptr)
@@ -65,7 +65,7 @@ Collider* RigidBody::CreateCollider(Shape* shape, float density, const Material&
 #endif
 
     Collider* collider = new (mem) Collider;
-    collider->Create(allocator, this, shape, density, material);
+    collider->Create(allocator, this, shape, tf, density, material);
 
     collider->next = colliderList;
     colliderList = collider;
@@ -115,34 +115,34 @@ void RigidBody::DestroyCollider(Collider* collider)
     ResetMassData();
 }
 
-Collider* RigidBody::CreateCircleCollider(float radius, const Vec2& position, float density, const Material& material)
+Collider* RigidBody::CreateCircleCollider(float radius, const Transform& tf, float density, const Material& material)
 {
-    Circle circle{ radius, position };
-    return CreateCollider(&circle, density, material);
+    Circle circle{ radius };
+    return CreateCollider(&circle, tf, density, material);
 }
 
 Collider* RigidBody::CreateBoxCollider(
-    float width, float height, float radius, const Vec2& position, float angle, float density, const Material& material
+    float width, float height, float radius, const Transform& tf, float density, const Material& material
 )
 {
-    Polygon box{ width, height, radius, position, angle };
-    return CreateCollider(&box, density, material);
+    Polygon box{ width, height, radius };
+    return CreateCollider(&box, tf, density, material);
 }
 
 Collider* RigidBody::CreateCapsuleCollider(
-    float length, float radius, bool horizontal, const Vec2& position, float density, const Material& material
+    float length, float radius, bool horizontal, const Transform& tf, float density, const Material& material
 )
 {
-    Capsule capsule{ length, radius, horizontal, position };
-    return CreateCollider(&capsule, density, material);
+    Capsule capsule{ length, radius, horizontal };
+    return CreateCollider(&capsule, tf, density, material);
 }
 
 Collider* RigidBody::CreateCapsuleCollider(
-    const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, float density, const Material& material
+    const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, const Transform& tf, float density, const Material& material
 )
 {
     Capsule capsule{ p1, p2, radius, resetPosition };
-    return CreateCollider(&capsule, density, material);
+    return CreateCollider(&capsule, tf, density, material);
 }
 
 bool RigidBody::TestPoint(const Vec2& p) const

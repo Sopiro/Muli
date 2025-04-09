@@ -14,7 +14,7 @@ public:
     Breakable(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
         ground->GetColliderList()->ContactListener = this;
 
         b = world->CreateEmptyBody();
@@ -49,7 +49,7 @@ public:
         while (c)
         {
             RigidBody* e = world->CreateEmptyBody();
-            e->CreateCollider(c->GetShape(), c->GetDensity(), c->GetMaterial());
+            e->CreateCollider(c->GetShape(), identity, c->GetDensity(), c->GetMaterial());
             e->SetTransform(b->GetTransform());
             e->SetLinearVelocity(b->GetLinearVelocity());
             e->SetAngularVelocity(b->GetAngularVelocity());

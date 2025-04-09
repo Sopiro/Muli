@@ -9,7 +9,7 @@ public:
     Ragdoll100(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
     }
 
     void CreateRagdoll(float headX, float headY, float scale)

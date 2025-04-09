@@ -19,7 +19,8 @@ public:
     Windmill(Game& game)
         : Demo(game)
     {
-        RigidBody* stick = world->CreateCapsule(Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 3.0f }, 0.075f, RigidBody::Type::static_body);
+        RigidBody* stick =
+            world->CreateCapsule(Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 3.0f }, 0.075f, identity, RigidBody::Type::static_body);
 
         windmill = world->CreateCapsule(2.0f, 0.075f, true);
         windmill->SetPosition(0.0f, 3.0f);

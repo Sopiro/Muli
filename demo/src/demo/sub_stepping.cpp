@@ -16,7 +16,7 @@ public:
     {
         settings.sub_stepping = true;
 
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
 
         int32 rows = 15;
         float boxSize = 0.4f;

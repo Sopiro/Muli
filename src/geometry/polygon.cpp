@@ -6,7 +6,7 @@ namespace muli
 
 extern void ComputeConvexHull(const Vec2* vertices, int32 vertexCount, Vec2* outVertices, int32* outVertexCount);
 
-Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition, float radius)
+Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition, float radius, const Transform& tf)
     : Shape(polygon, radius)
 {
     if (inVertexCount > max_local_polygon_vertices)
@@ -45,22 +45,30 @@ Polygon::Polygon(const Vec2* inVertices, int32 inVertexCount, bool resetPosition
 
     area += pi * radius * radius; // corner arc
 
-    if (resetPosition)
+    for (int32 i = 0; i < vertexCount; ++i)
     {
-        for (int32 i = 0; i < vertexCount; ++i)
+        if (resetPosition)
         {
             vertices[i] -= center;
         }
+
+        vertices[i] = Mul(tf, vertices[i]);
+    }
+
+    if (resetPosition)
+    {
         center.SetZero();
     }
+
+    center = Mul(tf, center);
 }
 
-Polygon::Polygon(std::initializer_list<Vec2> vertices, bool resetPosition, float radius)
-    : Polygon(vertices.begin(), int32(vertices.size()), resetPosition, radius)
+Polygon::Polygon(std::initializer_list<Vec2> vertices, bool resetPosition, float radius, const Transform& tf)
+    : Polygon(vertices.begin(), int32(vertices.size()), resetPosition, radius, tf)
 {
 }
 
-Polygon::Polygon(float width, float height, float radius, const Vec2& position, float angle)
+Polygon::Polygon(float width, float height, float radius, const Transform& tf)
     : Shape(polygon, radius)
 {
     vertices = localVertices;
@@ -70,24 +78,22 @@ Polygon::Polygon(float width, float height, float radius, const Vec2& position, 
     float hx = width * 0.5f;
     float hy = height * 0.5f;
 
-    Transform t{ position, angle };
+    vertices[0] = Mul(tf, Vec2{ -hx, -hy });
+    vertices[1] = Mul(tf, Vec2{ hx, -hy });
+    vertices[2] = Mul(tf, Vec2{ hx, hy });
+    vertices[3] = Mul(tf, Vec2{ -hx, hy });
 
-    vertices[0] = Mul(t, Vec2{ -hx, -hy });
-    vertices[1] = Mul(t, Vec2{ hx, -hy });
-    vertices[2] = Mul(t, Vec2{ hx, hy });
-    vertices[3] = Mul(t, Vec2{ -hx, hy });
+    normals[0] = Mul(tf.rotation, Vec2{ 0.0f, -1.0f });
+    normals[1] = Mul(tf.rotation, Vec2{ 1.0f, 0.0f });
+    normals[2] = Mul(tf.rotation, Vec2{ 0.0f, 1.0f });
+    normals[3] = Mul(tf.rotation, Vec2{ -1.0f, 0.0f });
 
-    normals[0] = Mul(t.rotation, Vec2{ 0.0f, -1.0f });
-    normals[1] = Mul(t.rotation, Vec2{ 1.0f, 0.0f });
-    normals[2] = Mul(t.rotation, Vec2{ 0.0f, 1.0f });
-    normals[3] = Mul(t.rotation, Vec2{ -1.0f, 0.0f });
-
-    center = position;
+    center = tf.position;
     area = width * height;
 }
 
-Polygon::Polygon(float size, float radius, const Vec2& position, float angle)
-    : Polygon(size, size, radius, position, angle)
+Polygon::Polygon(float size, float radius, const Transform& tf)
+    : Polygon(size, size, radius, tf)
 {
 }
 
@@ -100,15 +106,15 @@ Polygon::~Polygon()
     }
 }
 
-Polygon::Polygon(const Polygon& other)
-    : Polygon(other.vertices, other.vertexCount, false, other.radius)
+Polygon::Polygon(const Polygon& other, const Transform& tf)
+    : Polygon(other.vertices, other.vertexCount, false, other.radius, tf)
 {
 }
 
-Shape* Polygon::Clone(Allocator* allocator) const
+Shape* Polygon::Clone(Allocator* allocator, const Transform& tf) const
 {
     void* mem = allocator->Allocate(sizeof(Polygon));
-    Polygon* shape = new (mem) Polygon(vertices, vertexCount, false, radius);
+    Polygon* shape = new (mem) Polygon(*this, tf);
     return shape;
 }
 

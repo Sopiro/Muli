@@ -24,7 +24,7 @@ public:
         b = world->CreateCapsule(0.5f, 0.2f);
         b->SetPosition(-0.5f, 3);
 
-        b = world->CreateBox(0.3f, RigidBody::dynamic_body, 0.1f);
+        b = world->CreateBox(0.3f, identity, RigidBody::dynamic_body, 0.1f);
         b->SetPosition(0.5f, 3);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
