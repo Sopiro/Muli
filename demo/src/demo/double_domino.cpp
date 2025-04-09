@@ -3,10 +3,10 @@
 namespace muli
 {
 
+static int32 rows = 15;
+
 class DoubleDomino : public Demo
 {
-    static inline int32 rows = 15;
-
 public:
     DoubleDomino(Game& game)
         : Demo(game)
@@ -16,7 +16,7 @@ public:
 
         float boxWidth = 1.0f;
         float boxHeight = boxWidth * 4;
-        float xGap = boxHeight - boxWidth * 0.98f;
+        float xGap = boxHeight - boxWidth * 0.97f;
         float xStart = -(rows - 1.0f) * (boxWidth + xGap) / 2.0f;
         float yStart = l + boxHeight / 2;
 

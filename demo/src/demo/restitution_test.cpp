@@ -4,14 +4,14 @@
 namespace muli
 {
 
+static int32 selection = 0;
+static float threshold = 2.0f;
+static const char* items[] = { "Circle", "Box", "Capsule" };
+static int32 selection2 = 0;
+static const char* items2[] = { "Quadratic", "Linear" };
+
 class RestitutionTest : public Demo
 {
-    static inline int32 selection = 0;
-    static inline float threshold = 2.0f;
-    static inline const char* items[] = { "Circle", "Box", "Capsule" };
-    static inline int32 selection2 = 0;
-    static inline const char* items2[] = { "Quadratic", "Linear" };
-
 public:
     RestitutionTest(Game& game)
         : Demo(game)

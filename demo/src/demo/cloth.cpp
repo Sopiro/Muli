@@ -4,11 +4,11 @@
 namespace muli
 {
 
+static float f = 2.0f;
+static float d = 0.7f;
+
 class Cloth : public Demo
 {
-    static inline float f = 2.0f;
-    static inline float d = 0.7f;
-
 public:
     Cloth(Game& game)
         : Demo(game)

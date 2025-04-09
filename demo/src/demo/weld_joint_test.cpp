@@ -4,14 +4,14 @@
 namespace muli
 {
 
+static int32 selection = 0;
+static const char* items[] = { "Box", "Capsule" };
+
+static float freq = 8.0f;
+static float damp = 0.8f;
+
 class WeldJointTest : public Demo
 {
-    static inline int32 selection = 0;
-    static inline const char* items[] = { "Box", "Capsule" };
-
-    static inline float freq = 8.0f;
-    static inline float damp = 0.8f;
-
 public:
     WeldJointTest(Game& game)
         : Demo(game)

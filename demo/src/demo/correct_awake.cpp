@@ -4,11 +4,11 @@
 namespace muli
 {
 
+static int32 count = 20;
+static float error = 0.0f;
+
 class CorrectAwake : public Demo
 {
-    static inline int32 count = 20;
-    static inline float error = 0.0f;
-
 public:
     CorrectAwake(Game& game)
         : Demo(game)

@@ -4,12 +4,12 @@
 namespace muli
 {
 
+static bool drawTrajectory = true;
+static int32 selection = 1;
+static const char* items[] = { "Circle", "Box", "Capsule", "Rounded polygon", "Random" };
+
 class ContinuousTest2 : public Demo
 {
-    static inline bool drawTrajectory = true;
-    static inline int32 selection = 1;
-    static inline const char* items[] = { "Circle", "Box", "Capsule", "Rounded polygon", "Random" };
-
 public:
     RigidBody* target;
 

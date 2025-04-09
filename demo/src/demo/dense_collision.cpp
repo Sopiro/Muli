@@ -4,13 +4,13 @@
 namespace muli
 {
 
+static float lv = 40.0f;
+static float av = 1.0f;
+static float ld = 0.1f;
+static float ad = 0.1f;
+
 class DenseCollision : public Demo
 {
-    static inline float lv = 40.0f;
-    static inline float av = 1.0f;
-    static inline float ld = 0.1f;
-    static inline float ad = 0.1f;
-
 public:
     DenseCollision(Game& game)
         : Demo(game)

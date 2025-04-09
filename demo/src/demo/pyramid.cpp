@@ -4,10 +4,10 @@
 namespace muli
 {
 
+static int32 rows = 15;
+
 class Pyramid : public Demo
 {
-    static inline int32 rows = 15;
-
 public:
     Pyramid(Game& game)
         : Demo(game)

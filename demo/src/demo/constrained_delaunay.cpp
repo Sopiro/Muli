@@ -4,10 +4,10 @@
 namespace muli
 {
 
+static bool constrained = true;
+
 class ConstrainedDelaunay : public Demo
 {
-    static inline bool constrained = true;
-
 public:
     std::vector<Vec2> vertices;
     std::vector<std::vector<Vec2>> holes;

@@ -4,10 +4,10 @@
 namespace muli
 {
 
+static bool triangulation = false;
+
 class ConvexHull : public Demo
 {
-    static inline bool triangulation = false;
-
 public:
     std::vector<Vec2> vertices;
     std::vector<Vec2> convexHull;

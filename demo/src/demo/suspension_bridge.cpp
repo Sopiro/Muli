@@ -4,11 +4,11 @@
 namespace muli
 {
 
+static int32 selection = 0;
+static const char* items[] = { "Revolute joint", "Distance joint" };
+
 class SuspensionBridge : public Demo
 {
-    static inline int32 selection = 0;
-    static inline const char* items[] = { "Revolute joint", "Distance joint" };
-
 public:
     SuspensionBridge(Game& game)
         : Demo(game)

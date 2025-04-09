@@ -4,10 +4,10 @@
 namespace muli
 {
 
+static bool constrain_linear_motion = true;
+
 class Springs : public Demo
 {
-    static inline bool constrain_linear_motion = true;
-
 public:
     Springs(Game& game)
         : Demo(game)

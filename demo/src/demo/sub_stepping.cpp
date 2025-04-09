@@ -4,10 +4,10 @@
 namespace muli
 {
 
+static float angle = 45.0f;
+
 class SubStepping : public Demo
 {
-    static inline float angle = 45.0f;
-
 public:
     float progress = 0.0f;
 
@@ -91,8 +91,8 @@ public:
             ImGui::Text("Step progress");
             ImGui::ProgressBar(progress, ImVec2{ 0.0f, 0.0f });
             // ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-            ImGui::Text("Throw angle");
-            ImGui::SliderFloat("##Throw angle", &angle, 0.0f, 180.0f, "%.2f", 1.0f);
+            ImGui::Text("Throwing angle");
+            ImGui::SliderFloat("##Throwing angle", &angle, 0.0f, 180.0f, "%.2f", 1.0f);
         }
         ImGui::End();
     }

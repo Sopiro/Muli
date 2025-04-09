@@ -4,11 +4,11 @@
 namespace muli
 {
 
+static bool disable_contacts = false;
+
 class ContactCallbacks : public Demo,
                          public ContactListener
 {
-    static inline bool disable_contact = false;
-
 public:
     ContactCallbacks(Game& game)
         : Demo(game)
@@ -41,7 +41,7 @@ public:
     virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) override
     {
         RigidBody* body = other->GetBody();
-        contact->SetEnabled(!disable_contact);
+        contact->SetEnabled(!disable_contacts);
 
         if (body->GetType() != RigidBody::Type::static_body)
         {
@@ -82,7 +82,7 @@ public:
 
         if (ImGui::Begin("Contact callbacks", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            if (ImGui::Checkbox("Disable contact", &disable_contact))
+            if (ImGui::Checkbox("Disable contacts", &disable_contacts))
             {
                 game.RestartDemo();
             }
