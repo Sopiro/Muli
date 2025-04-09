@@ -19,13 +19,13 @@ public:
         float wallRadius = wallWidth / 2.0f;
 
         world->CreateCapsule(
-            Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, identity, RigidBody::Type::static_body
+            Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, identity, RigidBody::static_body
         );
         world->CreateCapsule(
-            Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, identity, RigidBody::Type::static_body
+            Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, identity, RigidBody::static_body
         );
         world->CreateCapsule(
-            Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, identity, RigidBody::Type::static_body
+            Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, identity, RigidBody::static_body
         );
 
         float r = 0.22f;
@@ -39,7 +39,7 @@ public:
             b->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 
-        k = world->CreateCapsule(size * 0.9f, 0.15f, true, identity, RigidBody::Type::kinematic_body);
+        k = world->CreateCapsule(size * 0.9f, 0.15f, true, identity, RigidBody::kinematic_body);
         k->CreateCapsuleCollider(size * 0.9f, 0.15f, false);
         k->SetAngularVelocity(speed);
 

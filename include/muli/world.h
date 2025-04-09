@@ -54,14 +54,14 @@ public:
         const Transform& tf = identity
     );
     RigidBody* CreateEmptyBody(
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
-        const Transform& tf = identity
+        const Transform& tf = identity,
+        RigidBody::Type type = RigidBody::dynamic_body
     );
 
     RigidBody* CreateCircle(
         float radius,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float density = default_density
     );
     RigidBody* CreateCapsule(
@@ -69,7 +69,7 @@ public:
         float radius,
         bool horizontal = false,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float density = default_density
     );
     RigidBody* CreateCapsule(
@@ -77,14 +77,14 @@ public:
         const Vec2& point2,
         float radius,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         bool resetPosition = false,
         float density = default_density
     );
     RigidBody* CreatePolygon(
         std::span<Vec2> vertices,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         bool resetCenter = true,
         float radius = default_radius,
         float density = default_density
@@ -92,7 +92,7 @@ public:
     RigidBody* CreateBox(
         float size,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float radius = default_radius,
         float density = default_density
     );
@@ -100,7 +100,7 @@ public:
         float width,
         float height,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float radius = default_radius,
         float density = default_density
     );
@@ -108,7 +108,7 @@ public:
         float length,
         int32 vertexCount = 0,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float radius = default_radius,
         float density = default_density
     );
@@ -117,7 +117,7 @@ public:
         int32 vertexCount = 0,
         float initialAngle = 0,
         const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::Type::dynamic_body,
+        RigidBody::Type type = RigidBody::dynamic_body,
         float radius = default_radius,
         float density = default_density
     );

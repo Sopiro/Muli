@@ -13,7 +13,7 @@ Demo::Demo(Game& game)
     , cursorJoint{ nullptr }
 {
     screenBounds = Window::Get()->GetWindowSize() * game.GetWindowScale();
-    settings.world_bounds.min.y = -30.0f;
+    settings.world_bounds.min.y = -50.0f;
 
     world = new World(settings);
 
@@ -214,11 +214,11 @@ bool Demo::EnablePolygonCreateConvexHull()
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
-            create_body(RigidBody::Type::dynamic_body);
+            create_body(RigidBody::dynamic_body);
         }
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
-            create_body(RigidBody::Type::static_body);
+            create_body(RigidBody::static_body);
         }
     }
 
@@ -302,7 +302,7 @@ bool Demo::EnablePolygonCreateDecomposition()
                 }
                 center /= points.size();
 
-                b = world->CreateEmptyBody(type, center);
+                b = world->CreateEmptyBody(center, type);
                 constraints.push_back(std::move(points));
                 poly = ComputeDecomposition(constraints);
 
@@ -322,11 +322,11 @@ bool Demo::EnablePolygonCreateDecomposition()
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
-            create_body(RigidBody::Type::dynamic_body);
+            create_body(RigidBody::dynamic_body);
         }
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
-            create_body(RigidBody::Type::static_body);
+            create_body(RigidBody::static_body);
         }
     }
 
@@ -451,7 +451,7 @@ bool Demo::EnableBodyGrab()
 {
     if (targetBody && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        if (targetBody->GetType() == RigidBody::Type::dynamic_body)
+        if (targetBody->GetType() == RigidBody::dynamic_body)
         {
             targetBody->Awake();
             cursorJoint = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
@@ -483,7 +483,7 @@ bool Demo::EnableAddForce()
     static RigidBody* ft;
     static Vec2 mStartLocal;
 
-    if (targetBody && targetBody->GetType() != RigidBody::Type::static_body)
+    if (targetBody && targetBody->GetType() != RigidBody::static_body)
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {

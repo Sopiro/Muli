@@ -29,7 +29,7 @@ public:
         dynamic_body,
     };
 
-    RigidBody(RigidBody::Type type, const Transform& tf);
+    RigidBody(const Transform& tf, RigidBody::Type type);
     ~RigidBody() noexcept;
 
     RigidBody(const RigidBody&) = delete;

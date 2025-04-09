@@ -13,7 +13,7 @@ public:
         : Demo(game)
     {
         float l = 0.5f;
-        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, identity, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, identity, RigidBody::static_body);
 
         float boxSize = 3.0f;
         float xGap = 0.03f * boxSize / 0.5f;

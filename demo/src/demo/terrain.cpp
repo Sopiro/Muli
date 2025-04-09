@@ -13,7 +13,7 @@ public:
 
         auto f = [](float x) { return Sin(x) * 0.5f + 0.8f; };
 
-        RigidBody* b = world->CreateEmptyBody(RigidBody::Type::static_body);
+        RigidBody* b = world->CreateEmptyBody(identity, RigidBody::static_body);
         UserFlag::SetFlag(b, UserFlag::remove_outline, true);
 
         // Capsule terrain

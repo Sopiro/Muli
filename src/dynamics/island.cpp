@@ -70,7 +70,7 @@ void Island::Solve()
             b->resting += step.dt;
         }
 
-        if (b->type == RigidBody::Type::dynamic_body)
+        if (b->type == RigidBody::dynamic_body)
         {
             // Integrate velocites
             b->linearVelocity += b->invMass * step.dt * (b->force + settings.apply_gravity * settings.gravity * b->mass);

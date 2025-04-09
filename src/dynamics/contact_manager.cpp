@@ -33,8 +33,8 @@ void ContactManager::EvaluateContacts()
         RigidBody* bodyA = c->bodyA;
         RigidBody* bodyB = c->bodyB;
 
-        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::Type::static_body;
-        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::Type::static_body;
+        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::static_body;
+        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::static_body;
 
         if (activeA == false && activeB == false)
         {
@@ -67,7 +67,7 @@ void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
     MuliAssert(bodyA != bodyB);
     MuliAssert(colliderA->GetType() >= colliderB->GetType());
 
-    if (bodyA->GetType() != RigidBody::Type::dynamic_body && bodyB->GetType() != RigidBody::Type::dynamic_body)
+    if (bodyA->GetType() != RigidBody::dynamic_body && bodyB->GetType() != RigidBody::dynamic_body)
     {
         return;
     }

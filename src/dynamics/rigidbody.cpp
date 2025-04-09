@@ -8,7 +8,7 @@
 namespace muli
 {
 
-RigidBody::RigidBody(RigidBody::Type type, const Transform& tf)
+RigidBody::RigidBody(const Transform& tf, RigidBody::Type type)
     : OnDestroy{ nullptr }
     , UserData{ nullptr }
     , type{ type }

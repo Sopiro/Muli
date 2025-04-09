@@ -9,7 +9,7 @@ public:
     RandomConvexPolygons(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
 
         int32 rows = 12;
         float size = 0.25f;
@@ -28,13 +28,13 @@ public:
             }
         }
 
-        RigidBody* pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::Type::static_body);
+        RigidBody* pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::static_body);
         pillar->SetPosition(xStart - 0.2f, 3.0f);
 
-        pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::Type::static_body);
+        pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::static_body);
         pillar->SetPosition(-(xStart - 0.2f), 3.0f);
 
-        // Capsule* c = world->CreateCapsule(4.0f, 0.1f, true, RigidBody::Type::Dynamic);
+        // Capsule* c = world->CreateCapsule(4.0f, 0.1f, true, RigidBody::Dynamic);
         // c->SetPosition(0.0f, 2.0f);
 
         // world->CreateGrabJoint(c, c->GetPosition(), c->GetPosition(), -1.0f);

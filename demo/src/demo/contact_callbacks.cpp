@@ -13,7 +13,7 @@ public:
     ContactCallbacks(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
 
         int32 rows = 12;
         float size = 0.25f;
@@ -43,7 +43,7 @@ public:
         RigidBody* body = other->GetBody();
         contact->SetEnabled(!disable_contacts);
 
-        if (body->GetType() != RigidBody::Type::static_body)
+        if (body->GetType() != RigidBody::static_body)
         {
             world->BufferDestroy(body);
         }

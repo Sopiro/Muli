@@ -16,7 +16,7 @@ public:
 
         float h = screenBounds.y / 2.0f;
 
-        RigidBody* g = world->CreateBox(0.3f, 6, identity, RigidBody::Type::static_body);
+        RigidBody* g = world->CreateBox(0.3f, 6, identity, RigidBody::static_body);
         g->SetPosition(0.0f, h);
 
         float size = 0.3f;

@@ -81,7 +81,7 @@ void World::Solve()
             continue;
         }
 
-        if (b->type == RigidBody::Type::static_body)
+        if (b->type == RigidBody::static_body)
         {
             continue;
         }
@@ -132,7 +132,7 @@ void World::Solve()
                     continue;
                 }
 
-                if (other->type == RigidBody::Type::static_body)
+                if (other->type == RigidBody::static_body)
                 {
                     continue;
                 }
@@ -166,7 +166,7 @@ void World::Solve()
                     continue;
                 }
 
-                if (other->type == RigidBody::Type::static_body)
+                if (other->type == RigidBody::static_body)
                 {
                     continue;
                 }
@@ -201,7 +201,7 @@ void World::Solve()
             continue;
         }
 
-        MuliAssert(body->type != RigidBody::Type::static_body);
+        MuliAssert(body->type != RigidBody::static_body);
 
         // Clear island flag
         body->flag &= ~RigidBody::flag_island;
@@ -269,10 +269,10 @@ float World::SolveTOI()
 
                 RigidBody::Type typeA = bodyA->type;
                 RigidBody::Type typeB = bodyB->type;
-                MuliAssert(typeA == RigidBody::Type::dynamic_body || typeB == RigidBody::Type::dynamic_body);
+                MuliAssert(typeA == RigidBody::dynamic_body || typeB == RigidBody::dynamic_body);
 
-                bool activeA = bodyA->IsSleeping() == false && typeA != RigidBody::Type::static_body;
-                bool activeB = bodyB->IsSleeping() == false && typeB != RigidBody::Type::static_body;
+                bool activeA = bodyA->IsSleeping() == false && typeA != RigidBody::static_body;
+                bool activeB = bodyB->IsSleeping() == false && typeB != RigidBody::static_body;
 
                 // Is at least one body active (awake and dynamic or kinematic)?
                 if (activeA == false && activeB == false)
@@ -280,8 +280,8 @@ float World::SolveTOI()
                     continue;
                 }
 
-                bool collideA = bodyA->IsContinuous() || typeA == RigidBody::Type::static_body;
-                bool collideB = bodyB->IsContinuous() || typeB == RigidBody::Type::static_body;
+                bool collideA = bodyA->IsContinuous() || typeA == RigidBody::static_body;
+                bool collideB = bodyB->IsContinuous() || typeB == RigidBody::static_body;
 
                 // Discard non-continuous dynamic|kinematic vs. non-continuous dynamic|kinematic case
                 if (collideA == false && collideB == false)
@@ -412,7 +412,7 @@ float World::SolveTOI()
         {
             RigidBody* body = bodies[i];
 
-            if (body->type != RigidBody::Type::dynamic_body)
+            if (body->type != RigidBody::dynamic_body)
             {
                 continue;
             }
@@ -442,8 +442,7 @@ float World::SolveTOI()
                 other->Awake();
 
                 // Discard non-continuous dynamic vs. non-continuous dynamic case
-                if (body->IsContinuous() == false && other->IsContinuous() == false &&
-                    other->type == RigidBody::Type::dynamic_body)
+                if (body->IsContinuous() == false && other->IsContinuous() == false && other->type == RigidBody::dynamic_body)
                 {
                     continue;
                 }
@@ -477,7 +476,7 @@ float World::SolveTOI()
                     continue;
                 }
 
-                if (other->type == RigidBody::Type::static_body)
+                if (other->type == RigidBody::static_body)
                 {
                     continue;
                 }
@@ -502,7 +501,7 @@ float World::SolveTOI()
             RigidBody* body = island.bodies[i];
             body->flag &= ~RigidBody::flag_island;
 
-            if (body->type != RigidBody::Type::dynamic_body)
+            if (body->type != RigidBody::dynamic_body)
             {
                 continue;
             }
@@ -1185,7 +1184,7 @@ RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
         return nullptr;
     }
 
-    RigidBody* b = CreateEmptyBody(body->GetType());
+    RigidBody* b = CreateEmptyBody(identity, body->GetType());
 
     for (Collider* collider = body->colliderList; collider; collider = collider->next)
     {
@@ -1222,10 +1221,10 @@ RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
     return b;
 }
 
-RigidBody* World::CreateEmptyBody(RigidBody::Type type, const Transform& tf)
+RigidBody* World::CreateEmptyBody(const Transform& tf, RigidBody::Type type)
 {
     void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* body = new (mem) RigidBody(type, tf);
+    RigidBody* body = new (mem) RigidBody(tf, type);
 
     body->world = this;
 
@@ -1248,7 +1247,7 @@ RigidBody* World::CreateEmptyBody(RigidBody::Type type, const Transform& tf)
 
 RigidBody* World::CreateCircle(float radius, const Transform& tf, RigidBody::Type type, float density)
 {
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Circle circle{ radius };
     b->CreateCollider(&circle, tf, density);
@@ -1260,7 +1259,7 @@ RigidBody* World::CreateCapsule(
     float length, float radius, bool horizontal, const Transform& tf, RigidBody::Type type, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Capsule capsule{ length, radius, horizontal };
     b->CreateCollider(&capsule, tf, density);
@@ -1278,7 +1277,7 @@ RigidBody* World::CreateCapsule(
     float density
 )
 {
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Vec2 center = (point1 + point2) * 0.5f;
     Capsule capsule{ point1, point2, radius, true };
@@ -1296,7 +1295,7 @@ RigidBody* World::CreatePolygon(
     std::span<Vec2> vertices, const Transform& tf, RigidBody::Type type, bool resetPosition, float radius, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Polygon polygon(vertices.data(), int32(vertices.size()), true, radius);
     b->CreateCollider(&polygon, tf, density);
@@ -1318,7 +1317,7 @@ RigidBody* World::CreatePolygon(
 
 RigidBody* World::CreateBox(float width, float height, const Transform& tf, RigidBody::Type type, float radius, float density)
 {
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     Polygon box{ vertices, 4, true, radius };
@@ -1359,7 +1358,7 @@ RigidBody* World::CreateRandomConvexPolygon(
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, tf, density);
@@ -1392,7 +1391,7 @@ RigidBody* World::CreateRegularPolygon(
         vertices.push_back(vertex);
     }
 
-    RigidBody* b = CreateEmptyBody(type);
+    RigidBody* b = CreateEmptyBody(identity, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, tf, density);

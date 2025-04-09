@@ -18,7 +18,7 @@ public:
         float wallWidth = 0.4f;
         float wallRadius = wallWidth / 2.0f;
 
-        frame = world->CreateEmptyBody(RigidBody::Type::kinematic_body);
+        frame = world->CreateEmptyBody(identity, RigidBody::kinematic_body);
 
         frame->CreateCapsuleCollider(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius);
         frame->CreateCapsuleCollider(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius);

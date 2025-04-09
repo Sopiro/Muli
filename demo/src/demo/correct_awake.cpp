@@ -13,7 +13,7 @@ public:
     CorrectAwake(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::Type::static_body);
+        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
 
         float size = 0.3f;
         float gap = 0.1f;
