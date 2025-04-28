@@ -34,9 +34,9 @@ void LineJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-t^t, -(ra + d)×t, t^t, rb×t]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     Vec2 ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
     Vec2 rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());

@@ -26,9 +26,9 @@ void DistanceJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
     rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());

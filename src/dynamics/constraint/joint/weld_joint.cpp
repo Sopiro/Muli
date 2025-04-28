@@ -22,11 +22,11 @@ void WeldJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
     //     [ 0,        -1, 0,        1] // Angle
     // K = (J · M^-1 · J^t)
-    // M = K^-1
+    // W = K^-1
 
     // Find k matrix here: https://dyn4j.org/2010/12/weld-constraint/
     ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());

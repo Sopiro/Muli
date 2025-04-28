@@ -18,9 +18,9 @@ void RevoluteJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-I, -skew(ra), I, skew(rb)]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
     rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());

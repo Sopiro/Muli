@@ -22,8 +22,8 @@ public:
      * C = J·v = 0
      * J is depend on constraint
      *
-     * Compute Jacobian J and effective mass M
-     * M = K^-1 = (J · M^-1 · J^t)^-1
+     * Compute Jacobian J and effective mass W
+     * W = K^-1 = (J · M^-1 · J^t)^-1
      */
     virtual void Prepare(const Timestep& step) = 0;
 

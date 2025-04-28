@@ -32,11 +32,11 @@ void PulleyJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = -[ua, ra×ua, r*ub, r*rb×ub]
     // K = (J · M^-1 · J^t)
     //   = iMa + iIa * (ra×ua)^2 + ratio*(iMb + iIb * (rb×ub)^2)
-    // M = K^-1
+    // W = K^-1
 
     ra = Mul(bodyA->GetRotation(), localAnchorA - bodyA->GetLocalCenter());
     rb = Mul(bodyB->GetRotation(), localAnchorB - bodyB->GetLocalCenter());

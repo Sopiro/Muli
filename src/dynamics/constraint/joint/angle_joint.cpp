@@ -15,9 +15,9 @@ void AngleJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [0 -1 0 1]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     float k = bodyA->invInertia + bodyB->invInertia + gamma;
 

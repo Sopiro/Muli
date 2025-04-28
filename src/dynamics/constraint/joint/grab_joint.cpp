@@ -23,9 +23,9 @@ void GrabJoint::Prepare(const Timestep& step)
 {
     ComputeBetaAndGamma(step);
 
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [I, skew(r)]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     r = Mul(bodyA->GetRotation(), localAnchor - bodyA->GetLocalCenter());
     Vec2 p = bodyA->motion.c + r;

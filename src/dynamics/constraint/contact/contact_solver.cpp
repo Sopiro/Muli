@@ -7,9 +7,9 @@ namespace muli
 
 void ContactSolverNormal::Prepare(const Contact* c, const Vec2& normal, int32 index, const Timestep& step)
 {
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-n, -ra × n, n, rb × n]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     Vec2 point = c->manifold.contactPoints[index].p;
     Vec2 ra = point - c->b1->motion.c;
@@ -97,9 +97,9 @@ void ContactSolverNormal::Solve(Contact* c)
 
 void ContactSolverTangent::Prepare(const Contact* c, const Vec2& tangent, int32 index, const Timestep& step)
 {
-    // Compute Jacobian J and effective mass M
+    // Compute Jacobian J and effective mass W
     // J = [-n, -ra × n, n, rb × n]
-    // M = (J · M^-1 · J^t)^-1
+    // W = (J · M^-1 · J^t)^-1
 
     Vec2 point = c->manifold.contactPoints[index].p;
     Vec2 ra = point - c->b1->motion.c;
