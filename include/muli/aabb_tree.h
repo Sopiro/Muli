@@ -21,7 +21,7 @@ inline float SurfaceArea(const AABB& aabb)
 
 class AABBTree
 {
-    using NodeProxy = int32;
+    using NodeIndex = int32;
     using Data = Collider;
 
 public:
@@ -36,11 +36,11 @@ public:
 
         AABB aabb;
 
-        NodeProxy parent;
-        NodeProxy child1;
-        NodeProxy child2;
+        NodeIndex parent;
+        NodeIndex child1;
+        NodeIndex child2;
 
-        NodeProxy next;
+        NodeIndex next;
         bool moved;
 
         Data* data; // user data
@@ -57,15 +57,15 @@ public:
 
     void Reset();
 
-    NodeProxy CreateNode(Data* data, const AABB& aabb);
-    bool MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove);
-    void RemoveNode(NodeProxy node);
+    NodeIndex CreateNode(Data* data, const AABB& aabb);
+    bool MoveNode(NodeIndex node, AABB aabb, const Vec2& displacement, bool forceMove);
+    void RemoveNode(NodeIndex node);
 
-    bool TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const;
-    const AABB& GetAABB(NodeProxy node) const;
-    void ClearMoved(NodeProxy node) const;
-    bool WasMoved(NodeProxy node) const;
-    Data* GetData(NodeProxy node) const;
+    bool TestOverlap(NodeIndex nodeA, NodeIndex nodeB) const;
+    const AABB& GetAABB(NodeIndex node) const;
+    void ClearMoved(NodeIndex node) const;
+    bool WasMoved(NodeIndex node) const;
+    Data* GetData(NodeIndex node) const;
 
     template <typename T>
     void Traverse(T* callback) const;
@@ -77,33 +77,33 @@ public:
     void AABBCast(const AABBCastInput& input, T* callback) const;
 
     void Traverse(std::function<void(const Node*)> callback) const;
-    void Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> callback) const;
-    void Query(const AABB& aabb, std::function<bool(NodeProxy, Data*)> callback) const;
+    void Query(const Vec2& point, std::function<bool(NodeIndex, Data*)> callback) const;
+    void Query(const AABB& aabb, std::function<bool(NodeIndex, Data*)> callback) const;
     void AABBCast(const AABBCastInput& input, std::function<float(const AABBCastInput& input, Data* data)> callback) const;
 
     float ComputeTreeCost() const;
     void Rebuild();
 
 private:
-    NodeProxy root;
+    NodeIndex root;
 
     Node* nodes;
     int32 nodeCapacity;
     int32 nodeCount;
 
-    NodeProxy freeList;
+    NodeIndex freeList;
 
-    NodeProxy AllocateNode();
-    void FreeNode(NodeProxy node);
+    NodeIndex AllocateNode();
+    void FreeNode(NodeIndex node);
 
-    NodeProxy InsertLeaf(NodeProxy leaf);
-    void RemoveLeaf(NodeProxy leaf);
+    NodeIndex InsertLeaf(NodeIndex leaf);
+    void RemoveLeaf(NodeIndex leaf);
 
-    void Rotate(NodeProxy node);
-    void Swap(NodeProxy node1, NodeProxy node2);
+    void Rotate(NodeIndex node);
+    void Swap(NodeIndex node1, NodeIndex node2);
 };
 
-inline bool AABBTree::TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const
+inline bool AABBTree::TestOverlap(NodeIndex nodeA, NodeIndex nodeB) const
 {
     MuliAssert(0 <= nodeA && nodeA < nodeCapacity);
     MuliAssert(0 <= nodeB && nodeB < nodeCapacity);
@@ -111,28 +111,28 @@ inline bool AABBTree::TestOverlap(NodeProxy nodeA, NodeProxy nodeB) const
     return nodes[nodeA].aabb.TestOverlap(nodes[nodeB].aabb);
 }
 
-inline const AABB& AABBTree::GetAABB(NodeProxy node) const
+inline const AABB& AABBTree::GetAABB(NodeIndex node) const
 {
     MuliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].aabb;
 }
 
-inline void AABBTree::ClearMoved(NodeProxy node) const
+inline void AABBTree::ClearMoved(NodeIndex node) const
 {
     MuliAssert(0 <= node && node < nodeCapacity);
 
     nodes[node].moved = false;
 }
 
-inline bool AABBTree::WasMoved(NodeProxy node) const
+inline bool AABBTree::WasMoved(NodeIndex node) const
 {
     MuliAssert(0 <= node && node < nodeCapacity);
 
     return nodes[node].moved;
 }
 
-inline AABBTree::Data* AABBTree::GetData(NodeProxy node) const
+inline AABBTree::Data* AABBTree::GetData(NodeIndex node) const
 {
     MuliAssert(0 <= node && node < nodeCapacity);
 
@@ -156,12 +156,12 @@ void AABBTree::Traverse(T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].IsLeaf() == false)
         {
@@ -182,12 +182,12 @@ void AABBTree::Query(const Vec2& point, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].aabb.TestPoint(point) == false)
         {
@@ -218,12 +218,12 @@ void AABBTree::Query(const AABB& aabb, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
@@ -262,12 +262,12 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() > 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
         if (current == nullNode)
         {
             continue;
@@ -298,8 +298,8 @@ void AABBTree::AABBCast(const AABBCastInput& input, T* callback) const
         else
         {
             // Ordered traversal
-            NodeProxy child1 = node->child1;
-            NodeProxy child2 = node->child2;
+            NodeIndex child1 = node->child1;
+            NodeIndex child2 = node->child2;
 
             float dist1 = nodes[child1].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);
             float dist2 = nodes[child2].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);

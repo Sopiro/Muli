@@ -20,8 +20,8 @@ LinearAllocator::~LinearAllocator()
 {
     assert(index == 0 && entryCount == 0);
 
-    free(entries);
-    free(mem);
+    muli::Free(entries);
+    muli::Free(mem);
 }
 
 void* LinearAllocator::Allocate(int32 size)
@@ -34,7 +34,7 @@ void* LinearAllocator::Allocate(int32 size)
         entries = (MemoryEntry*)malloc(entryCapacity * sizeof(MemoryEntry));
         memcpy(entries, old, entryCount * sizeof(MemoryEntry));
         memset(entries + entryCount, 0, (entryCapacity - entryCount) * sizeof(MemoryEntry));
-        free(old);
+        muli::Free(old);
     }
 
     MemoryEntry* entry = entries + entryCount;
@@ -74,7 +74,7 @@ void LinearAllocator::Free(void* p, int32 size)
 
     if (entry->mallocUsed)
     {
-        free(p);
+        muli::Free(p);
     }
     else
     {
@@ -97,7 +97,7 @@ bool LinearAllocator::GrowMemory()
     }
 
     // Grow memory by half
-    free(mem);
+    muli::Free(mem);
     capacity += capacity / 2;
     mem = (int8*)malloc(capacity);
     memset(mem, 0, capacity);

@@ -75,7 +75,7 @@ AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
     return *this;
 }
 
-NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
+NodeProxy AABBTree::InsertLeaf(NodeIndex leaf)
 {
     MuliAssert(0 <= leaf && leaf < nodeCapacity);
     MuliAssert(nodes[leaf].IsLeaf());
@@ -91,13 +91,13 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     // Find the best sibling for the new leaf
 
 #if 1
-    NodeProxy bestSibling = root;
+    NodeIndex bestSibling = root;
     float bestCost = SurfaceArea(AABB::Union(nodes[root].aabb, aabb));
 
     // Candidate node with inherited cost
     struct Candidate
     {
-        NodeProxy node;
+        NodeIndex node;
         float inheritedCost;
     };
 
@@ -106,7 +106,7 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.Back().node;
+        NodeIndex current = stack.Back().node;
         float inheritedCost = stack.Back().inheritedCost;
         stack.PopBack();
 
@@ -189,8 +189,8 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
 #endif
 
     // Create a new parent
-    NodeProxy oldParent = nodes[bestSibling].parent;
-    NodeProxy newParent = AllocateNode();
+    NodeIndex oldParent = nodes[bestSibling].parent;
+    NodeIndex newParent = AllocateNode();
     nodes[newParent].aabb = AABB::Union(aabb, nodes[bestSibling].aabb);
     nodes[newParent].data = nullptr;
     nodes[newParent].parent = oldParent;
@@ -218,11 +218,11 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     }
 
     // Walk back up the tree refitting ancestors' AABB and applying rotations
-    NodeProxy ancestor = newParent;
+    NodeIndex ancestor = newParent;
     while (ancestor != nullNode)
     {
-        NodeProxy child1 = nodes[ancestor].child1;
-        NodeProxy child2 = nodes[ancestor].child2;
+        NodeIndex child1 = nodes[ancestor].child1;
+        NodeIndex child2 = nodes[ancestor].child2;
 
         nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
 
@@ -234,12 +234,12 @@ NodeProxy AABBTree::InsertLeaf(NodeProxy leaf)
     return leaf;
 }
 
-void AABBTree::RemoveLeaf(NodeProxy leaf)
+void AABBTree::RemoveLeaf(NodeIndex leaf)
 {
     MuliAssert(0 <= leaf && leaf < nodeCapacity);
     MuliAssert(nodes[leaf].IsLeaf());
 
-    NodeProxy parent = nodes[leaf].parent;
+    NodeIndex parent = nodes[leaf].parent;
     if (parent == nullNode) // node is root
     {
         MuliAssert(root == leaf);
@@ -247,8 +247,8 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
         return;
     }
 
-    NodeProxy grandParent = nodes[parent].parent;
-    NodeProxy sibling;
+    NodeIndex grandParent = nodes[parent].parent;
+    NodeIndex sibling;
     if (nodes[parent].child1 == leaf)
     {
         sibling = nodes[parent].child2;
@@ -273,11 +273,11 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
             nodes[grandParent].child2 = sibling;
         }
 
-        NodeProxy ancestor = grandParent;
+        NodeIndex ancestor = grandParent;
         while (ancestor != nullNode)
         {
-            NodeProxy child1 = nodes[ancestor].child1;
-            NodeProxy child2 = nodes[ancestor].child2;
+            NodeIndex child1 = nodes[ancestor].child1;
+            NodeIndex child2 = nodes[ancestor].child2;
 
             nodes[ancestor].aabb = AABB::Union(nodes[child1].aabb, nodes[child2].aabb);
 
@@ -295,7 +295,7 @@ void AABBTree::RemoveLeaf(NodeProxy leaf)
 
 NodeProxy AABBTree::CreateNode(Data* data, const AABB& aabb)
 {
-    NodeProxy newNode = AllocateNode();
+    NodeIndex newNode = AllocateNode();
 
     // Fatten the aabb
     nodes[newNode].aabb.max = aabb.max + aabb_margin;
@@ -309,7 +309,7 @@ NodeProxy AABBTree::CreateNode(Data* data, const AABB& aabb)
     return newNode;
 }
 
-bool AABBTree::MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, bool forceMove)
+bool AABBTree::MoveNode(NodeIndex node, AABB aabb, const Vec2& displacement, bool forceMove)
 {
     MuliAssert(0 <= node && node < nodeCapacity);
     MuliAssert(nodes[node].IsLeaf());
@@ -355,7 +355,7 @@ bool AABBTree::MoveNode(NodeProxy node, AABB aabb, const Vec2& displacement, boo
     return true;
 }
 
-void AABBTree::RemoveNode(NodeProxy node)
+void AABBTree::RemoveNode(NodeIndex node)
 {
     MuliAssert(0 <= node && node < nodeCapacity);
     MuliAssert(nodes[node].IsLeaf());
@@ -364,15 +364,15 @@ void AABBTree::RemoveNode(NodeProxy node)
     FreeNode(node);
 }
 
-void AABBTree::Rotate(NodeProxy node)
+void AABBTree::Rotate(NodeIndex node)
 {
     if (nodes[node].IsLeaf())
     {
         return;
     }
 
-    NodeProxy child1 = nodes[node].child1;
-    NodeProxy child2 = nodes[node].child2;
+    NodeIndex child1 = nodes[node].child1;
+    NodeIndex child2 = nodes[node].child2;
 
     float costDiffs[4] = { 0.0f };
 
@@ -459,10 +459,10 @@ void AABBTree::Rotate(NodeProxy node)
     }
 }
 
-void AABBTree::Swap(NodeProxy node1, NodeProxy node2)
+void AABBTree::Swap(NodeIndex node1, NodeIndex node2)
 {
-    NodeProxy parent1 = nodes[node1].parent;
-    NodeProxy parent2 = nodes[node2].parent;
+    NodeIndex parent1 = nodes[node1].parent;
+    NodeIndex parent2 = nodes[node2].parent;
 
     if (parent1 == parent2)
     {
@@ -499,12 +499,12 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].IsLeaf() == false)
         {
@@ -517,19 +517,19 @@ void AABBTree::Traverse(std::function<void(const Node*)> callback) const
     }
 }
 
-void AABBTree::Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> callback) const
+void AABBTree::Query(const Vec2& point, std::function<bool(NodeIndex, Data*)> callback) const
 {
     if (root == nullNode)
     {
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].aabb.TestPoint(point) == false)
         {
@@ -552,19 +552,19 @@ void AABBTree::Query(const Vec2& point, std::function<bool(NodeProxy, Data*)> ca
     }
 }
 
-void AABBTree::Query(const AABB& aabb, std::function<bool(NodeProxy, Data*)> callback) const
+void AABBTree::Query(const AABB& aabb, std::function<bool(NodeIndex, Data*)> callback) const
 {
     if (root == nullNode)
     {
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() != 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
 
         if (nodes[current].aabb.TestOverlap(aabb) == false)
         {
@@ -602,12 +602,12 @@ void AABBTree::AABBCast(const AABBCastInput& input, std::function<float(const AA
         return;
     }
 
-    GrowableArray<NodeProxy, 64> stack;
+    GrowableArray<NodeIndex, 64> stack;
     stack.EmplaceBack(root);
 
     while (stack.Count() > 0)
     {
-        NodeProxy current = stack.PopBack();
+        NodeIndex current = stack.PopBack();
         if (current == nullNode)
         {
             continue;
@@ -638,8 +638,8 @@ void AABBTree::AABBCast(const AABBCastInput& input, std::function<float(const AA
         else
         {
             // Ordered traversal
-            NodeProxy child1 = node->child1;
-            NodeProxy child2 = node->child2;
+            NodeIndex child1 = node->child1;
+            NodeIndex child2 = node->child2;
 
             float dist1 = nodes[child1].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);
             float dist2 = nodes[child2].aabb.RayCast(p1, p2, 0.0f, maxFraction, halfExtents);
@@ -710,7 +710,7 @@ NodeProxy AABBTree::AllocateNode()
         freeList = nodeCount;
     }
 
-    NodeProxy node = freeList;
+    NodeIndex node = freeList;
     freeList = nodes[node].next;
     nodes[node].parent = nullNode;
     nodes[node].child1 = nullNode;
@@ -721,7 +721,7 @@ NodeProxy AABBTree::AllocateNode()
     return node;
 }
 
-void AABBTree::FreeNode(NodeProxy node)
+void AABBTree::FreeNode(NodeIndex node)
 {
     MuliAssert(0 <= node && node <= nodeCapacity);
     MuliAssert(0 < nodeCount);
@@ -737,7 +737,7 @@ void AABBTree::Rebuild()
 {
     // Rebuild tree with bottom up approach
 
-    NodeProxy* leaves = (NodeProxy*)muli::Alloc(nodeCount * sizeof(NodeProxy));
+    NodeIndex* leaves = (NodeIndex*)muli::Alloc(nodeCount * sizeof(NodeIndex));
     int32 count = 0;
 
     // Collect all leaves
@@ -790,13 +790,13 @@ void AABBTree::Rebuild()
             }
         }
 
-        NodeProxy index1 = leaves[minI];
-        NodeProxy index2 = leaves[minJ];
+        NodeIndex index1 = leaves[minI];
+        NodeIndex index2 = leaves[minJ];
         Node* child1 = nodes + index1;
         Node* child2 = nodes + index2;
 
         // Create a parent(internal) node
-        NodeProxy parentIndex = AllocateNode();
+        NodeIndex parentIndex = AllocateNode();
         Node* parent = nodes + parentIndex;
 
         parent->child1 = index1;
