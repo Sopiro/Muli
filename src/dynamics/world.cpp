@@ -1247,10 +1247,10 @@ RigidBody* World::CreateEmptyBody(const Transform& tf, RigidBody::Type type)
 
 RigidBody* World::CreateCircle(float radius, const Transform& tf, RigidBody::Type type, float density)
 {
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Circle circle{ radius };
-    b->CreateCollider(&circle, tf, density);
+    b->CreateCollider(&circle, identity, density);
 
     return b;
 }
@@ -1259,10 +1259,10 @@ RigidBody* World::CreateCapsule(
     float length, float radius, bool horizontal, const Transform& tf, RigidBody::Type type, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Capsule capsule{ length, radius, horizontal };
-    b->CreateCollider(&capsule, tf, density);
+    b->CreateCollider(&capsule, identity, density);
 
     return b;
 }
@@ -1277,11 +1277,11 @@ RigidBody* World::CreateCapsule(
     float density
 )
 {
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Vec2 center = (point1 + point2) * 0.5f;
     Capsule capsule{ point1, point2, radius, true };
-    b->CreateCollider(&capsule, tf, density);
+    b->CreateCollider(&capsule, identity, density);
 
     if (resetPosition == false)
     {
@@ -1295,10 +1295,10 @@ RigidBody* World::CreatePolygon(
     std::span<Vec2> vertices, const Transform& tf, RigidBody::Type type, bool resetPosition, float radius, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Polygon polygon(vertices.data(), int32(vertices.size()), true, radius);
-    b->CreateCollider(&polygon, tf, density);
+    b->CreateCollider(&polygon, identity, density);
 
     Vec2 center{ 0.0f };
     for (size_t i = 0; i < vertices.size(); ++i)
@@ -1317,11 +1317,11 @@ RigidBody* World::CreatePolygon(
 
 RigidBody* World::CreateBox(float width, float height, const Transform& tf, RigidBody::Type type, float radius, float density)
 {
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
     Polygon box{ vertices, 4, true, radius };
-    b->CreateCollider(&box, tf, density);
+    b->CreateCollider(&box, identity, density);
 
     return b;
 }
@@ -1358,10 +1358,10 @@ RigidBody* World::CreateRandomConvexPolygon(
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon, tf, density);
+    b->CreateCollider(&polygon, identity, density);
 
     return b;
 }
@@ -1391,10 +1391,10 @@ RigidBody* World::CreateRegularPolygon(
         vertices.push_back(vertex);
     }
 
-    RigidBody* b = CreateEmptyBody(identity, type);
+    RigidBody* b = CreateEmptyBody(tf, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
-    b->CreateCollider(&polygon, tf, density);
+    b->CreateCollider(&polygon, identity, density);
 
     return b;
 }

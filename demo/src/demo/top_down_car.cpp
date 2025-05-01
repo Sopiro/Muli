@@ -45,10 +45,8 @@ struct Wheel
         float _drag
     )
     {
-        wheel = world->CreateCapsule(scale, scale);
+        wheel = world->CreateCapsule(scale, scale, false, tf);
         wheel->SetCollisionFilter(filter);
-
-        wheel->SetTransform(tf);
 
         wheel->SetLinearDamping(linearDamping);
         wheel->SetAngularDamping(angularDamping);
