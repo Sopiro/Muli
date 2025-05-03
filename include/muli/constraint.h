@@ -12,10 +12,10 @@ class Constraint
 {
 public:
     Constraint(RigidBody* bodyA, RigidBody* bodyB);
-    virtual ~Constraint() noexcept = default;
+    virtual ~Constraint() = default;
 
-    Constraint(const Constraint&) noexcept = delete;
-    Constraint& operator=(const Constraint&) noexcept = delete;
+    Constraint(const Constraint&) = delete;
+    Constraint& operator=(const Constraint&) = delete;
 
     /*
      * C: Constraint equation

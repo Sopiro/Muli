@@ -17,7 +17,7 @@ public:
     {
     }
 
-    ~GrowableArray() noexcept
+    ~GrowableArray()
     {
         if (array != stackArray)
         {
@@ -69,7 +69,7 @@ public:
         return *this;
     }
 
-    GrowableArray(GrowableArray&& other) noexcept
+    GrowableArray(GrowableArray&& other)
     {
         if (other.array == other.stackArray)
         {
@@ -89,7 +89,7 @@ public:
         other.capacity = N;
     }
 
-    GrowableArray& operator=(GrowableArray&& other) noexcept
+    GrowableArray& operator=(GrowableArray&& other)
     {
         MuliAssert(this != &other);
 

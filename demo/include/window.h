@@ -13,7 +13,7 @@ namespace muli
 class Window : NonCopyable
 {
 public:
-    ~Window() noexcept;
+    ~Window();
 
     void SetFramebufferSizeChangeCallback(std::function<void(int32, int32)> callback);
     Vec2 GetWindowSize() const;
@@ -247,7 +247,7 @@ inline Window::Window(int32 width, int32 height, const char* title)
     glFrontFace(GL_CCW);
 }
 
-inline Window::~Window() noexcept
+inline Window::~Window()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

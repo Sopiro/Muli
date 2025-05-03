@@ -13,11 +13,11 @@ public:
         RigidBody* bodyA,
         RigidBody* bodyB,
         const Vec2& anchor,
-        float maxJointForce = 1000.0f,
-        float maxJointTorque = 1000.0f,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float maxJointForce,
+        float maxJointTorque,
+        float frequency,
+        float dampingRatio,
+        float jointMass
     );
 
     virtual void Prepare(const Timestep& step) override;

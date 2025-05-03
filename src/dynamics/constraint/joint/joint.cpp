@@ -15,7 +15,7 @@ Joint::Joint(Joint::Type type, RigidBody* bodyA, RigidBody* bodyB, float jointFr
     SetParameters(jointFrequency, jointDampingRatio, jointMass);
 }
 
-Joint::~Joint() noexcept
+Joint::~Joint()
 {
     if (OnDestroy)
     {

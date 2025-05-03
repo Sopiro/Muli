@@ -60,7 +60,7 @@ Shader::Shader(const char* vsCode, const char* fsCode)
     shaderHandle = shaderProgram;
 }
 
-Shader::~Shader() noexcept
+Shader::~Shader()
 {
     if (shaderHandle)
     {

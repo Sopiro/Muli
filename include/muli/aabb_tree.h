@@ -47,13 +47,13 @@ public:
     };
 
     AABBTree();
-    ~AABBTree() noexcept;
+    ~AABBTree();
 
     AABBTree(const AABBTree&) = delete;
     AABBTree& operator=(const AABBTree&) = delete;
 
-    AABBTree(AABBTree&&) noexcept;
-    AABBTree& operator=(AABBTree&&) noexcept;
+    AABBTree(AABBTree&&);
+    AABBTree& operator=(AABBTree&&);
 
     void Reset();
 

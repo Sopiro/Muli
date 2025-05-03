@@ -23,7 +23,7 @@ class Contact : Constraint
 {
 public:
     Contact(Collider* colliderA, Collider* colliderB);
-    ~Contact() noexcept = default;
+    ~Contact() = default;
 
     Collider* GetColliderA() const;
     Collider* GetColliderB() const;

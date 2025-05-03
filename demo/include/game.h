@@ -16,7 +16,7 @@ class Game final : NonCopyable,
 {
 public:
     Game();
-    ~Game() noexcept;
+    ~Game();
 
     void Update(float dt);
     void FixedUpdate();

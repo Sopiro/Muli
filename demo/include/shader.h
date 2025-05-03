@@ -11,7 +11,7 @@ namespace muli
 class Shader : NonCopyable
 {
 public:
-    virtual ~Shader() noexcept;
+    virtual ~Shader();
 
     void Use() const;
 

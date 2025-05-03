@@ -27,7 +27,7 @@ World::World(const WorldSettings& settings)
     MuliAssert(position_solver_threshold > toi_position_solver_threshold);
 }
 
-World::~World() noexcept
+World::~World()
 {
     Reset();
 }

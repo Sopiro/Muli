@@ -30,7 +30,7 @@ public:
     };
 
     RigidBody(const Transform& tf, RigidBody::Type type);
-    ~RigidBody() noexcept;
+    ~RigidBody();
 
     RigidBody(const RigidBody&) = delete;
     RigidBody& operator=(const RigidBody&) = delete;

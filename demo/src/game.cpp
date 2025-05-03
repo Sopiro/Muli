@@ -36,7 +36,7 @@ Game::Game()
     // InitDemo(42); // Logo
 }
 
-Game::~Game() noexcept
+Game::~Game()
 {
     delete demo;
 }

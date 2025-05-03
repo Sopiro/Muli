@@ -47,7 +47,7 @@ Mesh::Mesh(std::vector<Vec3> inVertices, std::vector<Vec2> inTexCoords, std::vec
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int32) * indicesL.size(), indicesL.data(), GL_STATIC_DRAW);
 }
 
-Mesh::~Mesh() noexcept
+Mesh::~Mesh()
 {
     if (moved)
     {
@@ -61,12 +61,12 @@ Mesh::~Mesh() noexcept
     glDeleteBuffers(1, &EBOl);
 }
 
-Mesh::Mesh(Mesh&& other) noexcept
+Mesh::Mesh(Mesh&& other)
 {
     operator=(std::move(other));
 }
 
-Mesh& Mesh::operator=(Mesh&& other) noexcept
+Mesh& Mesh::operator=(Mesh&& other)
 {
     other.moved = true;
 

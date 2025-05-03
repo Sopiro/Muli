@@ -38,7 +38,7 @@ RigidBody::RigidBody(const Transform& tf, RigidBody::Type type)
 {
 }
 
-RigidBody::~RigidBody() noexcept
+RigidBody::~RigidBody()
 {
     if (OnDestroy)
     {

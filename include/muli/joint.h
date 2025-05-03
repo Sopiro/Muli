@@ -78,7 +78,7 @@ public:
         float jointMass
     );
     // clang-format on
-    virtual ~Joint() noexcept;
+    virtual ~Joint();
 
     virtual bool SolvePositionConstraints(const Timestep& step) override
     {
@@ -115,6 +115,10 @@ protected:
 
 private:
     // Following parameters are used to soften the joint
+    // Frequency values less than or equal to zero make joints rigid
+    // 0 < Frequency
+    // 0 <= Damping ratio <= 1
+    // 0 < Mass
     float jointFrequency;
     float jointDampingRatio;
     float jointMass;

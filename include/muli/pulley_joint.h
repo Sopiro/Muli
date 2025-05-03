@@ -16,10 +16,10 @@ public:
         const Vec2& anchorB,
         const Vec2& groundAnchorA,
         const Vec2& groundAnchorB,
-        float ratio = 1.0f,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float ratio,
+        float frequency,
+        float dampingRatio,
+        float jointMass
     );
 
     virtual void Prepare(const Timestep& step) override;

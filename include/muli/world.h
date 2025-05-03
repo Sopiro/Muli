@@ -28,10 +28,10 @@ class World
 {
 public:
     World(const WorldSettings& settings);
-    ~World() noexcept;
+    ~World();
 
-    World(const World&) noexcept = delete;
-    World& operator=(const World&) noexcept = delete;
+    World(const World&) = delete;
+    World& operator=(const World&) = delete;
 
     float Step(float dt);
     void Reset();
@@ -230,15 +230,38 @@ public:
     );
     // clang-format on
 
+    // clang-format off
     void Query(const Vec2& point, WorldQueryCallback* callback);
     void Query(const AABB& aabb, WorldQueryCallback* callback);
-    void RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback);
-    bool RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback);
-    void ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback);
-    bool ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback);
+
+    void RayCastAny(
+        const Vec2& from,
+        const Vec2& to,
+        float radius,
+        RayCastAnyCallback* callback
+    );
+    bool RayCastClosest(
+        const Vec2& from,
+        const Vec2& to,
+        float radius,
+        RayCastClosestCallback* callback
+    );
+    void ShapeCastAny(
+        const Shape* shape,
+        const Transform& tf,
+        const Vec2& translation,
+        ShapeCastAnyCallback* callback
+    );
+    bool ShapeCastClosest(
+        const Shape* shape,
+        const Transform& tf,
+        const Vec2& translation,
+        ShapeCastClosestCallback* callback
+    );
 
     void Query(const Vec2& point, std::function<bool(Collider* collider)> callback) const;
     void Query(const AABB& aabb, std::function<bool(Collider* collider)> callback) const;
+    
     void RayCastAny(
         const Vec2& from,
         const Vec2& to,
@@ -263,6 +286,7 @@ public:
         const Vec2& translation,
         std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
     );
+    // clang-format on
 
     RigidBody* GetBodyList() const;
     RigidBody* GetBodyListTail() const;

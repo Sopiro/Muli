@@ -24,14 +24,14 @@ AABBTree::AABBTree()
     freeList = 0;
 }
 
-AABBTree::~AABBTree() noexcept
+AABBTree::~AABBTree()
 {
     muli::Free(nodes);
     root = nullNode;
     nodeCount = 0;
 }
 
-AABBTree::AABBTree(AABBTree&& other) noexcept
+AABBTree::AABBTree(AABBTree&& other)
 {
     root = other.root;
 
@@ -50,7 +50,7 @@ AABBTree::AABBTree(AABBTree&& other) noexcept
     other.freeList = nullNode;
 }
 
-AABBTree& AABBTree::operator=(AABBTree&& other) noexcept
+AABBTree& AABBTree::operator=(AABBTree&& other)
 {
     MuliAssert(this != &other);
 

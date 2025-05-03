@@ -9,10 +9,10 @@ class Mesh : NonCopyable
 {
 public:
     Mesh(std::vector<Vec3> vertices, std::vector<Vec2> texCoords, std::vector<int32> indices);
-    ~Mesh() noexcept;
+    ~Mesh();
 
-    Mesh(Mesh&&) noexcept;
-    Mesh& operator=(Mesh&&) noexcept;
+    Mesh(Mesh&&);
+    Mesh& operator=(Mesh&&);
 
     void Draw(GLenum drawMode = GL_TRIANGLES) const;
 

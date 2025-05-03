@@ -9,14 +9,7 @@ namespace muli
 class WeldJoint : public Joint
 {
 public:
-    WeldJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
-        const Vec2& anchor,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
-    );
+    WeldJoint(RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass);
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;
