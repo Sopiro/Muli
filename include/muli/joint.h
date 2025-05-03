@@ -68,14 +68,16 @@ public:
         motor_joint,
     };
 
+    // clang-format off
     Joint(
         Joint::Type type,
         RigidBody* bodyA,
         RigidBody* bodyB,
-        float jointFrequency = default_joint_frequency,
-        float jointDampingRatio = default_joint_damping_ratio,
-        float jointMass = default_joint_mass
+        float jointFrequency,
+        float jointDampingRatio,
+        float jointMass
     );
+    // clang-format on
     virtual ~Joint() noexcept;
 
     virtual bool SolvePositionConstraints(const Timestep& step) override

@@ -46,7 +46,7 @@ void Joint::SetParameters(float newJointFrequency, float newJointDampingRatio, f
 void Joint::ComputeBetaAndGamma(const Timestep& step)
 {
     // If the frequency is less than or equal to zero, make this joint solid
-    if (jointFrequency < 0.0f)
+    if (jointFrequency <= 0.0f)
     {
         beta = 1.0f;
         gamma = 0.0f;

@@ -80,7 +80,7 @@ void PulleyJoint::Prepare(const Timestep& step)
     }
 
     float error = length - (lengthA + lengthB);
-    bias = error * step.inv_dt;
+    bias = error * beta * step.inv_dt;
 
     if (step.warm_starting)
     {

@@ -130,7 +130,7 @@ public:
         const Vec2& anchor,
         const Vec2& target,
         float frequency = 1.0f,
-        float dampingRatio = 0.5f,
+        float dampingRatio = 1.0f,
         float jointMass = 1.0f
     );
     RevoluteJoint* CreateRevoluteJoint(

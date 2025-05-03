@@ -51,11 +51,6 @@ constexpr float default_restitution = 0.0f;
 constexpr float default_restitution_treshold = 2.0f; // m/s
 constexpr float default_surface_speed = 0.0f;
 
-// Default joint settings
-constexpr float default_joint_frequency = 10.0f;
-constexpr float default_joint_damping_ratio = 1.0f;
-constexpr float default_joint_mass = 1.0f;
-
 // Maximum number of vertices stored in local(stack) memory.
 // Exceeding this limit allocates polygon vertices on the heap.
 constexpr int32 max_local_polygon_vertices = 8;

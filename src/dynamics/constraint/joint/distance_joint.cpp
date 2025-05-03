@@ -52,7 +52,7 @@ void DistanceJoint::Prepare(const Timestep& step)
     }
 
     float error = currentLength - length;
-    bias = error * step.inv_dt;
+    bias = error * beta * step.inv_dt;
 
     if (step.warm_starting)
     {
