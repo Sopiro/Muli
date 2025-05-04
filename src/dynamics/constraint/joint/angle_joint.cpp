@@ -4,10 +4,13 @@
 namespace muli
 {
 
-AngleJoint::AngleJoint(RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass)
+AngleJoint::AngleJoint(
+    RigidBody* bodyA, RigidBody* bodyB, float jointAngleLimit, float jointFrequency, float jointDampingRatio, float jointMass
+)
     : Joint(angle_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
     , impulseSum{ 0.0f }
 {
+    angleLimit = Max(0.0f, jointAngleLimit);
     angleOffset = bodyB->motion.a - bodyA->motion.a;
 }
 
@@ -26,12 +29,29 @@ void AngleJoint::Prepare(const Timestep& step)
         m = 1.0f / k;
     }
 
-    float error = bodyB->motion.a - bodyA->motion.a - angleOffset;
+    Vec2 error(bodyB->motion.a - bodyA->motion.a - angleOffset);
+    error[0] += angleLimit / 2;
+    error[1] -= angleLimit / 2;
+
     bias = error * beta * step.inv_dt;
 
     if (step.warm_starting)
     {
-        ApplyImpulse(impulseSum);
+        if (angleLimit == 0)
+        {
+            ApplyImpulse(impulseSum[0]);
+        }
+        else
+        {
+            if (bias[0] < 0)
+            {
+                ApplyImpulse(impulseSum[0]);
+            }
+            if (bias[1] > 0)
+            {
+                ApplyImpulse(impulseSum[1]);
+            }
+        }
     }
 }
 
@@ -45,10 +65,27 @@ void AngleJoint::SolveVelocityConstraints(const Timestep& step)
 
     float jv = bodyB->angularVelocity - bodyA->angularVelocity;
 
-    float lambda = m * -(jv + bias + impulseSum * gamma);
-
-    ApplyImpulse(lambda);
-    impulseSum += lambda;
+    if (angleLimit == 0)
+    {
+        float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
+        ApplyImpulse(lambda);
+        impulseSum[0] += lambda;
+    }
+    else
+    {
+        if (bias[0] < 0)
+        {
+            float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
+            ApplyImpulse(lambda);
+            impulseSum[0] += lambda;
+        }
+        if (bias[1] > 0)
+        {
+            float lambda = m * -(jv + bias[1] + impulseSum[1] * gamma);
+            ApplyImpulse(lambda);
+            impulseSum[1] += lambda;
+        }
+    }
 }
 
 void AngleJoint::ApplyImpulse(float lambda)

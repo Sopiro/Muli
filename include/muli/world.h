@@ -182,6 +182,7 @@ public:
     AngleJoint* CreateAngleJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
+        float angleLimit = -1.0f,
         float frequency = 10.0f,
         float dampingRatio = 1.0f,
         float jointMass = 1.0f

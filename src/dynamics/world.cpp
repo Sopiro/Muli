@@ -1506,7 +1506,7 @@ DistanceJoint* World::CreateLimitedDistanceJoint(
 }
 
 AngleJoint* World::CreateAngleJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, float angleLimit, float jointFrequency, float jointDampingRatio, float jointMass
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1515,7 +1515,7 @@ AngleJoint* World::CreateAngleJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
-    AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass);
+    AngleJoint* aj = new (mem) AngleJoint(bodyA, bodyB, angleLimit, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(aj);
     return aj;
