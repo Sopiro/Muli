@@ -348,6 +348,9 @@ void Game::Render()
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);
+            Vec2 d = Normalize(anchorB - anchorA);
+            renderer.DrawPoint(anchorA + d * dj->GetJointMinLength());
+            renderer.DrawPoint(anchorA + d * dj->GetJointMaxLength());
 
             renderer.DrawLine(anchorA, anchorB);
         }

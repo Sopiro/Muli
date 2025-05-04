@@ -1449,7 +1449,7 @@ DistanceJoint* World::CreateDistanceJoint(
 
     void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
     DistanceJoint* dj =
-        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, jointFrequency, jointDampingRatio, jointMass);
+        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, length, jointFrequency, jointDampingRatio, jointMass);
 
     AddJoint(dj);
     return dj;

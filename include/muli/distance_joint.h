@@ -14,16 +14,6 @@ public:
         RigidBody* bodyB,
         const Vec2& anchorA,
         const Vec2& anchorB,
-        float length,
-        float frequency,
-        float dampingRatio,
-        float jointMass
-    );
-    DistanceJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
-        const Vec2& anchorA,
-        const Vec2& anchorB,
         float minLength,
         float maxLength,
         float frequency,

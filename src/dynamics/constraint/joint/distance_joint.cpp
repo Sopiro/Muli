@@ -9,25 +9,6 @@ DistanceJoint::DistanceJoint(
     RigidBody* bodyB,
     const Vec2& anchorA,
     const Vec2& anchorB,
-    float jointLength,
-    float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
-)
-    : Joint(distance_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
-    , impulseSum{ 0.0f }
-{
-    localAnchorA = MulT(bodyA->GetTransform(), anchorA);
-    localAnchorB = MulT(bodyB->GetTransform(), anchorB);
-    minLength = jointLength < 0 ? Length(anchorB - anchorA) : jointLength;
-    maxLength = minLength;
-}
-
-DistanceJoint::DistanceJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    const Vec2& anchorA,
-    const Vec2& anchorB,
     float jointMinLength,
     float jointMaxLength,
     float jointFrequency,
