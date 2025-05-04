@@ -159,6 +159,26 @@ public:
         float dampingRatio = 1.0f,
         float jointMass = 1.0f
     );
+    DistanceJoint* CreateLimitedDistanceJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        const Vec2& anchorA,
+        const Vec2& anchorB,
+        float minLength = -1.0f,
+        float maxLength = -1.0f,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
+    DistanceJoint* CreateLimitedDistanceJoint(
+        RigidBody* bodyA,
+        RigidBody* bodyB,
+        float minLength = -1.0f,
+        float maxLength = -1.0f,
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f,
+        float jointMass = 1.0f
+    );
     AngleJoint* CreateAngleJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,

@@ -1464,6 +1464,47 @@ DistanceJoint* World::CreateDistanceJoint(
     );
 }
 
+DistanceJoint* World::CreateLimitedDistanceJoint(
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    const Vec2& anchorA,
+    const Vec2& anchorB,
+    float minLength,
+    float maxLength,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
+)
+{
+    if (bodyA->world != this || bodyB->world != this)
+    {
+        return nullptr;
+    }
+
+    void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
+    DistanceJoint* dj = new (mem)
+        DistanceJoint(bodyA, bodyB, anchorA, anchorB, minLength, maxLength, jointFrequency, jointDampingRatio, jointMass);
+
+    AddJoint(dj);
+    return dj;
+}
+
+DistanceJoint* World::CreateLimitedDistanceJoint(
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    float minLength,
+    float maxLength,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
+)
+{
+    return CreateLimitedDistanceJoint(
+        bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), minLength, maxLength, jointFrequency, jointDampingRatio,
+        jointMass
+    );
+}
+
 AngleJoint* World::CreateAngleJoint(
     RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio, float jointMass
 )
