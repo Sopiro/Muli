@@ -26,8 +26,10 @@ public:
 
     const Vec2& GetLocalAnchorA() const;
     const Vec2& GetLocalAnchorB() const;
+
     float GetJointLength() const;
     void SetJointLength(float newLength);
+
     float GetJointMinLength() const;
     void SetJointMinLength(float newMinLength);
     float GetJointMaxLength() const;

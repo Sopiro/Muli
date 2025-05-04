@@ -17,7 +17,10 @@ public:
         RigidBody* b = world->CreateBox(0.4f);
         b->SetPosition(-1.5f, 3.0f);
 
-        world->CreateLimitedDistanceJoint(s, b, -1, 4);
+        float frequency = 10.0f;
+        float dampingRatio = 1.0f;
+
+        world->CreateLimitedDistanceJoint(s, b, -1, 4, frequency, dampingRatio, b->GetMass());
 
         CollisionFilter filter;
         filter.bit = (1 << 1);
@@ -31,7 +34,7 @@ public:
         b->SetCollisionFilter(filter);
 
         world->CreateRevoluteJoint(s, b, s->GetPosition(), -1);
-        world->CreateAngleJoint(s, b, DegToRad(90), 10.0f, 0.7f, b->GetMass());
+        world->CreateLimitedAngleJoint(s, b, DegToRad(-45), DegToRad(90), frequency, dampingRatio, b->GetMass());
     }
 
     static Demo* Create(Game& game)

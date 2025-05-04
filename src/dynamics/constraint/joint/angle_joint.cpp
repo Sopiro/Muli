@@ -5,13 +5,22 @@ namespace muli
 {
 
 AngleJoint::AngleJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float jointAngleLimit, float jointFrequency, float jointDampingRatio, float jointMass
+    RigidBody* bodyA,
+    RigidBody* bodyB,
+    float jointAngleOffset,
+    float jointMinAngle,
+    float jointMaxAngle,
+    float jointFrequency,
+    float jointDampingRatio,
+    float jointMass
 )
     : Joint(angle_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    , angleOffset{ jointAngleOffset }
+    , minAngle{ jointMinAngle }
+    , maxAngle{ jointMaxAngle }
     , impulseSum{ 0.0f }
 {
-    angleLimit = Max(0.0f, jointAngleLimit);
-    angleOffset = bodyB->motion.a - bodyA->motion.a;
+    maxAngle = Max(minAngle, maxAngle);
 }
 
 void AngleJoint::Prepare(const Timestep& step)
@@ -30,14 +39,14 @@ void AngleJoint::Prepare(const Timestep& step)
     }
 
     Vec2 error(bodyB->motion.a - bodyA->motion.a - angleOffset);
-    error[0] += angleLimit / 2;
-    error[1] -= angleLimit / 2;
+    error[0] -= minAngle;
+    error[1] -= maxAngle;
 
     bias = error * beta * step.inv_dt;
 
     if (step.warm_starting)
     {
-        if (angleLimit == 0)
+        if (minAngle == maxAngle)
         {
             ApplyImpulse(impulseSum[0]);
         }
@@ -65,7 +74,7 @@ void AngleJoint::SolveVelocityConstraints(const Timestep& step)
 
     float jv = bodyB->angularVelocity - bodyA->angularVelocity;
 
-    if (angleLimit == 0)
+    if (minAngle == maxAngle)
     {
         float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
         ApplyImpulse(lambda);
