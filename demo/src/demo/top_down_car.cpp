@@ -139,8 +139,7 @@ public:
         settings.apply_gravity = false;
 
         CollisionFilter filter;
-        filter.bit = 1 << 1;
-        filter.mask = ~(1 << 1);
+        filter.group = -1;
 
         float w = 0.8f;
         float h = 1.4f;

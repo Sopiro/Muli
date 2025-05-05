@@ -6,7 +6,7 @@ namespace muli
 class CollisionFiltering : public Demo
 {
 public:
-    uint32 group = 1;
+    int32 group = 0;
     uint32 filter0 = 1; // Default filter
     uint32 filter1 = 1 << 1;
     uint32 filter2 = 1 << 2;
