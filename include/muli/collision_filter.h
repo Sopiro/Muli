@@ -7,13 +7,13 @@ namespace muli
 
 struct CollisionFilter
 {
-    int32 group = 0;      // Collision group: same non-zero value means special behavior
-                          // Positive: always collide
-                          // Negative: never collide
-                          // Zero: No group
+    int32 group = 0;          // Collision group: same non-zero value means special behavior
+                              // Positive: always collide
+                              // Negative: never collide
+                              // Zero: No group
 
-    uint16 bit = 1;       // Collision bit representing this object's collision type
-    uint16 mask = 0xffff; // Collision mask: which collision bits this object can collide with (default: all)
+    uint32 bit = 1;           // Collision bit representing this object's collision type
+    uint32 mask = 0xffffffff; // Collision mask: which collision bits this object can collide with (default: all)
 };
 
 constexpr CollisionFilter default_collision_filter{};
