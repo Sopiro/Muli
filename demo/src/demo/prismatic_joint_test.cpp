@@ -16,13 +16,15 @@ public:
         RigidBody* b = world->CreateBox(0.5f);
         b->SetPosition(0.0f, 2.0f);
         world->CreatePrismaticJoint(ground, b);
+        world->CreateLimitedDistanceJoint(ground, b, 0.0f, 8.0f);
 
         b = world->CreateBox(0.5f);
         b->SetPosition(0.0f, 5.0f);
         world->CreatePrismaticJoint(ground, b, b->GetPosition(), Vec2{ 1.0f, 0.0f });
+        world->CreateLimitedDistanceJoint(ground, b, -1.0f, 8.0f);
 
-        world->CreateCapsule(Vec2{ 3.0f, 4.8f }, Vec2{ 3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
-        world->CreateCapsule(Vec2{ -3.0f, 4.8f }, Vec2{ -3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
+        // world->CreateCapsule(Vec2{ 3.0f, 4.8f }, Vec2{ 3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
+        // world->CreateCapsule(Vec2{ -3.0f, 4.8f }, Vec2{ -3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
     }
 
     static Demo* Create(Game& game)
