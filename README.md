@@ -64,7 +64,7 @@ int main()
 }
 ```
 
-## Building and running
+## Building and running demo
 - Install [CMake](https://cmake.org/install/)
 - Ensure CMake is in the system `PATH`
 - Clone the repository `git clone --recursive https://github.com/Sopiro/Muli`
@@ -73,7 +73,21 @@ int main()
   - Otherwise: Run `build.sh`
 - You can find the executable demo in the `build/bin`
 
-## Installation
+## Include library
+You can easily include the library using CMake's `FetchContent` module
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+    muli
+    GIT_REPOSITORY https://github.com/Sopiro/Muli
+)
+
+set(MULI_BUILD_DEMO OFF)
+FetchContent_MakeAvailable(muli)
+```
+
+## Install library
 
 You can install the library using these commands
 
