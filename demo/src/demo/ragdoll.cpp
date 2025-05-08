@@ -5,6 +5,7 @@ namespace muli
 
 void CreateRagdoll(World* world, float headX, float headY, float scale)
 {
+    // todo: Make body hierarchy and return it
     bool continuous = true;
 
     int32 id = 1;
@@ -12,6 +13,11 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
     CollisionFilter bodyFilter;
     bodyFilter.group = id++;
     bodyFilter.bit = 1 << shift++;
+
+    CollisionFilter headFilter;
+    headFilter.group = id++;
+    headFilter.bit = 1 << shift++;
+    headFilter.mask = ~bodyFilter.bit;
 
     CollisionFilter rightUpperArmFilter;
     rightUpperArmFilter.group = id++;
@@ -56,6 +62,7 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
     RigidBody* head = world->CreateCircle(headRadius);
     head->SetContinuous(true);
     head->SetPosition(headX, headY);
+    head->SetCollisionFilter(headFilter);
 
     float bodyWidth = 0.8f * scale;
     float bodyHeight = 1.4f * scale;
@@ -67,7 +74,9 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
     body->SetContinuous(continuous);
 
     {
-        world->CreateWeldJoint(body, head, body->GetPosition() + Vec2{ 0.0f, bodyHeight / 2.0f }, 20.0f);
+        float angle = DegToRad(5);
+        world->CreateRevoluteJoint(body, head, body->GetPosition() + Vec2{ 0.0f, bodyHeight / 2.0f }, 60.0f);
+        world->CreateLimitedAngleJoint(body, head, -angle, angle, 60.0f, 1.0f, body->GetMass());
     }
 
     // Arms
