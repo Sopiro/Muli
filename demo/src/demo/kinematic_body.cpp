@@ -3,7 +3,7 @@
 namespace muli
 {
 
-static float speed = pi / 2;
+static float speed = 90.0f;
 
 class KinematicBody : public Demo
 {
@@ -41,7 +41,7 @@ public:
 
         k = world->CreateCapsule(size * 0.9f, 0.15f, true, identity, RigidBody::kinematic_body);
         k->CreateCapsuleCollider(size * 0.9f, 0.15f, false);
-        k->SetAngularVelocity(speed);
+        k->SetAngularVelocity(DegToRad(speed));
 
         camera.position = { 0.0f, 0.0f };
         camera.scale = { 3.f, 3.f };
@@ -53,10 +53,10 @@ public:
 
         if (ImGui::Begin("Kinematic", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            if (ImGui::SliderFloat("Speed", &speed, 0, 10))
+            if (ImGui::SliderFloat("Speed", &speed, 0, 360, "%.2f deg/s"))
             {
                 k->Awake();
-                k->SetAngularVelocity(speed);
+                k->SetAngularVelocity(DegToRad(speed));
             }
         }
         ImGui::End();
@@ -68,6 +68,6 @@ public:
     }
 };
 
-static int index = register_demo("Kinematic body", KinematicBody::Create, 20);
+static int index = register_demo("Kinematic bodies", KinematicBody::Create, 20);
 
 } // namespace muli

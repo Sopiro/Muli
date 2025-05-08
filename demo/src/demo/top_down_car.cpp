@@ -15,7 +15,7 @@ static float angularDamping = 2.0f;
 static float force = 30;
 static float torque = 10;
 
-static float friction = 0.4;
+static float friction = 0.3;
 static float maxImpulse = 0.5;
 
 static float brake = 10;
@@ -210,6 +210,7 @@ public:
 
         camera.position = Vec2::zero;
         camera.scale.Set(2.0f);
+        settings.world_bounds.min.y = -FLT_MAX;
     }
 
     virtual void UpdateInput() override
@@ -277,11 +278,11 @@ public:
 
         if (followCam)
         {
-            camera.position = Lerp(camera.position, body->GetPosition(), 2.0f * dt);
+            camera.position = Lerp(camera.position, body->GetPosition(), 3.0f * dt);
         }
         if (rotateCam)
         {
-            camera.rotation = Lerp(camera.rotation, body->GetAngle(), 2.0f * dt);
+            camera.rotation = Lerp(camera.rotation, body->GetAngle(), 3.0f * dt);
         }
     }
 
