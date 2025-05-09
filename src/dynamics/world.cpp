@@ -896,7 +896,7 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCa
         Vec2 closestNormal;
         float closestFraction;
 
-        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
         {
             hit = true;
             closestCollider = collider;
@@ -974,7 +974,7 @@ bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2
         Vec2 closestNormal;
         float closestT = 1.0f;
 
-        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float t)
         {
             hit = true;
             closestCollider = collider;
@@ -1003,7 +1003,7 @@ void World::RayCastAny(
     const Vec2& from,
     const Vec2& to,
     float radius,
-    std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 )
 {
     AABBCastInput input;
@@ -1051,7 +1051,7 @@ bool World::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
     float radius,
-    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 )
 {
     struct TempCallback : public RayCastAnyCallback
@@ -1062,7 +1062,7 @@ bool World::RayCastClosest(
         Vec2 closestNormal;
         float closestFraction;
 
-        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
         {
             hit = true;
             closestCollider = collider;
@@ -1091,7 +1091,7 @@ void World::ShapeCastAny(
     const Shape* shape,
     const Transform& tf,
     const Vec2& translation,
-    std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+    std::function<float(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
 )
 {
     AABB aabb;
@@ -1142,7 +1142,7 @@ bool World::ShapeCastClosest(
     const Shape* shape,
     const Transform& tf,
     const Vec2& translation,
-    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+    std::function<void(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
 )
 {
     struct TempCallback : ShapeCastAnyCallback
@@ -1153,7 +1153,7 @@ bool World::ShapeCastClosest(
         Vec2 closestNormal;
         float closestT = 1.0f;
 
-        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t)
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float t)
         {
             hit = true;
             closestCollider = collider;

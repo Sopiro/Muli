@@ -87,7 +87,7 @@ public:
 
         float r = 3.0f;
 
-        world->RayCastAny(p, p + Vec2(0, -r), 0.0f, [&](Collider* c, const Vec2& p, const Vec2& normal, float fraction) {
+        world->RayCastAny(p, p + Vec2(0, -r), 0.0f, [&](Collider* c, Vec2 p, Vec2 normal, float fraction) {
             if (c->GetFilter().group != -ragdollGroup)
             {
                 found = true;

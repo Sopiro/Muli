@@ -289,7 +289,7 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
         Vec2 closestNormal;
         float closestFraction;
 
-        float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
         {
             hit = true;
             closestCollider = collider;

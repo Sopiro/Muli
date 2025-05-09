@@ -81,28 +81,28 @@ class RayCastAnyCallback
 {
 public:
     virtual ~RayCastAnyCallback() {}
-    virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
+    virtual float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction) = 0;
 };
 
 class RayCastClosestCallback
 {
 public:
     virtual ~RayCastClosestCallback() {}
-    virtual void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float fraction) = 0;
+    virtual void OnHitClosest(Collider* collider, Vec2 point, Vec2 normal, float fraction) = 0;
 };
 
 class ShapeCastAnyCallback
 {
 public:
     virtual ~ShapeCastAnyCallback() {}
-    virtual float OnHitAny(Collider* collider, const Vec2& point, const Vec2& normal, float t) = 0;
+    virtual float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float t) = 0;
 };
 
 class ShapeCastClosestCallback
 {
 public:
     virtual ~ShapeCastClosestCallback() {}
-    virtual void OnHitClosest(Collider* collider, const Vec2& point, const Vec2& normal, float t) = 0;
+    virtual void OnHitClosest(Collider* collider, Vec2 point, Vec2 normal, float t) = 0;
 };
 
 } // namespace muli

@@ -295,25 +295,25 @@ public:
         const Vec2& from,
         const Vec2& to,
         float radius,
-        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+        std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
     );
     bool RayCastClosest(
         const Vec2& from,
         const Vec2& to,
         float radius,
-        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+        std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
     );
     void ShapeCastAny(
         const Shape* shape,
         const Transform& tf,
         const Vec2& translation,
-        std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+        std::function<float(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
     );
     bool ShapeCastClosest(
         const Shape* shape,
         const Transform& tf,
         const Vec2& translation,
-        std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float t)> callback
+        std::function<void(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
     );
     // clang-format on
 
