@@ -223,10 +223,10 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, float radius, R
     struct TempCallback : public RayCastAnyCallback
     {
         bool hit = false;
-        Collider* closestCollider;
+        Collider* closestCollider = nullptr;
         Vec2 closestPoint;
         Vec2 closestNormal;
-        float closestFraction;
+        float closestFraction = 1.0f;
 
         float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
         {
@@ -296,10 +296,10 @@ bool RigidBody::RayCastClosest(
     struct TempCallback : public RayCastAnyCallback
     {
         bool hit = false;
-        Collider* closestCollider;
+        Collider* closestCollider = nullptr;
         Vec2 closestPoint;
         Vec2 closestNormal;
-        float closestFraction;
+        float closestFraction = 1.0f;
 
         float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
         {
