@@ -191,10 +191,10 @@ void CreateRagdoll(World* world, float headX, float headY, float scale, int32 gr
     }
 }
 
-class Ragdoll : public Demo
+class Ragdolls : public Demo
 {
 public:
-    Ragdoll(Game& game)
+    Ragdolls(Game& game)
         : Demo(game)
     {
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
@@ -221,10 +221,10 @@ public:
 
     static Demo* Create(Game& game)
     {
-        return new Ragdoll(game);
+        return new Ragdolls(game);
     }
 };
 
-static int index = register_demo("Ragdoll", Ragdoll::Create, 59);
+static int index = register_demo("Ragdolls", Ragdolls::Create, 59);
 
 } // namespace muli
