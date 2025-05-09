@@ -1,9 +1,8 @@
 #include "demo.h"
+#include "ragdoll.h"
 
 namespace muli
 {
-
-extern void CreateRagdoll(World* world, float headX, float headY, float scale, int32 group);
 
 class RagdollPile : public Demo
 {
@@ -33,7 +32,7 @@ public:
         if (count < 100 && t0 + 0.3f < t1)
         {
             static int32 id = 0;
-            CreateRagdoll(world, x, y, 0.5f, ++id);
+            CreateRagdoll(world, { x, y }, 0.5f, ++id);
             x += dx;
             y += dy;
 
