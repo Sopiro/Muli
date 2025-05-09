@@ -3,66 +3,20 @@
 namespace muli
 {
 
-void CreateRagdoll(World* world, float headX, float headY, float scale)
+void CreateRagdoll(World* world, float headX, float headY, float scale, int32 gruop)
 {
     // todo: Make body hierarchy and return it
     bool continuous = true;
 
-    int32 id = 1;
-    int32 shift = 1;
-    CollisionFilter bodyFilter;
-    bodyFilter.group = id++;
-    bodyFilter.bit = 1 << shift++;
-
-    CollisionFilter headFilter;
-    headFilter.group = id++;
-    headFilter.bit = 1 << shift++;
-    headFilter.mask = ~bodyFilter.bit;
-
-    CollisionFilter rightUpperArmFilter;
-    rightUpperArmFilter.group = id++;
-    rightUpperArmFilter.bit = 1 << shift++;
-    rightUpperArmFilter.mask = ~bodyFilter.bit;
-    CollisionFilter rightLowerArmFilter;
-    rightLowerArmFilter.group = id++;
-    rightUpperArmFilter.bit = 1 << shift++;
-    rightLowerArmFilter.mask = ~rightUpperArmFilter.bit;
-
-    CollisionFilter leftUpperArmFilter;
-    leftUpperArmFilter.group = id++;
-    leftUpperArmFilter.bit = 1 << shift++;
-    leftUpperArmFilter.mask = ~bodyFilter.bit;
-    CollisionFilter leftLowerArmFilter;
-    leftLowerArmFilter.group = id++;
-    leftLowerArmFilter.bit = 1 << shift++;
-    leftLowerArmFilter.mask = ~leftUpperArmFilter.bit;
-
-    CollisionFilter rightUpperLegFilter;
-    rightUpperLegFilter.group = id++;
-    rightUpperLegFilter.bit = 1 << shift++;
-    rightUpperLegFilter.mask = ~bodyFilter.bit;
-    CollisionFilter rightLowerLegFilter;
-    rightLowerLegFilter.group = id++;
-    rightLowerLegFilter.bit = 1 << shift++;
-    rightLowerLegFilter.mask = ~rightUpperLegFilter.bit;
-
-    CollisionFilter leftUpperLegFilter;
-    leftUpperLegFilter.group = id++;
-    leftUpperLegFilter.bit = 1 << shift++;
-    leftUpperLegFilter.mask = ~bodyFilter.bit;
-    CollisionFilter leftLowerLegFilter;
-    leftLowerLegFilter.group = id++;
-    leftLowerLegFilter.bit = 1 << shift++;
-    leftLowerLegFilter.mask = ~leftUpperLegFilter.bit;
-
-    float motorForce = max_value;
+    CollisionFilter filter;
+    filter.group = -gruop;
 
     float headRadius = 0.3f * scale;
 
     RigidBody* head = world->CreateCircle(headRadius);
     head->SetContinuous(true);
     head->SetPosition(headX, headY);
-    head->SetCollisionFilter(headFilter);
+    head->SetCollisionFilter(filter);
 
     float bodyWidth = 0.8f * scale;
     float bodyHeight = 1.4f * scale;
@@ -70,7 +24,7 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
 
     RigidBody* body = world->CreateCapsule(bodyHeight / 2.0f, bodyWidth / 2.0f);
     body->SetPosition(headX, headY - headRadius - bodyHeight / 2.0f);
-    body->SetCollisionFilter(bodyFilter);
+    body->SetCollisionFilter(filter);
     body->SetContinuous(continuous);
 
     {
@@ -93,27 +47,27 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
             Vec2{ headX + armStartX, headY - armStartY }, Vec2{ headX + armStartX + armLength, headY - armStartY }, armRadius
         );
         rightUpperArm->SetContinuous(continuous);
-        rightUpperArm->SetCollisionFilter(rightUpperArmFilter);
+        rightUpperArm->SetCollisionFilter(filter);
 
         RigidBody* rightLowerArm = world->CreateCapsule(
             Vec2{ headX + armStartX + armLength + armGap, headY - armStartY },
             Vec2{ headX + armStartX + armLength + armGap + armLength, headY - armStartY }, armRadius
         );
         rightLowerArm->SetContinuous(continuous);
-        rightLowerArm->SetCollisionFilter(rightLowerArmFilter);
+        rightLowerArm->SetCollisionFilter(filter);
 
         RigidBody* leftUpperArm = world->CreateCapsule(
             Vec2{ headX - armStartX, headY - armStartY }, Vec2{ headX - armStartX - armLength, headY - armStartY }, armRadius
         );
         leftUpperArm->SetContinuous(continuous);
-        leftUpperArm->SetCollisionFilter(leftUpperArmFilter);
+        leftUpperArm->SetCollisionFilter(filter);
 
         RigidBody* leftLowerArm = world->CreateCapsule(
             Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
             Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius
         );
         leftLowerArm->SetContinuous(continuous);
-        leftLowerArm->SetCollisionFilter(leftLowerArmFilter);
+        leftLowerArm->SetCollisionFilter(filter);
 
         {
             float armFrequency = 60.0f;
@@ -122,7 +76,7 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
             float armAngleFrequency = 5.0f;
             float armAngleDampingRatio = 1.0f;
 
-            float minAngle = DegToRad(70.0f);
+            float minAngle = DegToRad(100.0f);
             float maxAngle = DegToRad(80.0f);
 
             world->CreateRevoluteJoint(
@@ -171,27 +125,27 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
             Vec2{ headX + legStartX, headY - legStartY }, Vec2{ headX + legStartX, headY - legStartY - legLength }, legRadius
         );
         rightUpperLeg->SetContinuous(continuous);
-        rightUpperLeg->SetCollisionFilter(rightUpperLegFilter);
+        rightUpperLeg->SetCollisionFilter(filter);
 
         RigidBody* rightLowerLeg = world->CreateCapsule(
             Vec2{ headX + legStartX, headY - legStartY - legLength - legGap },
             Vec2{ headX + legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius
         );
         rightLowerLeg->SetContinuous(continuous);
-        rightLowerLeg->SetCollisionFilter(rightLowerLegFilter);
+        rightLowerLeg->SetCollisionFilter(filter);
 
         RigidBody* leftUpperLeg = world->CreateCapsule(
             Vec2{ headX - legStartX, headY - legStartY }, Vec2{ headX - legStartX, headY - legStartY - legLength }, legRadius
         );
         leftUpperLeg->SetContinuous(continuous);
-        leftUpperLeg->SetCollisionFilter(leftUpperLegFilter);
+        leftUpperLeg->SetCollisionFilter(filter);
 
         RigidBody* leftLowerLeg = world->CreateCapsule(
             Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
             Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius
         );
         leftLowerLeg->SetContinuous(continuous);
-        leftLowerLeg->SetCollisionFilter(leftLowerLegFilter);
+        leftLowerLeg->SetCollisionFilter(filter);
 
         {
             float LegFrequency = 30.0f;
@@ -200,7 +154,7 @@ void CreateRagdoll(World* world, float headX, float headY, float scale)
             float legAngleFrequency = 5.0f;
             float legAngleDampingRatio = 1.0f;
 
-            float minAngle = DegToRad(15.0f);
+            float minAngle = DegToRad(30.0f);
             float maxAngle = DegToRad(75.0f);
 
             world->CreateRevoluteJoint(
@@ -245,7 +199,7 @@ public:
     {
         RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
 
-        CreateRagdoll(world, 0.0f, 5.0f, 1.0f);
+        CreateRagdoll(world, 0.0f, 5.0f, 1.0f, 1);
 
         RigidBody* c = world->CreateCircle(0.6f);
         float r = Rand(0.0f, pi);
