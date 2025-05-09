@@ -190,14 +190,81 @@ Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
     return cp0;
 }
 
+void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback) const
+{
+    RayCastInput input;
+    input.from = from;
+    input.to = to;
+    input.maxFraction = 1.0f;
+    input.radius = radius;
+
+    for (Collider* collider = colliderList; collider; collider = collider->next)
+    {
+        RayCastOutput output;
+
+        bool hit = collider->RayCast(input, &output);
+        if (hit)
+        {
+            float fraction = output.fraction;
+            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
+
+            input.maxFraction = callback->OnHitAny(collider, point, output.normal, fraction);
+        }
+
+        if (input.maxFraction <= 0)
+        {
+            return;
+        }
+    }
+}
+
+bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback) const
+{
+    struct TempCallback : public RayCastAnyCallback
+    {
+        bool hit = false;
+        Collider* closestCollider;
+        Vec2 closestPoint;
+        Vec2 closestNormal;
+        float closestFraction;
+
+        float OnHitAny(Collider* collider, Vec2 point, Vec2 normal, float fraction)
+        {
+            hit = true;
+            closestCollider = collider;
+            closestPoint = point;
+            closestNormal = normal;
+            closestFraction = fraction;
+
+            return fraction;
+        }
+    } tempCallback;
+
+    RayCastAny(from, to, radius, &tempCallback);
+
+    if (tempCallback.hit)
+    {
+        callback->OnHitClosest(
+            tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestFraction
+        );
+        return true;
+    }
+
+    return false;
+}
+
 void RigidBody::RayCastAny(
-    const Vec2& from, const Vec2& to, std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
+    const Vec2& from,
+    const Vec2& to,
+    float radius,
+    std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 ) const
 {
     RayCastInput input;
     input.from = from;
     input.to = to;
     input.maxFraction = 1.0f;
+    input.radius = radius;
 
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -220,62 +287,11 @@ void RigidBody::RayCastAny(
 }
 
 bool RigidBody::RayCastClosest(
-    const Vec2& from, const Vec2& to, std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
+    const Vec2& from,
+    const Vec2& to,
+    float radius,
+    std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 ) const
-{
-    bool hit = false;
-    Collider* closestCollider;
-    Vec2 closestPoint;
-    Vec2 closestNormal;
-    float closestFraction;
-
-    RayCastAny(from, to, [&](Collider* collider, Vec2 point, Vec2 normal, float fraction) -> float {
-        hit = true;
-        closestCollider = collider;
-        closestPoint = point;
-        closestNormal = normal;
-        closestFraction = fraction;
-
-        return fraction;
-    });
-
-    if (hit)
-    {
-        callback(closestCollider, closestPoint, closestNormal, closestFraction);
-        return true;
-    }
-
-    return false;
-}
-
-void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, RayCastAnyCallback* callback) const
-{
-    RayCastInput input;
-    input.from = from;
-    input.to = to;
-    input.maxFraction = 1.0f;
-
-    for (Collider* collider = colliderList; collider; collider = collider->next)
-    {
-        RayCastOutput output;
-
-        bool hit = collider->RayCast(input, &output);
-        if (hit)
-        {
-            float fraction = output.fraction;
-            Vec2 point = (1.0f - fraction) * input.from + fraction * input.to;
-
-            input.maxFraction = callback->OnHitAny(collider, point, output.normal, fraction);
-        }
-
-        if (input.maxFraction <= 0)
-        {
-            return;
-        }
-    }
-}
-
-bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestCallback* callback) const
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -297,11 +313,11 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, RayCastClosestC
         }
     } tempCallback;
 
-    RayCastAny(from, to, &tempCallback);
+    RayCastAny(from, to, radius, &tempCallback);
 
     if (tempCallback.hit)
     {
-        callback->OnHitClosest(
+        callback(
             tempCallback.closestCollider, tempCallback.closestPoint, tempCallback.closestNormal, tempCallback.closestFraction
         );
         return true;
