@@ -774,7 +774,7 @@ void World::Query(const AABB& aabb, std::function<bool(Collider* collider)> call
     contactManager.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
-void World::Query(const Vec2& point, WorldQueryCallback* callback)
+void World::Query(const Vec2& point, WorldQueryCallback* callback) const
 {
     struct TempCallback
     {
@@ -806,7 +806,7 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback)
     contactManager.broadPhase.tree.Query(point, &tempCallback);
 }
 
-void World::Query(const AABB& aabb, WorldQueryCallback* callback)
+void World::Query(const AABB& aabb, WorldQueryCallback* callback) const
 {
     Vec2 vertices[4] = { aabb.min, { aabb.max.x, aabb.min.y }, aabb.max, { aabb.min.x, aabb.max.y } };
     Polygon box{ vertices, 4, false, 0.0f };
@@ -846,7 +846,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback)
     contactManager.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
-void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback)
+void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback) const
 {
     AABBCastInput input;
     input.from = from;
@@ -886,7 +886,7 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAn
     contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
-bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback)
+bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback) const
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -921,7 +921,7 @@ bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCa
     return false;
 }
 
-void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback)
+void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastAnyCallback* callback) const
 {
     AABB aabb;
     shape->ComputeAABB(tf, &aabb);
@@ -964,7 +964,9 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
-bool World::ShapeCastClosest(const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback)
+bool World::ShapeCastClosest(
+    const Shape* shape, const Transform& tf, const Vec2& translation, ShapeCastClosestCallback* callback
+) const
 {
     struct TempCallback : ShapeCastAnyCallback
     {
@@ -1004,7 +1006,7 @@ void World::RayCastAny(
     const Vec2& to,
     float radius,
     std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
-)
+) const
 {
     AABBCastInput input;
     input.from = from;
@@ -1052,7 +1054,7 @@ bool World::RayCastClosest(
     const Vec2& to,
     float radius,
     std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
-)
+) const
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -1092,7 +1094,7 @@ void World::ShapeCastAny(
     const Transform& tf,
     const Vec2& translation,
     std::function<float(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
-)
+) const
 {
     AABB aabb;
     shape->ComputeAABB(tf, &aabb);
@@ -1143,7 +1145,7 @@ bool World::ShapeCastClosest(
     const Transform& tf,
     const Vec2& translation,
     std::function<void(Collider* collider, Vec2 point, Vec2 normal, float t)> callback
-)
+) const
 {
     struct TempCallback : ShapeCastAnyCallback
     {
