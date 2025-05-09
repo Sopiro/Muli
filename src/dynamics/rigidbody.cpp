@@ -191,9 +191,7 @@ Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
 }
 
 void RigidBody::RayCastAny(
-    const Vec2& from,
-    const Vec2& to,
-    std::function<float(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    const Vec2& from, const Vec2& to, std::function<float(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 ) const
 {
     RayCastInput input;
@@ -222,9 +220,7 @@ void RigidBody::RayCastAny(
 }
 
 bool RigidBody::RayCastClosest(
-    const Vec2& from,
-    const Vec2& to,
-    std::function<void(Collider* collider, const Vec2& point, const Vec2& normal, float fraction)> callback
+    const Vec2& from, const Vec2& to, std::function<void(Collider* collider, Vec2 point, Vec2 normal, float fraction)> callback
 ) const
 {
     bool hit = false;
@@ -233,7 +229,7 @@ bool RigidBody::RayCastClosest(
     Vec2 closestNormal;
     float closestFraction;
 
-    RayCastAny(from, to, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+    RayCastAny(from, to, [&](Collider* collider, Vec2 point, Vec2 normal, float fraction) -> float {
         hit = true;
         closestCollider = collider;
         closestPoint = point;
