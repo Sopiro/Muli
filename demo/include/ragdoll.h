@@ -116,7 +116,7 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             float armAngleFrequency = 5.0f;
             float armAngleDampingRatio = 1.0f;
 
-            float minAngle = DegToRad(100.0f);
+            float minAngle = DegToRad(85.0f);
             float maxAngle = DegToRad(80.0f);
 
             {
