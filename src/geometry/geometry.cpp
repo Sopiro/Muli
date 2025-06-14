@@ -270,7 +270,7 @@ static inline Circle Welzl(const std::vector<Vec2>& P, std::vector<Vec2>& R, int
     }
 }
 
-Circle ComputeCircle(std::span<Vec2> points)
+Circle ComputeCircle(std::span<const Vec2> points)
 {
     std::vector<Vec2> R;
     int32 n = int32(points.size());
@@ -569,7 +569,7 @@ static Poly Merge(const Poly& p1, const Poly& p2, const TriEdge& e)
 
 // The Bowyer–Watson algorithm (https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm)
 // + Brute force constraint resolution
-static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<std::vector<Vec2>> constraints)
+static std::vector<Tri> ComputeTriangulation(std::span<const Vec2> v, std::span<const std::vector<Vec2>> constraints)
 {
     std::vector<TriEdge> constraintEdges;
 
@@ -784,7 +784,7 @@ static std::vector<Tri> ComputeTriangulation(std::span<Vec2> v, std::span<std::v
     return res;
 }
 
-std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<std::vector<Vec2>> constraints)
+std::vector<Polygon> ComputeTriangles(std::span<const Vec2> vertices, std::span<const std::vector<Vec2>> constraints)
 {
     std::vector<Tri> triangles = ComputeTriangulation(vertices, constraints);
 
@@ -799,7 +799,7 @@ std::vector<Polygon> ComputeTriangles(std::span<Vec2> vertices, std::span<std::v
     return res;
 }
 
-std::vector<Polygon> ComputeDecomposition(std::span<std::vector<Vec2>> constraints)
+std::vector<Polygon> ComputeDecomposition(std::span<const std::vector<Vec2>> constraints)
 {
     std::vector<Tri> triangles = ComputeTriangulation({}, constraints);
     std::vector<Poly> polys(triangles.begin(), triangles.end());
