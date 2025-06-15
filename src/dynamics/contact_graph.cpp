@@ -1,4 +1,4 @@
-#include "muli/contact_manager.h"
+#include "muli/contact_graph.h"
 #include "muli/world.h"
 
 namespace muli

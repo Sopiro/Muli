@@ -4,7 +4,7 @@
 #include "callbacks.h"
 #include "collision.h"
 #include "common.h"
-#include "contact_manager.h"
+#include "contact_graph.h"
 #include "linear_allocator.h"
 
 #include "collider.h"

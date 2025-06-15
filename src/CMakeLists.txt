@@ -2,7 +2,7 @@ set(HEADER_FILES
     ../include/muli/aabb.h
     ../include/muli/aabb_tree.h
     ../include/muli/broad_phase.h
-    ../include/muli/contact_manager.h
+    ../include/muli/contact_graph.h
 
     ../include/muli/collision.h
     ../include/muli/simplex.h
@@ -72,7 +72,7 @@ set(SOURCE_FILES
     geometry/polygon.cpp
     geometry/geometry.cpp
     geometry/raycast.cpp
-    
+
     collision/aabb.cpp
     collision/aabb_tree.cpp
     collision/broad_phase.cpp
@@ -86,7 +86,7 @@ set(SOURCE_FILES
     dynamics/collider.cpp
     dynamics/rigidbody.cpp
     dynamics/island.cpp
-    dynamics/contact_manager.cpp
+    dynamics/contact_graph.cpp
 
     dynamics/constraint/constraint.cpp
     dynamics/constraint/contact/contact.cpp
@@ -113,15 +113,15 @@ add_library(muli ${SOURCE_FILES} ${HEADER_FILES})
 
 target_precompile_headers(muli
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/muli/common.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/muli/common.h
 )
 
 target_include_directories(muli
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(muli PROPERTIES
