@@ -67,7 +67,7 @@ private:
     friend class AABBTree;
     friend class BroadPhase;
     friend class Contact;
-    friend class ContactManager;
+    friend class ContactGraph;
     friend class World;
     friend class ContactSolver;
 

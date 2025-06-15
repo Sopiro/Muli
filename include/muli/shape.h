@@ -50,7 +50,7 @@ public:
     virtual bool RayCast(const Transform& transform, const RayCastInput& input, RayCastOutput* output) const = 0;
 
 protected:
-    friend class ContactManager;
+    friend class ContactGraph;
     friend class Collider;
     friend class RigidBody;
 

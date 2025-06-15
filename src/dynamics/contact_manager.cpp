@@ -6,7 +6,7 @@ namespace muli
 
 extern void InitializeDetectionFunctionMap();
 
-ContactManager::ContactManager(World* world)
+ContactGraph::ContactGraph(World* world)
     : world{ world }
     , broadPhase{ world, this }
     , contactList{ nullptr }
@@ -15,12 +15,12 @@ ContactManager::ContactManager(World* world)
     InitializeDetectionFunctionMap();
 }
 
-ContactManager::~ContactManager()
+ContactGraph::~ContactGraph()
 {
     MuliAssert(contactList == nullptr);
 }
 
-void ContactManager::EvaluateContacts()
+void ContactGraph::EvaluateContacts()
 {
     // Narrow phase
     // Evaluate contacts, prepare for solving step
@@ -59,7 +59,7 @@ void ContactManager::EvaluateContacts()
     }
 }
 
-void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
+void ContactGraph::OnNewContact(Collider* colliderA, Collider* colliderB)
 {
     RigidBody* bodyA = colliderA->body;
     RigidBody* bodyB = colliderB->body;
@@ -138,7 +138,7 @@ void ContactManager::OnNewContact(Collider* colliderA, Collider* colliderB)
     ++contactCount;
 }
 
-void ContactManager::Destroy(Contact* c)
+void ContactGraph::Destroy(Contact* c)
 {
     RigidBody* bodyA = c->bodyA;
     RigidBody* bodyB = c->bodyB;
@@ -163,12 +163,12 @@ void ContactManager::Destroy(Contact* c)
     --contactCount;
 }
 
-void ContactManager::AddCollider(Collider* collider)
+void ContactGraph::AddCollider(Collider* collider)
 {
     broadPhase.Add(collider, collider->GetAABB());
 }
 
-void ContactManager::RemoveCollider(Collider* collider)
+void ContactGraph::RemoveCollider(Collider* collider)
 {
     broadPhase.Remove(collider);
     collider->node = AABBTree::nullNode;
@@ -195,7 +195,7 @@ void ContactManager::RemoveCollider(Collider* collider)
     }
 }
 
-void ContactManager::UpdateCollider(Collider* collider, const Transform& tf)
+void ContactGraph::UpdateCollider(Collider* collider, const Transform& tf)
 {
     const Shape* shape = collider->GetShape();
     AABB aabb;
@@ -204,7 +204,7 @@ void ContactManager::UpdateCollider(Collider* collider, const Transform& tf)
     broadPhase.Update(collider, aabb, Vec2::zero);
 }
 
-void ContactManager::UpdateCollider(Collider* collider, const Transform& tf0, const Transform& tf1)
+void ContactGraph::UpdateCollider(Collider* collider, const Transform& tf0, const Transform& tf1)
 {
     const Shape* shape = collider->GetShape();
 

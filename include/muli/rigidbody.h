@@ -185,7 +185,7 @@ protected:
 
     friend class AABBTree;
     friend class BroadPhase;
-    friend class ContactManager;
+    friend class ContactGraph;
 
     friend class Collider;
 

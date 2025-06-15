@@ -339,7 +339,7 @@ public:
 private:
     friend class RigidBody;
     friend class Island;
-    friend class ContactManager;
+    friend class ContactGraph;
     friend class BroadPhase;
 
     void Solve();
@@ -350,7 +350,7 @@ private:
     void FreeJoint(Joint* joint);
 
     const WorldSettings& settings;
-    ContactManager contactManager;
+    ContactGraph contactGraph;
 
     // Doubly linked list of all registered rigid bodies
     RigidBody* bodyList;
@@ -407,12 +407,12 @@ inline int32 World::GetAwakeIslandCount() const
 
 inline const Contact* World::GetContacts() const
 {
-    return contactManager.contactList;
+    return contactGraph.contactList;
 }
 
 inline int32 World::GetContactCount() const
 {
-    return contactManager.contactCount;
+    return contactGraph.contactCount;
 }
 
 inline Joint* World::GetJoints() const
@@ -427,12 +427,12 @@ inline int32 World::GetJointCount() const
 
 inline const AABBTree& World::GetDynamicTree() const
 {
-    return contactManager.broadPhase.tree;
+    return contactGraph.broadPhase.tree;
 }
 
 inline void World::RebuildDynamicTree()
 {
-    contactManager.broadPhase.tree.Rebuild();
+    contactGraph.broadPhase.tree.Rebuild();
 }
 
 inline const WorldSettings& World::GetWorldSettings() const

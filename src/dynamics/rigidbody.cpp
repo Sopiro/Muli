@@ -71,7 +71,7 @@ Collider* RigidBody::CreateCollider(Shape* shape, const Transform& tf, float den
     colliderList = collider;
     ++colliderCount;
 
-    world->contactManager.AddCollider(collider);
+    world->contactGraph.AddCollider(collider);
 
     ResetMassData();
 
@@ -102,7 +102,7 @@ void RigidBody::DestroyCollider(Collider* collider)
     }
 
     // Remove collider from contact manager(broad phase)
-    world->contactManager.RemoveCollider(collider);
+    world->contactGraph.RemoveCollider(collider);
 
     Allocator* allocator = &world->blockAllocator;
 
@@ -356,13 +356,13 @@ void RigidBody::SetType(RigidBody::Type newType)
     {
         ContactEdge* ce0 = ce;
         ce = ce->next;
-        world->contactManager.Destroy(ce0->contact);
+        world->contactGraph.Destroy(ce0->contact);
     }
     contactList = nullptr;
 
     for (Collider* c = colliderList; c; c = c->next)
     {
-        world->contactManager.broadPhase.Refresh(c);
+        world->contactGraph.broadPhase.Refresh(c);
     }
 
     islandID = 0;
@@ -382,7 +382,7 @@ void RigidBody::SetEnabled(bool enabled)
 
         for (Collider* c = colliderList; c; c = c->next)
         {
-            world->contactManager.broadPhase.Add(c, c->GetAABB());
+            world->contactGraph.broadPhase.Add(c, c->GetAABB());
         }
     }
     else
@@ -394,13 +394,13 @@ void RigidBody::SetEnabled(bool enabled)
         {
             ContactEdge* ce0 = ce;
             ce = ce->next;
-            world->contactManager.Destroy(ce0->contact);
+            world->contactGraph.Destroy(ce0->contact);
         }
         contactList = nullptr;
 
         for (Collider* c = colliderList; c; c = c->next)
         {
-            world->contactManager.broadPhase.Remove(c);
+            world->contactGraph.broadPhase.Remove(c);
         }
 
         islandID = 0;
@@ -507,7 +507,7 @@ void RigidBody::SynchronizeColliders()
     {
         for (Collider* collider = colliderList; collider; collider = collider->next)
         {
-            world->contactManager.UpdateCollider(collider, transform);
+            world->contactGraph.UpdateCollider(collider, transform);
         }
     }
     else
@@ -518,7 +518,7 @@ void RigidBody::SynchronizeColliders()
 
         for (Collider* collider = colliderList; collider; collider = collider->next)
         {
-            world->contactManager.UpdateCollider(collider, tf0, transform);
+            world->contactGraph.UpdateCollider(collider, tf0, transform);
         }
     }
 }

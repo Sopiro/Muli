@@ -51,7 +51,7 @@ public:
 private:
     friend class World;
     friend class Island;
-    friend class ContactManager;
+    friend class ContactGraph;
     friend class BroadPhase;
     friend class ContactSolverNormal;
     friend class ContactSolverTangent;

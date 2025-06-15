@@ -7,11 +7,11 @@ namespace muli
 {
 class World;
 
-class ContactManager
+class ContactGraph
 {
 public:
-    ContactManager(World* world);
-    ~ContactManager();
+    ContactGraph(World* world);
+    ~ContactGraph();
 
     void UpdateContactGraph();
     void EvaluateContacts();
@@ -32,8 +32,11 @@ private:
 
     World* world;
 
+    // Broad phase accelerator to quickly identify potentially colliding pairs
     BroadPhase broadPhase;
 
+    // Linked list of potential contacts (i.e. collider pairs whose AABBs overlap)
+    // These pairs must be evaluated by EvaluateContacts() to determine actual collision pairs
     Contact* contactList;
     int32 contactCount;
 
@@ -41,14 +44,14 @@ private:
     void OnNewContact(Collider*, Collider*);
 };
 
-inline void ContactManager::UpdateContactGraph()
+inline void ContactGraph::UpdateContactGraph()
 {
     // Find new contacts for moved objects
     // broadphase will callback OnNewContact(Collider*, Collider*)
     broadPhase.FindNewContacts();
 }
 
-inline int32 ContactManager::GetContactCount() const
+inline int32 ContactGraph::GetContactCount() const
 {
     return contactCount;
 }

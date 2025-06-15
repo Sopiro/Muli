@@ -11,7 +11,7 @@ namespace muli
 
 World::World(const WorldSettings& settings)
     : settings{ settings }
-    , contactManager{ this }
+    , contactGraph{ this }
     , bodyList{ nullptr }
     , bodyListTail{ nullptr }
     , bodyCount{ 0 }
@@ -56,7 +56,7 @@ void World::Reset()
 void World::Solve()
 {
     // Build the constraint island
-    Island island{ this, bodyCount, contactManager.contactCount, jointCount };
+    Island island{ this, bodyCount, contactGraph.contactCount, jointCount };
 
     int32 restingBodies = 0;
     int32 islandID = 0;
@@ -211,7 +211,7 @@ void World::Solve()
         body->SynchronizeColliders();
     }
 
-    for (Contact* contact = contactManager.contactList; contact; contact = contact->next)
+    for (Contact* contact = contactGraph.contactList; contact; contact = contact->next)
     {
         contact->flag &= ~Contact::flag_island;
     }
@@ -229,13 +229,13 @@ float World::SolveTOI()
 
     while (true)
     {
-        contactManager.UpdateContactGraph();
+        contactGraph.UpdateContactGraph();
 
         // Find the first TOI
         Contact* minContact = nullptr;
         float minAlpha = 1.0f;
 
-        for (Contact* c = contactManager.contactList; c; c = c->next)
+        for (Contact* c = contactGraph.contactList; c; c = c->next)
         {
             if (c->IsEnabled() == false)
             {
@@ -531,7 +531,7 @@ float World::SolveTOI()
         body->flag &= ~RigidBody::flag_island;
     }
 
-    for (Contact* contact = contactManager.contactList; contact; contact = contact->next)
+    for (Contact* contact = contactGraph.contactList; contact; contact = contact->next)
     {
         contact->flag &= ~(Contact::flag_toi | Contact::flag_island);
         contact->toiCount = 0;
@@ -557,10 +557,10 @@ float World::Step(float dt)
     if (stepComplete)
     {
         // Update broad-phase contact graph
-        contactManager.UpdateContactGraph();
+        contactGraph.UpdateContactGraph();
 
         // Narrow-phase
-        contactManager.EvaluateContacts();
+        contactGraph.EvaluateContacts();
 
         Solve();
     }
@@ -736,7 +736,7 @@ void World::Query(const Vec2& point, std::function<bool(Collider* collider)> cal
 
     tempCallback.point = point;
 
-    contactManager.broadPhase.tree.Query(point, &tempCallback);
+    contactGraph.broadPhase.tree.Query(point, &tempCallback);
 }
 
 void World::Query(const AABB& aabb, std::function<bool(Collider* collider)> callback) const
@@ -771,7 +771,7 @@ void World::Query(const AABB& aabb, std::function<bool(Collider* collider)> call
         }
     } tempCallback(aabb, callback);
 
-    contactManager.broadPhase.tree.Query(aabb, &tempCallback);
+    contactGraph.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
 void World::Query(const Vec2& point, WorldQueryCallback* callback) const
@@ -803,7 +803,7 @@ void World::Query(const Vec2& point, WorldQueryCallback* callback) const
     tempCallback.point = point;
     tempCallback.callback = callback;
 
-    contactManager.broadPhase.tree.Query(point, &tempCallback);
+    contactGraph.broadPhase.tree.Query(point, &tempCallback);
 }
 
 void World::Query(const AABB& aabb, WorldQueryCallback* callback) const
@@ -843,7 +843,7 @@ void World::Query(const AABB& aabb, WorldQueryCallback* callback) const
 
     tempCallback.callback = callback;
 
-    contactManager.broadPhase.tree.Query(aabb, &tempCallback);
+    contactGraph.broadPhase.tree.Query(aabb, &tempCallback);
 }
 
 void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback) const
@@ -883,7 +883,7 @@ void World::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAn
 
     tempCallback.callback = callback;
 
-    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
+    contactGraph.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback) const
@@ -961,7 +961,7 @@ void World::ShapeCastAny(const Shape* shape, const Transform& tf, const Vec2& tr
     tempCallback.tf = tf;
     tempCallback.translation = translation;
 
-    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
+    contactGraph.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::ShapeCastClosest(
@@ -1046,7 +1046,7 @@ void World::RayCastAny(
         }
     } tempCallback(callback);
 
-    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
+    contactGraph.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::RayCastClosest(
@@ -1137,7 +1137,7 @@ void World::ShapeCastAny(
         }
     } tempCallback(callback, shape, tf, translation);
 
-    contactManager.broadPhase.tree.AABBCast(input, &tempCallback);
+    contactGraph.broadPhase.tree.AABBCast(input, &tempCallback);
 }
 
 bool World::ShapeCastClosest(

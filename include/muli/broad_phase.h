@@ -6,12 +6,12 @@
 
 namespace muli
 {
-class ContactManager;
+class ContactGraph;
 
 class BroadPhase
 {
 public:
-    BroadPhase(World* world, ContactManager* contactManager);
+    BroadPhase(World* world, ContactGraph* contactManager);
     ~BroadPhase();
 
     void FindNewContacts();
@@ -28,7 +28,7 @@ protected:
     friend class World;
 
     World* world;
-    ContactManager* contactManager;
+    ContactGraph* contactManager;
     AABBTree tree;
 
 private:

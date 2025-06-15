@@ -5,7 +5,7 @@
 namespace muli
 {
 
-BroadPhase::BroadPhase(World* world, ContactManager* contactManager)
+BroadPhase::BroadPhase(World* world, ContactGraph* contactManager)
     : world{ world }
     , contactManager{ contactManager }
     , moveCapacity{ 16 }
