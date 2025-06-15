@@ -11,7 +11,7 @@ class ContactGraph;
 class BroadPhase
 {
 public:
-    BroadPhase(World* world, ContactGraph* contactManager);
+    BroadPhase(ContactGraph* contactGraph);
     ~BroadPhase();
 
     void FindNewContacts();
@@ -27,8 +27,7 @@ public:
 protected:
     friend class World;
 
-    World* world;
-    ContactGraph* contactManager;
+    ContactGraph* contactGraph;
     AABBTree tree;
 
 private:

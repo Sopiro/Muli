@@ -5,9 +5,8 @@
 namespace muli
 {
 
-BroadPhase::BroadPhase(World* world, ContactGraph* contactManager)
-    : world{ world }
-    , contactManager{ contactManager }
+BroadPhase::BroadPhase(ContactGraph* contactGraph)
+    : contactGraph{ contactGraph }
     , moveCapacity{ 16 }
     , moveCount{ 0 }
 {
@@ -98,7 +97,7 @@ void BroadPhase::Remove(Collider* collider)
 void BroadPhase::Update(Collider* collider, const AABB& aabb, const Vec2& displacement)
 {
     NodeProxy node = collider->node;
-    bool rested = collider->body->resting > world->settings.sleeping_time;
+    bool rested = collider->body->resting > contactGraph->world->settings.sleeping_time;
 
     bool nodeMoved = tree.MoveNode(node, aabb, displacement, rested);
     if (nodeMoved)
@@ -138,11 +137,11 @@ bool BroadPhase::QueryCallback(NodeProxy nodeB, Collider* colliderB)
     Shape::Type typeB = colliderB->GetType();
     if (typeA <= typeB)
     {
-        contactManager->OnNewContact(colliderB, colliderA);
+        contactGraph->OnNewContact(colliderB, colliderA);
     }
     else
     {
-        contactManager->OnNewContact(colliderA, colliderB);
+        contactGraph->OnNewContact(colliderA, colliderB);
     }
 
     return true;

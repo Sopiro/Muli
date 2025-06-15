@@ -8,7 +8,7 @@ extern void InitializeDetectionFunctionMap();
 
 ContactGraph::ContactGraph(World* world)
     : world{ world }
-    , broadPhase{ world, this }
+    , broadPhase{ this }
     , contactList{ nullptr }
     , contactCount{ 0 }
 {
