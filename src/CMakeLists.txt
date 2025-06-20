@@ -50,7 +50,6 @@ set(HEADER_FILES
     ../include/muli/allocator.h
     ../include/muli/stack_allocator.h
     ../include/muli/block_allocator.h
-    ../include/muli/predefined_block_allocator.h
     ../include/muli/fixed_block_allocator.h
     ../include/muli/callbacks.h
     ../include/muli/geometry.h
@@ -65,7 +64,6 @@ set(SOURCE_FILES
     util/stack_allocator.cpp
     util/linear_allocator.cpp
     util/block_allocator.cpp
-    util/predefined_block_allocator.cpp
 
     geometry/circle.cpp
     geometry/capsule.cpp
