@@ -52,9 +52,6 @@ public:
     AABBTree(const AABBTree&) = delete;
     AABBTree& operator=(const AABBTree&) = delete;
 
-    AABBTree(AABBTree&&);
-    AABBTree& operator=(AABBTree&&);
-
     void Reset();
 
     NodeIndex CreateNode(Data* data, const AABB& aabb);

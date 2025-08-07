@@ -1,11 +1,6 @@
 #pragma once
 
-#include "block_allocator.h"
-#include "callbacks.h"
-#include "collision.h"
 #include "common.h"
-#include "contact_graph.h"
-#include "linear_allocator.h"
 
 #include "collider.h"
 #include "rigidbody.h"
@@ -20,6 +15,13 @@
 #include "pulley_joint.h"
 #include "revolute_joint.h"
 #include "weld_joint.h"
+
+#include "callbacks.h"
+#include "collision.h"
+#include "contact_graph.h"
+
+#include "block_allocator.h"
+#include "linear_allocator.h"
 
 namespace muli
 {

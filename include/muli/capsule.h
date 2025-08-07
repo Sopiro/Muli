@@ -10,7 +10,6 @@ class Capsule : public Shape
 public:
     Capsule(float length, float radius, bool horizontal = false, const Transform& tf = identity);
     Capsule(const Vec2& p1, const Vec2& p2, float radius, bool resetPosition = false, const Transform& tf = identity);
-    ~Capsule() = default;
 
     Capsule(const Capsule& other, const Transform& tf);
 

@@ -61,28 +61,6 @@ Mesh::~Mesh()
     glDeleteBuffers(1, &EBOl);
 }
 
-Mesh::Mesh(Mesh&& other)
-{
-    operator=(std::move(other));
-}
-
-Mesh& Mesh::operator=(Mesh&& other)
-{
-    other.moved = true;
-
-    vertices = std::move(other.vertices);
-    texCoords = std::move(other.texCoords);
-    indices = std::move(other.indices);
-
-    VAO = other.VAO;
-    VBOv = other.VBOv;
-    VBOt = other.VBOt;
-    EBOt = other.EBOt;
-    EBOl = other.EBOl;
-
-    return *this;
-}
-
 void Mesh::Draw(GLenum drawMode) const
 {
     glBindVertexArray(VAO);

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "muli/polygon.h"
-#include "muli/random.h"
 #include "muli/world.h"
 
 namespace muli

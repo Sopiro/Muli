@@ -9,7 +9,6 @@ class Circle : public Shape
 {
 public:
     Circle(float radius, const Transform& tf = identity);
-    ~Circle() = default;
 
     Circle(const Circle& other, const Transform& tf);
 

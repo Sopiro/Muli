@@ -11,9 +11,6 @@ public:
     Mesh(std::vector<Vec3> vertices, std::vector<Vec2> texCoords, std::vector<int32> indices);
     ~Mesh();
 
-    Mesh(Mesh&&);
-    Mesh& operator=(Mesh&&);
-
     void Draw(GLenum drawMode = GL_TRIANGLES) const;
 
 private:

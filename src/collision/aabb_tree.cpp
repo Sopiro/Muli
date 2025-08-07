@@ -31,50 +31,6 @@ AABBTree::~AABBTree()
     nodeCount = 0;
 }
 
-AABBTree::AABBTree(AABBTree&& other)
-{
-    root = other.root;
-
-    nodes = other.nodes;
-    nodeCount = other.nodeCount;
-    nodeCapacity = other.nodeCapacity;
-
-    freeList = other.freeList;
-
-    other.root = nullNode;
-
-    other.nodes = nullptr;
-    other.nodeCount = 0;
-    other.nodeCapacity = 0;
-
-    other.freeList = nullNode;
-}
-
-AABBTree& AABBTree::operator=(AABBTree&& other)
-{
-    MuliAssert(this != &other);
-
-    muli::Free(nodes);
-
-    root = other.root;
-
-    nodes = other.nodes;
-    nodeCount = other.nodeCount;
-    nodeCapacity = other.nodeCapacity;
-
-    freeList = other.freeList;
-
-    other.root = nullNode;
-
-    other.nodes = nullptr;
-    other.nodeCount = 0;
-    other.nodeCapacity = 0;
-
-    other.freeList = nullNode;
-
-    return *this;
-}
-
 NodeProxy AABBTree::InsertLeaf(NodeIndex leaf)
 {
     MuliAssert(0 <= leaf && leaf < nodeCapacity);

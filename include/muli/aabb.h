@@ -27,8 +27,9 @@ struct AABB
     Vec2 min;
     Vec2 max;
 
-    static AABB Union(const AABB& b1, const AABB& b2);
     static AABB Union(const AABB& b, const Vec2& p);
+    static AABB Union(const AABB& b1, const AABB& b2);
+    static AABB Intersection(const AABB& b1, const AABB& b2);
 };
 
 inline AABB::AABB(const Vec2& min, const Vec2& max)
@@ -84,6 +85,14 @@ inline std::string AABB::ToString() const
     return FormatString("min: %s\nmax: %s", min.ToString().c_str(), max.ToString().c_str());
 }
 
+inline AABB AABB::Union(const AABB& b, const Vec2& p)
+{
+    Vec2 min = Min(b.min, p);
+    Vec2 max = Max(b.max, p);
+
+    return AABB{ min, max };
+}
+
 inline AABB AABB::Union(const AABB& b1, const AABB& b2)
 {
     Vec2 min = Min(b1.min, b2.min);
@@ -92,10 +101,10 @@ inline AABB AABB::Union(const AABB& b1, const AABB& b2)
     return AABB{ min, max };
 }
 
-inline AABB AABB::Union(const AABB& b, const Vec2& p)
+inline AABB AABB::Intersection(const AABB& b1, const AABB& b2)
 {
-    Vec2 min = Min(b.min, p);
-    Vec2 max = Max(b.max, p);
+    Vec2 min = Max(b1.min, b2.min);
+    Vec2 max = Min(b1.max, b2.max);
 
     return AABB{ min, max };
 }

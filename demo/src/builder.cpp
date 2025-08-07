@@ -1,4 +1,6 @@
 #include "builder.h"
+#include "muli/polygon.h"
+#include "muli/random.h"
 
 namespace muli
 {
