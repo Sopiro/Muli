@@ -22,7 +22,7 @@ public:
         float r = 0.25f;
         float spread = 10.0f;
 
-        RigidBody* b = world->CreateRandomConvexPolygon(spread / 2.0f, 7);
+        RigidBody* b = CreateRandomConvexPolygon(world, spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
         b->SetLinearVelocity(lv, 0.0f);
         b->SetAngularVelocity(av);

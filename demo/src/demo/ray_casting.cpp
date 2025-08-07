@@ -28,7 +28,7 @@ public:
         b->SetPosition(0.5f, 3);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
-        b = world->CreateRegularPolygon(0.2f, 3);
+        b = CreateRegularPolygon(world, 0.2f, 3);
         b->SetPosition(-1.5f, 3);
 
         settings.apply_gravity = false;
@@ -45,8 +45,7 @@ public:
         Renderer::DrawMode dm{};
 
         world->RayCastAny(
-            from, to, radius,
-            [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
+            from, to, radius, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> float {
                 hit = true;
 
                 if (closest == false)

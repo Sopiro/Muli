@@ -1,5 +1,6 @@
 #pragma once
 
+#include "builder.h"
 #include "camera.h"
 #include "common.h"
 #include "game.h"

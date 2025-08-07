@@ -69,7 +69,7 @@ public:
         float currentTime = game.GetTime();
         if (spawn_bodies && !options.pause && currentTime - lastTime > 1.0f)
         {
-            RigidBody* c = world->CreateRandomConvexPolygon(0.3f);
+            RigidBody* c = CreateRandomConvexPolygon(world, 0.3f);
             c->SetPosition(Rand(-5.5f, -3.0f), 7.0f);
 
             lastTime = currentTime;

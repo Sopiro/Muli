@@ -104,23 +104,6 @@ public:
         float radius = default_radius,
         float density = default_density
     );
-    RigidBody* CreateRandomConvexPolygon(
-        float length,
-        int32 vertexCount = 0,
-        const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::dynamic_body,
-        float radius = default_radius,
-        float density = default_density
-    );
-    RigidBody* CreateRegularPolygon(
-        float length,
-        int32 vertexCount = 0,
-        float initialAngle = 0,
-        const Transform& tf = identity,
-        RigidBody::Type type = RigidBody::dynamic_body,
-        float radius = default_radius,
-        float density = default_density
-    );
 
     // Factory functions for joints
     // You should register the bodies to the world before registering the joints

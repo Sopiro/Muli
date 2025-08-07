@@ -34,7 +34,7 @@ public:
         b->SetPosition(0.5f, 3.0f);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 
-        b = world->CreateRegularPolygon(0.2f, 3);
+        b = CreateRegularPolygon(world, 0.2f, 3);
         b->SetPosition(-1.5f, 3.0f);
 
         settings.apply_gravity = false;

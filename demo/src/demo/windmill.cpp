@@ -47,7 +47,7 @@ public:
         {
             if (create_bodies)
             {
-                RigidBody* c = world->CreateRegularPolygon(0.18f, (int32)Rand(3, 8));
+                RigidBody* c = CreateRegularPolygon(world, 0.18f, (int32)Rand(3, 8));
                 c->SetPosition(RandVec2(Vec2{ -2.0f, 6.0f }, Vec2{ 2.0f, 6.0f }));
             }
 

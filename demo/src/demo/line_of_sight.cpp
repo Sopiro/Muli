@@ -36,11 +36,11 @@ public:
                 else if (r < 2.0f)
                 {
 
-                    b = world->CreateRandomConvexPolygon(0.2f, 0);
+                    b = CreateRandomConvexPolygon(world, 0.2f, 0);
                 }
                 else
                 {
-                    b = world->CreateRandomConvexPolygon(0.15f, 0, identity, RigidBody::dynamic_body, 0.05f);
+                    b = CreateRandomConvexPolygon(world, 0.15f, 0, identity, RigidBody::dynamic_body, 0.05f);
                     UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
                 }
 
@@ -62,8 +62,7 @@ public:
             Vec2 to = cursorPos + Vec2{ Cos(angle), Sin(angle) } * 3.0f;
 
             if (!world->RayCastClosest(
-                    cursorPos, to, 0.0f,
-                    [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
+                    cursorPos, to, 0.0f, [&](Collider* collider, const Vec2& point, const Vec2& normal, float fraction) -> void {
                         renderer.DrawPoint(point);
                         renderer.DrawLine(cursorPos, point);
                     }

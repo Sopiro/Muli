@@ -34,11 +34,11 @@ public:
             target = world->CreateCapsule(1.2f, 0.05f);
             break;
         case 3:
-            target = world->CreateRandomConvexPolygon(0.28f, 6, identity, RigidBody::dynamic_body, 0.05f);
+            target = CreateRandomConvexPolygon(world, 0.28f, 6, identity, RigidBody::dynamic_body, 0.05f);
             target->UserData = (void*)((size_t)target->UserData | UserFlag::render_polygon_radius);
             break;
         case 4:
-            target = world->CreateRandomConvexPolygon(0.28f, (int32)Rand(6, 8));
+            target = CreateRandomConvexPolygon(world, 0.28f, (int32)Rand(6, 8));
             break;
 
         default:

@@ -34,7 +34,7 @@ public:
             float random = Rand(0.0f, 3.0f);
             if (random < 1.0f)
             {
-                b = world->CreateRandomConvexPolygon(r, 7);
+                b = CreateRandomConvexPolygon(world, r, 7);
             }
             else if (random < 2.0f)
             {

@@ -51,7 +51,7 @@ public:
 
             float angle = Rand(0.0f, pi);
 
-            b = world->CreateRandomConvexPolygon(size, 6, identity, RigidBody::dynamic_body, r);
+            b = CreateRandomConvexPolygon(world, size, 6, identity, RigidBody::dynamic_body, r);
             b->SetPosition(pos);
             b->SetRotation(angle);
             UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
