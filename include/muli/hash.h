@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cstring>
-#include <string.h>
+#include "common.h"
 
 namespace muli
 {
