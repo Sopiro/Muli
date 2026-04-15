@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "shader.h"
 
 namespace muli

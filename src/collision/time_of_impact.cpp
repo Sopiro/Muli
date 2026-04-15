@@ -1,4 +1,5 @@
 #include "muli/time_of_impact.h"
+#include "muli/distance.h"
 #include "muli/settings.h"
 
 namespace muli

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "format.h"
+#include "math.h"
 
 namespace muli
 {

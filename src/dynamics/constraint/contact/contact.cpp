@@ -2,7 +2,6 @@
 #include "muli/callbacks.h"
 #include "muli/contact_solver.h"
 #include "muli/settings.h"
-#include "muli/world.h"
 
 namespace muli
 {

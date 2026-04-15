@@ -1,6 +1,5 @@
 #include "muli/joint.h"
 #include "muli/callbacks.h"
-#include "muli/world.h"
 
 namespace muli
 {

@@ -14,7 +14,6 @@
 #include <imgui.h>
 // clang-format on
 
-#include <iostream>
 #include <muli/muli.h>
 
 class NonCopyable

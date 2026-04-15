@@ -2,7 +2,6 @@
 
 #include "common.h"
 #include "input.h"
-#include "util.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>

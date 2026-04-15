@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "growable_array.h"
 #include "simplex.h"
 

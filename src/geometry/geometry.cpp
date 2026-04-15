@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <random>
 
 #include "muli/geometry.h"
@@ -332,12 +331,12 @@ struct TriEdge
     };
 };
 
-static inline bool operator==(const TriEdge& a, const TriEdge& b)
+inline bool operator==(const TriEdge& a, const TriEdge& b)
 {
     return a[0] == b[0] && a[1] == b[1];
 }
 
-static inline TriEdge operator~(const TriEdge& e)
+inline TriEdge operator~(const TriEdge& e)
 {
     return TriEdge{ e[1], e[0] };
 }
@@ -429,7 +428,7 @@ struct Tri
     };
 };
 
-static inline bool operator==(const Tri& a, const Tri& b)
+inline bool operator==(const Tri& a, const Tri& b)
 {
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }

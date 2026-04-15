@@ -2,9 +2,7 @@
 
 #include "aabb.h"
 #include "collider.h"
-#include "collision.h"
 #include "growable_array.h"
-#include "settings.h"
 
 namespace muli
 {

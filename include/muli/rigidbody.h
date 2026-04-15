@@ -1,6 +1,5 @@
 #pragma once
 
-#include "aabb.h"
 #include "collision.h"
 #include "collision_filter.h"
 #include "material.h"

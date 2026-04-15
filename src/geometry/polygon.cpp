@@ -1,5 +1,4 @@
 #include "muli/polygon.h"
-#include "muli/geometry.h"
 
 namespace muli
 {

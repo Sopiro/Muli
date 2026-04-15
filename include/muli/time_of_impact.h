@@ -1,9 +1,12 @@
 #pragma once
 
-#include "distance.h"
+#include "math.h"
 
 namespace muli
 {
+
+class Shape;
+
 struct TOIInput
 {
     Shape* shapeA;

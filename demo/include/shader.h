@@ -1,9 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include "util.h"
-
-#include <unordered_map>
 
 namespace muli
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "settings.h"
 #include "shape.h"
 
 namespace muli

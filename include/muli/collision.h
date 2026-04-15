@@ -1,6 +1,5 @@
 #pragma once
 
-#include "settings.h"
 #include "simplex.h"
 
 /*

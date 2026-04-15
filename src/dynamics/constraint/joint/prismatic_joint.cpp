@@ -1,5 +1,4 @@
 #include "muli/prismatic_joint.h"
-#include "muli/world.h"
 
 namespace muli
 {

@@ -1,5 +1,4 @@
 #include "muli/weld_joint.h"
-#include "muli/world.h"
 
 namespace muli
 {

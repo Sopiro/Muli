@@ -3,7 +3,6 @@
 #include "aabb.h"
 #include "allocator.h"
 #include "collision.h"
-#include "common.h"
 #include "primitives.h"
 #include "raycast.h"
 

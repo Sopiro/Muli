@@ -1,6 +1,5 @@
 #include "muli/contact_solver.h"
 #include "muli/contact.h"
-#include "muli/world.h"
 
 namespace muli
 {

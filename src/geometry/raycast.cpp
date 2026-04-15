@@ -1,5 +1,6 @@
 #include "muli/raycast.h"
 #include "muli/collision.h"
+#include "muli/settings.h"
 #include "muli/shape.h"
 
 namespace muli

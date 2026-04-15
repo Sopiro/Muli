@@ -1,5 +1,4 @@
 #include "muli/constraint.h"
-#include "muli/world.h"
 
 namespace muli
 {
