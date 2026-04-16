@@ -305,6 +305,11 @@ void Game::Render()
     // Draw joints
     for (Joint* j = world.GetJoints(); j; j = j->GetNext())
     {
+        if (UserFlag::IsEnabled(j, UserFlag::hide_joint_anchors))
+        {
+            continue;
+        }
+
         Joint::Type type = j->GetType();
 
         switch (type)

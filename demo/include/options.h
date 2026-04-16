@@ -26,6 +26,7 @@ enum Flag : size_t
 {
     remove_outline = 1 << 1,
     render_polygon_radius = 1 << 2,
+    hide_joint_anchors = 1 << 3,
 };
 
 inline void SetFlag(RigidBody* body, Flag flag, bool enabled)
@@ -43,6 +44,23 @@ inline void SetFlag(RigidBody* body, Flag flag, bool enabled)
 inline bool IsEnabled(const RigidBody* body, Flag flag)
 {
     return ((size_t)body->UserData & flag) == flag;
+}
+
+inline void SetFlag(Joint* joint, Flag flag, bool enabled)
+{
+    if (enabled)
+    {
+        joint->UserData = (void*)((size_t)joint->UserData | flag);
+    }
+    else
+    {
+        joint->UserData = (void*)((size_t)joint->UserData & ~flag);
+    }
+}
+
+inline bool IsEnabled(const Joint* joint, Flag flag)
+{
+    return ((size_t)joint->UserData & flag) == flag;
 }
 
 } // namespace UserFlag
