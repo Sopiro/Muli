@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <string>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <limits>
