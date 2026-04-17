@@ -5,8 +5,7 @@ namespace muli
 
 const char* vertexShader =
 #ifndef __EMSCRIPTEN__
-    R"(
-    #version 330 core
+    R"(#version 330 core
 
     layout (location = 0) in vec2 pos;
     layout (location = 1) in vec4 color;
@@ -25,13 +24,13 @@ const char* vertexShader =
     }
 )";
 #else
-    R"(
-    #version 100
+    R"(#version 300 es
+    precision highp float;
 
-    attribute vec2 pos;
-    attribute vec4 color;
+    layout (location = 0) in vec2 pos;
+    layout (location = 1) in vec4 color;
 
-    varying vec4 out_color;
+    out vec4 out_color;
 
     uniform mat4 view;
     uniform mat4 proj;
@@ -49,8 +48,7 @@ const char* vertexShader =
 
 const char* fragmentShader =
 #ifndef __EMSCRIPTEN__
-    R"(
-    #version 330 core
+    R"(#version 330 core
 
     in vec4 out_color;
 
@@ -62,15 +60,16 @@ const char* fragmentShader =
     }
 )";
 #else
-    R"(
-    #version 100
+    R"(#version 300 es
     precision mediump float;
 
-    varying vec4 out_color;
+    in vec4 out_color;
+
+    out vec4 fragColor;
 
     void main()
     {
-        gl_FragColor = out_color;
+        fragColor = out_color;
     }
 )";
 #endif

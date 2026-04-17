@@ -220,7 +220,7 @@ inline Window::Window(int32 width, int32 height, const char* title)
 #ifndef __EMSCRIPTEN__
     ImGui_ImplOpenGL3_Init("#version 330");
 #else
-    ImGui_ImplOpenGL3_Init("#version 100");
+    ImGui_ImplOpenGL3_Init("#version 300 es");
 #endif
 
     // Setup font

@@ -247,6 +247,7 @@ void Game::Render()
     Mat4 cameraMatrix = camera.GetCameraMatrix();
 
     renderer.SetViewMatrix(cameraMatrix);
+    renderer.SetPixelWorldSize(scale * camera.scale);
     renderer.SetPointSize(4.0f);
     renderer.SetLineWidth(1.0f);
 

@@ -4,12 +4,50 @@
 namespace muli
 {
 
+namespace
+{
+
+constexpr int32 sdf_quad_vertex_count = 6;
+
+constexpr std::array<Vec2, sdf_quad_vertex_count> sdf_quad_vertices = {
+    Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 0.0f }, Vec2{ 1.0f, 1.0f }, Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f }, Vec2{ 0.0f, 1.0f },
+};
+
+float GetSdfPadding(const Vec2& pixelWorldSize)
+{
+    return 2.0f * Max(pixelWorldSize.x, pixelWorldSize.y);
+}
+
+void SetVec4InstanceAttrib(GLuint index, GLsizei stride, size_t offset)
+{
+    glVertexAttribPointer(index, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void*>(offset));
+    glEnableVertexAttribArray(index);
+    glVertexAttribDivisor(index, 1);
+}
+
+void SetIVec4InstanceAttrib(GLuint index, GLsizei stride, size_t offset)
+{
+    glVertexAttribIPointer(index, 4, GL_INT, stride, reinterpret_cast<const void*>(offset));
+    glEnableVertexAttribArray(index);
+    glVertexAttribDivisor(index, 1);
+}
+
+} // namespace
+
 Renderer::Renderer()
     : pointCount{ 0 }
     , lineCount{ 0 }
     , triangleCount{ 0 }
 {
+    points.resize(max_vertex_count);
+    pointColors.resize(max_vertex_count);
+    lines.resize(max_vertex_count);
+    lineColors.resize(max_vertex_count);
+    triangles.resize(max_vertex_count);
+    triangleColors.resize(max_vertex_count);
+
     shader = BatchShader::Create();
+    shapeShader = ShapeSdfShader::Create();
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &pVBO);
@@ -29,23 +67,51 @@ Renderer::Renderer()
     }
     glBindVertexArray(0);
 
+    glGenVertexArrays(1, &sdfVAO);
+    glGenBuffers(1, &sdfQuadVBO);
+    glGenBuffers(1, &sdfInstanceVBO);
+    glGenTextures(1, &sdfPolygonTexture);
+
+    glBindVertexArray(sdfVAO);
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, sdfQuadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * sdf_quad_vertex_count, sdf_quad_vertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), 0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, sdfInstanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeInstanceData) * max_shape_batch_count, nullptr, GL_DYNAMIC_DRAW);
+
+        constexpr GLsizei stride = sizeof(ShapeInstanceData);
+        SetVec4InstanceAttrib(1, stride, offsetof(ShapeInstanceData, localBounds));
+        SetVec4InstanceAttrib(2, stride, offsetof(ShapeInstanceData, transform0));
+        SetVec4InstanceAttrib(3, stride, offsetof(ShapeInstanceData, transform1));
+        SetVec4InstanceAttrib(4, stride, offsetof(ShapeInstanceData, capsule));
+        SetVec4InstanceAttrib(5, stride, offsetof(ShapeInstanceData, fillColor));
+        SetVec4InstanceAttrib(6, stride, offsetof(ShapeInstanceData, outlineColor));
+        SetVec4InstanceAttrib(7, stride, offsetof(ShapeInstanceData, scalarData));
+        SetIVec4InstanceAttrib(8, stride, offsetof(ShapeInstanceData, shapeType));
+    }
+    glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, sdfPolygonTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, max_sdf_polygon_vertices, max_shape_batch_count, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    shapeShader->Use();
+    shapeShader->SetPolygonVertexTextureUnit(0);
+    shapeShader->SetPixelWorldSize(pixelWorldSize);
+
     if (initialized == false)
     {
-        MuliAssert(circle_count % 4 == 0);
-
-        constexpr float angle = pi * 2.0f / circle_count;
-        for (int32 i = 0; i < circle_count; ++i)
-        {
-            float currentAngle = angle * i;
-
-            unit_circle[i].Set(Cos(currentAngle), Sin(currentAngle));
-        }
-
         constexpr float stride = 360.0f / color_count;
         for (int32 i = 0; i < color_count; ++i)
         {
             Vec3 rgb = HSLtoRGB({ i * stride / 360.0f, 1.0f, 0.8f });
-
             colors[i].Set(rgb.x, rgb.y, rgb.z, 0.85f);
         }
 
@@ -58,527 +124,217 @@ Renderer::~Renderer()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &pVBO);
     glDeleteBuffers(1, &cVBO);
+
+    glDeleteVertexArrays(1, &sdfVAO);
+    glDeleteBuffers(1, &sdfQuadVBO);
+    glDeleteBuffers(1, &sdfInstanceVBO);
+    glDeleteTextures(1, &sdfPolygonTexture);
+}
+
+void Renderer::EnsurePrimitiveCapacity(std::vector<Vec2>& vertices, std::vector<Vec4>& colors, int32 requiredCount)
+{
+    if (requiredCount <= (int32)vertices.size())
+    {
+        return;
+    }
+
+    int32 newCapacity = Max<int32>((int32)vertices.size() * 2, requiredCount);
+    vertices.resize(newCapacity);
+    colors.resize(newCapacity);
+}
+
+void Renderer::EnsureBatchBufferCapacity(int32 requiredCount)
+{
+    if (requiredCount <= batchBufferCapacity)
+    {
+        return;
+    }
+
+    batchBufferCapacity = Max(batchBufferCapacity * 2, requiredCount);
+
+    glBindBuffer(GL_ARRAY_BUFFER, pVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * batchBufferCapacity, nullptr, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, cVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vec4) * batchBufferCapacity, nullptr, GL_DYNAMIC_DRAW);
+}
+
+void Renderer::QueueShapeInstance(ShapeInstanceData instance, const Vec2* polygonVertices)
+{
+    if (shapeCount == max_shape_batch_count)
+    {
+        FlushShapes();
+    }
+
+    if (polygonVertices && instance.vertexCount > 0)
+    {
+        if (packedPolygonVertexCount + instance.vertexCount > max_packed_polygon_vertex_count)
+        {
+            FlushShapes();
+        }
+
+        instance.vertexOffset = packedPolygonVertexCount;
+        const int32 base = packedPolygonVertexCount;
+        for (int32 i = 0; i < instance.vertexCount; ++i)
+        {
+            const Vec2& vertex = polygonVertices[i];
+            polygonVertexTexels[base + i] = Vec4{ vertex.x, vertex.y, 0.0f, 0.0f };
+        }
+
+        packedPolygonVertexCount += instance.vertexCount;
+    }
+    else
+    {
+        instance.vertexOffset = 0;
+    }
+
+    shapeInstances[shapeCount] = instance;
+    ++shapeCount;
 }
 
 void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode& mode)
 {
-    const Vec4& color = mode.colorIndex < 0 ? default_white : colors[mode.colorIndex % color_count];
-
-    if (mode.fill && mode.outline)
+    if (mode.fill == false && mode.outline == false)
     {
-        switch (shape->GetType())
+        return;
+    }
+
+    const Vec4& fillColor = mode.colorIndex < 0 ? default_white : colors[mode.colorIndex % color_count];
+    const float padding = GetSdfPadding(pixelWorldSize);
+
+    ShapeInstanceData instance{};
+    instance.transform0 = Vec4{ tf.position.x, tf.position.y, tf.rotation.c, tf.rotation.s };
+    instance.transform1 = Vec4{ -tf.rotation.s, tf.rotation.c, 0.0f, 0.0f };
+    instance.fillColor = fillColor;
+    instance.outlineColor = default_black;
+    instance.shapeType = shape->GetType();
+    instance.flags = (mode.fill ? shape_flag_fill : 0) | (mode.outline ? shape_flag_outline : 0);
+
+    const Vec2* polygonVertices = nullptr;
+
+    switch (shape->GetType())
+    {
+    case Shape::Type::circle:
+    {
+        const Circle* c = (const Circle*)shape;
+        const Vec2 center = c->GetCenter();
+        const float radius = c->GetRadius();
+        const Vec2 pad{ radius + padding };
+
+        instance.localBounds = Vec4{ center.x - pad.x, center.y - pad.y, center.x + pad.x, center.y + pad.y };
+        instance.transform1.z = center.x;
+        instance.transform1.w = center.y;
+        instance.scalarData.x = radius;
+
+        QueueShapeInstance(instance, nullptr);
+
+        if (mode.outline)
         {
-        case Shape::Type::circle:
-        {
-            const Circle* c = (const Circle*)shape;
-            Vec2 localCenter = c->GetCenter();
-            Vec2 center = Mul(tf, localCenter);
-            float radius = c->GetRadius();
-
-            int32 i0 = circle_count - 1;
-            int32 i1 = 0;
-            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
-            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-
-            DrawTriangle(center, v0, v1, color);
-            DrawLine(center, v1);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-
-            for (i1 = 1; i1 < circle_count; ++i1)
-            {
-                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-                DrawTriangle(center, v0, v1, color);
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-        }
-        break;
-        case Shape::Type::capsule:
-        {
-            const Capsule* c = (const Capsule*)shape;
-
-            Vec2 va = c->GetVertexA();
-            Vec2 vb = c->GetVertexB();
-            Vec2 normal = Normalize(Cross(1.0f, vb - va));
-
-            Vec2 gva = Mul(tf, va);
-            Vec2 gvb = Mul(tf, vb);
-
-            Vec2 dir = vb - va;
-            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
-
-            Rotation rot{ angleOffset };
-
-            float radius = c->GetRadius();
-
-            int32 i0 = 0;
-            Vec2 vf = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
-            Vec2 v0 = vf;
-            Vec2 v1;
-
-            for (int32 i1 = 1; i0 < quater_count; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gvb, v0, v1, color);
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gvb, v0, gva, color);
-
-            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
-            {
-                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gva, v0, v1, color);
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gva, v0, gvb, color);
-
-            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gvb, v0, v1, color);
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gvb, v1, vf, color);
-            DrawLine(v1, vf);
-        }
-        break;
-        case Shape::Type::polygon:
-        {
-            if (mode.rounded == false)
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                int32 vertexCount = p->GetVertexCount();
-
-                Vec2 center = Mul(tf, p->GetCenter());
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = Mul(tf, vertices[i0]);
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = Mul(tf, vertices[i1]);
-
-                    DrawTriangle(center, v0, v1, color);
-                    DrawLine(v0, v1);
-
-                    i0 = i1;
-                    v0 = v1;
-                }
-            }
-            else
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                const Vec2* normals = p->GetNormals();
-                int32 vertexCount = p->GetVertexCount();
-
-                Vec2 center = Mul(tf, p->GetCenter());
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = vertices[i0];
-                Vec2 n0 = normals[i0];
-                Vec2 vn0 = v0 + n0 * radius;
-                Vec2 gv0 = Mul(tf, vn0);
-
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = vertices[i1];
-                    Vec2 n1 = normals[i1];
-                    Vec2 vn1 = v1 + n1 * radius;
-
-                    float theta = AngleBetween(n0, n1);
-                    float cCount = circle_count * theta / (2.0f * pi);
-
-                    Vec2 gv1;
-                    for (int32 j = 0; j < cCount; ++j)
-                    {
-                        float per = j / cCount;
-                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
-
-                        gv1 = Mul(tf, cv);
-                        DrawTriangle(center, gv0, gv1, color);
-                        DrawLine(gv0, gv1);
-                        gv0 = gv1;
-                    }
-
-                    gv1 = Mul(tf, vn1);
-
-                    DrawTriangle(center, gv0, gv1, color);
-                    DrawLine(gv0, gv1);
-
-                    i0 = i1;
-                    v0 = v1;
-                    n0 = n1;
-                    vn0 = vn1;
-                    gv0 = gv1;
-                }
-            }
-        }
-        break;
-        default:
-            MuliAssert(false);
-            break;
+            DrawLine(Mul(tf, center), Mul(tf, center + Vec2{ radius, 0.0f }), default_black);
         }
     }
-    else if (mode.fill)
+    break;
+    case Shape::Type::capsule:
     {
-        switch (shape->GetType())
-        {
-        case Shape::Type::circle:
-        {
-            const Circle* c = (const Circle*)shape;
-            Vec2 localCenter = c->GetCenter();
-            Vec2 center = Mul(tf, localCenter);
-            float radius = c->GetRadius();
+        const Capsule* c = (const Capsule*)shape;
+        const Vec2 va = c->GetVertexA();
+        const Vec2 vb = c->GetVertexB();
+        const float radius = c->GetRadius();
+        const Vec2 pad{ radius + padding };
+        const Vec2 min = Min(va, vb) - pad;
+        const Vec2 max = Max(va, vb) + pad;
 
-            int32 i0 = circle_count - 1;
-            int32 i1 = 0;
-            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
-            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
+        instance.localBounds = Vec4{ min.x, min.y, max.x, max.y };
+        instance.capsule = Vec4{ va.x, va.y, vb.x, vb.y };
+        instance.scalarData.x = radius;
 
-            DrawTriangle(center, v0, v1, color);
-
-            i0 = i1;
-            v0 = v1;
-
-            for (i1 = 1; i1 < circle_count; ++i1)
-            {
-                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-                DrawTriangle(center, v0, v1, color);
-
-                i0 = i1;
-                v0 = v1;
-            }
-        }
-        break;
-        case Shape::Type::capsule:
-        {
-            const Capsule* c = (const Capsule*)shape;
-
-            Vec2 va = c->GetVertexA();
-            Vec2 vb = c->GetVertexB();
-            Vec2 normal = Normalize(Cross(1.0f, vb - va));
-
-            Vec2 gva = Mul(tf, va);
-            Vec2 gvb = Mul(tf, vb);
-
-            Vec2 dir = vb - va;
-            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
-
-            Rotation rot{ angleOffset };
-
-            float radius = c->GetRadius();
-
-            int32 i0 = 0;
-            Vec2 vf = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
-            Vec2 v0 = vf;
-            Vec2 v1;
-
-            for (int32 i1 = 1; i0 < quater_count; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gvb, v0, v1, color);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gvb, v0, gva, color);
-
-            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
-            {
-                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gva, v0, v1, color);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gva, v0, gvb, color);
-
-            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawTriangle(gvb, v0, v1, color);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            DrawTriangle(gvb, v1, vf, color);
-        }
-        break;
-        case Shape::Type::polygon:
-        {
-            if (mode.rounded == false)
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                int32 vertexCount = p->GetVertexCount();
-
-                Vec2 center = Mul(tf, p->GetCenter());
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = Mul(tf, vertices[i0]);
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = Mul(tf, vertices[i1]);
-
-                    DrawTriangle(center, v0, v1, color);
-
-                    i0 = i1;
-                    v0 = v1;
-                }
-            }
-            else
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                const Vec2* normals = p->GetNormals();
-                int32 vertexCount = p->GetVertexCount();
-
-                Vec2 center = Mul(tf, p->GetCenter());
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = vertices[i0];
-                Vec2 n0 = normals[i0];
-                Vec2 vn0 = v0 + n0 * radius;
-                Vec2 gv0 = Mul(tf, vn0);
-
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = vertices[i1];
-                    Vec2 n1 = normals[i1];
-                    Vec2 vn1 = v1 + n1 * radius;
-
-                    float theta = AngleBetween(n0, n1);
-                    float cCount = circle_count * theta / (2.0f * pi);
-
-                    Vec2 gv1;
-                    for (int32 j = 0; j < cCount; ++j)
-                    {
-                        float per = j / cCount;
-                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
-
-                        gv1 = Mul(tf, cv);
-                        DrawTriangle(center, gv0, gv1, color);
-                        gv0 = gv1;
-                    }
-
-                    gv1 = Mul(tf, vn1);
-
-                    DrawTriangle(center, gv0, gv1, color);
-
-                    i0 = i1;
-                    v0 = v1;
-                    n0 = n1;
-                    vn0 = vn1;
-                    gv0 = gv1;
-                }
-            }
-        }
-        break;
-        default:
-            MuliAssert(false);
-            break;
-        }
+        QueueShapeInstance(instance, nullptr);
     }
-    else if (mode.outline)
+    break;
+    case Shape::Type::polygon:
     {
-        switch (shape->GetType())
+        const Polygon* p = (const Polygon*)shape;
+        const int32 vertexCount = p->GetVertexCount();
+
+        if (vertexCount > max_sdf_polygon_vertices)
         {
-        case Shape::Type::circle:
+            std::cout << "ShapeSdfRenderer: polygon " << static_cast<const void*>(shape) << " exceeds "
+                      << max_sdf_polygon_vertices << " vertices (" << vertexCount << "); skipping render\n";
+            return;
+        }
+
+        polygonVertices = p->GetVertices();
+
+        float radius = mode.rounded ? p->GetRadius() : 0.0f;
+        Vec2 min = polygonVertices[0];
+        Vec2 max = polygonVertices[0];
+        for (int32 i = 1; i < vertexCount; ++i)
         {
-            const Circle* c = (const Circle*)shape;
-
-            float radius = c->GetRadius();
-            Vec2 localCenter = c->GetCenter();
-            Vec2 center = Mul(tf, localCenter);
-
-            int32 i0 = circle_count - 1;
-            int32 i1 = 0;
-            Vec2 v0 = Mul(tf, localCenter + unit_circle[i0] * radius);
-            Vec2 v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-
-            DrawLine(center, v1);
-            DrawLine(v0, v1);
-
-            i0 = i1;
-            v0 = v1;
-
-            for (i1 = 1; i1 < circle_count; ++i1)
-            {
-                v1 = Mul(tf, localCenter + unit_circle[i1] * radius);
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
+            min = Min(min, polygonVertices[i]);
+            max = Max(max, polygonVertices[i]);
         }
-        break;
-        case Shape::Type::capsule:
-        {
-            const Capsule* c = (const Capsule*)shape;
 
-            Vec2 va = c->GetVertexA();
-            Vec2 vb = c->GetVertexB();
-            Vec2 normal = Normalize(Cross(1.0f, vb - va));
+        const Vec2 pad{ radius + padding };
+        min -= pad;
+        max += pad;
 
-            Vec2 gva = Mul(tf, va);
-            Vec2 gvb = Mul(tf, vb);
+        instance.localBounds = Vec4{ min.x, min.y, max.x, max.y };
+        instance.scalarData.x = radius;
+        instance.vertexCount = vertexCount;
 
-            Vec2 dir = vb - va;
-            float angleOffset = AngleBetween(Vec2{ 1.0f, 0.0 }, dir);
-
-            Rotation rot{ angleOffset };
-
-            float radius = c->GetRadius();
-
-            int32 i0 = 0;
-            Vec2 v0 = Mul(tf, vb + Mul(rot, unit_circle[i0] * radius));
-            Vec2 v1;
-
-            for (int32 i1 = 1; i0 < quater_count; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            for (int32 i1 = quater_count; i0 < quater_count * 3; ++i1)
-            {
-                v1 = Mul(tf, va + Mul(rot, unit_circle[i1] * radius));
-
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            for (int32 i1 = quater_count * 3; i0 < quater_count * 4 - 1; ++i1)
-            {
-                v1 = Mul(tf, vb + Mul(rot, unit_circle[i1] * radius));
-
-                DrawLine(v0, v1);
-
-                i0 = i1;
-                v0 = v1;
-            }
-
-            v0 = Mul(tf, vb + Mul(rot, unit_circle[0] * radius));
-
-            DrawLine(v1, v0);
-        }
-        break;
-        case Shape::Type::polygon:
-        {
-            if (mode.rounded == false)
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                int32 vertexCount = p->GetVertexCount();
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = Mul(tf, vertices[i0]);
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = Mul(tf, vertices[i1]);
-
-                    DrawLine(v0, v1);
-
-                    i0 = i1;
-                    v0 = v1;
-                }
-            }
-            else
-            {
-                const Polygon* p = (const Polygon*)shape;
-                float radius = p->GetRadius();
-
-                const Vec2* vertices = p->GetVertices();
-                const Vec2* normals = p->GetNormals();
-                int32 vertexCount = p->GetVertexCount();
-
-                int32 i0 = vertexCount - 1;
-                Vec2 v0 = vertices[i0];
-                Vec2 n0 = normals[i0];
-                Vec2 vn0 = v0 + n0 * radius;
-                Vec2 gv0 = Mul(tf, vn0);
-
-                for (int32 i1 = 0; i1 < vertexCount; ++i1)
-                {
-                    Vec2 v1 = vertices[i1];
-                    Vec2 n1 = normals[i1];
-                    Vec2 vn1 = v1 + n1 * radius;
-
-                    float theta = AngleBetween(n0, n1);
-                    float cCount = circle_count * theta / (2.0f * pi);
-
-                    Vec2 gv1;
-                    for (int32 j = 0; j < cCount; ++j)
-                    {
-                        float per = j / cCount;
-                        Vec2 cv = v1 + Slerp(n0, n1, per) * radius;
-
-                        gv1 = Mul(tf, cv);
-                        DrawLine(gv0, gv1);
-                        gv0 = gv1;
-                    }
-
-                    gv1 = Mul(tf, vn1);
-
-                    DrawLine(gv0, gv1);
-
-                    i0 = i1;
-                    v0 = v1;
-                    n0 = n1;
-                    vn0 = vn1;
-                    gv0 = gv1;
-                }
-            }
-        }
-        break;
-        default:
-            MuliAssert(false);
-            break;
-        }
+        QueueShapeInstance(instance, polygonVertices);
     }
+    break;
+    default:
+        MuliAssert(false);
+        break;
+    }
+}
+
+void Renderer::FlushShapes()
+{
+    if (shapeCount == 0)
+    {
+        return;
+    }
+
+    shapeShader->Use();
+    shapeShader->SetPixelWorldSize(pixelWorldSize);
+
+    glBindVertexArray(sdfVAO);
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, sdfInstanceVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(ShapeInstanceData) * shapeCount, shapeInstances.data());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, sdfPolygonTexture);
+
+        if (packedPolygonVertexCount > 0)
+        {
+            const int32 uploadHeight = (packedPolygonVertexCount + max_sdf_polygon_vertices - 1) / max_sdf_polygon_vertices;
+            const int32 uploadTexelCount = uploadHeight * max_sdf_polygon_vertices;
+
+            for (int32 i = packedPolygonVertexCount; i < uploadTexelCount; ++i)
+            {
+                polygonVertexTexels[i] = Vec4::zero;
+            }
+
+            glTexSubImage2D(
+                GL_TEXTURE_2D, 0, 0, 0, max_sdf_polygon_vertices, uploadHeight, GL_RGBA, GL_FLOAT, polygonVertexTexels.data()
+            );
+        }
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, sdf_quad_vertex_count, shapeCount);
+        glDisable(GL_BLEND);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    glBindVertexArray(0);
+
+    shapeCount = 0;
+    packedPolygonVertexCount = 0;
 }
 
 void Renderer::FlushPoints()
@@ -587,6 +343,8 @@ void Renderer::FlushPoints()
 
     glBindVertexArray(VAO);
     {
+        EnsureBatchBufferCapacity(pointCount);
+
         glBindBuffer(GL_ARRAY_BUFFER, pVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * pointCount, points.data());
 
@@ -606,6 +364,8 @@ void Renderer::FlushLines()
 
     glBindVertexArray(VAO);
     {
+        EnsureBatchBufferCapacity(lineCount);
+
         glBindBuffer(GL_ARRAY_BUFFER, pVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * lineCount, lines.data());
 
@@ -625,6 +385,8 @@ void Renderer::FlushTriangles()
 
     glBindVertexArray(VAO);
     {
+        EnsureBatchBufferCapacity(triangleCount);
+
         glBindBuffer(GL_ARRAY_BUFFER, pVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vec2) * triangleCount, triangles.data());
 
