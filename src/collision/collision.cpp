@@ -417,49 +417,47 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
 
     if (collide == false)
     {
+        MuliAssert(simplex.count < max_simplex_vertex_count);
+
+        if (gjkResult.distance >= radii)
+        {
+            return false;
+        }
+
         switch (simplex.count)
         {
         case 1: // vertex vs. vertex collision
-            if (gjkResult.distance < radii)
-            {
-                Vec2 normal = Normalize(origin - simplex.vertices[0].point);
+        {
+            Vec2 normal = Normalize(origin - simplex.vertices[0].point);
 
-                Point supportA = simplex.vertices[0].pointA;
-                Point supportB = simplex.vertices[0].pointB;
-                supportA.p += normal * ra;
-                supportB.p -= normal * rb;
+            Point supportA = simplex.vertices[0].pointA;
+            Point supportB = simplex.vertices[0].pointB;
+            supportA.p += normal * ra;
+            supportB.p -= normal * rb;
 
-                manifold->contactNormal = normal;
-                manifold->contactTangent.Set(-normal.y, normal.x);
-                manifold->contactPoints[0] = supportB;
-                manifold->contactCount = 1;
-                manifold->referencePoint = supportA;
-                manifold->penetrationDepth = radii - gjkResult.distance;
-                manifold->featureFlipped = false;
+            manifold->contactNormal = normal;
+            manifold->contactTangent.Set(-normal.y, normal.x);
+            manifold->contactPoints[0] = supportB;
+            manifold->contactCount = 1;
+            manifold->referencePoint = supportA;
+            manifold->penetrationDepth = radii - gjkResult.distance;
+            manifold->featureFlipped = false;
 
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
+        }
         case 2: // vertex vs. edge collision
-            if (gjkResult.distance < radii)
+        {
+            Vec2 normal = Normalize(Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point));
+            Vec2 k = origin - simplex.vertices[0].point;
+            if (Dot(normal, k) < 0)
             {
-                Vec2 normal = Normalize(Cross(1.0f, simplex.vertices[1].point - simplex.vertices[0].point));
-                Vec2 k = origin - simplex.vertices[0].point;
-                if (Dot(normal, k) < 0)
-                {
-                    normal = -normal;
-                }
+                normal = -normal;
+            }
 
-                manifold->contactNormal = normal;
-                manifold->penetrationDepth = radii - gjkResult.distance;
-            }
-            else
-            {
-                return false;
-            }
+            manifold->contactNormal = normal;
+            manifold->penetrationDepth = radii - gjkResult.distance;
+            break;
+        }
         }
     }
     else
