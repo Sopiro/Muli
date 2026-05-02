@@ -12,7 +12,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 add_subdirectory(src)
 
 if(MULI_BUILD_DEMO)
-    add_subdirectory(extern)
     add_subdirectory(demo)
 
     # default startup project for Visual Studio
