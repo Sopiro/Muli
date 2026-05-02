@@ -1,17 +1,17 @@
 file(GLOB_RECURSE DEMO_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE DEMO_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "include" FILES ${DEMO_HEADER_FILES})
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${DEMO_SOURCE_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "include" FILES ${DEMO_HEADER_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "src" FILES ${DEMO_SOURCE_FILES})
 
 add_executable(demo ${DEMO_SOURCE_FILES} ${DEMO_HEADER_FILES})
 
 target_precompile_headers(demo PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/common.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/common.h
 )
 
 target_include_directories(demo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(demo PUBLIC
