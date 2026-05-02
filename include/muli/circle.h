@@ -43,7 +43,13 @@ inline Shape* Circle::Clone(Allocator* allocator, const Transform& tf) const
 inline Edge Circle::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     MuliNotUsed(dir);
-    return Edge{ Mul(transform, center), Mul(transform, center) };
+
+    Edge edge;
+    edge.p1 = { Mul(transform, center), -1 };
+    edge.p2 = edge.p1;
+    edge.normal.SetZero();
+
+    return edge;
 }
 
 inline Vec2 Circle::GetVertex(int32 id) const

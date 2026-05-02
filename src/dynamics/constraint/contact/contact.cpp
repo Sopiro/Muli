@@ -171,7 +171,7 @@ bool Contact::SolvePositionConstraints(const Timestep& step)
     // Solve position constraint
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        solved &= positionSolvers[i].Solve();
+        solved &= positionSolvers[i].Solve(this);
     }
 
     b1->motion.c += b1->invMass * cLinearImpulseA;
@@ -194,7 +194,7 @@ bool Contact::SolveTOIPositionConstraints()
     // Solve position constraint
     for (int32 i = 0; i < manifold.contactCount; ++i)
     {
-        solved &= positionSolvers[i].SolveTOI();
+        solved &= positionSolvers[i].SolveTOI(this);
     }
 
     // Push the body only if it's involved in TOI contact

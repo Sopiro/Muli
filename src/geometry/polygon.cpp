@@ -218,14 +218,21 @@ Edge Polygon::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
     Vec2 e1 = curr - prev;
     Vec2 e2 = curr - next;
 
+    Edge edge;
     if (Dot(e1, localDir) <= Dot(e2, localDir))
     {
-        return Edge{ Mul(transform, prev), Mul(transform, curr), prevIndex, index };
+        edge.p1 = { Mul(transform, prev), prevIndex };
+        edge.p2 = { Mul(transform, curr), index };
     }
     else
     {
-        return Edge{ Mul(transform, curr), Mul(transform, next), index, nextIndex };
+        edge.p1 = { Mul(transform, curr), index };
+        edge.p2 = { Mul(transform, next), nextIndex };
     }
+
+    edge.normal = Normalize(Cross(1.0f, edge.p2.p - edge.p1.p));
+
+    return edge;
 }
 
 int32 Polygon::GetSupport(const Vec2& localDir) const

@@ -4,10 +4,8 @@
 namespace muli
 {
 
-void PositionSolver::Prepare(Contact* inContact, int32 index)
+void PositionSolver::Prepare(Contact* contact, int32 index)
 {
-    contact = inContact;
-
     Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
     Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };
 
@@ -16,7 +14,7 @@ void PositionSolver::Prepare(Contact* inContact, int32 index)
     localNormal = MulT(tfA.rotation, contact->manifold.contactNormal);
 }
 
-bool PositionSolver::Solve()
+bool PositionSolver::Solve(Contact* contact)
 {
     Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
     Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };
@@ -58,7 +56,7 @@ bool PositionSolver::Solve()
     return -separation <= position_solver_threshold;
 }
 
-bool PositionSolver::SolveTOI()
+bool PositionSolver::SolveTOI(Contact* contact)
 {
     Transform tfA{ contact->b1->motion.c, contact->b1->motion.a };
     Transform tfB{ contact->b2->motion.c, contact->b2->motion.a };

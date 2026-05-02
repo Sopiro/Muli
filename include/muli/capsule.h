@@ -51,7 +51,13 @@ inline Shape* Capsule::Clone(Allocator* allocator, const Transform& tf) const
 inline Edge Capsule::GetFeaturedEdge(const Transform& transform, const Vec2& dir) const
 {
     MuliNotUsed(dir);
-    return Edge{ Mul(transform, va), Mul(transform, vb), 0, 1 };
+
+    Edge edge;
+    edge.p1 = { Mul(transform, va), 0 };
+    edge.p2 = { Mul(transform, vb), 1 };
+    edge.normal = Normalize(Cross(1.0f, edge.p2.p - edge.p1.p));
+
+    return edge;
 }
 
 inline Vec2 Capsule::GetVertex(int32 id) const

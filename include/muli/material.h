@@ -1,6 +1,5 @@
 #pragma once
 
-#include "collision_filter.h"
 #include "settings.h"
 
 namespace muli

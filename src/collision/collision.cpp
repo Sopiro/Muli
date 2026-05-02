@@ -150,6 +150,12 @@ static void ClipEdge(Edge* e, const Vec2& p, const Vec2& dir, bool removeClipped
     }
 }
 
+inline static void TranslateEdge(Edge& e, const Vec2& d)
+{
+    e.p1.p += d;
+    e.p2.p += d;
+}
+
 static void FindContactPoints(
     const Vec2& n, const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold
 )
@@ -157,47 +163,53 @@ static void FindContactPoints(
     Edge edgeA = a->GetFeaturedEdge(tfA, n);
     Edge edgeB = b->GetFeaturedEdge(tfB, -n);
 
-    edgeA.Translate(n * a->GetRadius());
-    edgeB.Translate(-n * b->GetRadius());
+    TranslateEdge(edgeA, n * a->GetRadius());
+    TranslateEdge(edgeB, -n * b->GetRadius());
 
-    Edge* ref = &edgeA; // Reference edge
-    Edge* inc = &edgeB; // Incident edge
-    manifold->contactNormal = n;
-    manifold->featureFlipped = false;
+    Edge ref; // Reference edge
+    Edge inc; // Incident edge
 
-    float aPerpendicularness = Abs(Dot(edgeA.tangent, n));
-    float bPerpendicularness = Abs(Dot(edgeB.tangent, n));
+    float aParallelness = Abs(Dot(edgeA.normal, n));
+    float bParallelness = Abs(Dot(edgeB.normal, n));
 
-    if (bPerpendicularness < aPerpendicularness)
+    if (bParallelness > aParallelness)
     {
-        ref = &edgeB;
-        inc = &edgeA;
+        ref = edgeB;
+        inc = edgeA;
         manifold->contactNormal = -n;
         manifold->featureFlipped = true;
     }
+    else
+    {
+        ref = edgeA;
+        inc = edgeB;
+        manifold->contactNormal = n;
+        manifold->featureFlipped = false;
+    }
 
-    ClipEdge(inc, ref->p1.p, ref->tangent, false);
-    ClipEdge(inc, ref->p2.p, -ref->tangent, false);
-    ClipEdge(inc, ref->p1.p, -manifold->contactNormal, true);
+    Vec2 tangent = Normalize(ref.p2.p - ref.p1.p);
+    ClipEdge(&inc, ref.p1.p, tangent, false);
+    ClipEdge(&inc, ref.p2.p, -tangent, false);
+    ClipEdge(&inc, ref.p1.p, -manifold->contactNormal, true);
 
     // To ensure consistent warm starting, the contact point id is always set based on Shape A
-    if (inc->GetLength2() <= contact_merge_threshold)
+    if (Dist2(inc.p1.p, inc.p2.p) <= contact_merge_threshold)
     {
         // If two points are closer than the threshold, merge them into one point
         manifold->contactPoints[0].id = edgeA.p1.id;
-        manifold->contactPoints[0].p = inc->p1.p;
+        manifold->contactPoints[0].p = inc.p1.p;
         manifold->contactCount = 1;
     }
     else
     {
         manifold->contactPoints[0].id = edgeA.p1.id;
-        manifold->contactPoints[0].p = inc->p1.p;
+        manifold->contactPoints[0].p = inc.p1.p;
         manifold->contactPoints[1].id = edgeA.p2.id;
-        manifold->contactPoints[1].p = inc->p2.p;
+        manifold->contactPoints[1].p = inc.p2.p;
         manifold->contactCount = 2;
     }
 
-    manifold->referencePoint = ref->p1;
+    manifold->referencePoint = ref.p1;
 }
 
 bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)

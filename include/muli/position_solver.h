@@ -11,14 +11,12 @@ class PositionSolver
 {
 public:
     void Prepare(Contact* contact, int32 index);
-    bool Solve();
-    bool SolveTOI();
+    bool Solve(Contact* contact);
+    bool SolveTOI(Contact* contact);
 
 private:
     friend class Contact;
     friend class BlockSolver;
-
-    Contact* contact;
 
     Vec2 localPlainPoint;
     Vec2 localClipPoint;
