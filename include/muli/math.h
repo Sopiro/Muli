@@ -1235,6 +1235,11 @@ inline Mat2 operator+(const Mat2& a, const Mat2& b)
     return Mat2{ a.ex + b.ex, a.ey + b.ey };
 }
 
+inline Mat2 operator-(const Mat2& a, const Mat2& b)
+{
+    return Mat2{ a.ex - b.ex, a.ey - b.ey };
+}
+
 // M * V
 inline Vec2 Mul(const Mat2& m, const Vec2& v)
 {
@@ -1281,6 +1286,16 @@ inline Mat2 MulT(const Mat2& a, const Mat2& b)
 // Mat2 functions end
 
 // Mat3 functions begin
+
+inline Mat3 operator+(const Mat3& a, const Mat3& b)
+{
+    return Mat3(a.ex + b.ex, a.ey + b.ey, a.ez + b.ez);
+}
+
+inline Mat3 operator-(const Mat3& a, const Mat3& b)
+{
+    return Mat3(a.ex - b.ex, a.ey - b.ey, a.ez - b.ez);
+}
 
 // M * V
 inline Vec3 Mul(const Mat3& m, const Vec3& v)
@@ -1331,6 +1346,16 @@ inline Mat3 MulT(const Mat3& a, const Mat3& b)
 // Mat3 functions end
 
 // Mat4 functions begin
+
+inline Mat4 operator+(const Mat4& a, const Mat4& b)
+{
+    return Mat4(a.ex + b.ex, a.ey + b.ey, a.ez + b.ez, a.ew + b.ew);
+}
+
+inline Mat4 operator-(const Mat4& a, const Mat4& b)
+{
+    return Mat4(a.ex - b.ex, a.ey - b.ey, a.ez - b.ez, a.ew - b.ew);
+}
 
 // M * V
 inline Vec4 Mul(const Mat4& m, const Vec4& v)
