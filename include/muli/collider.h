@@ -1,6 +1,5 @@
 #pragma once
 
-#include "allocator.h"
 #include "collision_filter.h"
 #include "material.h"
 #include "rigidbody.h"
@@ -74,10 +73,8 @@ private:
     Collider();
     ~Collider();
 
-    void Create(
-        Allocator* allocator, RigidBody* body, Shape* shape, const Transform& tf, float density, const Material& material
-    );
-    void Destroy(Allocator* allocator);
+    void Create(RigidBody* body, Shape* shape, const Transform& tf, float density, const Material& material);
+    void Destroy(World* world);
 
     RigidBody* body;
     Collider* next;

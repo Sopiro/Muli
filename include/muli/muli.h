@@ -2,31 +2,31 @@
 
 // clang-format off
 
-#include "world.h"
-#include "rigidbody.h"
-#include "collider.h"
+#include "world.h"           // IWYU pragma: export
+#include "collider.h"        // IWYU pragma: export
+#include "rigidbody.h"       // IWYU pragma: export
 
-#include "shape.h"
-#include "circle.h"
-#include "capsule.h"
-#include "polygon.h"
+#include "shape.h"           // IWYU pragma: export
+#include "circle.h"          // IWYU pragma: export
+#include "capsule.h"         // IWYU pragma: export
+#include "polygon.h"         // IWYU pragma: export
 
-#include "joint.h"
-#include "angle_joint.h"
-#include "distance_joint.h"
-#include "grab_joint.h"
-#include "line_joint.h"
-#include "motor_joint.h"
-#include "prismatic_joint.h"
-#include "pulley_joint.h"
-#include "revolute_joint.h"
-#include "weld_joint.h"
+#include "joint.h"           // IWYU pragma: export
+#include "grab_joint.h"      // IWYU pragma: export
+#include "angle_joint.h"     // IWYU pragma: export
+#include "revolute_joint.h"  // IWYU pragma: export
+#include "distance_joint.h"  // IWYU pragma: export
+#include "line_joint.h"      // IWYU pragma: export
+#include "prismatic_joint.h" // IWYU pragma: export
+#include "motor_joint.h"     // IWYU pragma: export
+#include "weld_joint.h"      // IWYU pragma: export
+#include "pulley_joint.h"    // IWYU pragma: export
 
-#include "callbacks.h"
+#include "callbacks.h"       // IWYU pragma: export
 
-#include "collision.h"
-#include "distance.h"
-#include "geometry.h"
-#include "spline.h"
+#include "collision.h"       // IWYU pragma: export
+#include "distance.h"        // IWYU pragma: export
+#include "geometry.h"        // IWYU pragma: export
+#include "spline.h"          // IWYU pragma: export
 
 // clang-format on

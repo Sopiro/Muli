@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "joint.h"
 
 namespace muli

@@ -23,7 +23,7 @@ public:
         float gap = 0.5f;
         float size = 0.3f;
 
-        float xStart = -(count - 1) / 2 * gap;
+        float xStart = -(count - 1) / 2.0f * gap;
         float yStart = 6.0f;
 
         RigidBody* b;

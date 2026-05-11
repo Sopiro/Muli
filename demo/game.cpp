@@ -83,8 +83,11 @@ void Game::UpdateUI()
     ImGui::SetNextWindowSize({ 240, 470 }, ImGuiCond_Once);
 
     static bool collapsed = false;
-    if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT)) collapsed = !collapsed;
-    ImGui::SetNextWindowCollapsed(collapsed, ImGuiCond_None);
+    if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT))
+    {
+        collapsed = !collapsed;
+        ImGui::SetNextWindowCollapsed(collapsed, ImGuiCond_None);
+    }
 
     ImGuiWindowFlags flag = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     if (ImGui::Begin("Muli Engine", NULL, flag))

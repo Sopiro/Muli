@@ -1698,4 +1698,57 @@ void World::FreeJoint(Joint* joint)
     }
 }
 
+Shape* World::CloneShape(const Shape* shape, const Transform& transform)
+{
+    if (shape == nullptr)
+    {
+        return nullptr;
+    }
+
+    switch (shape->GetType())
+    {
+    case Shape::circle:
+    {
+        void* mem = blockAllocator.Allocate(sizeof(Circle));
+        return new (mem) Circle(*(const Circle*)shape, transform);
+    }
+    case Shape::capsule:
+    {
+        void* mem = blockAllocator.Allocate(sizeof(Capsule));
+        return new (mem) Capsule(*(const Capsule*)shape, transform);
+    }
+    case Shape::polygon:
+    {
+        void* mem = blockAllocator.Allocate(sizeof(Polygon));
+        return new (mem) Polygon(*(const Polygon*)shape, transform);
+    }
+    default:
+        MuliAssert(false);
+        break;
+    }
+
+    return nullptr;
+}
+
+void World::FreeShape(Shape* shape)
+{
+    shape->~Shape();
+
+    switch (shape->GetType())
+    {
+    case Shape::circle:
+        blockAllocator.Free(shape, sizeof(Circle));
+        break;
+    case Shape::capsule:
+        blockAllocator.Free(shape, sizeof(Capsule));
+        break;
+    case Shape::polygon:
+        blockAllocator.Free(shape, sizeof(Polygon));
+        break;
+    default:
+        MuliAssert(false);
+        break;
+    }
+}
+
 } // namespace muli

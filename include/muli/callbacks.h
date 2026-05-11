@@ -1,7 +1,6 @@
 #pragma once
 
 #include "collider.h"
-#include "common.h"
 #include "contact.h"
 #include "joint.h"
 

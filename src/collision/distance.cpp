@@ -1,4 +1,5 @@
 #include "muli/distance.h"
+#include "muli/collision.h"
 
 namespace muli
 {

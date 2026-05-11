@@ -67,7 +67,7 @@ int main()
 ## Building and running the demo
 - Install [CMake](https://cmake.org/install/).
 - Ensure CMake is in the system `PATH`.
-- Clone the repository: `git clone --recursive https://github.com/Sopiro/Muli`
+- Clone the repository: `git clone https://github.com/Sopiro/Muli`
 - Run CMake build script for your system:
   - Visual Studio: Run `build.bat`.
   - Other systems: Run `build.sh`.

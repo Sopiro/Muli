@@ -320,6 +320,7 @@ public:
     void Awake();
 
 private:
+    friend class Collider;
     friend class RigidBody;
     friend class Island;
     friend class ContactGraph;
@@ -331,6 +332,8 @@ private:
     void FreeBody(RigidBody* body);
     void AddJoint(Joint* joint);
     void FreeJoint(Joint* joint);
+    Shape* CloneShape(const Shape* shape, const Transform& transform = identity);
+    void FreeShape(Shape* shape);
 
     const WorldSettings& settings;
     ContactGraph contactGraph;

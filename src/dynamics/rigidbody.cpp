@@ -65,7 +65,7 @@ Collider* RigidBody::CreateCollider(Shape* shape, const Transform& tf, float den
 #endif
 
     Collider* collider = new (mem) Collider;
-    collider->Create(allocator, this, shape, tf, density, material);
+    collider->Create(this, shape, tf, density, material);
 
     collider->next = colliderList;
     colliderList = collider;
@@ -107,7 +107,7 @@ void RigidBody::DestroyCollider(Collider* collider)
     Allocator* allocator = &world->blockAllocator;
 
     collider->~Collider();
-    collider->Destroy(allocator);
+    collider->Destroy(world);
     allocator->Free(collider, sizeof(Collider));
 
     --colliderCount;

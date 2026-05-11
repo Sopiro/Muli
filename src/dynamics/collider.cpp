@@ -1,9 +1,7 @@
 #include "muli/collider.h"
 #include "muli/aabb_tree.h"
 #include "muli/callbacks.h"
-#include "muli/capsule.h"
-#include "muli/circle.h"
-#include "muli/polygon.h"
+#include "muli/world.h"
 
 namespace muli
 {
@@ -30,36 +28,17 @@ Collider::~Collider()
     next = nullptr;
 }
 
-void Collider::Create(
-    Allocator* allocator, RigidBody* inBody, Shape* inShape, const Transform& tf, float inDensity, const Material& inMaterial
-)
+void Collider::Create(RigidBody* inBody, Shape* inShape, const Transform& tf, float inDensity, const Material& inMaterial)
 {
     body = inBody;
-    shape = inShape->Clone(allocator, tf);
+    shape = body->world->CloneShape(inShape, tf);
     density = inDensity;
     material = inMaterial;
 }
 
-void Collider::Destroy(Allocator* allocator)
+void Collider::Destroy(World* world)
 {
-    shape->~Shape();
-
-    switch (shape->GetType())
-    {
-    case Shape::Type::circle:
-        allocator->Free(shape, sizeof(Circle));
-        break;
-    case Shape::Type::capsule:
-        allocator->Free(shape, sizeof(Capsule));
-        break;
-    case Shape::Type::polygon:
-        allocator->Free(shape, sizeof(Polygon));
-        break;
-    default:
-        MuliAssert(false);
-        break;
-    }
-
+    world->FreeShape(shape);
     shape = nullptr;
 }
 

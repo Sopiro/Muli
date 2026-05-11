@@ -1,7 +1,6 @@
 #pragma once
 
 #include "allocator.h"
-#include "common.h"
 
 namespace muli
 {
