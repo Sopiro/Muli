@@ -16,9 +16,9 @@ set(HEADER_FILES
     ../include/muli/rigidbody.h
 
     ../include/muli/shape.h
-    ../include/muli/circle.h
-    ../include/muli/capsule.h
-    ../include/muli/polygon.h
+    ../include/muli/circle_shape.h
+    ../include/muli/capsule_shape.h
+    ../include/muli/polygon_shape.h
 
     ../include/muli/collider.h
     ../include/muli/material.h
@@ -65,9 +65,9 @@ set(SOURCE_FILES
     util/linear_allocator.cpp
     util/block_allocator.cpp
 
-    geometry/circle.cpp
-    geometry/capsule.cpp
-    geometry/polygon.cpp
+    geometry/circle_shape.cpp
+    geometry/capsule_shape.cpp
+    geometry/polygon_shape.cpp
     geometry/geometry.cpp
     geometry/raycast.cpp
 

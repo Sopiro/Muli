@@ -1,9 +1,10 @@
 #include "muli/rigidbody.h"
-#include "muli/capsule.h"
-#include "muli/circle.h"
 #include "muli/collider.h"
-#include "muli/polygon.h"
 #include "muli/world.h"
+
+#include "muli/capsule_shape.h"
+#include "muli/circle_shape.h"
+#include "muli/polygon_shape.h"
 
 namespace muli
 {

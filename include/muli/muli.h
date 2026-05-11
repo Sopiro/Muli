@@ -7,9 +7,9 @@
 #include "rigidbody.h"       // IWYU pragma: export
 
 #include "shape.h"           // IWYU pragma: export
-#include "circle.h"          // IWYU pragma: export
-#include "capsule.h"         // IWYU pragma: export
-#include "polygon.h"         // IWYU pragma: export
+#include "circle_shape.h"    // IWYU pragma: export
+#include "capsule_shape.h"   // IWYU pragma: export
+#include "polygon_shape.h"   // IWYU pragma: export
 
 #include "joint.h"           // IWYU pragma: export
 #include "grab_joint.h"      // IWYU pragma: export

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "circle.h"
-#include "polygon.h"
+#include "circle_shape.h"
+#include "polygon_shape.h"
 
 namespace muli
 {

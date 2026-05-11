@@ -1,8 +1,9 @@
 #include "muli/collision.h"
-#include "muli/capsule.h"
-#include "muli/polygon.h"
 #include "muli/polytope.h"
 #include "muli/rigidbody.h"
+
+#include "muli/capsule_shape.h"
+#include "muli/polygon_shape.h"
 #include "muli/shape.h"
 
 namespace muli

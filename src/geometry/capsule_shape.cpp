@@ -1,4 +1,4 @@
-#include "muli/capsule.h"
+#include "muli/capsule_shape.h"
 
 namespace muli
 {
