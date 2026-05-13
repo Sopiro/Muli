@@ -3,6 +3,29 @@
 namespace muli
 {
 
+enum
+{
+    distance_limit_inactive,
+    distance_limit_at_lower,
+    distance_limit_at_upper,
+    distance_limit_equal,
+};
+
+static float ClampImpulse(float impulse, int32 limitState)
+{
+    switch (limitState)
+    {
+    case distance_limit_at_lower:
+        return Max(impulse, 0.0f);
+    case distance_limit_at_upper:
+        return Min(impulse, 0.0f);
+    case distance_limit_inactive:
+        return 0.0f;
+    default:
+        return impulse;
+    }
+}
+
 DistanceJoint::DistanceJoint(
     RigidBody* bodyA,
     RigidBody* bodyB,
@@ -15,7 +38,9 @@ DistanceJoint::DistanceJoint(
     float jointMass
 )
     : Joint(distance_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    , bias{ 0.0f }
     , impulseSum{ 0.0f }
+    , limitState{ distance_limit_inactive }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchorA);
     localAnchorB = MulT(bodyB->GetTransform(), anchorB);
@@ -53,26 +78,32 @@ void DistanceJoint::Prepare(const Timestep& step)
         m = 1.0f / k;
     }
 
-    Vec2 error(currentLength - minLength, currentLength - maxLength);
-    bias = error * beta * step.inv_dt;
-
-    if (step.warm_starting)
+    if (minLength == maxLength)
     {
-        if (minLength == maxLength)
-        {
-            ApplyImpulse(impulseSum[0]);
-        }
-        else
-        {
-            if (bias[0] < 0)
-            {
-                ApplyImpulse(impulseSum[0]);
-            }
-            if (bias[1] > 0)
-            {
-                ApplyImpulse(impulseSum[1]);
-            }
-        }
+        limitState = distance_limit_equal;
+        bias = (currentLength - minLength) * beta * step.inv_dt;
+    }
+    else if (currentLength < minLength)
+    {
+        limitState = distance_limit_at_lower;
+        bias = (currentLength - minLength) * beta * step.inv_dt;
+    }
+    else if (currentLength > maxLength)
+    {
+        limitState = distance_limit_at_upper;
+        bias = (currentLength - maxLength) * beta * step.inv_dt;
+    }
+    else
+    {
+        limitState = distance_limit_inactive;
+        bias = 0.0f;
+    }
+
+    impulseSum = ClampImpulse(impulseSum, limitState);
+
+    if (step.warm_starting && limitState != distance_limit_inactive)
+    {
+        ApplyImpulse(impulseSum);
     }
 }
 
@@ -89,29 +120,27 @@ void DistanceJoint::SolveVelocityConstraints(const Timestep& step)
                 (bodyA->linearVelocity + Cross(bodyA->angularVelocity, ra)),
             d);
 
-    if (minLength == maxLength)
+    if (limitState == distance_limit_inactive)
     {
-        // You don't have to clamp the impulse because it's equality constraint!
-        float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
-        ApplyImpulse(lambda);
-        impulseSum[0] += lambda;
+        return;
+    }
+
+    float lambda = m * -(jv + bias + impulseSum * gamma);
+
+    float newImpulseSum;
+    if (limitState == distance_limit_equal)
+    {
+        newImpulseSum = impulseSum + lambda;
     }
     else
     {
-        if (bias[0] < 0)
-        {
-            float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
-            ApplyImpulse(lambda);
-            impulseSum[0] += lambda;
-        }
-
-        if (bias[1] > 0)
-        {
-            float lambda = m * -(jv + bias[1] + impulseSum[1] * gamma);
-            ApplyImpulse(lambda);
-            impulseSum[1] += lambda;
-        }
+        newImpulseSum = ClampImpulse(impulseSum + lambda, limitState);
     }
+
+    lambda = newImpulseSum - impulseSum;
+    impulseSum = newImpulseSum;
+
+    ApplyImpulse(lambda);
 }
 
 void DistanceJoint::ApplyImpulse(float lambda)

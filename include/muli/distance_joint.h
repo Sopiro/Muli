@@ -43,9 +43,9 @@ private:
     Vec2 rb;
     Vec2 d;
     float m;
-
-    Vec2 bias;
-    Vec2 impulseSum;
+    float bias;
+    float impulseSum;
+    int32 limitState;
 
     void ApplyImpulse(float lambda);
 };

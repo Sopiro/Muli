@@ -3,6 +3,29 @@
 namespace muli
 {
 
+enum
+{
+    angle_limit_inactive,
+    angle_limit_at_lower,
+    angle_limit_at_upper,
+    angle_limit_equal,
+};
+
+static float ClampImpulse(float impulse, int32 limitState)
+{
+    switch (limitState)
+    {
+    case angle_limit_at_lower:
+        return Max(impulse, 0.0f);
+    case angle_limit_at_upper:
+        return Min(impulse, 0.0f);
+    case angle_limit_inactive:
+        return 0.0f;
+    default:
+        return impulse;
+    }
+}
+
 AngleJoint::AngleJoint(
     RigidBody* bodyA,
     RigidBody* bodyB,
@@ -17,7 +40,9 @@ AngleJoint::AngleJoint(
     , angleOffset{ jointAngleOffset }
     , minAngle{ jointMinAngle }
     , maxAngle{ jointMaxAngle }
+    , bias{ 0.0f }
     , impulseSum{ 0.0f }
+    , limitState{ angle_limit_inactive }
 {
     maxAngle = Max(minAngle, maxAngle);
 }
@@ -37,29 +62,34 @@ void AngleJoint::Prepare(const Timestep& step)
         m = 1.0f / k;
     }
 
-    Vec2 error(bodyB->motion.a - bodyA->motion.a - angleOffset);
-    error[0] -= minAngle;
-    error[1] -= maxAngle;
+    float currentAngle = bodyB->motion.a - bodyA->motion.a - angleOffset;
 
-    bias = error * beta * step.inv_dt;
-
-    if (step.warm_starting)
+    if (minAngle == maxAngle)
     {
-        if (minAngle == maxAngle)
-        {
-            ApplyImpulse(impulseSum[0]);
-        }
-        else
-        {
-            if (bias[0] < 0)
-            {
-                ApplyImpulse(impulseSum[0]);
-            }
-            if (bias[1] > 0)
-            {
-                ApplyImpulse(impulseSum[1]);
-            }
-        }
+        limitState = angle_limit_equal;
+        bias = (currentAngle - minAngle) * beta * step.inv_dt;
+    }
+    else if (currentAngle < minAngle)
+    {
+        limitState = angle_limit_at_lower;
+        bias = (currentAngle - minAngle) * beta * step.inv_dt;
+    }
+    else if (currentAngle > maxAngle)
+    {
+        limitState = angle_limit_at_upper;
+        bias = (currentAngle - maxAngle) * beta * step.inv_dt;
+    }
+    else
+    {
+        limitState = angle_limit_inactive;
+        bias = 0.0f;
+    }
+
+    impulseSum = ClampImpulse(impulseSum, limitState);
+
+    if (step.warm_starting && limitState != angle_limit_inactive)
+    {
+        ApplyImpulse(impulseSum);
     }
 }
 
@@ -73,27 +103,27 @@ void AngleJoint::SolveVelocityConstraints(const Timestep& step)
 
     float jv = bodyB->angularVelocity - bodyA->angularVelocity;
 
-    if (minAngle == maxAngle)
+    if (limitState == angle_limit_inactive)
     {
-        float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
-        ApplyImpulse(lambda);
-        impulseSum[0] += lambda;
+        return;
+    }
+
+    float lambda = m * -(jv + bias + impulseSum * gamma);
+
+    float newImpulseSum;
+    if (limitState == angle_limit_equal)
+    {
+        newImpulseSum = impulseSum + lambda;
     }
     else
     {
-        if (bias[0] < 0)
-        {
-            float lambda = m * -(jv + bias[0] + impulseSum[0] * gamma);
-            ApplyImpulse(lambda);
-            impulseSum[0] += lambda;
-        }
-        if (bias[1] > 0)
-        {
-            float lambda = m * -(jv + bias[1] + impulseSum[1] * gamma);
-            ApplyImpulse(lambda);
-            impulseSum[1] += lambda;
-        }
+        newImpulseSum = ClampImpulse(impulseSum + lambda, limitState);
     }
+
+    lambda = newImpulseSum - impulseSum;
+    impulseSum = newImpulseSum;
+
+    ApplyImpulse(lambda);
 }
 
 void AngleJoint::ApplyImpulse(float lambda)
