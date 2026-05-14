@@ -285,6 +285,39 @@ void Renderer::DrawShape(const Shape* shape, const Transform& tf, const DrawMode
         QueueShapeInstance(instance, polygonVertices);
     }
     break;
+    case Shape::Type::box:
+    {
+        const Box* b = (const Box*)shape;
+        Vec2 boxVertices[4];
+
+        for (int32 i = 0; i < 4; ++i)
+        {
+            boxVertices[i] = b->GetVertex(i);
+        }
+
+        polygonVertices = boxVertices;
+
+        float radius = mode.rounded ? b->GetRadius() : 0.0f;
+        Vec2 min = boxVertices[0];
+        Vec2 max = boxVertices[0];
+        for (int32 i = 1; i < 4; ++i)
+        {
+            min = Min(min, boxVertices[i]);
+            max = Max(max, boxVertices[i]);
+        }
+
+        const Vec2 pad{ radius + padding };
+        min -= pad;
+        max += pad;
+
+        instance.shapeType = Shape::Type::polygon;
+        instance.localBounds = Vec4{ min.x, min.y, max.x, max.y };
+        instance.scalarData.x = radius;
+        instance.vertexCount = 4;
+
+        QueueShapeInstance(instance, polygonVertices);
+    }
+    break;
     default:
         MuliAssert(false);
         break;

@@ -23,6 +23,7 @@ public:
         // Order matters!
         circle = 0,
         capsule,
+        box,
         polygon,
         shape_count
     };

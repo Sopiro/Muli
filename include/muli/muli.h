@@ -9,6 +9,7 @@
 #include "shape.h"           // IWYU pragma: export
 #include "circle_shape.h"    // IWYU pragma: export
 #include "capsule_shape.h"   // IWYU pragma: export
+#include "box_shape.h"       // IWYU pragma: export
 #include "polygon_shape.h"   // IWYU pragma: export
 
 #include "joint.h"           // IWYU pragma: export

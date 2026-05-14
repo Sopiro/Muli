@@ -2,6 +2,7 @@
 #include "muli/polytope.h"
 #include "muli/rigidbody.h"
 
+#include "muli/box_shape.h"
 #include "muli/capsule_shape.h"
 #include "muli/polygon_shape.h"
 #include "muli/shape.h"
@@ -315,6 +316,235 @@ bool CapsuleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const
     return true;
 }
 
+bool BoxVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+{
+    const Box* box = (const Box*)a;
+
+    Vec2 cb = Mul(tfB, b->GetCenter());
+    Vec2 localP = MulT(box->GetRotation(), MulT(tfA, cb) - box->GetCenter());
+    Vec2 extents = box->GetHalfExtents();
+
+    Vec2 closest = Clamp(localP, -extents, extents);
+    Vec2 d = localP - closest;
+
+    float ra = a->GetRadius();
+    float rb = b->GetRadius();
+    float radii = ra + rb;
+
+    Vec2 localNormal;
+    float separation;
+
+    if (d.Length2() == 0.0f)
+    {
+        // Inside the box, so choose the closest edge
+        float px = extents.x - localP.x;
+        float nx = extents.x + localP.x;
+        float py = extents.y - localP.y;
+        float ny = extents.y + localP.y;
+
+        separation = px;
+        localNormal = Vec2{ 1.0f, 0.0f };
+        closest = Vec2{ extents.x, localP.y };
+
+        if (nx < separation)
+        {
+            separation = nx;
+            localNormal = Vec2{ -1.0f, 0.0f };
+            closest = Vec2{ -extents.x, localP.y };
+        }
+
+        if (py < separation)
+        {
+            separation = py;
+            localNormal = Vec2{ 0.0f, 1.0f };
+            closest = Vec2{ localP.x, extents.y };
+        }
+
+        if (ny < separation)
+        {
+            separation = ny;
+            localNormal = Vec2{ 0.0f, -1.0f };
+            closest = Vec2{ localP.x, -extents.y };
+        }
+
+        separation = -separation;
+    }
+    else
+    {
+        separation = d.Normalize();
+        if (separation > radii)
+        {
+            return false;
+        }
+
+        localNormal = d;
+    }
+
+    Vec2 normal = Mul(tfA.rotation, Mul(box->GetRotation(), localNormal));
+    Vec2 point = Mul(tfA, box->GetCenter() + Mul(box->GetRotation(), closest));
+
+    manifold->contactNormal = normal;
+    manifold->contactTangent.Set(-normal.y, normal.x);
+    manifold->penetrationDepth = radii - separation;
+    manifold->contactPoints[0].id = 0;
+    manifold->contactPoints[0].p = cb - normal * rb;
+    manifold->referencePoint.id = 0;
+    manifold->referencePoint.p = point + normal * ra;
+    manifold->contactCount = 1;
+    manifold->featureFlipped = false;
+
+    return true;
+}
+
+bool BoxVsCapsule(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+{
+    const Box* boxA = (const Box*)a;
+    const Capsule* capsuleB = (const Capsule*)b;
+
+    Vec2 extentsA = boxA->GetHalfExtents();
+
+    // Transform the capsule into the box local space so the box becomes axis-aligned.
+    Vec2 p1 = MulT(boxA->GetRotation(), MulT(tfA, Mul(tfB, capsuleB->GetVertexA())) - boxA->GetCenter());
+    Vec2 p2 = MulT(boxA->GetRotation(), MulT(tfA, Mul(tfB, capsuleB->GetVertexB())) - boxA->GetCenter());
+    Vec2 d = p2 - p1;
+
+    float radii = boxA->GetRadius() + capsuleB->GetRadius();
+
+    float minPenetration = max_value;
+    Vec2 localNormal;
+
+    auto TestAxis = [&](Vec2 n) -> bool {
+        float length = n.NormalizeSafe();
+        if (length == 0.0f)
+        {
+            return true;
+        }
+
+        float pa = extentsA.x * Abs(n.x) + extentsA.y * Abs(n.y);
+
+        float proj1 = Dot(p1, n);
+        float proj2 = Dot(p2, n);
+
+        float minB = Min(proj1, proj2);
+        float maxB = Max(proj1, proj2);
+
+        // SAT between the box interval [-pa, pa] and the capsule segment interval [minB, maxB].
+        float separation = pa + radii - Max(-maxB, minB);
+        if (separation < 0.0f)
+        {
+            return false;
+        }
+
+        if (separation < minPenetration)
+        {
+            minPenetration = separation;
+            localNormal = n;
+
+            if ((minB + maxB) * 0.5f < 0.0f)
+            {
+                localNormal = -localNormal;
+            }
+        }
+
+        return true;
+    };
+
+    if (!TestAxis(Vec2{ 1.0f, 0.0f })) return false;
+    if (!TestAxis(Vec2{ 0.0f, 1.0f })) return false;
+    if (!TestAxis(Cross(1.0f, d))) return false;
+
+    Vec2 q1 = Clamp(p1, -extentsA, extentsA);
+    if (!TestAxis(p1 - q1)) return false;
+
+    Vec2 q2 = Clamp(p2, -extentsA, extentsA);
+    if (!TestAxis(p2 - q2)) return false;
+
+    // Found overlap
+
+    Vec2 normal = Mul(tfA.rotation, Mul(boxA->GetRotation(), localNormal));
+
+    manifold->contactNormal = normal;
+    manifold->penetrationDepth = minPenetration;
+
+    FindContactPoints(normal, a, tfA, b, tfB, manifold);
+    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
+
+    return manifold->contactCount > 0;
+}
+
+bool BoxVsBox(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
+{
+    const Box* boxA = (const Box*)a;
+    const Box* boxB = (const Box*)b;
+
+    Vec2 ca = Mul(tfA, boxA->GetCenter());
+    Vec2 cb = Mul(tfB, boxB->GetCenter());
+
+    Vec2 axesA[2] = {
+        Mul(tfA.rotation, Mul(boxA->GetRotation(), Vec2{ 1.0f, 0.0f })),
+        Mul(tfA.rotation, Mul(boxA->GetRotation(), Vec2{ 0.0f, 1.0f })),
+    };
+    Vec2 axesB[2] = {
+        Mul(tfB.rotation, Mul(boxB->GetRotation(), Vec2{ 1.0f, 0.0f })),
+        Mul(tfB.rotation, Mul(boxB->GetRotation(), Vec2{ 0.0f, 1.0f })),
+    };
+
+    Vec2 extentsA = boxA->GetHalfExtents();
+    Vec2 extentsB = boxB->GetHalfExtents();
+    Vec2 dir = cb - ca;
+
+    float radii = boxA->GetRadius() + boxB->GetRadius();
+
+    float minPenetration = max_value;
+    Vec2 normal;
+
+    auto TestAxis = [&](Vec2 n) -> bool {
+        float length = n.NormalizeSafe();
+        if (length == 0.0f)
+        {
+            return true;
+        }
+
+        float pa = extentsA.x * Abs(Dot(axesA[0], n)) + extentsA.y * Abs(Dot(axesA[1], n));
+        float pb = extentsB.x * Abs(Dot(axesB[0], n)) + extentsB.y * Abs(Dot(axesB[1], n));
+        float d = Abs(Dot(dir, n));
+
+        float separation = pa + pb + radii - d;
+        if (separation < 0.0f)
+        {
+            return false;
+        }
+
+        if (separation < minPenetration)
+        {
+            minPenetration = separation;
+            normal = n;
+
+            if (Dot(dir, n) < 0.0f)
+            {
+                normal = -normal;
+            }
+        }
+
+        return true;
+    };
+
+    if (!TestAxis(axesA[0])) return false;
+    if (!TestAxis(axesA[1])) return false;
+    if (!TestAxis(axesB[0])) return false;
+    if (!TestAxis(axesB[1])) return false;
+
+    // Found overlap
+
+    manifold->contactNormal = normal;
+    manifold->penetrationDepth = minPenetration;
+
+    FindContactPoints(normal, a, tfA, b, tfB, manifold);
+    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
+
+    return manifold->contactCount > 0;
+}
+
 bool PolygonVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
     const Polygon* p = (const Polygon*)a;
@@ -566,8 +796,13 @@ void InitializeDetectionFunctionMap()
     collide_function_map[Shape::Type::capsule][Shape::Type::circle] = &CapsuleVsCircle;
     collide_function_map[Shape::Type::capsule][Shape::Type::capsule] = &ConvexVsConvex;
 
+    collide_function_map[Shape::Type::box][Shape::Type::circle] = &BoxVsCircle;
+    collide_function_map[Shape::Type::box][Shape::Type::capsule] = &BoxVsCapsule;
+    collide_function_map[Shape::Type::box][Shape::Type::box] = &BoxVsBox;
+
     collide_function_map[Shape::Type::polygon][Shape::Type::circle] = &PolygonVsCircle;
     collide_function_map[Shape::Type::polygon][Shape::Type::capsule] = &ConvexVsConvex;
+    collide_function_map[Shape::Type::polygon][Shape::Type::box] = &ConvexVsConvex;
     collide_function_map[Shape::Type::polygon][Shape::Type::polygon] = &ConvexVsConvex;
 
     detection_function_initialized = true;

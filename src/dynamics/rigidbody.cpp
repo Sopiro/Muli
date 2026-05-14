@@ -2,9 +2,10 @@
 #include "muli/collider.h"
 #include "muli/world.h"
 
+#include "muli/box_shape.h"
 #include "muli/capsule_shape.h"
 #include "muli/circle_shape.h"
-#include "muli/polygon_shape.h"
+
 
 namespace muli
 {
@@ -126,7 +127,7 @@ Collider* RigidBody::CreateBoxCollider(
     float width, float height, float radius, const Transform& tf, float density, const Material& material
 )
 {
-    Polygon box{ width, height, radius };
+    Box box{ width, height, radius };
     return CreateCollider(&box, tf, density, material);
 }
 

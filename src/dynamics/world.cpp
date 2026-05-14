@@ -2,6 +2,7 @@
 #include "muli/island.h"
 #include "muli/time_of_impact.h"
 
+#include "muli/box_shape.h"
 #include "muli/capsule_shape.h"
 #include "muli/circle_shape.h"
 #include "muli/polygon_shape.h"
@@ -1321,8 +1322,7 @@ RigidBody* World::CreateBox(float width, float height, const Transform& tf, Rigi
 {
     RigidBody* b = CreateEmptyBody(tf, type);
 
-    Vec2 vertices[4] = { Vec2{ 0, 0 }, Vec2{ width, 0 }, Vec2{ width, height }, Vec2{ 0, height } };
-    Polygon box{ vertices, 4, true, radius };
+    Box box{ width, height, radius };
     b->CreateCollider(&box, identity, density);
 
     return b;
@@ -1718,6 +1718,11 @@ Shape* World::CloneShape(const Shape* shape, const Transform& transform)
         void* mem = blockAllocator.Allocate(sizeof(Capsule));
         return new (mem) Capsule(*(const Capsule*)shape, transform);
     }
+    case Shape::box:
+    {
+        void* mem = blockAllocator.Allocate(sizeof(Box));
+        return new (mem) Box(*(const Box*)shape, transform);
+    }
     case Shape::polygon:
     {
         void* mem = blockAllocator.Allocate(sizeof(Polygon));
@@ -1742,6 +1747,9 @@ void World::FreeShape(Shape* shape)
         break;
     case Shape::capsule:
         blockAllocator.Free(shape, sizeof(Capsule));
+        break;
+    case Shape::box:
+        blockAllocator.Free(shape, sizeof(Box));
         break;
     case Shape::polygon:
         blockAllocator.Free(shape, sizeof(Polygon));

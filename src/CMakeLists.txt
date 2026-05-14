@@ -18,6 +18,7 @@ set(HEADER_FILES
     ../include/muli/shape.h
     ../include/muli/circle_shape.h
     ../include/muli/capsule_shape.h
+    ../include/muli/box_shape.h
     ../include/muli/polygon_shape.h
 
     ../include/muli/collider.h
@@ -67,6 +68,7 @@ set(SOURCE_FILES
 
     geometry/circle_shape.cpp
     geometry/capsule_shape.cpp
+    geometry/box_shape.cpp
     geometry/polygon_shape.cpp
     geometry/geometry.cpp
     geometry/raycast.cpp

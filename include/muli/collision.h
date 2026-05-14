@@ -18,7 +18,6 @@ namespace muli
 
 constexpr int32 max_contact_point_count = 2;
 
-class RigidBody;
 class Shape;
 
 // 64byte
