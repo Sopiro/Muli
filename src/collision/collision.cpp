@@ -212,6 +212,7 @@ static void FindContactPoints(
     }
 
     manifold->referencePoint = ref.p1;
+    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
 }
 
 bool CircleVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
@@ -398,17 +399,17 @@ bool BoxVsCircle(const Shape* a, const Transform& tfA, const Shape* b, const Tra
 
 bool BoxVsCapsule(const Shape* a, const Transform& tfA, const Shape* b, const Transform& tfB, ContactManifold* manifold)
 {
-    const Box* boxA = (const Box*)a;
-    const Capsule* capsuleB = (const Capsule*)b;
+    const Box* box = (const Box*)a;
+    const Capsule* capsule = (const Capsule*)b;
 
-    Vec2 extentsA = boxA->GetHalfExtents();
+    Vec2 extentsA = box->GetHalfExtents();
 
     // Transform the capsule into the box local space so the box becomes axis-aligned.
-    Vec2 p1 = MulT(boxA->GetRotation(), MulT(tfA, Mul(tfB, capsuleB->GetVertexA())) - boxA->GetCenter());
-    Vec2 p2 = MulT(boxA->GetRotation(), MulT(tfA, Mul(tfB, capsuleB->GetVertexB())) - boxA->GetCenter());
+    Vec2 p1 = MulT(box->GetRotation(), MulT(tfA, Mul(tfB, capsule->GetVertexA())) - box->GetCenter());
+    Vec2 p2 = MulT(box->GetRotation(), MulT(tfA, Mul(tfB, capsule->GetVertexB())) - box->GetCenter());
     Vec2 d = p2 - p1;
 
-    float radii = boxA->GetRadius() + capsuleB->GetRadius();
+    float radii = box->GetRadius() + capsule->GetRadius();
 
     float minPenetration = max_value;
     Vec2 localNormal;
@@ -461,13 +462,12 @@ bool BoxVsCapsule(const Shape* a, const Transform& tfA, const Shape* b, const Tr
 
     // Found overlap
 
-    Vec2 normal = Mul(tfA.rotation, Mul(boxA->GetRotation(), localNormal));
+    Vec2 normal = Mul(tfA.rotation, Mul(box->GetRotation(), localNormal));
 
     manifold->contactNormal = normal;
     manifold->penetrationDepth = minPenetration;
 
     FindContactPoints(normal, a, tfA, b, tfB, manifold);
-    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
 
     return manifold->contactCount > 0;
 }
@@ -540,7 +540,6 @@ bool BoxVsBox(const Shape* a, const Transform& tfA, const Shape* b, const Transf
     manifold->penetrationDepth = minPenetration;
 
     FindContactPoints(normal, a, tfA, b, tfB, manifold);
-    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
 
     return manifold->contactCount > 0;
 }
@@ -746,7 +745,6 @@ bool ConvexVsConvex(const Shape* a, const Transform& tfA, const Shape* b, const 
     }
 
     FindContactPoints(manifold->contactNormal, a, tfA, b, tfB, manifold);
-    manifold->contactTangent.Set(-manifold->contactNormal.y, manifold->contactNormal.x);
 
     return true;
 }
