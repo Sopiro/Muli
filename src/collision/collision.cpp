@@ -412,7 +412,7 @@ bool BoxVsCapsule(const Shape* a, const Transform& tfA, const Shape* b, const Tr
     float radii = box->GetRadius() + capsule->GetRadius();
 
     float minPenetration = max_value;
-    Vec2 localNormal;
+    Vec2 localNormal = Vec2::zero;
 
     auto TestAxis = [&](Vec2 n) -> bool {
         float length = n.NormalizeSafe();
