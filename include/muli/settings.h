@@ -7,6 +7,7 @@ namespace muli
 
 // Contact solver settings
 constexpr float linear_slop = 0.004f; // meters
+constexpr float angular_slop = 2.0f * pi / 180.0f; // radians
 
 constexpr float position_solver_threshold = linear_slop * 2.5f;
 constexpr float toi_position_solver_threshold = linear_slop * 2.0f - linear_slop * 0.1f;

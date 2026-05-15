@@ -69,15 +69,15 @@ void AngleJoint::Prepare(const Timestep& step)
         limitState = angle_limit_equal;
         bias = (currentAngle - minAngle) * beta * step.inv_dt;
     }
-    else if (currentAngle < minAngle)
+    else if (currentAngle < minAngle - angular_slop)
     {
         limitState = angle_limit_at_lower;
-        bias = (currentAngle - minAngle) * beta * step.inv_dt;
+        bias = (currentAngle - (minAngle - angular_slop)) * beta * step.inv_dt;
     }
-    else if (currentAngle > maxAngle)
+    else if (currentAngle > maxAngle + angular_slop)
     {
         limitState = angle_limit_at_upper;
-        bias = (currentAngle - maxAngle) * beta * step.inv_dt;
+        bias = (currentAngle - (maxAngle + angular_slop)) * beta * step.inv_dt;
     }
     else
     {
