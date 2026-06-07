@@ -80,7 +80,7 @@ void Game::UpdateUI()
 
     // ImGui Windows
     ImGui::SetNextWindowPos({ 2, 2 }, ImGuiCond_Once, { 0.0f, 0.0f });
-    ImGui::SetNextWindowSize({ 240, 470 }, ImGuiCond_Once);
+    ImGui::SetNextWindowSize({ 240, 450 }, ImGuiCond_Once);
 
     static bool collapsed = false;
     if (Input::IsKeyPressed(GLFW_KEY_GRAVE_ACCENT))
@@ -126,12 +126,12 @@ void Game::UpdateUI()
                 static int32 ups = GetUpdateRate();
 
                 ImGui::SetNextItemWidth(120);
-                if (ImGui::SliderInt("Frame rate", &fps, 30, 300))
+                if (ImGui::SliderInt("Frame Rate", &fps, 30, 300))
                 {
                     SetFrameRate(fps);
                 }
                 ImGui::SetNextItemWidth(120);
-                if (ImGui::SliderInt("Update rate", &ups, 30, 300))
+                if (ImGui::SliderInt("Update Rate", &ups, 30, 300))
                 {
                     SetUpdateRate(ups);
                 }
@@ -144,28 +144,23 @@ void Game::UpdateUI()
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::CollapsingHeader("Debug options"))
                 {
-                    ImGui::Checkbox("Camera reset", &options.reset_camera);
-                    ImGui::Checkbox("Colorize island", &options.colorize_island);
-                    ImGui::Checkbox("Draw body", &options.draw_body);
-                    ImGui::Checkbox("Draw outlined", &options.draw_outlined);
+                    ImGui::Checkbox("Camera Reset", &options.reset_camera);
+                    ImGui::Checkbox("Colorize Island", &options.colorize_island);
+                    ImGui::Checkbox("Draw Body", &options.draw_body);
+                    ImGui::Checkbox("Draw Outlined", &options.draw_outlined);
                     ImGui::Checkbox("Show BVH", &options.show_bvh);
                     ImGui::Checkbox("Show AABB", &options.show_aabb);
-                    ImGui::Checkbox("Show contact point", &options.show_contact_point);
-                    ImGui::Checkbox("Show contact normal", &options.show_contact_normal);
+                    ImGui::Checkbox("Show Contact Point", &options.show_contact_point);
+                    ImGui::Checkbox("Show Contact Normal", &options.show_contact_normal);
                 }
 
                 World& world = demo->GetWorld();
                 WorldSettings& settings = demo->GetWorldSettings();
 
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-                if (ImGui::CollapsingHeader("Simulation settings"))
+                if (ImGui::CollapsingHeader("Simulation Settings"))
                 {
-                    if (ImGui::Checkbox("Apply gravity", &settings.apply_gravity))
-                    {
-                        world.Awake();
-                    }
-
-                    ImGui::Text("Constraint solve iterations");
+                    ImGui::Text("Solver Iterations");
                     {
                         ImGui::SetNextItemWidth(120);
                         ImGui::SliderInt("Velocity", &settings.step.velocity_iterations, 0, 50);
@@ -173,25 +168,28 @@ void Game::UpdateUI()
                         ImGui::SetNextItemWidth(120);
                         ImGui::SliderInt("Position", &settings.step.position_iterations, 0, 50);
                     }
-                    ImGui::Checkbox("Contact block solve", &block_solve);
-                    ImGui::Checkbox("Warm starting", &settings.step.warm_starting);
+                    if (ImGui::Checkbox("Apply Gravity", &settings.apply_gravity))
+                    {
+                        world.Awake();
+                    }
+                    ImGui::Checkbox("Block Solve", &block_solve);
+                    ImGui::Checkbox("Warm Starting", &settings.step.warm_starting);
                     ImGui::Checkbox("Sleeping", &settings.sleeping);
                     ImGui::Checkbox("Continuous", &settings.continuous);
-                    ImGui::Checkbox("Sub-stepping", &settings.sub_stepping);
                 }
 
                 ImGui::Separator();
-                ImGui::Text("%s", demos[demoIndex].name);
+                ImGui::Text("%lld.%s", demoIndex, demos[demoIndex].name);
                 ImGui::Text("Bodies: %d", world.GetBodyCount());
-                ImGui::Text("Sleeping dynamic bodies: %d", world.GetSleepingBodyCount());
+                ImGui::Text("Sleeping Dynamic Bodies: %d", world.GetSleepingBodyCount());
                 // ImGui::Text("Awake island count: %d", world.GetIslandCount());
-                ImGui::Text("Broad phase contacts: %d", world.GetContactCount());
+                ImGui::Text("Broad Phase Contacts: %d", world.GetContactCount());
                 ImGui::EndTabItem();
             }
 
             if (ImGui::BeginTabItem("Demos"))
             {
-                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 24 * ImGui::GetTextLineHeightWithSpacing() }))
+                if (ImGui::BeginListBox("##listbox 2", ImVec2{ -FLT_MIN, 23 * ImGui::GetTextLineHeightWithSpacing() }))
                 {
                     for (int32 i = 0; i < demoCount; ++i)
                     {
@@ -222,7 +220,7 @@ void Game::UpdateUI()
 
     ImGui::SetNextWindowPos({ 0, Window::Get()->GetWindowSize().y }, ImGuiCond_Always, ImVec2{ 0.0f, 1.0f });
     ImGui::Begin(
-        "Body info", NULL,
+        "BodyInfo", NULL,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
     );
