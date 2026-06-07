@@ -19,7 +19,7 @@ public:
         float range = size * 0.7f;
 
         float r = Rand(0.0f, 3.0f);
-        RigidBody* b;
+        Body* b;
 
         if (r < 1.0f)
         {
@@ -63,8 +63,8 @@ public:
     {
         if (world->GetBodyCount() > 1)
         {
-            RigidBody* b1 = world->GetBodyList();
-            RigidBody* b2 = b1->GetNext();
+            Body* b1 = world->GetBodyList();
+            Body* b2 = b1->GetNext();
 
             const Shape* s1 = b1->GetColliderList()->GetShape();
             const Shape* s2 = b2->GetColliderList()->GetShape();

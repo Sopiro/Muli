@@ -3,7 +3,7 @@
 namespace muli
 {
 
-Constraint::Constraint(RigidBody* bodyA, RigidBody* bodyB)
+Constraint::Constraint(Body* bodyA, Body* bodyB)
     : bodyA{ bodyA }
     , bodyB{ bodyB }
     , beta{ 0.0f }

@@ -13,7 +13,7 @@ private:
     Island(World* world, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity);
     ~Island();
 
-    void Add(RigidBody* body);
+    void Add(Body* body);
     void Add(Contact* contact);
     void Add(Joint* joint);
 
@@ -24,7 +24,7 @@ private:
     World* world;
 
     // Static body is not included
-    RigidBody** bodies;
+    Body** bodies;
     Contact** contacts;
     Joint** joints;
 
@@ -38,7 +38,7 @@ private:
     bool sleeping;
 };
 
-inline void Island::Add(RigidBody* body)
+inline void Island::Add(Body* body)
 {
     MuliAssert(bodyCount < bodyCapacity);
     body->islandIndex = bodyCount;

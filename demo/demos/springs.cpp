@@ -16,7 +16,7 @@ public:
 
         float h = screenBounds.y / 2.0f;
 
-        RigidBody* g = world->CreateBox(0.3f, 6, identity, RigidBody::static_body);
+        Body* g = world->CreateBox(0.3f, 6, identity, Body::static_body);
         g->SetPosition(0.0f, h);
 
         float size = 0.3f;
@@ -25,7 +25,7 @@ public:
         float yStart = h;
         float yGap = 2.0f;
 
-        RigidBody* b = world->CreateBox(size);
+        Body* b = world->CreateBox(size);
         b->SetPosition(length, yStart + yGap);
         world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.05f);
         if (constrain_linear_motion)

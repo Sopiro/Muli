@@ -6,14 +6,14 @@ namespace muli
 class PrismaticJointTest : public Demo
 {
 public:
-    RigidBody* ground;
+    Body* ground;
 
     PrismaticJointTest(Game& game)
         : Demo(game)
     {
-        ground = world->CreateBox(100.0f, 0.4f, identity, RigidBody::static_body);
+        ground = world->CreateBox(100.0f, 0.4f, identity, Body::static_body);
 
-        RigidBody* b = world->CreateBox(0.5f);
+        Body* b = world->CreateBox(0.5f);
         b->SetPosition(0.0f, 2.0f);
         world->CreatePrismaticJoint(ground, b);
         world->CreateLimitedDistanceJoint(ground, b, 0.0f, 8.0f);
@@ -23,8 +23,8 @@ public:
         world->CreatePrismaticJoint(ground, b, b->GetPosition(), Vec2{ 1.0f, 0.0f });
         world->CreateLimitedDistanceJoint(ground, b, -1.0f, 8.0f);
 
-        // world->CreateCapsule(Vec2{ 3.0f, 4.8f }, Vec2{ 3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
-        // world->CreateCapsule(Vec2{ -3.0f, 4.8f }, Vec2{ -3.0f, 5.2f }, 0.1f, identity, RigidBody::static_body);
+        // world->CreateCapsule(Vec2{ 3.0f, 4.8f }, Vec2{ 3.0f, 5.2f }, 0.1f, identity, Body::static_body);
+        // world->CreateCapsule(Vec2{ -3.0f, 4.8f }, Vec2{ -3.0f, 5.2f }, 0.1f, identity, Body::static_body);
     }
 
     static Demo* Create(Game& game)

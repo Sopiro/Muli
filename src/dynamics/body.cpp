@@ -1,4 +1,4 @@
-#include "muli/rigidbody.h"
+#include "muli/body.h"
 #include "muli/collider.h"
 #include "muli/world.h"
 
@@ -6,11 +6,10 @@
 #include "muli/capsule_shape.h"
 #include "muli/circle_shape.h"
 
-
 namespace muli
 {
 
-RigidBody::RigidBody(const Transform& tf, RigidBody::Type type)
+Body::Body(const Transform& tf, Body::Type type)
     : OnDestroy{ nullptr }
     , UserData{ nullptr }
     , type{ type }
@@ -40,7 +39,7 @@ RigidBody::RigidBody(const Transform& tf, RigidBody::Type type)
 {
 }
 
-RigidBody::~RigidBody()
+Body::~Body()
 {
     if (OnDestroy)
     {
@@ -50,7 +49,7 @@ RigidBody::~RigidBody()
     world = nullptr;
 }
 
-Collider* RigidBody::CreateCollider(Shape* shape, const Transform& tf, float density, const Material& material)
+Collider* Body::CreateCollider(Shape* shape, const Transform& tf, float density, const Material& material)
 {
     MuliAssert(world != nullptr);
     if (world == nullptr)
@@ -80,7 +79,7 @@ Collider* RigidBody::CreateCollider(Shape* shape, const Transform& tf, float den
     return collider;
 }
 
-void RigidBody::DestroyCollider(Collider* collider)
+void Body::DestroyCollider(Collider* collider)
 {
     if (collider == nullptr)
     {
@@ -117,13 +116,13 @@ void RigidBody::DestroyCollider(Collider* collider)
     ResetMassData();
 }
 
-Collider* RigidBody::CreateCircleCollider(float radius, const Transform& tf, float density, const Material& material)
+Collider* Body::CreateCircleCollider(float radius, const Transform& tf, float density, const Material& material)
 {
     Circle circle{ radius };
     return CreateCollider(&circle, tf, density, material);
 }
 
-Collider* RigidBody::CreateBoxCollider(
+Collider* Body::CreateBoxCollider(
     float width, float height, float radius, const Transform& tf, float density, const Material& material
 )
 {
@@ -131,7 +130,7 @@ Collider* RigidBody::CreateBoxCollider(
     return CreateCollider(&box, tf, density, material);
 }
 
-Collider* RigidBody::CreateCapsuleCollider(
+Collider* Body::CreateCapsuleCollider(
     float length, float radius, bool horizontal, const Transform& tf, float density, const Material& material
 )
 {
@@ -139,7 +138,7 @@ Collider* RigidBody::CreateCapsuleCollider(
     return CreateCollider(&capsule, tf, density, material);
 }
 
-Collider* RigidBody::CreateCapsuleCollider(
+Collider* Body::CreateCapsuleCollider(
     const Vec2& p1, const Vec2& p2, float radius, bool resetPosition, const Transform& tf, float density, const Material& material
 )
 {
@@ -147,7 +146,7 @@ Collider* RigidBody::CreateCapsuleCollider(
     return CreateCollider(&capsule, tf, density, material);
 }
 
-bool RigidBody::TestPoint(const Vec2& p) const
+bool Body::TestPoint(const Vec2& p) const
 {
     MuliAssert(colliderCount > 0);
 
@@ -162,7 +161,7 @@ bool RigidBody::TestPoint(const Vec2& p) const
     return false;
 }
 
-Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
+Vec2 Body::GetClosestPoint(const Vec2& p) const
 {
     MuliAssert(colliderCount > 0);
 
@@ -192,7 +191,7 @@ Vec2 RigidBody::GetClosestPoint(const Vec2& p) const
     return cp0;
 }
 
-void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback) const
+void Body::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCastAnyCallback* callback) const
 {
     RayCastInput input;
     input.from = from;
@@ -220,7 +219,7 @@ void RigidBody::RayCastAny(const Vec2& from, const Vec2& to, float radius, RayCa
     }
 }
 
-bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback) const
+bool Body::RayCastClosest(const Vec2& from, const Vec2& to, float radius, RayCastClosestCallback* callback) const
 {
     struct TempCallback : public RayCastAnyCallback
     {
@@ -255,7 +254,7 @@ bool RigidBody::RayCastClosest(const Vec2& from, const Vec2& to, float radius, R
     return false;
 }
 
-void RigidBody::RayCastAny(
+void Body::RayCastAny(
     const Vec2& from,
     const Vec2& to,
     float radius,
@@ -288,7 +287,7 @@ void RigidBody::RayCastAny(
     }
 }
 
-bool RigidBody::RayCastClosest(
+bool Body::RayCastClosest(
     const Vec2& from,
     const Vec2& to,
     float radius,
@@ -328,7 +327,7 @@ bool RigidBody::RayCastClosest(
     return false;
 }
 
-void RigidBody::SetType(RigidBody::Type newType)
+void Body::SetType(Body::Type newType)
 {
     if (type == newType)
     {
@@ -371,7 +370,7 @@ void RigidBody::SetType(RigidBody::Type newType)
     islandIndex = 0;
 }
 
-void RigidBody::SetEnabled(bool enabled)
+void Body::SetEnabled(bool enabled)
 {
     if (enabled == IsEnabled())
     {
@@ -410,7 +409,7 @@ void RigidBody::SetEnabled(bool enabled)
     }
 }
 
-void RigidBody::SetCollisionFilter(const CollisionFilter& filter) const
+void Body::SetCollisionFilter(const CollisionFilter& filter) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -418,7 +417,7 @@ void RigidBody::SetCollisionFilter(const CollisionFilter& filter) const
     }
 }
 
-void RigidBody::SetFriction(float friction) const
+void Body::SetFriction(float friction) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -426,7 +425,7 @@ void RigidBody::SetFriction(float friction) const
     }
 }
 
-void RigidBody::SetRestitution(float restitution) const
+void Body::SetRestitution(float restitution) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -434,7 +433,7 @@ void RigidBody::SetRestitution(float restitution) const
     }
 }
 
-void RigidBody::SetRestitutionThreshold(float threshold) const
+void Body::SetRestitutionThreshold(float threshold) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -442,7 +441,7 @@ void RigidBody::SetRestitutionThreshold(float threshold) const
     }
 }
 
-void RigidBody::SetSurfaceSpeed(float surfaceSpeed) const
+void Body::SetSurfaceSpeed(float surfaceSpeed) const
 {
     for (Collider* collider = colliderList; collider; collider = collider->next)
     {
@@ -450,7 +449,7 @@ void RigidBody::SetSurfaceSpeed(float surfaceSpeed) const
     }
 }
 
-void RigidBody::ResetMassData()
+void Body::ResetMassData()
 {
     mass = 0.0f;
     invMass = 0.0f;
@@ -503,7 +502,7 @@ void RigidBody::ResetMassData()
     linearVelocity += Cross(angularVelocity, motion.c - oldPosition);
 }
 
-void RigidBody::SynchronizeColliders()
+void Body::SynchronizeColliders()
 {
     if (IsSleeping())
     {

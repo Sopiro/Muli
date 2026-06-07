@@ -5,23 +5,23 @@
 namespace muli
 {
 
-RigidBody* CreateRandomConvexPolygon(
+Body* CreateRandomConvexPolygon(
     World* world,
     float length,
     int32 vertexCount = 0,
     const Transform& tf = identity,
-    RigidBody::Type type = RigidBody::dynamic_body,
+    Body::Type type = Body::dynamic_body,
     float radius = default_radius,
     float density = default_density
 );
 
-RigidBody* CreateRegularPolygon(
+Body* CreateRegularPolygon(
     World* world,
     float length,
     int32 vertexCount = 0,
     float initialAngle = 0,
     const Transform& tf = identity,
-    RigidBody::Type type = RigidBody::dynamic_body,
+    Body::Type type = Body::dynamic_body,
     float radius = default_radius,
     float density = default_density
 );

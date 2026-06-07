@@ -19,7 +19,7 @@ public:
     int32 GetContactCount() const;
 
 protected:
-    friend class RigidBody;
+    friend class Body;
 
     void AddCollider(Collider* collider);
     void RemoveCollider(Collider* collider);

@@ -224,7 +224,7 @@ void Game::UpdateUI()
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
     );
-    RigidBody* t = demo->GetTargetBody();
+    Body* t = demo->GetTargetBody();
 
     if (t)
     {
@@ -261,7 +261,7 @@ void Game::Render()
         {
             drawMode.fill = false;
 
-            for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
+            for (Body* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
                 drawMode.rounded = UserFlag::IsEnabled(b, UserFlag::render_polygon_radius);
@@ -274,7 +274,7 @@ void Game::Render()
         }
         else
         {
-            for (RigidBody* b = world.GetBodyList(); b; b = b->GetNext())
+            for (Body* b = world.GetBodyList(); b; b = b->GetNext())
             {
                 const Transform& tf = b->GetTransform();
                 drawMode.rounded = UserFlag::IsEnabled(b, UserFlag::render_polygon_radius);
@@ -318,7 +318,7 @@ void Game::Render()
         {
         case Joint::Type::grab_joint:
         {
-            RigidBody* b = j->GetBodyA();
+            Body* b = j->GetBodyA();
             const GrabJoint* gj = (const GrabJoint*)j;
 
             const Vec2& anchor = Mul(b->GetTransform(), gj->GetLocalAnchor());
@@ -330,8 +330,8 @@ void Game::Render()
         break;
         case Joint::Type::revolute_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const RevoluteJoint* rj = (const RevoluteJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), rj->GetLocalAnchorA());
@@ -346,8 +346,8 @@ void Game::Render()
         break;
         case Joint::Type::distance_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const DistanceJoint* dj = (const DistanceJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), dj->GetLocalAnchorA());
@@ -364,8 +364,8 @@ void Game::Render()
         break;
         case Joint::Type::line_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const LineJoint* lj = (const LineJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), lj->GetLocalAnchorA());
@@ -378,8 +378,8 @@ void Game::Render()
         }
         case Joint::Type::prismatic_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const PrismaticJoint* pj = (const PrismaticJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
@@ -393,8 +393,8 @@ void Game::Render()
         break;
         case Joint::Type::pulley_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const PulleyJoint* pj = (const PulleyJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
@@ -414,8 +414,8 @@ void Game::Render()
         break;
         case Joint::Type::motor_joint:
         {
-            RigidBody* ba = j->GetBodyA();
-            RigidBody* bb = j->GetBodyB();
+            Body* ba = j->GetBodyA();
+            Body* bb = j->GetBodyB();
             const MotorJoint* pj = (const MotorJoint*)j;
 
             const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());

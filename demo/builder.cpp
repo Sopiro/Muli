@@ -5,8 +5,8 @@
 namespace muli
 {
 
-RigidBody* CreateRandomConvexPolygon(
-    World* world, float length, int32 vertexCount, const Transform& tf, RigidBody::Type type, float radius, float density
+Body* CreateRandomConvexPolygon(
+    World* world, float length, int32 vertexCount, const Transform& tf, Body::Type type, float radius, float density
 )
 {
     if (vertexCount < 3)
@@ -32,7 +32,7 @@ RigidBody* CreateRandomConvexPolygon(
         vertices.emplace_back(Cos(angles[i]) * length, Sin(angles[i]) * length);
     }
 
-    RigidBody* b = world->CreateEmptyBody(tf, type);
+    Body* b = world->CreateEmptyBody(tf, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, identity, density);
@@ -40,13 +40,13 @@ RigidBody* CreateRandomConvexPolygon(
     return b;
 }
 
-RigidBody* CreateRegularPolygon(
+Body* CreateRegularPolygon(
     World* world,
     float length,
     int32 vertexCount,
     float initialAngle,
     const Transform& tf,
-    RigidBody::Type type,
+    Body::Type type,
     float radius,
     float density
 )
@@ -72,7 +72,7 @@ RigidBody* CreateRegularPolygon(
         vertices.push_back(vertex);
     }
 
-    RigidBody* b = world->CreateEmptyBody(tf, type);
+    Body* b = world->CreateEmptyBody(tf, type);
 
     Polygon polygon{ vertices.data(), vertexCount, true, radius };
     b->CreateCollider(&polygon, identity, density);

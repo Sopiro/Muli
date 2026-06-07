@@ -4,7 +4,7 @@
 namespace muli
 {
 
-Joint::Joint(Joint::Type type, RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio)
+Joint::Joint(Joint::Type type, Body* bodyA, Body* bodyB, float jointFrequency, float jointDampingRatio)
     : Constraint(bodyA, bodyB)
     , OnDestroy{ nullptr }
     , UserData{ nullptr }

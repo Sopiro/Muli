@@ -27,8 +27,8 @@ static float ClampImpulse(float impulse, int32 limitState)
 }
 
 AngleJoint::AngleJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
+    Body* bodyA,
+    Body* bodyB,
     float jointAngleOffset,
     float jointMinAngle,
     float jointMaxAngle,

@@ -3,13 +3,7 @@
 namespace muli
 {
 
-GrabJoint::GrabJoint(
-    RigidBody* body,
-    const Vec2& anchor,
-    const Vec2& targetPosition,
-    float jointFrequency,
-    float jointDampingRatio
-)
+GrabJoint::GrabJoint(Body* body, const Vec2& anchor, const Vec2& targetPosition, float jointFrequency, float jointDampingRatio)
     : Joint(grab_joint, body, body, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {

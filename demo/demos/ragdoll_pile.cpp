@@ -12,7 +12,7 @@ public:
     RagdollPile(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
         camera.scale.Set(2.0f);
         camera.position.y = (screenBounds.y * 2.0f) / 2;
         t0 = game.GetTime();

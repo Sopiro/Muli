@@ -22,13 +22,14 @@ public:
     ActiveRagdoll(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         ragdoll = CreateRagdoll(world, { 0.0f, 5.0f }, 1.0f, ragdollGroup);
 
         {
-            RigidBody* body = ragdoll.bones[0].body;
-            MotorJoint* j = world->CreateMotorJoint(body, ground, ground->GetPosition(), 0.0f, bodyTorque, bodyFrequency, bodyDampingRatio);
+            Body* body = ragdoll.bones[0].body;
+            MotorJoint* j =
+                world->CreateMotorJoint(body, ground, ground->GetPosition(), 0.0f, bodyTorque, bodyFrequency, bodyDampingRatio);
 
             joints[0] = j;
         }
@@ -39,25 +40,27 @@ public:
 
         // for (int32 i = Ragdoll::index_upperRightArm; i <= Ragdoll::index_lowerLeftArm; ++i)
         // {
-        //     RigidBody* body = ragdoll.bones[i].body;
+        //     Body* body = ragdoll.bones[i].body;
 
-        //     MotorJoint* j = world->CreateMotorJoint(ground, body, ground->GetPosition(), 0, armTorque, armFrequency, armDampingRatio);
+        //     MotorJoint* j = world->CreateMotorJoint(ground, body, ground->GetPosition(), 0, armTorque, armFrequency,
+        //     armDampingRatio);
 
         //     armJoints.push_back(j);
         // }
 
         for (int32 i = Ragdoll::index_upperRightLeg; i <= Ragdoll::index_lowerLeftLeg; ++i)
         {
-            RigidBody* body = ragdoll.bones[i].body;
+            Body* body = ragdoll.bones[i].body;
 
-            MotorJoint* j = world->CreateMotorJoint(body, ground, ground->GetPosition(), 0, legTorque, legFrequency, legDampingRatio);
+            MotorJoint* j =
+                world->CreateMotorJoint(body, ground, ground->GetPosition(), 0, legTorque, legFrequency, legDampingRatio);
 
             joints[i] = j;
         }
 
         // Projectile
         {
-            RigidBody* c = world->CreateCircle(0.6f);
+            Body* c = world->CreateCircle(0.6f);
             float r = Rand(0.0f, pi);
             Vec2 p{ Cos(r), Sin(r) };
             p *= 8.0f;
@@ -73,7 +76,7 @@ public:
 
     void Step()
     {
-        RigidBody* body = ragdoll.bones[Ragdoll::index_body].body;
+        Body* body = ragdoll.bones[Ragdoll::index_body].body;
 
         Vec2 p = body->GetPosition();
         bool found = false;
@@ -119,7 +122,7 @@ public:
 
             for (int32 i = Ragdoll::index_upperRightLeg; i <= Ragdoll::index_lowerLeftLeg; ++i)
             {
-                RigidBody* b = ragdoll.bones[i].body;
+                Body* b = ragdoll.bones[i].body;
                 joints[i]->SetMaxTorque(0.0f);
             }
         }

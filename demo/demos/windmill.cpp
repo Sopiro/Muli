@@ -14,12 +14,12 @@ class Windmill : public Demo
 
 public:
     MotorJoint* motor;
-    RigidBody* windmill;
+    Body* windmill;
 
     Windmill(Game& game)
         : Demo(game)
     {
-        RigidBody* stick = world->CreateCapsule(Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 3.0f }, 0.075f, identity, RigidBody::static_body);
+        Body* stick = world->CreateCapsule(Vec2{ 0.0f, 0.0f }, Vec2{ 0.0f, 3.0f }, 0.075f, identity, Body::static_body);
 
         windmill = world->CreateCapsule(2.0f, 0.075f, true);
         windmill->SetPosition(0.0f, 3.0f);
@@ -47,7 +47,7 @@ public:
         {
             if (create_bodies)
             {
-                RigidBody* c = CreateRegularPolygon(world, 0.18f, (int32)Rand(3, 8));
+                Body* c = CreateRegularPolygon(world, 0.18f, (int32)Rand(3, 8));
                 c->SetPosition(RandVec2(Vec2{ -2.0f, 6.0f }, Vec2{ 2.0f, 6.0f }));
             }
 

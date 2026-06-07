@@ -6,16 +6,16 @@ namespace muli
 class Car : public Demo
 {
 public:
-    RigidBody* body;
-    RigidBody* wheel1;
-    RigidBody* wheel2;
+    Body* body;
+    Body* wheel1;
+    Body* wheel2;
     MotorJoint* motor1;
     MotorJoint* motor2;
 
     Car(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         std::vector<Vec2> vertices;
         vertices.reserve(6);
@@ -26,7 +26,7 @@ public:
         vertices.emplace_back(0.5f, 0.25f);
         vertices.emplace_back(0.5f, 0.0f);
 
-        body = world->CreatePolygon(vertices, identity, RigidBody::dynamic_body, false);
+        body = world->CreatePolygon(vertices, identity, Body::dynamic_body, false);
 
         wheel1 = world->CreateCircle(0.15f);
         wheel1->SetPosition(-0.4f, 0.0f);

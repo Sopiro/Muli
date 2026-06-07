@@ -6,7 +6,7 @@ namespace muli
 class Breakable : public Demo,
                   public ContactListener
 {
-    RigidBody* b;
+    Body* b;
     Collider* c1;
     Collider* c2;
 
@@ -14,7 +14,7 @@ public:
     Breakable(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
         ground->GetColliderList()->ContactListener = this;
 
         b = world->CreateEmptyBody();
@@ -39,7 +39,7 @@ public:
     virtual void OnPreSolve(Collider* me, Collider* other, Contact* contact) override
     {
         static int32 broke;
-        RigidBody* b = other->GetBody();
+        Body* b = other->GetBody();
         if (b->GetColliderCount() == 1 || b->UserData == &broke)
         {
             return;
@@ -48,7 +48,7 @@ public:
         Collider* c = b->GetColliderList();
         while (c)
         {
-            RigidBody* e = world->CreateEmptyBody();
+            Body* e = world->CreateEmptyBody();
             e->CreateCollider(c->GetShape(), identity, c->GetDensity(), c->GetMaterial());
             e->SetTransform(b->GetTransform());
             e->SetLinearVelocity(b->GetLinearVelocity());

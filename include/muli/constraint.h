@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rigidbody.h"
+#include "body.h"
 
 namespace muli
 {
@@ -10,7 +10,7 @@ struct Timestep;
 class Constraint
 {
 public:
-    Constraint(RigidBody* bodyA, RigidBody* bodyB);
+    Constraint(Body* bodyA, Body* bodyB);
     virtual ~Constraint() = default;
 
     Constraint(const Constraint&) = delete;
@@ -43,23 +43,23 @@ public:
     virtual void SolveVelocityConstraints(const Timestep& step) = 0;
     virtual bool SolvePositionConstraints(const Timestep& step) = 0;
 
-    RigidBody* GetBodyA() const;
-    RigidBody* GetBodyB() const;
+    Body* GetBodyA() const;
+    Body* GetBodyB() const;
 
 protected:
-    RigidBody* bodyA;
-    RigidBody* bodyB;
+    Body* bodyA;
+    Body* bodyB;
 
     float beta;
     float gamma;
 };
 
-inline RigidBody* Constraint::GetBodyA() const
+inline Body* Constraint::GetBodyA() const
 {
     return bodyA;
 }
 
-inline RigidBody* Constraint::GetBodyB() const
+inline Body* Constraint::GetBodyB() const
 {
     return bodyB;
 }

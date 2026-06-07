@@ -8,14 +8,7 @@ namespace muli
 class LineJoint : public Joint
 {
 public:
-    LineJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
-        const Vec2& anchor,
-        const Vec2& dir,
-        float frequency,
-        float dampingRatio
-    );
+    LineJoint(Body* bodyA, Body* bodyB, const Vec2& anchor, const Vec2& dir, float frequency, float dampingRatio);
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

@@ -51,7 +51,7 @@ public:
 protected:
     friend class ContactGraph;
     friend class Collider;
-    friend class RigidBody;
+    friend class Body;
 
     virtual Shape* Clone(Allocator* allocator, const Transform& tf) const = 0;
 

@@ -34,7 +34,7 @@ private:
     int32 moveCount;
 
     NodeProxy nodeA;
-    RigidBody* bodyA;
+    Body* bodyA;
     Collider* colliderA;
     Shape::Type typeA;
 

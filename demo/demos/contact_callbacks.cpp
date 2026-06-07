@@ -13,7 +13,7 @@ public:
     ContactCallbacks(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         int32 rows = 12;
         float size = 0.25f;
@@ -26,13 +26,13 @@ public:
         {
             for (int32 x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = CreateRandomConvexPolygon(world, size, 6);
+                Body* b = CreateRandomConvexPolygon(world, size, 6);
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
                 b->SetLinearVelocity(b->GetPosition() * Rand(0.5f, 0.7f));
             }
         }
 
-        RigidBody* b = world->CreateCapsule(Vec2{ -5, 8 }, Vec2{ 5, 8 }, 0.05f);
+        Body* b = world->CreateCapsule(Vec2{ -5, 8 }, Vec2{ 5, 8 }, 0.05f);
 
         Collider* c = b->GetColliderList();
         c->ContactListener = this;
@@ -40,10 +40,10 @@ public:
 
     virtual void OnContactBegin(Collider* me, Collider* other, Contact* contact) override
     {
-        RigidBody* body = other->GetBody();
+        Body* body = other->GetBody();
         contact->SetEnabled(!disable_contacts);
 
-        if (body->GetType() != RigidBody::static_body)
+        if (body->GetType() != Body::static_body)
         {
             world->BufferDestroy(body);
         }

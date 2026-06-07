@@ -9,8 +9,8 @@ class PulleyJoint : public Joint
 {
 public:
     PulleyJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
+        Body* bodyA,
+        Body* bodyB,
         const Vec2& anchorA,
         const Vec2& anchorB,
         const Vec2& groundAnchorA,

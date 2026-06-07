@@ -23,7 +23,7 @@ static float drag = 0.5f;
 
 struct Wheel
 {
-    RigidBody* wheel;
+    Body* wheel;
     Vec2 forward, normal;
 
     float force, torque;
@@ -128,7 +128,7 @@ struct Wheel
 class TopDownCar : public Demo
 {
     Wheel wheels[4];
-    RigidBody* body;
+    Body* body;
 
     MotorJoint* mj[4];
 
@@ -186,7 +186,7 @@ public:
         Vec2 o(10, 0);
         for (int32 i = 0; i < 50; ++i)
         {
-            RigidBody* b;
+            Body* b;
             float random = Rand(0.0f, 3.0f);
             if (random < 1.0f)
             {

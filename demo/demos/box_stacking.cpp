@@ -14,7 +14,7 @@ public:
         : Demo(game)
     {
         float l = 0.5f;
-        RigidBody* ground = world->CreateCapsule(1000.0f, l, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(1000.0f, l, true, identity, Body::static_body);
 
         float size = 1.0f;
         float gap = 0.05f;
@@ -22,7 +22,7 @@ public:
 
         for (int32 i = 0; i < count; ++i)
         {
-            RigidBody* b = world->CreateBox(size);
+            Body* b = world->CreateBox(size);
             b->SetPosition(Rand(-error, error), start + i * (size + gap));
         }
 

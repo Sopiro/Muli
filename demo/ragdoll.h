@@ -8,7 +8,7 @@ namespace muli
 struct Bone
 {
     int32 parentIndex;
-    RigidBody* body;
+    Body* body;
     RevoluteJoint* revoluteJoint;
     AngleJoint* angleJoint;
 };
@@ -49,15 +49,14 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
     float headX = headPosition.x;
     float headY = headPosition.y;
 
-    RigidBody* head = world->CreateCircle(headRadius, identity, RigidBody::dynamic_body, density);
+    Body* head = world->CreateCircle(headRadius, identity, Body::dynamic_body, density);
     head->SetPosition(headX, headY);
 
     float bodyWidth = 0.8f * scale;
     float bodyHeight = 1.4f * scale;
     float neckGap = 0.05f * scale;
 
-    RigidBody* body =
-        world->CreateCapsule(bodyHeight / 2.0f, bodyWidth / 2.0f, false, identity, RigidBody::dynamic_body, density);
+    Body* body = world->CreateCapsule(bodyHeight / 2.0f, bodyWidth / 2.0f, false, identity, Body::dynamic_body, density);
     body->SetPosition(headX, headY - headRadius - bodyHeight / 2.0f);
 
     ragdoll.bones[Ragdoll::index_body] = Bone{ -1, body, nullptr, nullptr };
@@ -81,26 +80,26 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
         float armStartX = (bodyWidth / 2.0f + armRadius + bodyArmGap);
         float armStartY = (headRadius + neckGap + armRadius);
 
-        RigidBody* upperRightArm = world->CreateCapsule(
+        Body* upperRightArm = world->CreateCapsule(
             Vec2{ headX + armStartX, headY - armStartY }, Vec2{ headX + armStartX + armLength, headY - armStartY }, armRadius,
-            identity, RigidBody::dynamic_body, false, density
+            identity, Body::dynamic_body, false, density
         );
 
-        RigidBody* lowerRightArm = world->CreateCapsule(
+        Body* lowerRightArm = world->CreateCapsule(
             Vec2{ headX + armStartX + armLength + armGap, headY - armStartY },
             Vec2{ headX + armStartX + armLength + armGap + armLength, headY - armStartY }, armRadius, identity,
-            RigidBody::dynamic_body, false, density
+            Body::dynamic_body, false, density
         );
 
-        RigidBody* upperLeftArm = world->CreateCapsule(
+        Body* upperLeftArm = world->CreateCapsule(
             Vec2{ headX - armStartX, headY - armStartY }, Vec2{ headX - armStartX - armLength, headY - armStartY }, armRadius,
-            identity, RigidBody::dynamic_body, false, density
+            identity, Body::dynamic_body, false, density
         );
 
-        RigidBody* lowerLeftArm = world->CreateCapsule(
+        Body* lowerLeftArm = world->CreateCapsule(
             Vec2{ headX - armStartX - armLength - armGap, headY - armStartY },
             Vec2{ headX - armStartX - armLength - armGap - armLength, headY - armStartY }, armRadius, identity,
-            RigidBody::dynamic_body, false, density
+            Body::dynamic_body, false, density
         );
 
         // Arm joints
@@ -175,26 +174,26 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
         float legGap = 0.0f;
         float legStartY = (bodyHeight + headRadius + neckGap + legRadius + bodyLegGap);
 
-        RigidBody* upperRightLeg = world->CreateCapsule(
+        Body* upperRightLeg = world->CreateCapsule(
             Vec2{ headX + legStartX, headY - legStartY }, Vec2{ headX + legStartX, headY - legStartY - legLength }, legRadius,
-            identity, RigidBody::dynamic_body, false, density
+            identity, Body::dynamic_body, false, density
         );
 
-        RigidBody* lowerRightLeg = world->CreateCapsule(
+        Body* lowerRightLeg = world->CreateCapsule(
             Vec2{ headX + legStartX, headY - legStartY - legLength - legGap },
             Vec2{ headX + legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius, identity,
-            RigidBody::dynamic_body, false, density
+            Body::dynamic_body, false, density
         );
 
-        RigidBody* upperLeftLeg = world->CreateCapsule(
+        Body* upperLeftLeg = world->CreateCapsule(
             Vec2{ headX - legStartX, headY - legStartY }, Vec2{ headX - legStartX, headY - legStartY - legLength }, legRadius,
-            identity, RigidBody::dynamic_body, false, density
+            identity, Body::dynamic_body, false, density
         );
 
-        RigidBody* lowerLeftLeg = world->CreateCapsule(
+        Body* lowerLeftLeg = world->CreateCapsule(
             Vec2{ headX - legStartX, headY - legStartY - legLength - legGap },
             Vec2{ headX - legStartX, headY - legStartY - legLength - legGap - legLength }, legRadius, identity,
-            RigidBody::dynamic_body, false, density
+            Body::dynamic_body, false, density
         );
 
         // Leg joints

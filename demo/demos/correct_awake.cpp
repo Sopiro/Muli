@@ -13,7 +13,7 @@ public:
     CorrectAwake(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float size = 0.3f;
         float gap = 0.1f;
@@ -21,7 +21,7 @@ public:
 
         for (int32 i = 0; i < count; ++i)
         {
-            RigidBody* b = world->CreateBox(size);
+            Body* b = world->CreateBox(size);
             b->SetPosition(Rand(-error, error), start + i * (size + gap));
         }
 
@@ -35,7 +35,7 @@ public:
         if (!t && world->GetSleepingBodyCount() >= count)
         {
             t = true;
-            RigidBody* b = world->CreateBox(0.4f);
+            Body* b = world->CreateBox(0.4f);
             b->SetPosition(6.0f, 3.3f);
             b->SetContinuous(true);
 

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "body.h"
 #include "collision_filter.h"
 #include "material.h"
-#include "rigidbody.h"
 #include "shape.h"
 
 namespace muli
@@ -18,8 +18,8 @@ public:
     Collider(const Collider&) = delete;
     Collider& operator=(const Collider&) = delete;
 
-    RigidBody* GetBody();
-    const RigidBody* GetBody() const;
+    Body* GetBody();
+    const Body* GetBody() const;
 
     Collider* GetNext();
     const Collider* GetNext() const;
@@ -62,7 +62,7 @@ public:
     muli::ContactListener* ContactListener;
 
 private:
-    friend class RigidBody;
+    friend class Body;
     friend class AABBTree;
     friend class BroadPhase;
     friend class Contact;
@@ -73,10 +73,10 @@ private:
     Collider();
     ~Collider();
 
-    void Create(RigidBody* body, Shape* shape, const Transform& tf, float density, const Material& material);
+    void Create(Body* body, Shape* shape, const Transform& tf, float density, const Material& material);
     void Destroy(World* world);
 
-    RigidBody* body;
+    Body* body;
     Collider* next;
 
     Shape* shape;
@@ -91,12 +91,12 @@ private:
     bool enabled;
 };
 
-inline RigidBody* Collider::GetBody()
+inline Body* Collider::GetBody()
 {
     return body;
 }
 
-inline const RigidBody* Collider::GetBody() const
+inline const Body* Collider::GetBody() const
 {
     return body;
 }

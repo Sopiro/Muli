@@ -18,7 +18,7 @@ class RayCastAnyCallback;
 class RayCastClosestCallback;
 class BodyDestroyCallback;
 
-class RigidBody
+class Body
 {
 public:
     enum Type
@@ -28,11 +28,11 @@ public:
         dynamic_body,
     };
 
-    RigidBody(const Transform& tf, RigidBody::Type type);
-    ~RigidBody();
+    Body(const Transform& tf, Body::Type type);
+    ~Body();
 
-    RigidBody(const RigidBody&) = delete;
-    RigidBody& operator=(const RigidBody&) = delete;
+    Body(const Body&) = delete;
+    Body& operator=(const Body&) = delete;
 
     const Transform& GetTransform() const;
     void SetTransform(const Transform& transform);
@@ -82,8 +82,8 @@ public:
     void Translate(float dx, float dy);
     void Rotate(float a);
 
-    RigidBody::Type GetType() const;
-    void SetType(RigidBody::Type type);
+    Body::Type GetType() const;
+    void SetType(Body::Type type);
 
     void SetFixedRotation(bool fixed);
     bool IsRotationFixed() const;
@@ -102,10 +102,10 @@ public:
     int32 GetIslandID() const;
     int32 GetIslandIndex() const;
 
-    RigidBody* GetPrev();
-    const RigidBody* GetPrev() const;
-    RigidBody* GetNext();
-    const RigidBody* GetNext() const;
+    Body* GetPrev();
+    const Body* GetPrev() const;
+    Body* GetNext();
+    const Body* GetNext() const;
     World* GetWorld();
     const World* GetWorld() const;
 
@@ -247,8 +247,8 @@ protected:
 private:
     World* world;
 
-    RigidBody* prev;
-    RigidBody* next;
+    Body* prev;
+    Body* next;
 
     Collider* colliderList;
     int32 colliderCount;
@@ -259,17 +259,17 @@ private:
     float resting;
 };
 
-inline const Transform& RigidBody::GetTransform() const
+inline const Transform& Body::GetTransform() const
 {
     return transform;
 }
 
-inline void RigidBody::SetTransform(const Transform& newTransform)
+inline void Body::SetTransform(const Transform& newTransform)
 {
     SetTransform(newTransform.position, newTransform.rotation.GetAngle());
 }
 
-inline void RigidBody::SetTransform(const Vec2& newPos, float newAngle)
+inline void Body::SetTransform(const Vec2& newPos, float newAngle)
 {
     transform.position = newPos;
     transform.rotation = newAngle;
@@ -283,27 +283,27 @@ inline void RigidBody::SetTransform(const Vec2& newPos, float newAngle)
     SynchronizeColliders();
 }
 
-inline const Motion& RigidBody::GetMotion() const
+inline const Motion& Body::GetMotion() const
 {
     return motion;
 }
 
-inline const Vec2& RigidBody::GetLocalCenter() const
+inline const Vec2& Body::GetLocalCenter() const
 {
     return motion.localCenter;
 }
 
-inline const Vec2& RigidBody::GetPosition() const
+inline const Vec2& Body::GetPosition() const
 {
     return transform.position;
 }
 
-inline void RigidBody::SetPosition(const Vec2& pos)
+inline void Body::SetPosition(const Vec2& pos)
 {
     SetPosition(pos.x, pos.y);
 }
 
-inline void RigidBody::SetPosition(float x, float y)
+inline void Body::SetPosition(float x, float y)
 {
     transform.position.Set(x, y);
     motion.c = Mul(transform, motion.localCenter);
@@ -312,12 +312,12 @@ inline void RigidBody::SetPosition(float x, float y)
     SynchronizeColliders();
 }
 
-inline const Rotation& RigidBody::GetRotation() const
+inline const Rotation& Body::GetRotation() const
 {
     return transform.rotation;
 }
 
-inline void RigidBody::SetRotation(const Rotation& newRotation)
+inline void Body::SetRotation(const Rotation& newRotation)
 {
     transform.rotation = newRotation;
     motion.a = transform.rotation.GetAngle();
@@ -326,7 +326,7 @@ inline void RigidBody::SetRotation(const Rotation& newRotation)
     SynchronizeColliders();
 }
 
-inline void RigidBody::SetRotation(float newAngle)
+inline void Body::SetRotation(float newAngle)
 {
     transform.rotation = newAngle;
     motion.a = newAngle;
@@ -335,52 +335,52 @@ inline void RigidBody::SetRotation(float newAngle)
     SynchronizeColliders();
 }
 
-inline float RigidBody::GetAngle() const
+inline float Body::GetAngle() const
 {
     return motion.a;
 }
 
-inline float RigidBody::GetMass() const
+inline float Body::GetMass() const
 {
     return mass;
 }
 
-inline float RigidBody::GetInertia() const
+inline float Body::GetInertia() const
 {
     return inertia;
 }
 
-inline float RigidBody::GetInertiaLocalOrigin() const
+inline float Body::GetInertiaLocalOrigin() const
 {
     return inertia + mass * Length2(motion.localCenter);
 }
 
-inline float RigidBody::GetLinearDamping() const
+inline float Body::GetLinearDamping() const
 {
     return linearDamping;
 }
 
-inline void RigidBody::SetLinearDamping(float newLinearDamping)
+inline void Body::SetLinearDamping(float newLinearDamping)
 {
     linearDamping = newLinearDamping;
 }
 
-inline float RigidBody::GetAngularDamping() const
+inline float Body::GetAngularDamping() const
 {
     return angularDamping;
 }
 
-inline void RigidBody::SetAngularDamping(float newAngularDamping)
+inline void Body::SetAngularDamping(float newAngularDamping)
 {
     angularDamping = newAngularDamping;
 }
 
-inline const Vec2& RigidBody::GetForce() const
+inline const Vec2& Body::GetForce() const
 {
     return force;
 }
 
-inline void RigidBody::SetForce(const Vec2& newForce)
+inline void Body::SetForce(const Vec2& newForce)
 {
     if (type != Type::dynamic_body)
     {
@@ -390,12 +390,12 @@ inline void RigidBody::SetForce(const Vec2& newForce)
     force = newForce;
 }
 
-inline float RigidBody::GetTorque() const
+inline float Body::GetTorque() const
 {
     return torque;
 }
 
-inline void RigidBody::SetTorque(float newTorque)
+inline void Body::SetTorque(float newTorque)
 {
     if (type != Type::dynamic_body)
     {
@@ -405,17 +405,17 @@ inline void RigidBody::SetTorque(float newTorque)
     torque = newTorque;
 }
 
-inline const Vec2& RigidBody::GetLinearVelocity() const
+inline const Vec2& Body::GetLinearVelocity() const
 {
     return linearVelocity;
 }
 
-inline void RigidBody::SetLinearVelocity(const Vec2& newLinearVelocity)
+inline void Body::SetLinearVelocity(const Vec2& newLinearVelocity)
 {
     SetLinearVelocity(newLinearVelocity.x, newLinearVelocity.y);
 }
 
-inline void RigidBody::SetLinearVelocity(float vx, float vy)
+inline void Body::SetLinearVelocity(float vx, float vy)
 {
     if (type == Type::static_body)
     {
@@ -425,12 +425,12 @@ inline void RigidBody::SetLinearVelocity(float vx, float vy)
     linearVelocity.Set(vx, vy);
 }
 
-inline float RigidBody::GetAngularVelocity() const
+inline float Body::GetAngularVelocity() const
 {
     return angularVelocity;
 }
 
-inline void RigidBody::SetAngularVelocity(float newAngularVelocity)
+inline void Body::SetAngularVelocity(float newAngularVelocity)
 {
     if (type == Type::static_body)
     {
@@ -440,7 +440,7 @@ inline void RigidBody::SetAngularVelocity(float newAngularVelocity)
     angularVelocity = newAngularVelocity;
 }
 
-inline void RigidBody::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, bool awake)
+inline void Body::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -459,7 +459,7 @@ inline void RigidBody::ApplyForce(const Vec2& worldPoint, const Vec2& inForce, b
     }
 }
 
-inline void RigidBody::ApplyForceLocal(const Vec2& localPoint, const Vec2& inForce, bool awake)
+inline void Body::ApplyForceLocal(const Vec2& localPoint, const Vec2& inForce, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -478,7 +478,7 @@ inline void RigidBody::ApplyForceLocal(const Vec2& localPoint, const Vec2& inFor
     }
 }
 
-inline void RigidBody::ApplyTorque(float inTorque, bool awake)
+inline void Body::ApplyTorque(float inTorque, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -496,7 +496,7 @@ inline void RigidBody::ApplyTorque(float inTorque, bool awake)
     }
 }
 
-inline void RigidBody::ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& impulse, bool awake)
+inline void Body::ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& impulse, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -515,7 +515,7 @@ inline void RigidBody::ApplyLinearImpulse(const Vec2& worldPoint, const Vec2& im
     }
 }
 
-inline void RigidBody::ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec2& impulse, bool awake)
+inline void Body::ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec2& impulse, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -534,7 +534,7 @@ inline void RigidBody::ApplyLinearImpulseLocal(const Vec2& localPoint, const Vec
     }
 }
 
-inline void RigidBody::ApplyAngularImpulse(float impulse, bool awake)
+inline void Body::ApplyAngularImpulse(float impulse, bool awake)
 {
     if (type != Type::dynamic_body)
     {
@@ -552,12 +552,12 @@ inline void RigidBody::ApplyAngularImpulse(float impulse, bool awake)
     }
 }
 
-inline void RigidBody::Translate(const Vec2& d)
+inline void Body::Translate(const Vec2& d)
 {
     Translate(d.x, d.y);
 }
 
-inline void RigidBody::Translate(float dx, float dy)
+inline void Body::Translate(float dx, float dy)
 {
     transform.position.x += dx;
     transform.position.y += dy;
@@ -567,7 +567,7 @@ inline void RigidBody::Translate(float dx, float dy)
     SynchronizeColliders();
 }
 
-inline void RigidBody::Rotate(float a)
+inline void Body::Rotate(float a)
 {
     motion.a += a;
     motion.a0 = motion.a;
@@ -576,12 +576,12 @@ inline void RigidBody::Rotate(float a)
     SynchronizeColliders();
 }
 
-inline RigidBody::Type RigidBody::GetType() const
+inline Body::Type Body::GetType() const
 {
     return type;
 }
 
-inline void RigidBody::SetFixedRotation(bool fixed)
+inline void Body::SetFixedRotation(bool fixed)
 {
     if (fixed)
     {
@@ -595,12 +595,12 @@ inline void RigidBody::SetFixedRotation(bool fixed)
     ResetMassData();
 }
 
-inline bool RigidBody::IsRotationFixed() const
+inline bool Body::IsRotationFixed() const
 {
     return (flag & flag_fixed_rotation) == flag_fixed_rotation;
 }
 
-inline void RigidBody::SetContinuous(bool continuous)
+inline void Body::SetContinuous(bool continuous)
 {
     if (continuous)
     {
@@ -612,12 +612,12 @@ inline void RigidBody::SetContinuous(bool continuous)
     }
 }
 
-inline bool RigidBody::IsContinuous() const
+inline bool Body::IsContinuous() const
 {
     return (flag & flag_continuous) == flag_continuous;
 }
 
-inline void RigidBody::SetSleeping(bool sleeping)
+inline void Body::SetSleeping(bool sleeping)
 {
     if (sleeping)
     {
@@ -629,12 +629,12 @@ inline void RigidBody::SetSleeping(bool sleeping)
     }
 }
 
-inline bool RigidBody::IsSleeping() const
+inline bool Body::IsSleeping() const
 {
     return (flag & flag_sleeping) == flag_sleeping;
 }
 
-inline void RigidBody::Awake()
+inline void Body::Awake()
 {
     if (type == Type::static_body)
     {
@@ -645,7 +645,7 @@ inline void RigidBody::Awake()
     flag &= ~flag_sleeping;
 }
 
-inline void RigidBody::Sleep()
+inline void Body::Sleep()
 {
     if (type == Type::static_body)
     {
@@ -660,67 +660,67 @@ inline void RigidBody::Sleep()
     flag &= ~flag_sleeping;
 }
 
-inline bool RigidBody::IsEnabled() const
+inline bool Body::IsEnabled() const
 {
     return (flag & flag_enabled) == flag_enabled;
 }
 
-inline int32 RigidBody::GetIslandID() const
+inline int32 Body::GetIslandID() const
 {
     return islandID;
 }
 
-inline int32 RigidBody::GetIslandIndex() const
+inline int32 Body::GetIslandIndex() const
 {
     return islandIndex;
 }
 
-inline RigidBody* RigidBody::GetPrev()
+inline Body* Body::GetPrev()
 {
     return prev;
 }
 
-inline const RigidBody* RigidBody::GetPrev() const
+inline const Body* Body::GetPrev() const
 {
     return prev;
 }
 
-inline RigidBody* RigidBody::GetNext()
+inline Body* Body::GetNext()
 {
     return next;
 }
 
-inline const RigidBody* RigidBody::GetNext() const
+inline const Body* Body::GetNext() const
 {
     return next;
 }
 
-inline const World* RigidBody::GetWorld() const
+inline const World* Body::GetWorld() const
 {
     return world;
 }
 
-inline World* RigidBody::GetWorld()
+inline World* Body::GetWorld()
 {
     return world;
 }
 
-inline Collider* RigidBody::GetColliderList()
+inline Collider* Body::GetColliderList()
 {
     return colliderList;
 }
 
-inline const Collider* RigidBody::GetColliderList() const
+inline const Collider* Body::GetColliderList() const
 {
     return colliderList;
 }
 
-inline int32 RigidBody::GetColliderCount() const
+inline int32 Body::GetColliderCount() const
 {
     return colliderCount;
 }
 
-inline void RigidBody::SynchronizeTransform()
+inline void Body::SynchronizeTransform()
 {
     transform.rotation = motion.a;
     // Shift to origin
@@ -730,7 +730,7 @@ inline void RigidBody::SynchronizeTransform()
 // Advance to the new safe time
 // c0 = c = motion(alpha)
 // a0 = a = motion(alpha)
-inline void RigidBody::Advance(float alpha)
+inline void Body::Advance(float alpha)
 {
     motion.Advance(alpha);
     motion.c = motion.c0;

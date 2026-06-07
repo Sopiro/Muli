@@ -23,14 +23,14 @@ public:
     ShapeCastWorld(Game& game)
         : Demo(game)
     {
-        RigidBody* b;
+        Body* b;
         b = world->CreateCircle(0.3f);
         b->SetPosition(1.5f, 3.0f);
 
         b = world->CreateCapsule(0.5f, 0.2f);
         b->SetPosition(-0.5f, 3.0f);
 
-        b = world->CreateBox(0.3f, identity, RigidBody::dynamic_body, 0.1f);
+        b = world->CreateBox(0.3f, identity, Body::dynamic_body, 0.1f);
         b->SetPosition(0.5f, 3.0f);
         UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
 

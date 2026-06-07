@@ -35,10 +35,10 @@ World::~World()
 
 void World::Reset()
 {
-    RigidBody* b = bodyList;
+    Body* b = bodyList;
     while (b)
     {
-        RigidBody* b0 = b;
+        Body* b0 = b;
         b = b->next;
         Destroy(b0);
     }
@@ -64,14 +64,14 @@ void World::Solve()
     sleepingBodyCount = 0;
 
     // Use arena allocator to avoid per-frame allocation
-    RigidBody** stack = (RigidBody**)linearAllocator.Allocate(bodyCount * sizeof(RigidBody*));
+    Body** stack = (Body**)linearAllocator.Allocate(bodyCount * sizeof(Body*));
     int32 stackPointer;
 
     // Perform a DFS(Depth First Search) on the constraint graph
     // After building island, each island can be solved in parallel because they are independent of each other
-    for (RigidBody* b = bodyList; b; b = b->next)
+    for (Body* b = bodyList; b; b = b->next)
     {
-        if (b->flag & RigidBody::flag_island)
+        if (b->flag & Body::flag_island)
         {
             continue;
         }
@@ -82,7 +82,7 @@ void World::Solve()
             continue;
         }
 
-        if (b->type == RigidBody::static_body)
+        if (b->type == Body::static_body)
         {
             continue;
         }
@@ -94,12 +94,12 @@ void World::Solve()
 
         stackPointer = 0;
         stack[stackPointer++] = b;
-        b->flag |= RigidBody::flag_island;
+        b->flag |= Body::flag_island;
 
         ++islandID;
         while (stackPointer > 0)
         {
-            RigidBody* t = stack[--stackPointer];
+            Body* t = stack[--stackPointer];
 
             island.Add(t);
             t->islandID = islandID;
@@ -126,21 +126,21 @@ void World::Solve()
                 island.Add(c);
                 c->flag |= Contact::flag_island;
 
-                RigidBody* other = ce->other;
+                Body* other = ce->other;
 
-                if (other->flag & RigidBody::flag_island)
+                if (other->flag & Body::flag_island)
                 {
                     continue;
                 }
 
-                if (other->type == RigidBody::static_body)
+                if (other->type == Body::static_body)
                 {
                     continue;
                 }
 
                 MuliAssert(stackPointer < bodyCount);
                 stack[stackPointer++] = other;
-                other->flag |= RigidBody::flag_island;
+                other->flag |= Body::flag_island;
             }
 
             for (JointEdge* je = t->jointList; je; je = je->next)
@@ -152,7 +152,7 @@ void World::Solve()
                     continue;
                 }
 
-                RigidBody* other = je->other;
+                Body* other = je->other;
 
                 if (other->IsEnabled() == false)
                 {
@@ -162,19 +162,19 @@ void World::Solve()
                 island.Add(j);
                 j->flagIsland = true;
 
-                if (other->flag & RigidBody::flag_island)
+                if (other->flag & Body::flag_island)
                 {
                     continue;
                 }
 
-                if (other->type == RigidBody::static_body)
+                if (other->type == Body::static_body)
                 {
                     continue;
                 }
 
                 MuliAssert(stackPointer < bodyCount);
                 stack[stackPointer++] = other;
-                other->flag |= RigidBody::flag_island;
+                other->flag |= Body::flag_island;
             }
 
             if (t->resting > settings.sleeping_time)
@@ -189,23 +189,23 @@ void World::Solve()
         restingBodies = 0;
     }
 
-    linearAllocator.Free(stack, bodyCount * sizeof(RigidBody*));
+    linearAllocator.Free(stack, bodyCount * sizeof(Body*));
 
     islandCount = islandID;
 
-    for (RigidBody* body = bodyList; body; body = body->next)
+    for (Body* body = bodyList; body; body = body->next)
     {
         MuliAssert(body->motion.alpha0 == 0.0f);
 
-        if ((body->flag & RigidBody::flag_island) == 0)
+        if ((body->flag & Body::flag_island) == 0)
         {
             continue;
         }
 
-        MuliAssert(body->type != RigidBody::static_body);
+        MuliAssert(body->type != Body::static_body);
 
         // Clear island flag
-        body->flag &= ~RigidBody::flag_island;
+        body->flag &= ~Body::flag_island;
 
         // Synchronize transform and broad-phase collider node
         body->SynchronizeTransform();
@@ -265,15 +265,15 @@ float World::SolveTOI()
                     continue;
                 }
 
-                RigidBody* bodyA = colliderA->body;
-                RigidBody* bodyB = colliderB->body;
+                Body* bodyA = colliderA->body;
+                Body* bodyB = colliderB->body;
 
-                RigidBody::Type typeA = bodyA->type;
-                RigidBody::Type typeB = bodyB->type;
-                MuliAssert(typeA == RigidBody::dynamic_body || typeB == RigidBody::dynamic_body);
+                Body::Type typeA = bodyA->type;
+                Body::Type typeB = bodyB->type;
+                MuliAssert(typeA == Body::dynamic_body || typeB == Body::dynamic_body);
 
-                bool activeA = bodyA->IsSleeping() == false && typeA != RigidBody::static_body;
-                bool activeB = bodyB->IsSleeping() == false && typeB != RigidBody::static_body;
+                bool activeA = bodyA->IsSleeping() == false && typeA != Body::static_body;
+                bool activeB = bodyB->IsSleeping() == false && typeB != Body::static_body;
 
                 // Is at least one body active (awake and dynamic or kinematic)?
                 if (activeA == false && activeB == false)
@@ -281,8 +281,8 @@ float World::SolveTOI()
                     continue;
                 }
 
-                bool collideA = bodyA->IsContinuous() || typeA == RigidBody::static_body;
-                bool collideB = bodyB->IsContinuous() || typeB == RigidBody::static_body;
+                bool collideA = bodyA->IsContinuous() || typeA == Body::static_body;
+                bool collideB = bodyB->IsContinuous() || typeB == Body::static_body;
 
                 // Discard non-continuous dynamic|kinematic vs. non-continuous dynamic|kinematic case
                 if (collideA == false && collideB == false)
@@ -368,8 +368,8 @@ float World::SolveTOI()
         // Advance the bodies to the TOI
         Collider* colliderA = minContact->colliderA;
         Collider* colliderB = minContact->colliderB;
-        RigidBody* bodyA = colliderA->body;
-        RigidBody* bodyB = colliderB->body;
+        Body* bodyA = colliderA->body;
+        Body* bodyB = colliderB->body;
 
         Motion save1 = bodyA->motion;
         Motion save2 = bodyB->motion;
@@ -403,17 +403,17 @@ float World::SolveTOI()
         island.Add(bodyB);
         island.Add(minContact);
 
-        bodyA->flag |= RigidBody::flag_island;
-        bodyB->flag |= RigidBody::flag_island;
+        bodyA->flag |= Body::flag_island;
+        bodyB->flag |= Body::flag_island;
         minContact->flag |= Contact::flag_island;
 
         // Find contacts for TOI contact bodies
-        RigidBody* bodies[2] = { bodyA, bodyB };
+        Body* bodies[2] = { bodyA, bodyB };
         for (int32 i = 0; i < 2; ++i)
         {
-            RigidBody* body = bodies[i];
+            Body* body = bodies[i];
 
-            if (body->type != RigidBody::dynamic_body)
+            if (body->type != Body::dynamic_body)
             {
                 continue;
             }
@@ -437,13 +437,13 @@ float World::SolveTOI()
                     continue;
                 }
 
-                RigidBody* other = ce->other;
+                Body* other = ce->other;
 
                 // Awake linked bodies
                 other->Awake();
 
                 // Discard non-continuous dynamic vs. non-continuous dynamic case
-                if (body->IsContinuous() == false && other->IsContinuous() == false && other->type == RigidBody::dynamic_body)
+                if (body->IsContinuous() == false && other->IsContinuous() == false && other->type == Body::dynamic_body)
                 {
                     continue;
                 }
@@ -451,7 +451,7 @@ float World::SolveTOI()
                 Motion save = other->motion;
 
                 // Tentatively advance the body to the TOI
-                if ((other->flag & RigidBody::flag_island) == 0)
+                if ((other->flag & Body::flag_island) == 0)
                 {
                     other->Advance(minAlpha);
                 }
@@ -472,12 +472,12 @@ float World::SolveTOI()
                 island.Add(contact);
 
                 // Has the other body already been added to the island?
-                if (other->flag & RigidBody::flag_island)
+                if (other->flag & Body::flag_island)
                 {
                     continue;
                 }
 
-                if (other->type == RigidBody::static_body)
+                if (other->type == Body::static_body)
                 {
                     continue;
                 }
@@ -499,10 +499,10 @@ float World::SolveTOI()
         // Reset island flags and synchronize broad-phase collider node
         for (int32 i = 0; i < island.bodyCount; ++i)
         {
-            RigidBody* body = island.bodies[i];
-            body->flag &= ~RigidBody::flag_island;
+            Body* body = island.bodies[i];
+            body->flag &= ~Body::flag_island;
 
-            if (body->type != RigidBody::dynamic_body)
+            if (body->type != Body::dynamic_body)
             {
                 continue;
             }
@@ -526,10 +526,10 @@ float World::SolveTOI()
 
     MuliAssert(stepComplete == true);
 
-    for (RigidBody* body = bodyList; body; body = body->next)
+    for (Body* body = bodyList; body; body = body->next)
     {
         body->motion.alpha0 = 0.0f;
-        body->flag &= ~RigidBody::flag_island;
+        body->flag &= ~Body::flag_island;
     }
 
     for (Contact* contact = contactGraph.contactList; contact; contact = contact->next)
@@ -572,7 +572,7 @@ float World::Step(float dt)
         progress = SolveTOI();
     }
 
-    for (RigidBody* b : destroyBodyBuffer)
+    for (Body* b : destroyBodyBuffer)
     {
         Destroy(b);
     }
@@ -587,7 +587,7 @@ float World::Step(float dt)
     return progress;
 }
 
-void World::Destroy(RigidBody* body)
+void World::Destroy(Body* body)
 {
     MuliAssert(body->world == this);
 
@@ -618,13 +618,13 @@ void World::Destroy(RigidBody* body)
     --bodyCount;
 }
 
-void World::Destroy(std::span<RigidBody*> bodies)
+void World::Destroy(std::span<Body*> bodies)
 {
-    std::unordered_set<RigidBody*> destroyed;
+    std::unordered_set<Body*> destroyed;
 
     for (size_t i = 0; i < bodies.size(); ++i)
     {
-        RigidBody* b = bodies[i];
+        Body* b = bodies[i];
 
         if (destroyed.find(b) != destroyed.end())
         {
@@ -634,12 +634,12 @@ void World::Destroy(std::span<RigidBody*> bodies)
     }
 }
 
-void World::BufferDestroy(RigidBody* body)
+void World::BufferDestroy(Body* body)
 {
     destroyBodyBuffer.push_back(body);
 }
 
-void World::BufferDestroy(std::span<RigidBody*> bodies)
+void World::BufferDestroy(std::span<Body*> bodies)
 {
     for (size_t i = 0; i < bodies.size(); ++i)
     {
@@ -649,8 +649,8 @@ void World::BufferDestroy(std::span<RigidBody*> bodies)
 
 void World::Destroy(Joint* joint)
 {
-    RigidBody* bodyA = joint->bodyA;
-    RigidBody* bodyB = joint->bodyB;
+    Body* bodyA = joint->bodyA;
+    Body* bodyB = joint->bodyB;
 
     // Remove from the world
     if (joint->prev) joint->prev->next = joint->next;
@@ -1179,7 +1179,7 @@ bool World::ShapeCastClosest(
     return false;
 }
 
-RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
+Body* World::DuplicateBody(Body* body, const Transform& tf)
 {
     MuliAssert(body->world == this);
     if (body->world != this)
@@ -1187,7 +1187,7 @@ RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
         return nullptr;
     }
 
-    RigidBody* b = CreateEmptyBody(identity, body->GetType());
+    Body* b = CreateEmptyBody(identity, body->GetType());
 
     for (Collider* collider = body->colliderList; collider; collider = collider->next)
     {
@@ -1224,10 +1224,10 @@ RigidBody* World::DuplicateBody(RigidBody* body, const Transform& tf)
     return b;
 }
 
-RigidBody* World::CreateEmptyBody(const Transform& tf, RigidBody::Type type)
+Body* World::CreateEmptyBody(const Transform& tf, Body::Type type)
 {
-    void* mem = blockAllocator.Allocate(sizeof(RigidBody));
-    RigidBody* body = new (mem) RigidBody(tf, type);
+    void* mem = blockAllocator.Allocate(sizeof(Body));
+    Body* body = new (mem) Body(tf, type);
 
     body->world = this;
 
@@ -1248,9 +1248,9 @@ RigidBody* World::CreateEmptyBody(const Transform& tf, RigidBody::Type type)
     return body;
 }
 
-RigidBody* World::CreateCircle(float radius, const Transform& tf, RigidBody::Type type, float density)
+Body* World::CreateCircle(float radius, const Transform& tf, Body::Type type, float density)
 {
-    RigidBody* b = CreateEmptyBody(tf, type);
+    Body* b = CreateEmptyBody(tf, type);
 
     Circle circle{ radius };
     b->CreateCollider(&circle, identity, density);
@@ -1258,11 +1258,9 @@ RigidBody* World::CreateCircle(float radius, const Transform& tf, RigidBody::Typ
     return b;
 }
 
-RigidBody* World::CreateCapsule(
-    float length, float radius, bool horizontal, const Transform& tf, RigidBody::Type type, float density
-)
+Body* World::CreateCapsule(float length, float radius, bool horizontal, const Transform& tf, Body::Type type, float density)
 {
-    RigidBody* b = CreateEmptyBody(tf, type);
+    Body* b = CreateEmptyBody(tf, type);
 
     Capsule capsule{ length, radius, horizontal };
     b->CreateCollider(&capsule, identity, density);
@@ -1270,17 +1268,11 @@ RigidBody* World::CreateCapsule(
     return b;
 }
 
-RigidBody* World::CreateCapsule(
-    const Vec2& point1,
-    const Vec2& point2,
-    float radius,
-    const Transform& tf,
-    RigidBody::Type type,
-    bool resetPosition,
-    float density
+Body* World::CreateCapsule(
+    const Vec2& point1, const Vec2& point2, float radius, const Transform& tf, Body::Type type, bool resetPosition, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(tf, type);
+    Body* b = CreateEmptyBody(tf, type);
 
     Vec2 center = (point1 + point2) * 0.5f;
     Capsule capsule{ point1, point2, radius, true };
@@ -1294,11 +1286,11 @@ RigidBody* World::CreateCapsule(
     return b;
 }
 
-RigidBody* World::CreatePolygon(
-    std::span<Vec2> vertices, const Transform& tf, RigidBody::Type type, bool resetPosition, float radius, float density
+Body* World::CreatePolygon(
+    std::span<Vec2> vertices, const Transform& tf, Body::Type type, bool resetPosition, float radius, float density
 )
 {
-    RigidBody* b = CreateEmptyBody(tf, type);
+    Body* b = CreateEmptyBody(tf, type);
 
     Polygon polygon(vertices.data(), int32(vertices.size()), true, radius);
     b->CreateCollider(&polygon, identity, density);
@@ -1318,9 +1310,9 @@ RigidBody* World::CreatePolygon(
     return b;
 }
 
-RigidBody* World::CreateBox(float width, float height, const Transform& tf, RigidBody::Type type, float radius, float density)
+Body* World::CreateBox(float width, float height, const Transform& tf, Body::Type type, float radius, float density)
 {
-    RigidBody* b = CreateEmptyBody(tf, type);
+    Body* b = CreateEmptyBody(tf, type);
 
     Box box{ width, height, radius };
     b->CreateCollider(&box, identity, density);
@@ -1328,13 +1320,13 @@ RigidBody* World::CreateBox(float width, float height, const Transform& tf, Rigi
     return b;
 }
 
-RigidBody* World::CreateBox(float size, const Transform& tf, RigidBody::Type type, float radius, float density)
+Body* World::CreateBox(float size, const Transform& tf, Body::Type type, float radius, float density)
 {
     return CreateBox(size, size, tf, type, radius, density);
 }
 
 GrabJoint* World::CreateGrabJoint(
-    RigidBody* body, const Vec2& anchor, const Vec2& target, float jointFrequency, float jointDampingRatio
+    Body* body, const Vec2& anchor, const Vec2& target, float jointFrequency, float jointDampingRatio
 )
 {
     if (body->world != this)
@@ -1350,7 +1342,7 @@ GrabJoint* World::CreateGrabJoint(
 }
 
 RevoluteJoint* World::CreateRevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
+    Body* bodyA, Body* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1366,8 +1358,8 @@ RevoluteJoint* World::CreateRevoluteJoint(
 }
 
 DistanceJoint* World::CreateDistanceJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
+    Body* bodyA,
+    Body* bodyB,
     const Vec2& anchorA,
     const Vec2& anchorB,
     float length,
@@ -1381,22 +1373,23 @@ DistanceJoint* World::CreateDistanceJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
-    DistanceJoint* dj = new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, length, jointFrequency, jointDampingRatio);
+    DistanceJoint* dj =
+        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, length, jointFrequency, jointDampingRatio);
 
     AddJoint(dj);
     return dj;
 }
 
-DistanceJoint* World::CreateDistanceJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float length, float jointFrequency, float jointDampingRatio
-)
+DistanceJoint* World::CreateDistanceJoint(Body* bodyA, Body* bodyB, float length, float jointFrequency, float jointDampingRatio)
 {
-    return CreateDistanceJoint(bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, jointFrequency, jointDampingRatio);
+    return CreateDistanceJoint(
+        bodyA, bodyB, bodyA->GetPosition(), bodyB->GetPosition(), length, jointFrequency, jointDampingRatio
+    );
 }
 
 DistanceJoint* World::CreateLimitedDistanceJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
+    Body* bodyA,
+    Body* bodyB,
     const Vec2& anchorA,
     const Vec2& anchorB,
     float minLength,
@@ -1419,12 +1412,7 @@ DistanceJoint* World::CreateLimitedDistanceJoint(
 }
 
 DistanceJoint* World::CreateLimitedDistanceJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    float minLength,
-    float maxLength,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, float minLength, float maxLength, float jointFrequency, float jointDampingRatio
 )
 {
     return CreateLimitedDistanceJoint(
@@ -1432,9 +1420,7 @@ DistanceJoint* World::CreateLimitedDistanceJoint(
     );
 }
 
-AngleJoint* World::CreateAngleJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio
-)
+AngleJoint* World::CreateAngleJoint(Body* bodyA, Body* bodyB, float jointFrequency, float jointDampingRatio)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1450,12 +1436,7 @@ AngleJoint* World::CreateAngleJoint(
 }
 
 AngleJoint* World::CreateLimitedAngleJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    float minAngle,
-    float maxAngle,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, float minAngle, float maxAngle, float jointFrequency, float jointDampingRatio
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1464,16 +1445,14 @@ AngleJoint* World::CreateLimitedAngleJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
-    AngleJoint* aj =
-        new (mem) AngleJoint(bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), minAngle, maxAngle, jointFrequency, jointDampingRatio);
+    AngleJoint* aj = new (mem)
+        AngleJoint(bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), minAngle, maxAngle, jointFrequency, jointDampingRatio);
 
     AddJoint(aj);
     return aj;
 }
 
-WeldJoint* World::CreateWeldJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
-)
+WeldJoint* World::CreateWeldJoint(Body* bodyA, Body* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio)
 {
     if (bodyA->world != this || bodyB->world != this)
     {
@@ -1488,12 +1467,7 @@ WeldJoint* World::CreateWeldJoint(
 }
 
 LineJoint* World::CreateLineJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    const Vec2& anchor,
-    const Vec2& dir,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, const Vec2& anchor, const Vec2& dir, float jointFrequency, float jointDampingRatio
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1508,9 +1482,7 @@ LineJoint* World::CreateLineJoint(
     return lj;
 }
 
-LineJoint* World::CreateLineJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio
-)
+LineJoint* World::CreateLineJoint(Body* bodyA, Body* bodyB, float jointFrequency, float jointDampingRatio)
 {
     return CreateLineJoint(
         bodyA, bodyB, bodyA->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), jointFrequency,
@@ -1519,12 +1491,7 @@ LineJoint* World::CreateLineJoint(
 }
 
 PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    const Vec2& anchor,
-    const Vec2& dir,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, const Vec2& anchor, const Vec2& dir, float jointFrequency, float jointDampingRatio
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1539,9 +1506,7 @@ PrismaticJoint* World::CreatePrismaticJoint(
     return pj;
 }
 
-PrismaticJoint* World::CreatePrismaticJoint(
-    RigidBody* bodyA, RigidBody* bodyB, float jointFrequency, float jointDampingRatio
-)
+PrismaticJoint* World::CreatePrismaticJoint(Body* bodyA, Body* bodyB, float jointFrequency, float jointDampingRatio)
 {
     return CreatePrismaticJoint(
         bodyA, bodyB, bodyB->GetPosition(), Normalize(bodyB->GetPosition() - bodyA->GetPosition()), jointFrequency,
@@ -1550,8 +1515,8 @@ PrismaticJoint* World::CreatePrismaticJoint(
 }
 
 PulleyJoint* World::CreatePulleyJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
+    Body* bodyA,
+    Body* bodyB,
     const Vec2& anchorA,
     const Vec2& anchorB,
     const Vec2& groundAnchorA,
@@ -1567,21 +1532,15 @@ PulleyJoint* World::CreatePulleyJoint(
     }
 
     void* mem = blockAllocator.Allocate(sizeof(PulleyJoint));
-    PulleyJoint* pj =
-        new (mem) PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, jointFrequency, jointDampingRatio);
+    PulleyJoint* pj = new (mem)
+        PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, jointFrequency, jointDampingRatio);
 
     AddJoint(pj);
     return pj;
 }
 
 MotorJoint* World::CreateMotorJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    const Vec2& anchor,
-    float maxForce,
-    float maxTorque,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, const Vec2& anchor, float maxForce, float maxTorque, float jointFrequency, float jointDampingRatio
 )
 {
     if (bodyA->world != this || bodyB->world != this)
@@ -1639,10 +1598,10 @@ void World::AddJoint(Joint* joint)
     ++jointCount;
 }
 
-void World::FreeBody(RigidBody* body)
+void World::FreeBody(Body* body)
 {
-    body->~RigidBody();
-    blockAllocator.Free(body, sizeof(RigidBody));
+    body->~Body();
+    blockAllocator.Free(body, sizeof(Body));
 }
 
 void World::FreeJoint(Joint* joint)

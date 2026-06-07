@@ -122,7 +122,7 @@ bool BroadPhase::QueryCallback(NodeProxy nodeB, Collider* colliderB)
         return true;
     }
 
-    RigidBody* bodyB = colliderB->body;
+    Body* bodyB = colliderB->body;
     if (bodyA == bodyB)
     {
         return true;

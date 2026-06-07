@@ -9,7 +9,7 @@ public:
     CircleStacking(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float xStart = -3.0f;
         float yStart = 1.0f;
@@ -22,7 +22,7 @@ public:
         {
             for (int32 j = i; j < rows; ++j)
             {
-                RigidBody* c = world->CreateCircle(size);
+                Body* c = world->CreateCircle(size);
                 c->SetPosition(xStart + (gap + size * 2.0f) * i, yStart + (gap + size * 2.0f) * j);
             }
         }

@@ -27,8 +27,8 @@ static float ClampImpulse(float impulse, int32 limitState)
 }
 
 DistanceJoint::DistanceJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
+    Body* bodyA,
+    Body* bodyB,
     const Vec2& anchorA,
     const Vec2& anchorB,
     float jointMinLength,

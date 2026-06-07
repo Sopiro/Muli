@@ -16,7 +16,7 @@ public:
     {
         settings.sub_stepping = true;
 
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         int32 rows = 15;
         float boxSize = 0.4f;
@@ -29,7 +29,7 @@ public:
         {
             for (int32 x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = world->CreateBox(boxSize);
+                Body* b = world->CreateBox(boxSize);
                 b->SetPosition(xStart + y * (boxSize + xGap) / 2.0f + x * (boxSize + xGap), yStart + y * (boxSize + yGap));
                 b->SetContinuous(true);
             }
@@ -75,7 +75,7 @@ public:
             t = true;
 
             float r = 1.5f;
-            RigidBody* b = world->CreateCircle(r);
+            Body* b = world->CreateCircle(r);
 
             Vec2 p = PolarToCart(DegToRad(angle), 12.0f);
             b->SetPosition(p + Vec2{ 0.0f, r });

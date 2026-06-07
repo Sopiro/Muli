@@ -9,7 +9,7 @@ public:
     CapsuleStacking(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float xStart = -3.5f;
         float yStart = 1.0f;
@@ -22,7 +22,7 @@ public:
         {
             for (int32 j = 0; j < rows; ++j)
             {
-                RigidBody* c = world->CreateCapsule(size, size / 2.0f);
+                Body* c = world->CreateCapsule(size, size / 2.0f);
                 c->SetPosition(xStart + (gap + size * 2) * i, yStart + (gap + size * 2) * j);
                 int32 k = Abs(rows / 2 - i) + 2;
                 if (j % k == 0)

@@ -13,7 +13,7 @@ public:
     SuspensionBridge(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float groundStart = 0.2f;
 
@@ -25,10 +25,10 @@ public:
         float sizeX = 0.5f;
         float sizeY = sizeX * 0.25f;
 
-        RigidBody* pillar = world->CreateBox(pillarWidth, yStart, identity, RigidBody::static_body);
+        Body* pillar = world->CreateBox(pillarWidth, yStart, identity, Body::static_body);
         pillar->SetPosition(xStart, yStart / 2 + 0.2f);
 
-        RigidBody* b1 = world->CreateBox(sizeX, sizeY);
+        Body* b1 = world->CreateBox(sizeX, sizeY);
         b1->SetPosition(xStart + sizeX / 2 + pillarWidth / 2 + gap, yStart + groundStart);
 
         Joint* j;
@@ -37,7 +37,9 @@ public:
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f);
+            j = world->CreateRevoluteJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f
+            );
         }
         else
         {
@@ -49,7 +51,7 @@ public:
 
         for (int32 i = 1; i + 1 < xStart * -2 / (sizeX + gap); ++i)
         {
-            RigidBody* b2 = world->CreateBox(sizeX, sizeY);
+            Body* b2 = world->CreateBox(sizeX, sizeY);
             b2->SetPosition(xStart + sizeX / 2.0f + pillarWidth / 2.0f + gap + (gap + sizeX) * i, yStart + groundStart);
 
             if (selection == 0)
@@ -67,12 +69,14 @@ public:
             b1 = b2;
         }
 
-        pillar = world->CreateBox(pillarWidth, yStart, identity, RigidBody::static_body);
+        pillar = world->CreateBox(pillarWidth, yStart, identity, Body::static_body);
         pillar->SetPosition(-xStart, yStart / 2.0f + 0.2f);
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f);
+            j = world->CreateRevoluteJoint(
+                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f
+            );
         }
         else
         {

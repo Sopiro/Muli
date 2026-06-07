@@ -8,7 +8,7 @@ static float speed = 0.5f;
 
 class Mix1000 : public Demo
 {
-    RigidBody* frame;
+    Body* frame;
 
 public:
     Mix1000(Game& game)
@@ -19,7 +19,7 @@ public:
         float wallWidth = 0.4f;
         float wallRadius = wallWidth / 2.0f;
 
-        frame = world->CreateEmptyBody(identity, RigidBody::kinematic_body);
+        frame = world->CreateEmptyBody(identity, Body::kinematic_body);
 
         frame->CreateCapsuleCollider(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius);
         frame->CreateCapsuleCollider(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius);
@@ -28,7 +28,7 @@ public:
 
         float r = 0.24f;
 
-        RigidBody* b;
+        Body* b;
         for (int32 i = 0; i < 1000; ++i)
         {
             float random = Rand(0.0f, 3.0f);

@@ -99,7 +99,7 @@ void PrintSizes()
     std::cout << "Capsule: " << sizeof(Capsule) << '\n';
     std::cout << "Polygon: " << sizeof(Polygon) << '\n';
     std::cout << "Collider: " << sizeof(Collider) << '\n';
-    std::cout << "RigidBody: " << sizeof(RigidBody) << '\n';
+    std::cout << "Body: " << sizeof(Body) << '\n';
     std::cout << "Contact: " << sizeof(Contact) << '\n';
     std::cout << "Manifold: " << sizeof(ContactManifold) << '\n';
     std::cout << '\n';

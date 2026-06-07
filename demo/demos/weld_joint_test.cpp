@@ -16,12 +16,11 @@ public:
     WeldJointTest(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float wallX = -3.0f;
         float wallRadius = 0.2f;
-        RigidBody* wall =
-            world->CreateCapsule(Vec2{ wallX, 0.0f }, Vec2{ wallX, 5.0f }, wallRadius, identity, RigidBody::static_body);
+        Body* wall = world->CreateCapsule(Vec2{ wallX, 0.0f }, Vec2{ wallX, 5.0f }, wallRadius, identity, Body::static_body);
 
         int32 count = 8;
         float xStart = wallX + wallRadius;
@@ -33,7 +32,7 @@ public:
         filter.bit = 2;
         filter.mask = ~2;
 
-        RigidBody* b0;
+        Body* b0;
         if (selection == 0)
         {
             b0 = world->CreateBox(w, h);
@@ -50,7 +49,7 @@ public:
 
         for (int32 i = 1; i < count; ++i)
         {
-            RigidBody* b1;
+            Body* b1;
             if (selection == 0)
             {
                 b1 = world->CreateBox(w, h);

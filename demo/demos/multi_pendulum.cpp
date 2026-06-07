@@ -14,7 +14,7 @@ public:
     MultiPendulum(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float xStart = 0.0f;
         float yStart = 5.0f;
@@ -22,7 +22,7 @@ public:
         float sizeH = 0.15f;
         float gap = 0.1f;
 
-        RigidBody* b1 = world->CreateBox(sizeW, sizeH);
+        Body* b1 = world->CreateBox(sizeW, sizeH);
         b1->SetPosition(xStart - (gap + sizeW), yStart);
 
         Joint* j = world->CreateRevoluteJoint(ground, b1, { xStart, yStart }, -1.0f);
@@ -32,7 +32,7 @@ public:
         int32 count = 12;
         for (int32 i = 1; i < count; ++i)
         {
-            RigidBody* b2 = world->CreateBox(sizeW, sizeH);
+            Body* b2 = world->CreateBox(sizeW, sizeH);
             b2->SetPosition(xStart - (gap + sizeW) * (i + 1), yStart);
 
             if (selection == 0)

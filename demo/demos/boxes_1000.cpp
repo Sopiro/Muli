@@ -8,7 +8,7 @@ static float speed = 0.5f;
 
 class Boxes1000 : public Demo
 {
-    RigidBody* frame;
+    Body* frame;
 
 public:
     Boxes1000(Game& game)
@@ -19,7 +19,7 @@ public:
         float wallWidth = 0.4f;
         float wallRadius = wallWidth / 2.0f;
 
-        frame = world->CreateEmptyBody(identity, RigidBody::kinematic_body);
+        frame = world->CreateEmptyBody(identity, Body::kinematic_body);
 
         frame->CreateCapsuleCollider(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius);
         frame->CreateCapsuleCollider(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius);
@@ -30,7 +30,7 @@ public:
 
         for (int32 i = 0; i < 1000; ++i)
         {
-            RigidBody* b = world->CreateBox(r);
+            Body* b = world->CreateBox(r);
             b->SetPosition(
                 Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f, Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f
             );

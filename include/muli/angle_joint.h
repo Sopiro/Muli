@@ -8,15 +8,7 @@ namespace muli
 class AngleJoint : public Joint
 {
 public:
-    AngleJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
-        float angleOffset,
-        float minAngle,
-        float maxAngle,
-        float frequency,
-        float dampingRatio
-    );
+    AngleJoint(Body* bodyA, Body* bodyB, float angleOffset, float minAngle, float maxAngle, float frequency, float dampingRatio);
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

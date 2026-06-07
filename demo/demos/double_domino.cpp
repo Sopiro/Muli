@@ -12,7 +12,7 @@ public:
         : Demo(game)
     {
         float l = 0.2f;
-        RigidBody* ground = world->CreateCapsule(1000.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(1000.0f, 0.2f, true, identity, Body::static_body);
 
         float boxWidth = 1.0f;
         float boxHeight = boxWidth * 4;
@@ -22,7 +22,7 @@ public:
 
         for (int32 x = 0; x < rows; ++x)
         {
-            RigidBody* b = world->CreateBox(boxWidth, boxHeight);
+            Body* b = world->CreateBox(boxWidth, boxHeight);
             b->SetPosition(xStart + x * (boxWidth + xGap), yStart);
 
             if (x == 0)

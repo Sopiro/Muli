@@ -22,7 +22,7 @@ public:
         float r = 0.25f;
         float spread = 10.0f;
 
-        RigidBody* b = CreateRandomConvexPolygon(world, spread / 2.0f, 7);
+        Body* b = CreateRandomConvexPolygon(world, spread / 2.0f, 7);
         b->SetPosition(-25.0, 0.0f);
         b->SetLinearVelocity(lv, 0.0f);
         b->SetAngularVelocity(av);
@@ -32,7 +32,7 @@ public:
 
         for (int32 i = 0; i < 500; ++i)
         {
-            RigidBody* c = world->CreateCircle(r);
+            Body* c = world->CreateCircle(r);
             c->SetPosition(Rand(0.0f, spread * 1.414f), Rand(0.0f, spread * 0.9f) - spread / 2.0f);
             c->SetLinearDamping(0.1f);
         }

@@ -16,7 +16,7 @@ static int32 shape_index = 0;
 class Press : public Demo
 {
 
-    RigidBody *p1, *p2;
+    Body *p1, *p2;
 
 public:
     Press(Game& game)
@@ -34,7 +34,7 @@ public:
 
         float spacing = 2;
 
-        using Func = RigidBody*(World * world, float size);
+        using Func = Body*(World * world, float size);
 
         static Func* creator1 = [](World* world, float size) { return world->CreateBox(size); };
         static Func* creator2 = [](World* world, float size) { return world->CreateCircle(size / 2); };
@@ -44,7 +44,7 @@ public:
 
         for (int32 i = 0; i < count; ++i)
         {
-            RigidBody* b = creators[shape_index](world, size);
+            Body* b = creators[shape_index](world, size);
             b->SetPosition(0, start + i * (size + gap));
         }
 
@@ -52,13 +52,13 @@ public:
         {
             for (int32 i = 0; i < count; ++i)
             {
-                RigidBody* b = creators[(shape_index + 1) % num_shapes](world, size);
+                Body* b = creators[(shape_index + 1) % num_shapes](world, size);
                 b->SetPosition(-spacing, start + i * (size + gap));
             }
 
             for (int32 i = 0; i < count; ++i)
             {
-                RigidBody* b = creators[(shape_index + 2) % num_shapes](world, size);
+                Body* b = creators[(shape_index + 2) % num_shapes](world, size);
                 b->SetPosition(spacing, start + i * (size + gap));
             }
         }
@@ -69,9 +69,9 @@ public:
         camera.position.Set(0.0f, h / 2.0f);
         camera.scale.Set(h2 / screenBounds.y * 2);
 
-        p1 = world->CreateCapsule(l, r, true, identity, RigidBody::kinematic_body);
+        p1 = world->CreateCapsule(l, r, true, identity, Body::kinematic_body);
         p1->SetPosition({ 0, -offset });
-        p2 = world->CreateCapsule(l, r, true, identity, RigidBody::kinematic_body);
+        p2 = world->CreateCapsule(l, r, true, identity, Body::kinematic_body);
         p2->SetPosition({ 0, h + size + 2 * gap + offset });
 
         p1->SetLinearVelocity({ 0, speed });

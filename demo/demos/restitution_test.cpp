@@ -16,7 +16,7 @@ public:
     RestitutionTest(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
         ground->SetRestitutionThreshold(threshold);
 
         int32 count = 11;
@@ -26,7 +26,7 @@ public:
         float xStart = -(count - 1) / 2.0f * gap;
         float yStart = 6.0f;
 
-        RigidBody* b;
+        Body* b;
         for (int32 i = 0; i < count; ++i)
         {
             switch (selection)

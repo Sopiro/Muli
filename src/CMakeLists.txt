@@ -13,7 +13,7 @@ set(HEADER_FILES
     ../include/muli/raycast.h
     ../include/muli/time_of_impact.h
 
-    ../include/muli/rigidbody.h
+    ../include/muli/body.h
 
     ../include/muli/shape.h
     ../include/muli/circle_shape.h
@@ -84,7 +84,7 @@ set(SOURCE_FILES
 
     dynamics/world.cpp
     dynamics/collider.cpp
-    dynamics/rigidbody.cpp
+    dynamics/body.cpp
     dynamics/island.cpp
     dynamics/contact_graph.cpp
 

@@ -24,7 +24,7 @@ public:
         for (int32 i = 0; i < 10; ++i)
         {
             float r = Random(0.0f, 3.0f);
-            RigidBody* b;
+            Body* b;
 
             if (r < 1.0f)
             {

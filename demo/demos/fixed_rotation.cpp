@@ -9,7 +9,7 @@ public:
     FixedRotation(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         float start = 1.0f;
         float size = 0.3f;
@@ -28,15 +28,15 @@ public:
                 d = -d;
             }
 
-            RigidBody* b = world->CreateBox(size);
+            Body* b = world->CreateBox(size);
             px += d * error;
             b->SetPosition(px, start + i * (size + gap));
             b->SetFixedRotation(true);
         }
 
-        // RigidBody* b1 = world->CreateBox(0.5f);
+        // Body* b1 = world->CreateBox(0.5f);
         // b1->SetPosition(0, 3);
-        // RigidBody* b2 = world->CreateBox(0.5f);
+        // Body* b2 = world->CreateBox(0.5f);
         // b2->SetPosition(2, 2);
 
         // world->CreateAngleJoint(b1, b2)

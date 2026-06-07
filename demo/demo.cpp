@@ -74,22 +74,22 @@ void Demo::EnableBodyCreate()
     {
         if (Input::IsKeyDown(GLFW_KEY_1))
         {
-            RigidBody* b = world->CreateBox(0.5f);
+            Body* b = world->CreateBox(0.5f);
             b->SetPosition(cursorPos);
         }
         if (Input::IsKeyDown(GLFW_KEY_2))
         {
-            RigidBody* b = world->CreateCircle(0.25f);
+            Body* b = world->CreateCircle(0.25f);
             b->SetPosition(cursorPos);
         }
         if (Input::IsKeyDown(GLFW_KEY_3))
         {
-            RigidBody* b = world->CreateCapsule(0.5f, 0.25f);
+            Body* b = world->CreateCapsule(0.5f, 0.25f);
             b->SetPosition(cursorPos);
         }
         if (Input::IsKeyDown(GLFW_KEY_4) && targetBody)
         {
-            RigidBody* b = world->DuplicateBody(targetBody);
+            Body* b = world->DuplicateBody(targetBody);
         }
         if (Input::IsKeyDown(GLFW_KEY_5) && targetBody)
         {
@@ -107,7 +107,7 @@ void Demo::EnableBodyCreate()
         }
         else
         {
-            RigidBody* b = world->CreateBox(0.5f);
+            Body* b = world->CreateBox(0.5f);
             b->SetPosition(cursorPos);
         }
     }
@@ -120,7 +120,7 @@ void Demo::EnableBodyCreate()
 
         if (Input::IsMouseReleased(GLFW_MOUSE_BUTTON_LEFT))
         {
-            RigidBody* b = create_circle ? world->CreateCircle(0.15f * 1.414f) : world->CreateBox(0.3f);
+            Body* b = create_circle ? world->CreateCircle(0.15f * 1.414f) : world->CreateBox(0.3f);
             b->SetPosition(mStart);
             b->SetContinuous(true);
 
@@ -180,8 +180,8 @@ bool Demo::EnablePolygonCreateConvexHull()
             renderer.DrawLine(v0, v1);
         }
 
-        auto create_body = [&](RigidBody::Type type) {
-            RigidBody* b;
+        auto create_body = [&](Body::Type type) {
+            Body* b;
 
             switch (hull.size())
             {
@@ -214,11 +214,11 @@ bool Demo::EnablePolygonCreateConvexHull()
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
-            create_body(RigidBody::dynamic_body);
+            create_body(Body::dynamic_body);
         }
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
-            create_body(RigidBody::static_body);
+            create_body(Body::static_body);
         }
     }
 
@@ -268,8 +268,8 @@ bool Demo::EnablePolygonCreateDecomposition()
             renderer.DrawLine(points.back(), cursorPos);
         }
 
-        auto create_body = [&](RigidBody::Type type) {
-            RigidBody* b;
+        auto create_body = [&](Body::Type type) {
+            Body* b;
 
             if (constraints.size() > 0)
             {
@@ -322,11 +322,11 @@ bool Demo::EnablePolygonCreateDecomposition()
 
         if (!staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_CONTROL))
         {
-            create_body(RigidBody::dynamic_body);
+            create_body(Body::dynamic_body);
         }
         else if (staticBody && Input::IsKeyReleased(GLFW_KEY_LEFT_ALT))
         {
-            create_body(RigidBody::static_body);
+            create_body(Body::static_body);
         }
     }
 
@@ -353,7 +353,7 @@ void Demo::EnableBodyRemove()
     static bool removeBody = false;
     static bool draging = false;
     static Vec2 mStart;
-    static std::unordered_set<RigidBody*> destroySet;
+    static std::unordered_set<Body*> destroySet;
 
     if (!removeBody && Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
     {
@@ -418,7 +418,7 @@ void Demo::EnableBodyRemove()
             for (int32 i = 0; i < colliders.size(); ++i)
             {
                 Collider* c = colliders[i];
-                RigidBody* b = c->GetBody();
+                Body* b = c->GetBody();
 
                 if (removeBody)
                 {
@@ -435,7 +435,7 @@ void Demo::EnableBodyRemove()
 
             if (removeBody)
             {
-                for (RigidBody* b : destroySet)
+                for (Body* b : destroySet)
                 {
                     world->Destroy(b);
                 }
@@ -451,7 +451,7 @@ bool Demo::EnableBodyGrab()
 {
     if (targetBody && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        if (targetBody->GetType() == RigidBody::dynamic_body)
+        if (targetBody->GetType() == Body::dynamic_body)
         {
             targetBody->Awake();
             cursorJoint = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 5.0f, 0.5f);
@@ -480,10 +480,10 @@ bool Demo::EnableBodyGrab()
 
 bool Demo::EnableAddForce()
 {
-    static RigidBody* ft;
+    static Body* ft;
     static Vec2 mStartLocal;
 
-    if (targetBody && targetBody->GetType() != RigidBody::static_body)
+    if (targetBody && targetBody->GetType() != Body::static_body)
     {
         if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT) && Input::IsMousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {

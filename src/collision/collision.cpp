@@ -1,6 +1,6 @@
 #include "muli/collision.h"
+#include "muli/body.h"
 #include "muli/polytope.h"
-#include "muli/rigidbody.h"
 
 #include "muli/box_shape.h"
 #include "muli/capsule_shape.h"

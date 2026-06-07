@@ -30,11 +30,11 @@ void ContactGraph::EvaluateContacts()
         Collider* colliderA = c->colliderA;
         Collider* colliderB = c->colliderB;
 
-        RigidBody* bodyA = c->bodyA;
-        RigidBody* bodyB = c->bodyB;
+        Body* bodyA = c->bodyA;
+        Body* bodyB = c->bodyB;
 
-        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != RigidBody::static_body;
-        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != RigidBody::static_body;
+        bool activeA = bodyA->IsSleeping() == false && bodyA->GetType() != Body::static_body;
+        bool activeB = bodyB->IsSleeping() == false && bodyB->GetType() != Body::static_body;
 
         if (activeA == false && activeB == false)
         {
@@ -61,13 +61,13 @@ void ContactGraph::EvaluateContacts()
 
 void ContactGraph::OnNewContact(Collider* colliderA, Collider* colliderB)
 {
-    RigidBody* bodyA = colliderA->body;
-    RigidBody* bodyB = colliderB->body;
+    Body* bodyA = colliderA->body;
+    Body* bodyB = colliderB->body;
 
     MuliAssert(bodyA != bodyB);
     MuliAssert(colliderA->GetType() >= colliderB->GetType());
 
-    if (bodyA->GetType() != RigidBody::dynamic_body && bodyB->GetType() != RigidBody::dynamic_body)
+    if (bodyA->GetType() != Body::dynamic_body && bodyB->GetType() != Body::dynamic_body)
     {
         return;
     }
@@ -140,8 +140,8 @@ void ContactGraph::OnNewContact(Collider* colliderA, Collider* colliderB)
 
 void ContactGraph::Destroy(Contact* c)
 {
-    RigidBody* bodyA = c->bodyA;
-    RigidBody* bodyB = c->bodyB;
+    Body* bodyA = c->bodyA;
+    Body* bodyB = c->bodyB;
 
     // Remove from the world
     if (c->prev) c->prev->next = c->next;
@@ -173,7 +173,7 @@ void ContactGraph::RemoveCollider(Collider* collider)
     broadPhase.Remove(collider);
     collider->node = AABBTree::nullNode;
 
-    RigidBody* body = collider->body;
+    Body* body = collider->body;
 
     // Destroy any contacts associated with the collider
     ContactEdge* edge = body->contactList;

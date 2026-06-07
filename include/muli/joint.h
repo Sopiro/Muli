@@ -10,7 +10,7 @@ class JointDestroyCallback;
 
 struct JointEdge
 {
-    RigidBody* other;
+    Body* other;
     Joint* joint;
     JointEdge* prev;
     JointEdge* next;
@@ -70,8 +70,8 @@ public:
     // clang-format off
     Joint(
         Joint::Type type,
-        RigidBody* bodyA,
-        RigidBody* bodyB,
+        Body* bodyA,
+        Body* bodyB,
         float jointFrequency,
         float jointDampingRatio
     );

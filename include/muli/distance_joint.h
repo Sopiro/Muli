@@ -9,8 +9,8 @@ class DistanceJoint : public Joint
 {
 public:
     DistanceJoint(
-        RigidBody* bodyA,
-        RigidBody* bodyB,
+        Body* bodyA,
+        Body* bodyB,
         const Vec2& anchorA,
         const Vec2& anchorB,
         float minLength,

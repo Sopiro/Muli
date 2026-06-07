@@ -9,9 +9,9 @@ public:
     SinglePendulum(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
-        RigidBody* b = world->CreateBox(0.3f);
+        Body* b = world->CreateBox(0.3f);
         b->SetPosition(-3.0f, 5.0f);
 
         world->CreateRevoluteJoint(ground, b, Vec2{ 0.0f, 5.0f }, -1.0f);

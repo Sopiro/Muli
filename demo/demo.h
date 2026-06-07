@@ -30,7 +30,7 @@ public:
     WorldSettings& GetWorldSettings();
     Camera& GetCamera();
 
-    RigidBody* GetTargetBody();
+    Body* GetTargetBody();
     Collider* GetTargetCollider();
 
 protected:
@@ -58,7 +58,7 @@ protected:
     Vec2 cursorPos;
     Vec2 screenBounds;
 
-    RigidBody* targetBody;
+    Body* targetBody;
     Collider* targetCollider;
     GrabJoint* cursorJoint;
 };
@@ -83,7 +83,7 @@ inline Camera& Demo::GetCamera()
     return camera;
 }
 
-inline RigidBody* Demo::GetTargetBody()
+inline Body* Demo::GetTargetBody()
 {
     return targetBody;
 }

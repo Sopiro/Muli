@@ -7,7 +7,7 @@ namespace muli
 class ComputeDistancePoint : public Demo
 {
 public:
-    RigidBody* b;
+    Body* b;
     Vec2 closest = Vec2::zero;
     float distance = 0.0f;
 
@@ -28,11 +28,11 @@ public:
 
         if (r < 1.0f)
         {
-            b = CreateRandomConvexPolygon(world, size / 2.0f, 10, identity, RigidBody::dynamic_body, minimum_radius);
+            b = CreateRandomConvexPolygon(world, size / 2.0f, 10, identity, Body::dynamic_body, minimum_radius);
         }
         else if (r < 2.0f)
         {
-            b = CreateRandomConvexPolygon(world, size / 2.0f, 10, identity, RigidBody::dynamic_body, r / 10.0f + minimum_radius);
+            b = CreateRandomConvexPolygon(world, size / 2.0f, 10, identity, Body::dynamic_body, r / 10.0f + minimum_radius);
             UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);
         }
         else if (r < 3.0f)

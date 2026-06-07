@@ -21,7 +21,7 @@ public:
         settings.apply_gravity = false;
         settings.sleeping = false;
 
-        RigidBody* b = world->CreateCapsule(1.0f, 0.3f);
+        Body* b = world->CreateCapsule(1.0f, 0.3f);
         b->SetPosition(4.0f, 3.0f);
         b->SetFixedRotation(true);
 
@@ -33,8 +33,8 @@ public:
     {
         if (world->GetBodyCount() > 1)
         {
-            RigidBody* a = world->GetBodyListTail()->GetPrev();
-            RigidBody* b = world->GetBodyListTail();
+            Body* a = world->GetBodyListTail()->GetPrev();
+            Body* b = world->GetBodyListTail();
 
             Collider* ca = a->GetColliderList();
             Collider* cb = b->GetColliderList();

@@ -23,7 +23,7 @@ public:
 
         float gap = width / rows;
 
-        RigidBody* circles[rows][cols];
+        Body* circles[rows][cols];
 
         float yStart = 2.0f;
 
@@ -31,7 +31,7 @@ public:
         {
             for (int32 i = 0; i < cols; ++i)
             {
-                RigidBody* c = world->CreateCircle(radius);
+                Body* c = world->CreateCircle(radius);
 
                 float x = ((i - (cols - 1) / 2.0f) / (float)cols) * cols * gap;
                 float y = (j / (float)rows) * rows * gap + yStart;
@@ -47,25 +47,25 @@ public:
         {
             for (int32 i = 0; i < cols; ++i)
             {
-                RigidBody* c00 = circles[j][i];
+                Body* c00 = circles[j][i];
 
                 if (j + 1 < rows)
                 {
-                    RigidBody* c10 = circles[j + 1][i];
+                    Body* c10 = circles[j + 1][i];
                     world->CreateDistanceJoint(c00, c10, -1.0f, f, d);
                 }
                 if (i + 1 < cols)
                 {
-                    RigidBody* c01 = circles[j][i + 1];
+                    Body* c01 = circles[j][i + 1];
                     world->CreateDistanceJoint(c00, c01, -1.0f, f, d);
                 }
             }
         }
 
-        RigidBody* tl = circles[rows - 1][0];
-        RigidBody* ml = circles[rows - 1][(int32)(cols / 3.0f) - 1];
-        RigidBody* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
-        RigidBody* tr = circles[rows - 1][cols - 1];
+        Body* tl = circles[rows - 1][0];
+        Body* ml = circles[rows - 1][(int32)(cols / 3.0f) - 1];
+        Body* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
+        Body* tr = circles[rows - 1][cols - 1];
 
         world->CreateGrabJoint(tl, tl->GetPosition(), tl->GetPosition() + Vec2{ -gap, gap }, 15.0f, 1.0f);
         world->CreateGrabJoint(ml, ml->GetPosition(), ml->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f);

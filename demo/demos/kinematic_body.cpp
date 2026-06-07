@@ -7,7 +7,7 @@ static float speed = 90.0f;
 
 class KinematicBody : public Demo
 {
-    RigidBody* k;
+    Body* k;
 
 public:
     KinematicBody(Game& game)
@@ -18,28 +18,22 @@ public:
         float wallWidth = 0.4f;
         float wallRadius = wallWidth / 2.0f;
 
-        world->CreateCapsule(
-            Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, identity, RigidBody::static_body
-        );
-        world->CreateCapsule(
-            Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, identity, RigidBody::static_body
-        );
-        world->CreateCapsule(
-            Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, identity, RigidBody::static_body
-        );
+        world->CreateCapsule(Vec2{ -halfSize, -halfSize }, Vec2{ halfSize, -halfSize }, wallRadius, identity, Body::static_body);
+        world->CreateCapsule(Vec2{ halfSize, -halfSize }, Vec2{ halfSize, halfSize }, wallRadius, identity, Body::static_body);
+        world->CreateCapsule(Vec2{ -halfSize, halfSize }, Vec2{ -halfSize, -halfSize }, wallRadius, identity, Body::static_body);
 
         float r = 0.22f;
 
         for (int32 i = 0; i < 500; ++i)
         {
-            RigidBody* b = world->CreateCircle(r);
+            Body* b = world->CreateCircle(r);
             b->SetPosition(
                 Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f, Rand(0.0f, size - wallWidth) - (size - wallWidth) / 2.0f
             );
             b->SetRotation(Rand(0.0f, pi * 2.0f));
         }
 
-        k = world->CreateCapsule(size * 0.9f, 0.15f, true, identity, RigidBody::kinematic_body);
+        k = world->CreateCapsule(size * 0.9f, 0.15f, true, identity, Body::kinematic_body);
         k->CreateCapsuleCollider(size * 0.9f, 0.15f, false);
         k->SetAngularVelocity(DegToRad(speed));
 

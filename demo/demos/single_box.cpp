@@ -9,9 +9,9 @@ public:
     SingleBox(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
-        RigidBody* box = world->CreateBox(0.4f);
+        Body* box = world->CreateBox(0.4f);
         box->SetPosition(0.0f, 5.0f);
         box->SetAngularVelocity(Rand(-12.0f, 12.0f));
     }

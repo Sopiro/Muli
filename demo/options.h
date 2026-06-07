@@ -29,7 +29,7 @@ enum Flag : size_t
     hide_joint_anchors = 1 << 3,
 };
 
-inline void SetFlag(RigidBody* body, Flag flag, bool enabled)
+inline void SetFlag(Body* body, Flag flag, bool enabled)
 {
     if (enabled)
     {
@@ -41,7 +41,7 @@ inline void SetFlag(RigidBody* body, Flag flag, bool enabled)
     }
 }
 
-inline bool IsEnabled(const RigidBody* body, Flag flag)
+inline bool IsEnabled(const Body* body, Flag flag)
 {
     return ((size_t)body->UserData & flag) == flag;
 }

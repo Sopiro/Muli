@@ -18,7 +18,7 @@ class BodyDestroyCallback
 {
 public:
     virtual ~BodyDestroyCallback() {}
-    virtual void OnBodyDestroy(RigidBody* me) = 0;
+    virtual void OnBodyDestroy(Body* me) = 0;
 };
 
 class JointDestroyCallback

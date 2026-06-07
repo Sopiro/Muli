@@ -10,11 +10,11 @@ public:
     Ragdolls(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         CreateRagdoll(world, { 0.0f, 5.0f }, 1.0f, 1);
 
-        RigidBody* c = world->CreateCircle(0.6f);
+        Body* c = world->CreateCircle(0.6f);
         float r = Rand(0.0f, pi);
         Vec2 p{ Cos(r), Sin(r) };
         p *= 8.0f;

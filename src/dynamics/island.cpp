@@ -16,7 +16,7 @@ Island::Island(World* world, int32 bodyCapacity, int32 contactCapacity, int32 jo
     , jointCount{ 0 }
     , sleeping{ false }
 {
-    bodies = (RigidBody**)world->linearAllocator.Allocate(bodyCapacity * sizeof(RigidBody*));
+    bodies = (Body**)world->linearAllocator.Allocate(bodyCapacity * sizeof(Body*));
     contacts = (Contact**)world->linearAllocator.Allocate(contactCapacity * sizeof(Contact*));
     joints = (Joint**)world->linearAllocator.Allocate(jointCapacity * sizeof(Joint*));
 }
@@ -25,7 +25,7 @@ Island::~Island()
 {
     world->linearAllocator.Free(joints, jointCapacity * sizeof(Joint*));
     world->linearAllocator.Free(contacts, contactCapacity * sizeof(Contact*));
-    world->linearAllocator.Free(bodies, bodyCapacity * sizeof(RigidBody*));
+    world->linearAllocator.Free(bodies, bodyCapacity * sizeof(Body*));
 }
 
 void Island::Solve()
@@ -38,7 +38,7 @@ void Island::Solve()
     // Integrate velocities, yield tentative velocities that possibly violate the constraint
     for (int32 i = 0; i < bodyCount; ++i)
     {
-        RigidBody* b = bodies[i];
+        Body* b = bodies[i];
 
         // Save positions for continuous collision
         b->motion.c0 = b->motion.c;
@@ -51,11 +51,11 @@ void Island::Solve()
             b->islandIndex = 0;
             b->linearVelocity.SetZero();
             b->angularVelocity = 0.0f;
-            b->flag |= RigidBody::flag_sleeping;
+            b->flag |= Body::flag_sleeping;
         }
         else
         {
-            b->flag &= ~RigidBody::flag_sleeping;
+            b->flag &= ~Body::flag_sleeping;
         }
 
         if ((b->angularVelocity * b->angularVelocity > settings.rest_angular_tolerance) ||
@@ -70,7 +70,7 @@ void Island::Solve()
             b->resting += step.dt;
         }
 
-        if (b->type == RigidBody::dynamic_body)
+        if (b->type == Body::dynamic_body)
         {
             // Integrate velocites
             b->linearVelocity += b->invMass * step.dt * (b->force + settings.apply_gravity * settings.gravity * b->mass);
@@ -139,7 +139,7 @@ void Island::Solve()
     // Update positions using corrected velocities (Semi-implicit euler integration)
     for (int32 i = 0; i < bodyCount; ++i)
     {
-        RigidBody* b = bodies[i];
+        Body* b = bodies[i];
 
         if (awakeIsland)
         {
@@ -286,7 +286,7 @@ void Island::SolveTOI(float dt)
 
     for (int32 i = 0; i < bodyCount; ++i)
     {
-        RigidBody* b = bodies[i];
+        Body* b = bodies[i];
 
         b->motion.c += b->linearVelocity * dt;
         b->motion.a += b->angularVelocity * dt;

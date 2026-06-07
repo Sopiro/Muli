@@ -50,7 +50,7 @@ int main()
     WorldSettings settings;
     World world(settings);
 
-    RigidBody* box = world.CreateBox(1.0f);
+    Body* box = world.CreateBox(1.0f);
     box->SetPosition(0.0f, 5.0f);
 
     // Run simulation for one second

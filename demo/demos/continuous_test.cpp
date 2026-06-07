@@ -9,15 +9,15 @@ static bool drawTrajectory = true;
 class ContinuousTest : public Demo
 {
 public:
-    RigidBody* target;
+    Body* target;
     Capsule* stick;
 
     ContinuousTest(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
-        world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, identity, RigidBody::static_body);
+        world->CreateCapsule(Vec2{ 0.0f, 2.0f }, Vec2{ 0.0f, 1.5f }, 0.1f, identity, Body::static_body);
 
         target = world->CreateCapsule(2.8f, 0.05f, true);
         target->SetPosition(Rand(-0.5f, 0.5f), screenBounds.y);

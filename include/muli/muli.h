@@ -4,7 +4,7 @@
 
 #include "world.h"           // IWYU pragma: export
 #include "collider.h"        // IWYU pragma: export
-#include "rigidbody.h"       // IWYU pragma: export
+#include "body.h"            // IWYU pragma: export
 
 #include "shape.h"           // IWYU pragma: export
 #include "circle_shape.h"    // IWYU pragma: export

@@ -8,12 +8,12 @@
 namespace muli
 {
 
-class RigidBody;
+class Body;
 class Contact;
 
 struct ContactEdge
 {
-    RigidBody* other;
+    Body* other;
     Contact* contact;
     ContactEdge* prev;
     ContactEdge* next;
@@ -27,8 +27,8 @@ public:
 
     Collider* GetColliderA() const;
     Collider* GetColliderB() const;
-    RigidBody* GetReferenceBody() const;
-    RigidBody* GetIncidentBody() const;
+    Body* GetReferenceBody() const;
+    Body* GetIncidentBody() const;
 
     const Contact* GetNext() const;
     const Contact* GetPrev() const;
@@ -78,8 +78,8 @@ private:
 
     CollideFunction* collideFunction;
 
-    RigidBody* b1; // Reference body
-    RigidBody* b2; // Incident body
+    Body* b1; // Reference body
+    Body* b2; // Incident body
 
     Collider* colliderA;
     Collider* colliderB;
@@ -124,12 +124,12 @@ inline Collider* Contact::GetColliderB() const
     return colliderB;
 }
 
-inline RigidBody* Contact::GetReferenceBody() const
+inline Body* Contact::GetReferenceBody() const
 {
     return b1;
 }
 
-inline RigidBody* Contact::GetIncidentBody() const
+inline Body* Contact::GetIncidentBody() const
 {
     return b2;
 }

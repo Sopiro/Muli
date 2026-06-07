@@ -5,9 +5,7 @@ namespace muli
 
 // Revolute joint + Angle joint
 
-WeldJoint::WeldJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
-)
+WeldJoint::WeldJoint(Body* bodyA, Body* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio)
     : Joint(weld_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {

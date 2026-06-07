@@ -9,9 +9,9 @@ public:
     CompoundShape(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
-        RigidBody* b = world->CreateEmptyBody();
+        Body* b = world->CreateEmptyBody();
 
         float adjust = 0.7f;
         float radius = 0.1f;
@@ -51,7 +51,7 @@ public:
 
             float angle = Rand(0.0f, pi);
 
-            b = world->CreateBox(w, h, identity, RigidBody::dynamic_body, r);
+            b = world->CreateBox(w, h, identity, Body::dynamic_body, r);
             b->SetPosition(pos);
             b->SetRotation(angle);
             UserFlag::SetFlag(b, UserFlag::render_polygon_radius, true);

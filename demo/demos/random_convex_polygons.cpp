@@ -9,7 +9,7 @@ public:
     RandomConvexPolygons(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
         int32 rows = 12;
         float size = 0.25f;
@@ -22,19 +22,19 @@ public:
         {
             for (int32 x = 0; x < rows - y; ++x)
             {
-                RigidBody* b = CreateRandomConvexPolygon(world, size, 8);
+                Body* b = CreateRandomConvexPolygon(world, size, 8);
                 b->SetPosition(xStart + y * (size + xGap) / 2 + x * (size + xGap), yStart + y * (size + yGap));
                 b->SetLinearVelocity(b->GetPosition() * Rand(0.5f, 0.7f));
             }
         }
 
-        RigidBody* pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::static_body);
+        Body* pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, Body::static_body);
         pillar->SetPosition(xStart - 0.2f, 3.0f);
 
-        pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, RigidBody::static_body);
+        pillar = world->CreateCapsule(4.0f, 0.1f, false, identity, Body::static_body);
         pillar->SetPosition(-(xStart - 0.2f), 3.0f);
 
-        // Capsule* c = world->CreateCapsule(4.0f, 0.1f, true, RigidBody::Dynamic);
+        // Capsule* c = world->CreateCapsule(4.0f, 0.1f, true, Body::Dynamic);
         // c->SetPosition(0.0f, 2.0f);
 
         // world->CreateGrabJoint(c, c->GetPosition(), c->GetPosition(), -1.0f);

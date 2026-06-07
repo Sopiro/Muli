@@ -6,12 +6,7 @@ namespace muli
 // TODO: Implement limit constraint
 
 PrismaticJoint::PrismaticJoint(
-    RigidBody* bodyA,
-    RigidBody* bodyB,
-    const Vec2& anchor,
-    const Vec2& dir,
-    float jointFrequency,
-    float jointDampingRatio
+    Body* bodyA, Body* bodyB, const Vec2& anchor, const Vec2& dir, float jointFrequency, float jointDampingRatio
 )
     : Joint(prismatic_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }

@@ -9,15 +9,15 @@ public:
     Seesaw(Game& game)
         : Demo(game)
     {
-        RigidBody* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, RigidBody::static_body);
+        Body* ground = world->CreateCapsule(100.0f, 0.2f, true, identity, Body::static_body);
 
-        RigidBody* seesaw = world->CreateCapsule(6.0f, 0.05f, true);
+        Body* seesaw = world->CreateCapsule(6.0f, 0.05f, true);
         seesaw->SetPosition(0.0f, 0.45f);
         seesaw->SetContinuous(true);
 
         world->CreateRevoluteJoint(ground, seesaw, seesaw->GetPosition(), -1);
 
-        RigidBody* b = world->CreateCircle(0.2f);
+        Body* b = world->CreateCircle(0.2f);
         b->SetPosition(-2.5f, 1.0f);
 
         b = world->CreateBox(0.2f);
