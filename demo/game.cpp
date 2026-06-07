@@ -179,7 +179,7 @@ void Game::UpdateUI()
                 }
 
                 ImGui::Separator();
-                ImGui::Text("%lld.%s", demoIndex, demos[demoIndex].name);
+                ImGui::Text("%zu.%s", demoIndex, demos[demoIndex].name);
                 ImGui::Text("Bodies: %d", world.GetBodyCount());
                 ImGui::Text("Sleeping Dynamic Bodies: %d", world.GetSleepingBodyCount());
                 // ImGui::Text("Awake island count: %d", world.GetIslandCount());

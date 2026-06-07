@@ -48,7 +48,6 @@ void World::Reset()
     MuliAssert(jointList == nullptr);
     MuliAssert(bodyCount == 0);
     MuliAssert(jointCount == 0);
-    MuliAssert(blockAllocator.GetBlockCount() == 0);
 
     destroyBodyBuffer.clear();
     destroyJointBuffer.clear();
@@ -1226,8 +1225,7 @@ Body* World::DuplicateBody(Body* body, const Transform& tf)
 
 Body* World::CreateEmptyBody(const Transform& tf, Body::Type type)
 {
-    void* mem = blockAllocator.Allocate(sizeof(Body));
-    Body* body = new (mem) Body(tf, type);
+    Body* body = poolAllocator.New<Body>(tf, type);
 
     body->world = this;
 
@@ -1334,8 +1332,7 @@ GrabJoint* World::CreateGrabJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(GrabJoint));
-    GrabJoint* gj = new (mem) GrabJoint(body, anchor, target, jointFrequency, jointDampingRatio);
+    GrabJoint* gj = poolAllocator.New<GrabJoint>(body, anchor, target, jointFrequency, jointDampingRatio);
 
     AddJoint(gj);
     return gj;
@@ -1350,8 +1347,7 @@ RevoluteJoint* World::CreateRevoluteJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(RevoluteJoint));
-    RevoluteJoint* rj = new (mem) RevoluteJoint(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio);
+    RevoluteJoint* rj = poolAllocator.New<RevoluteJoint>(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio);
 
     AddJoint(rj);
     return rj;
@@ -1372,9 +1368,8 @@ DistanceJoint* World::CreateDistanceJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
     DistanceJoint* dj =
-        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, length, length, jointFrequency, jointDampingRatio);
+        poolAllocator.New<DistanceJoint>(bodyA, bodyB, anchorA, anchorB, length, length, jointFrequency, jointDampingRatio);
 
     AddJoint(dj);
     return dj;
@@ -1403,9 +1398,8 @@ DistanceJoint* World::CreateLimitedDistanceJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(DistanceJoint));
     DistanceJoint* dj =
-        new (mem) DistanceJoint(bodyA, bodyB, anchorA, anchorB, minLength, maxLength, jointFrequency, jointDampingRatio);
+        poolAllocator.New<DistanceJoint>(bodyA, bodyB, anchorA, anchorB, minLength, maxLength, jointFrequency, jointDampingRatio);
 
     AddJoint(dj);
     return dj;
@@ -1427,9 +1421,9 @@ AngleJoint* World::CreateAngleJoint(Body* bodyA, Body* bodyB, float jointFrequen
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
-    AngleJoint* aj =
-        new (mem) AngleJoint(bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), 0.0f, 0.0f, jointFrequency, jointDampingRatio);
+    AngleJoint* aj = poolAllocator.New<AngleJoint>(
+        bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), 0.0f, 0.0f, jointFrequency, jointDampingRatio
+    );
 
     AddJoint(aj);
     return aj;
@@ -1444,9 +1438,9 @@ AngleJoint* World::CreateLimitedAngleJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(AngleJoint));
-    AngleJoint* aj = new (mem)
-        AngleJoint(bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), minAngle, maxAngle, jointFrequency, jointDampingRatio);
+    AngleJoint* aj = poolAllocator.New<AngleJoint>(
+        bodyA, bodyB, bodyB->GetAngle() - bodyA->GetAngle(), minAngle, maxAngle, jointFrequency, jointDampingRatio
+    );
 
     AddJoint(aj);
     return aj;
@@ -1459,8 +1453,7 @@ WeldJoint* World::CreateWeldJoint(Body* bodyA, Body* bodyB, const Vec2& anchor, 
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(WeldJoint));
-    WeldJoint* wj = new (mem) WeldJoint(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio);
+    WeldJoint* wj = poolAllocator.New<WeldJoint>(bodyA, bodyB, anchor, jointFrequency, jointDampingRatio);
 
     AddJoint(wj);
     return wj;
@@ -1475,8 +1468,7 @@ LineJoint* World::CreateLineJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(LineJoint));
-    LineJoint* lj = new (mem) LineJoint(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio);
+    LineJoint* lj = poolAllocator.New<LineJoint>(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio);
 
     AddJoint(lj);
     return lj;
@@ -1499,8 +1491,7 @@ PrismaticJoint* World::CreatePrismaticJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(PrismaticJoint));
-    PrismaticJoint* pj = new (mem) PrismaticJoint(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio);
+    PrismaticJoint* pj = poolAllocator.New<PrismaticJoint>(bodyA, bodyB, anchor, dir, jointFrequency, jointDampingRatio);
 
     AddJoint(pj);
     return pj;
@@ -1531,9 +1522,9 @@ PulleyJoint* World::CreatePulleyJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(PulleyJoint));
-    PulleyJoint* pj = new (mem)
-        PulleyJoint(bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, jointFrequency, jointDampingRatio);
+    PulleyJoint* pj = poolAllocator.New<PulleyJoint>(
+        bodyA, bodyB, anchorA, anchorB, groundAnchorA, groundAnchorB, ratio, jointFrequency, jointDampingRatio
+    );
 
     AddJoint(pj);
     return pj;
@@ -1548,8 +1539,7 @@ MotorJoint* World::CreateMotorJoint(
         return nullptr;
     }
 
-    void* mem = blockAllocator.Allocate(sizeof(MotorJoint));
-    MotorJoint* mj = new (mem) MotorJoint(bodyA, bodyB, anchor, maxForce, maxTorque, jointFrequency, jointDampingRatio);
+    MotorJoint* mj = poolAllocator.New<MotorJoint>(bodyA, bodyB, anchor, maxForce, maxTorque, jointFrequency, jointDampingRatio);
 
     AddJoint(mj);
     return mj;
@@ -1600,8 +1590,7 @@ void World::AddJoint(Joint* joint)
 
 void World::FreeBody(Body* body)
 {
-    body->~Body();
-    blockAllocator.Free(body, sizeof(Body));
+    poolAllocator.Delete(body);
 }
 
 void World::FreeJoint(Joint* joint)
@@ -1611,31 +1600,31 @@ void World::FreeJoint(Joint* joint)
     switch (joint->type)
     {
     case Joint::Type::grab_joint:
-        blockAllocator.Free(joint, sizeof(GrabJoint));
+        poolAllocator.Free((GrabJoint*)joint);
         break;
     case Joint::Type::revolute_joint:
-        blockAllocator.Free(joint, sizeof(RevoluteJoint));
+        poolAllocator.Free((RevoluteJoint*)joint);
         break;
     case Joint::Type::distance_joint:
-        blockAllocator.Free(joint, sizeof(DistanceJoint));
+        poolAllocator.Free((DistanceJoint*)joint);
         break;
     case Joint::Type::angle_joint:
-        blockAllocator.Free(joint, sizeof(AngleJoint));
+        poolAllocator.Free((AngleJoint*)joint);
         break;
     case Joint::Type::weld_joint:
-        blockAllocator.Free(joint, sizeof(WeldJoint));
+        poolAllocator.Free((WeldJoint*)joint);
         break;
     case Joint::Type::line_joint:
-        blockAllocator.Free(joint, sizeof(LineJoint));
+        poolAllocator.Free((LineJoint*)joint);
         break;
     case Joint::Type::prismatic_joint:
-        blockAllocator.Free(joint, sizeof(PrismaticJoint));
+        poolAllocator.Free((PrismaticJoint*)joint);
         break;
     case Joint::Type::pulley_joint:
-        blockAllocator.Free(joint, sizeof(PulleyJoint));
+        poolAllocator.Free((PulleyJoint*)joint);
         break;
     case Joint::Type::motor_joint:
-        blockAllocator.Free(joint, sizeof(MotorJoint));
+        poolAllocator.Free((MotorJoint*)joint);
         break;
     default:
         MuliAssert(false);
@@ -1654,23 +1643,19 @@ Shape* World::CloneShape(const Shape* shape, const Transform& transform)
     {
     case Shape::circle:
     {
-        void* mem = blockAllocator.Allocate(sizeof(Circle));
-        return new (mem) Circle(*(const Circle*)shape, transform);
+        return poolAllocator.New<Circle>(*(const Circle*)shape, transform);
     }
     case Shape::capsule:
     {
-        void* mem = blockAllocator.Allocate(sizeof(Capsule));
-        return new (mem) Capsule(*(const Capsule*)shape, transform);
+        return poolAllocator.New<Capsule>(*(const Capsule*)shape, transform);
     }
     case Shape::box:
     {
-        void* mem = blockAllocator.Allocate(sizeof(Box));
-        return new (mem) Box(*(const Box*)shape, transform);
+        return poolAllocator.New<Box>(*(const Box*)shape, transform);
     }
     case Shape::polygon:
     {
-        void* mem = blockAllocator.Allocate(sizeof(Polygon));
-        return new (mem) Polygon(*(const Polygon*)shape, transform);
+        return poolAllocator.New<Polygon>(*(const Polygon*)shape, transform);
     }
     default:
         MuliAssert(false);
@@ -1687,16 +1672,16 @@ void World::FreeShape(Shape* shape)
     switch (shape->GetType())
     {
     case Shape::circle:
-        blockAllocator.Free(shape, sizeof(Circle));
+        poolAllocator.Free((Circle*)shape);
         break;
     case Shape::capsule:
-        blockAllocator.Free(shape, sizeof(Capsule));
+        poolAllocator.Free((Capsule*)shape);
         break;
     case Shape::box:
-        blockAllocator.Free(shape, sizeof(Box));
+        poolAllocator.Free((Box*)shape);
         break;
     case Shape::polygon:
-        blockAllocator.Free(shape, sizeof(Polygon));
+        poolAllocator.Free((Polygon*)shape);
         break;
     default:
         MuliAssert(false);

@@ -97,8 +97,7 @@ void ContactGraph::OnNewContact(Collider* colliderA, Collider* colliderB)
     }
 
     // Create new contact
-    void* mem = world->blockAllocator.Allocate(sizeof(Contact));
-    Contact* c = new (mem) Contact(colliderA, colliderB);
+    Contact* c = world->poolAllocator.New<Contact>(colliderA, colliderB);
 
     // Insert into the world
     c->prev = nullptr;
@@ -159,7 +158,7 @@ void ContactGraph::Destroy(Contact* c)
     if (&c->nodeB == bodyB->contactList) bodyB->contactList = c->nodeB.next;
 
     c->~Contact();
-    world->blockAllocator.Free(c, sizeof(Contact));
+    world->poolAllocator.Free<Contact>(c);
     --contactCount;
 }
 

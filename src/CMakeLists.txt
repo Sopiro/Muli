@@ -50,7 +50,8 @@ set(HEADER_FILES
     ../include/muli/growable_array.h
     ../include/muli/allocator.h
     ../include/muli/stack_allocator.h
-    ../include/muli/block_allocator.h
+    ../include/muli/linear_allocator.h
+    ../include/muli/pool_allocator.h
     ../include/muli/fixed_block_allocator.h
     ../include/muli/callbacks.h
     ../include/muli/geometry.h
@@ -64,7 +65,7 @@ set(SOURCE_FILES
     util/math.cpp
     util/stack_allocator.cpp
     util/linear_allocator.cpp
-    util/block_allocator.cpp
+    util/pool_allocator.cpp
 
     geometry/circle_shape.cpp
     geometry/capsule_shape.cpp

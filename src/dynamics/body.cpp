@@ -57,8 +57,8 @@ Collider* Body::CreateCollider(Shape* shape, const Transform& tf, float density,
         return nullptr;
     }
 
-    Allocator* allocator = &world->blockAllocator;
-    void* mem = allocator->Allocate(sizeof(Collider));
+    PoolAllocator* allocator = &world->poolAllocator;
+    void* mem = allocator->Allocate<Collider>();
 
 #if 1
     // Shape radius(skin) must be greater than or equal to linear_slop * 2.0 for stable CCD
@@ -105,11 +105,11 @@ void Body::DestroyCollider(Collider* collider)
     // Remove collider from contact manager(broad phase)
     world->contactGraph.RemoveCollider(collider);
 
-    Allocator* allocator = &world->blockAllocator;
+    PoolAllocator* allocator = &world->poolAllocator;
 
     collider->~Collider();
     collider->Destroy(world);
-    allocator->Free(collider, sizeof(Collider));
+    allocator->Free(collider);
 
     --colliderCount;
 

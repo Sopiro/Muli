@@ -18,8 +18,8 @@
 #include "collision.h"
 #include "contact_graph.h"
 
-#include "block_allocator.h"
 #include "linear_allocator.h"
+#include "pool_allocator.h"
 
 namespace muli
 {
@@ -340,7 +340,7 @@ private:
     std::vector<Joint*> destroyJointBuffer;
 
     LinearAllocator linearAllocator;
-    BlockAllocator blockAllocator;
+    PoolAllocator poolAllocator;
 };
 
 inline void World::Awake()
