@@ -52,12 +52,12 @@ public:
                 if (j + 1 < rows)
                 {
                     RigidBody* c10 = circles[j + 1][i];
-                    world->CreateDistanceJoint(c00, c10, -1.0f, f, d, c00->GetMass());
+                    world->CreateDistanceJoint(c00, c10, -1.0f, f, d);
                 }
                 if (i + 1 < cols)
                 {
                     RigidBody* c01 = circles[j][i + 1];
-                    world->CreateDistanceJoint(c00, c01, -1.0f, f, d, c00->GetMass());
+                    world->CreateDistanceJoint(c00, c01, -1.0f, f, d);
                 }
             }
         }
@@ -67,10 +67,10 @@ public:
         RigidBody* mr = circles[rows - 1][(int32)(cols * 2.0f / 3.0f)];
         RigidBody* tr = circles[rows - 1][cols - 1];
 
-        world->CreateGrabJoint(tl, tl->GetPosition(), tl->GetPosition() + Vec2{ -gap, gap }, 15.0f, 1.0f, tl->GetMass());
-        world->CreateGrabJoint(ml, ml->GetPosition(), ml->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
-        world->CreateGrabJoint(mr, mr->GetPosition(), mr->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f, tl->GetMass());
-        world->CreateGrabJoint(tr, tr->GetPosition(), tr->GetPosition() + Vec2{ gap, gap }, 15.0f, 1.0f, tl->GetMass());
+        world->CreateGrabJoint(tl, tl->GetPosition(), tl->GetPosition() + Vec2{ -gap, gap }, 15.0f, 1.0f);
+        world->CreateGrabJoint(ml, ml->GetPosition(), ml->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f);
+        world->CreateGrabJoint(mr, mr->GetPosition(), mr->GetPosition() + Vec2{ 0.0f, gap }, 15.0f, 1.0f);
+        world->CreateGrabJoint(tr, tr->GetPosition(), tr->GetPosition() + Vec2{ gap, gap }, 15.0f, 1.0f);
     }
 
     void UpdateUI() override

@@ -8,7 +8,7 @@ namespace muli
 class RevoluteJoint : public Joint
 {
 public:
-    RevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio, float jointMass);
+    RevoluteJoint(RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float frequency, float dampingRatio);
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

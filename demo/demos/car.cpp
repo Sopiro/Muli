@@ -45,20 +45,19 @@ public:
         wheel1->SetCollisionFilter(filter);
         wheel2->SetCollisionFilter(filter);
 
-        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f, wheel1->GetMass());
-        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f, wheel2->GetMass());
+        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f);
+        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f);
 
         float motorMaxForce = 300.0f;
         float motorMaxTorque = 0.0f;
         float motorFrequency = 30.0f;
         float motorDampingRatio = 1.0f;
-        float motorMass = wheel1->GetMass();
 
         motor1 = world->CreateMotorJoint(
-            body, wheel1, wheel1->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio, motorMass
+            body, wheel1, wheel1->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio
         );
         motor2 = world->CreateMotorJoint(
-            body, wheel2, wheel2->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio, motorMass
+            body, wheel2, wheel2->GetPosition(), motorMaxForce, motorMaxTorque, motorFrequency, motorDampingRatio
         );
 
         camera.scale.Set(1.5f);

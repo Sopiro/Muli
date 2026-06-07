@@ -7,7 +7,6 @@ static int32 selection = 0;
 static const char* items[] = { "Revolute joint", "Distance joint" };
 static float f = 12.0f;
 static float d = 0.5f;
-static float m = 1.0f;
 
 class MultiPendulum : public Demo
 {
@@ -38,12 +37,12 @@ public:
 
             if (selection == 0)
             {
-                j = world->CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, f, d, m);
+                j = world->CreateRevoluteJoint(b1, b2, { xStart - (sizeW + gap) / 2 - (gap + sizeW) * i, yStart }, f, d);
             }
             else
             {
                 j = world->CreateDistanceJoint(
-                    b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 }, b2->GetPosition() + Vec2{ sizeW / 2, 0 }, -1.0f, f, d, m
+                    b1, b2, b1->GetPosition() - Vec2{ sizeW / 2, 0 }, b2->GetPosition() + Vec2{ sizeW / 2, 0 }, -1.0f, f, d
                 );
             }
 
@@ -67,8 +66,6 @@ public:
             ImGui::SliderFloat("##Frequency", &f, 0.0f, 20.0f, "%.2f");
             ImGui::Text("Damping ratio");
             ImGui::SliderFloat("##Damping ratio", &d, 0.0f, 1.0f, "%.2f");
-            ImGui::Text("Joint mass");
-            ImGui::SliderFloat("##Joint mass", &m, 0.0f, 10.0f, "%.2f");
             ImGui::PopID();
         }
         ImGui::End();

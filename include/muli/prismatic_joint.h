@@ -14,8 +14,7 @@ public:
         const Vec2& anchor,
         const Vec2& dir,
         float frequency,
-        float dampingRatio,
-        float jointMass
+        float dampingRatio
     );
 
     virtual void Prepare(const Timestep& step) override;

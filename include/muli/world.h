@@ -112,17 +112,15 @@ public:
         RigidBody* body,
         const Vec2& anchor,
         const Vec2& target,
-        float frequency = 1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     RevoluteJoint* CreateRevoluteJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         const Vec2& anchor,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     DistanceJoint* CreateDistanceJoint(
         RigidBody* bodyA,
@@ -131,16 +129,14 @@ public:
         const Vec2& anchorB,
         float length = -1.0f,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     DistanceJoint* CreateDistanceJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         float length = -1.0f,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     DistanceJoint* CreateLimitedDistanceJoint(
         RigidBody* bodyA,
@@ -150,8 +146,7 @@ public:
         float minLength = -1.0f,
         float maxLength = -1.0f,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     DistanceJoint* CreateLimitedDistanceJoint(
         RigidBody* bodyA,
@@ -159,15 +154,13 @@ public:
         float minLength = -1.0f,
         float maxLength = -1.0f,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     AngleJoint* CreateAngleJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     AngleJoint* CreateLimitedAngleJoint(
         RigidBody* bodyA,
@@ -175,16 +168,14 @@ public:
         float minAngle,
         float maxAngle,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     WeldJoint* CreateWeldJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         const Vec2& anchor,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     LineJoint* CreateLineJoint(
         RigidBody* bodyA,
@@ -192,31 +183,27 @@ public:
         const Vec2& anchorA,
         const Vec2& dir,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     LineJoint* CreateLineJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         float frequency = 10.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float dampingRatio = 1.0f
     );
     PrismaticJoint* CreatePrismaticJoint(
         RigidBody* bodyA,
         RigidBody* bodyB,
         const Vec2& anchor,
         const Vec2& dir,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     PrismaticJoint* CreatePrismaticJoint(
         RigidBody* bodyA, 
         RigidBody* bodyB, 
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     PulleyJoint* CreatePulleyJoint(
         RigidBody* bodyA,
@@ -226,9 +213,8 @@ public:
         const Vec2& groundAnchorA,
         const Vec2& groundAnchorB,
         float ratio = 1.0f,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     MotorJoint* CreateMotorJoint(
         RigidBody* bodyA,
@@ -236,9 +222,8 @@ public:
         const Vec2& anchor,
         float maxForce = 1000.0f,
         float maxTorque = 1000.0f,
-        float frequency = -1.0f,
-        float dampingRatio = 1.0f,
-        float jointMass = 1.0f
+        float frequency = 10.0f,
+        float dampingRatio = 1.0f
     );
     // clang-format on
 

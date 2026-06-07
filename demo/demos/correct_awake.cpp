@@ -47,7 +47,7 @@ public:
 
         if (ImGui::Begin("Correct awake", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::Text("Press 's' to step simulation");
+            ImGui::Text("Press 'e' to step simulation");
         }
         ImGui::End();
     }

@@ -9,10 +9,9 @@ LineJoint::LineJoint(
     const Vec2& anchor,
     const Vec2& dir,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(line_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(line_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchor);
@@ -31,8 +30,6 @@ LineJoint::LineJoint(
 
 void LineJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-t^t, -(ra + d)×t, t^t, rb×t]
     // W = (J · M^-1 · J^t)^-1
@@ -50,13 +47,18 @@ void LineJoint::Prepare(const Timestep& step)
     // clang-format off
     float k = bodyA->invMass + bodyB->invMass
             + bodyA->invInertia * sa * sa
-            + bodyB->invInertia * sb * sb
-            + gamma;
+            + bodyB->invInertia * sb * sb;
     // clang-format on
 
     if (k != 0.0f)
     {
+        ComputeBetaAndGamma(1.0f / k, step.dt);
+        k += gamma;
         m = 1.0f / k;
+    }
+    else
+    {
+        ComputeBetaAndGamma(0.0f, step.dt);
     }
 
     float error = Dot(d, t);

@@ -66,7 +66,7 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
     {
         float angle = DegToRad(5);
         RevoluteJoint* j1 = world->CreateRevoluteJoint(body, head, body->GetPosition() + Vec2{ 0.0f, bodyHeight / 2.0f }, 60.0f);
-        AngleJoint* j2 = world->CreateLimitedAngleJoint(body, head, -angle, angle, 60.0f, 1.0f, body->GetMass());
+        AngleJoint* j2 = world->CreateLimitedAngleJoint(body, head, -angle, angle, 60.0f, 1.0f);
 
         ragdoll.bones[Ragdoll::index_head] = Bone{ Ragdoll::index_body, head, j1, j2 };
     }
@@ -117,11 +117,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             // body -> upper right arm
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
-                    body, upperRightArm, Vec2{ headX + armStartX, headY - armStartY }, armFrequency, armDampingRatio,
-                    body->GetMass()
+                    body, upperRightArm, Vec2{ headX + armStartX, headY - armStartY }, armFrequency, armDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    body, upperRightArm, -minAngle, maxAngle, armAngleFrequency, armAngleDampingRatio, body->GetMass()
+                    body, upperRightArm, -minAngle, maxAngle, armAngleFrequency, armAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_upperRightArm] = Bone{ Ragdoll::index_body, upperRightArm, j1, j2 };
@@ -131,11 +130,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
                     upperRightArm, lowerRightArm, Vec2{ headX + armStartX + armLength + armGap, headY - armStartY }, armFrequency,
-                    armDampingRatio, upperRightArm->GetMass()
+                    armDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    upperRightArm, lowerRightArm, -minAngle, maxAngle, armAngleFrequency, armAngleDampingRatio,
-                    upperRightArm->GetMass()
+                    upperRightArm, lowerRightArm, -minAngle, maxAngle, armAngleFrequency, armAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_lowerRightArm] = Bone{ Ragdoll::index_upperRightArm, lowerRightArm, j1, j2 };
@@ -144,11 +142,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             // body -> upper left arm
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
-                    body, upperLeftArm, Vec2{ headX - armStartX, headY - armStartY }, armFrequency, armDampingRatio,
-                    body->GetMass()
+                    body, upperLeftArm, Vec2{ headX - armStartX, headY - armStartY }, armFrequency, armDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    body, upperLeftArm, -maxAngle, minAngle, armAngleFrequency, armAngleDampingRatio, body->GetMass()
+                    body, upperLeftArm, -maxAngle, minAngle, armAngleFrequency, armAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_upperLeftArm] = Bone{ Ragdoll::index_body, upperLeftArm, j1, j2 };
@@ -158,11 +155,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
                     upperLeftArm, lowerLeftArm, Vec2{ headX - armStartX - armLength - armGap, headY - armStartY }, armFrequency,
-                    armDampingRatio, upperLeftArm->GetMass()
+                    armDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    upperLeftArm, lowerLeftArm, -maxAngle, minAngle, armAngleFrequency, armAngleDampingRatio,
-                    upperLeftArm->GetMass()
+                    upperLeftArm, lowerLeftArm, -maxAngle, minAngle, armAngleFrequency, armAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_lowerLeftArm] = Bone{ Ragdoll::index_upperLeftArm, lowerLeftArm, j1, j2 };
@@ -215,11 +211,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             // body -> upper right leg
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
-                    body, upperRightLeg, Vec2{ headX + legStartX, headY - legStartY }, LegFrequency, LegDampingRatio,
-                    body->GetMass()
+                    body, upperRightLeg, Vec2{ headX + legStartX, headY - legStartY }, LegFrequency, LegDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    body, upperRightLeg, -minAngle, maxAngle, legAngleFrequency, legAngleDampingRatio, body->GetMass()
+                    body, upperRightLeg, -minAngle, maxAngle, legAngleFrequency, legAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_upperRightLeg] = Bone{ Ragdoll::index_body, upperRightLeg, j1, j2 };
@@ -229,11 +224,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
                     upperRightLeg, lowerRightLeg, Vec2{ headX + legStartX, headY - legStartY - legLength - legGap }, LegFrequency,
-                    LegDampingRatio, body->GetMass()
+                    LegDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    upperRightLeg, lowerRightLeg, -minAngle, maxAngle, legAngleFrequency, legAngleDampingRatio,
-                    upperRightLeg->GetMass()
+                    upperRightLeg, lowerRightLeg, -minAngle, maxAngle, legAngleFrequency, legAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_lowerRightLeg] = Bone{ Ragdoll::index_upperRightLeg, lowerRightLeg, j1, j2 };
@@ -242,11 +236,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             // body -> upper left leg
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
-                    body, upperLeftLeg, Vec2{ headX - legStartX, headY - legStartY }, LegFrequency, LegDampingRatio,
-                    body->GetMass()
+                    body, upperLeftLeg, Vec2{ headX - legStartX, headY - legStartY }, LegFrequency, LegDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    body, upperLeftLeg, -maxAngle, minAngle, legAngleFrequency, legAngleDampingRatio, body->GetMass()
+                    body, upperLeftLeg, -maxAngle, minAngle, legAngleFrequency, legAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_upperLeftLeg] = Bone{ Ragdoll::index_body, upperLeftLeg, j1, j2 };
@@ -256,11 +249,10 @@ inline Ragdoll CreateRagdoll(World* world, Vec2 headPosition, float scale, int32
             {
                 RevoluteJoint* j1 = world->CreateRevoluteJoint(
                     upperLeftLeg, lowerLeftLeg, Vec2{ headX - legStartX, headY - legStartY - legLength - legGap }, LegFrequency,
-                    LegDampingRatio, body->GetMass()
+                    LegDampingRatio
                 );
                 AngleJoint* j2 = world->CreateLimitedAngleJoint(
-                    upperLeftLeg, lowerLeftLeg, -maxAngle, minAngle, legAngleFrequency, legAngleDampingRatio,
-                    upperLeftLeg->GetMass()
+                    upperLeftLeg, lowerLeftLeg, -maxAngle, minAngle, legAngleFrequency, legAngleDampingRatio
                 );
 
                 ragdoll.bones[Ragdoll::index_lowerLeftLeg] = Bone{ Ragdoll::index_upperLeftLeg, lowerLeftLeg, j1, j2 };

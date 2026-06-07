@@ -33,10 +33,9 @@ AngleJoint::AngleJoint(
     float jointMinAngle,
     float jointMaxAngle,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(angle_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(angle_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , angleOffset{ jointAngleOffset }
     , minAngle{ jointMinAngle }
     , maxAngle{ jointMaxAngle }
@@ -49,17 +48,21 @@ AngleJoint::AngleJoint(
 
 void AngleJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [0 -1 0 1]
     // W = (J · M^-1 · J^t)^-1
 
-    float k = bodyA->invInertia + bodyB->invInertia + gamma;
+    float k = bodyA->invInertia + bodyB->invInertia;
 
     if (k != 0.0f)
     {
+        ComputeBetaAndGamma(1.0f / k, step.dt);
+        k += gamma;
         m = 1.0f / k;
+    }
+    else
+    {
+        ComputeBetaAndGamma(0.0f, step.dt);
     }
 
     float currentAngle = bodyB->motion.a - bodyA->motion.a - angleOffset;

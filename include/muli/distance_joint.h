@@ -16,8 +16,7 @@ public:
         float minLength,
         float maxLength,
         float frequency,
-        float dampingRatio,
-        float jointMass
+        float dampingRatio
     );
 
     virtual void Prepare(const Timestep& step) override;

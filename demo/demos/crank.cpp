@@ -35,7 +35,7 @@ public:
         arm2->SetCollisionFilter(filter);
         arm3->SetCollisionFilter(filter);
 
-        motor = world->CreateMotorJoint(ground, arm1, Vec2{ 0.0f, 1.0f }, -1.0f, 100.0f);
+        motor = world->CreateMotorJoint(ground, arm1, Vec2{ 0.0f, 1.0f }, -1.0f, 100.0f, -1.0f);
 
         RigidBody* b = world->CreateBox(0.6f);
         b->SetPosition(0.0f, 4.0f);

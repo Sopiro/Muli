@@ -454,7 +454,7 @@ bool Demo::EnableBodyGrab()
         if (targetBody->GetType() == RigidBody::dynamic_body)
         {
             targetBody->Awake();
-            cursorJoint = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 4.0f, 0.5f, targetBody->GetMass());
+            cursorJoint = world->CreateGrabJoint(targetBody, cursorPos, cursorPos, 5.0f, 0.5f);
             cursorJoint->OnDestroy = this;
         }
     }
@@ -527,8 +527,8 @@ void Demo::EnableKeyboardShortcut()
     if (Input::IsKeyPressed(GLFW_KEY_P)) options.show_contact_point = !options.show_contact_point;
     if (Input::IsKeyPressed(GLFW_KEY_N)) options.show_contact_normal = !options.show_contact_normal;
     if (Input::IsKeyPressed(GLFW_KEY_C)) options.reset_camera = !options.reset_camera;
-    if (Input::IsKeyPressed(GLFW_KEY_SPACE)) options.pause = !options.pause;
-    if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_S)) options.step = true;
+    if (Input::IsKeyPressed(GLFW_KEY_SPACE) || Input::IsKeyPressed(GLFW_KEY_Q)) options.pause = !options.pause;
+    if (Input::IsKeyDown(GLFW_KEY_RIGHT) || Input::IsKeyPressed(GLFW_KEY_E)) options.step = true;
 
     if (Input::IsKeyPressed(GLFW_KEY_U)) settings.continuous = !settings.continuous;
     if (Input::IsKeyPressed(GLFW_KEY_I)) settings.sub_stepping = !settings.sub_stepping;

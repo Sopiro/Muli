@@ -28,9 +28,7 @@ public:
 
         {
             RigidBody* body = ragdoll.bones[0].body;
-            MotorJoint* j = world->CreateMotorJoint(
-                body, ground, ground->GetPosition(), 0.0f, bodyTorque, bodyFrequency, bodyDampingRatio, body->GetMass()
-            );
+            MotorJoint* j = world->CreateMotorJoint(body, ground, ground->GetPosition(), 0.0f, bodyTorque, bodyFrequency, bodyDampingRatio);
 
             joints[0] = j;
         }
@@ -43,9 +41,7 @@ public:
         // {
         //     RigidBody* body = ragdoll.bones[i].body;
 
-        //     MotorJoint* j = world->CreateMotorJoint(
-        //         ground, body, ground->GetPosition(), 0, armTorque, armFrequency, armDampingRatio, body->GetMass()
-        //     );
+        //     MotorJoint* j = world->CreateMotorJoint(ground, body, ground->GetPosition(), 0, armTorque, armFrequency, armDampingRatio);
 
         //     armJoints.push_back(j);
         // }
@@ -54,9 +50,7 @@ public:
         {
             RigidBody* body = ragdoll.bones[i].body;
 
-            MotorJoint* j = world->CreateMotorJoint(
-                body, ground, ground->GetPosition(), 0, legTorque, legFrequency, legDampingRatio, body->GetMass()
-            );
+            MotorJoint* j = world->CreateMotorJoint(body, ground, ground->GetPosition(), 0, legTorque, legFrequency, legDampingRatio);
 
             joints[i] = j;
         }

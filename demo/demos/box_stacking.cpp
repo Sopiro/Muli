@@ -17,7 +17,7 @@ public:
         RigidBody* ground = world->CreateCapsule(1000.0f, l, true, identity, RigidBody::static_body);
 
         float size = 1.0f;
-        float gap = 0.03f;
+        float gap = 0.05f;
         float start = l + size / 2.0f + gap;
 
         for (int32 i = 0; i < count; ++i)

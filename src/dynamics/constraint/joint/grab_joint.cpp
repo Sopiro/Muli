@@ -8,10 +8,9 @@ GrabJoint::GrabJoint(
     const Vec2& anchor,
     const Vec2& targetPosition,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(grab_joint, body, body, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(grab_joint, body, body, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {
     localAnchor = MulT(body->GetTransform(), anchor);
@@ -20,8 +19,6 @@ GrabJoint::GrabJoint(
 
 void GrabJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [I, skew(r)]
     // W = (J · M^-1 · J^t)^-1
@@ -35,6 +32,8 @@ void GrabJoint::Prepare(const Timestep& step)
     k[1][0] = -bodyA->invInertia * r.y * r.x;
     k[0][1] = -bodyA->invInertia * r.x * r.y;
     k[1][1] = bodyA->invMass + bodyA->invInertia * r.x * r.x;
+
+    ComputeBetaAndGamma(k.TraceInverse() * 0.5f, step.dt);
 
     k[0][0] += gamma;
     k[1][1] += gamma;

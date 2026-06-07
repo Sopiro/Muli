@@ -4,9 +4,9 @@ namespace muli
 {
 
 RevoluteJoint::RevoluteJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
 )
-    : Joint(revolute_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(revolute_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchor);
@@ -15,8 +15,6 @@ RevoluteJoint::RevoluteJoint(
 
 void RevoluteJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-I, -skew(ra), I, skew(rb)]
     // W = (J · M^-1 · J^t)^-1
@@ -32,6 +30,8 @@ void RevoluteJoint::Prepare(const Timestep& step)
     k[0][1] = -bodyA->invInertia * ra.x * ra.y - bodyB->invInertia * rb.x * rb.y;
 
     k[1][1] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+
+    ComputeBetaAndGamma(k.TraceInverse() * 0.5f, step.dt);
 
     k[0][0] += gamma;
     k[1][1] += gamma;

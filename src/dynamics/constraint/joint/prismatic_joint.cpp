@@ -11,10 +11,9 @@ PrismaticJoint::PrismaticJoint(
     const Vec2& anchor,
     const Vec2& dir,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(prismatic_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(prismatic_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchor);
@@ -35,8 +34,6 @@ PrismaticJoint::PrismaticJoint(
 
 void PrismaticJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-t^t, -(ra + u)×t, t^t, rb×t] // Line
     //     [   0,          -1,   0,    1] // Angle
@@ -59,6 +56,8 @@ void PrismaticJoint::Prepare(const Timestep& step)
     k[1][0] = sa * bodyA->invInertia + sb * bodyB->invInertia;
     k[0][1] = k[1][0];
     k[1][1] = bodyA->invInertia + bodyB->invInertia;
+
+    ComputeBetaAndGamma(k.TraceInverse() * 0.5f, step.dt);
 
     k[0][0] += gamma;
     k[1][1] += gamma;

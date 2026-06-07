@@ -175,11 +175,9 @@ public:
         float mf = -1;
         float fr = -1;
         float dr = 0.1f;
-        float jm = body->GetMass();
-
         for (int32 i = 0; i < 4; ++i)
         {
-            mj[i] = world->CreateMotorJoint(body, wheels[i].wheel, wheels[i].wheel->GetPosition(), mf, torque, fr, dr, jm);
+            mj[i] = world->CreateMotorJoint(body, wheels[i].wheel, wheels[i].wheel->GetPosition(), mf, torque, fr, dr);
         }
 
         // Obstacles

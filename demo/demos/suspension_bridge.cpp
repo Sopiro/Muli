@@ -37,15 +37,13 @@ public:
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(
-                pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f, b1->GetMass()
-            );
+            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth, yStart } / 2.0f, frequency, 1.0f);
         }
         else
         {
             j = world->CreateDistanceJoint(
                 pillar, b1, pillar->GetPosition() + Vec2{ pillarWidth / 2.0f, yStart / 2.0f },
-                b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f, b1->GetMass()
+                b1->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f }, -1.0f, frequency, 1.0f
             );
         }
 
@@ -56,15 +54,13 @@ public:
 
             if (selection == 0)
             {
-                j = world->CreateRevoluteJoint(
-                    b1, b2, (b1->GetPosition() + b2->GetPosition()) / 2.0f, frequency, 1.0f, b2->GetMass()
-                );
+                j = world->CreateRevoluteJoint(b1, b2, (b1->GetPosition() + b2->GetPosition()) / 2.0f, frequency, 1.0f);
             }
             else
             {
                 j = world->CreateDistanceJoint(
                     b1, b2, b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, b2->GetPosition() + Vec2{ -sizeX / 2.0f, 0.0f },
-                    -1.0f, frequency, 1.0f, b2->GetMass()
+                    -1.0f, frequency, 1.0f
                 );
             }
 
@@ -76,15 +72,13 @@ public:
 
         if (selection == 0)
         {
-            j = world->CreateRevoluteJoint(
-                pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f, b1->GetMass()
-            );
+            j = world->CreateRevoluteJoint(pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth, yStart } / 2.0f, frequency, 1.0f);
         }
         else
         {
             j = world->CreateDistanceJoint(
                 pillar, b1, pillar->GetPosition() + Vec2{ -pillarWidth / 2.0f, yStart / 2.0f },
-                b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f, b1->GetMass()
+                b1->GetPosition() + Vec2{ sizeX / 2.0f, 0.0f }, -1, frequency, 1.0f
             );
         }
 

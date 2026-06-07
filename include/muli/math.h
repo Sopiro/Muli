@@ -709,6 +709,22 @@ struct Mat2
         return t;
     }
 
+    float Trace() const
+    {
+        return ex.x + ey.y;
+    }
+
+    float TraceInverse() const
+    {
+        float det = ex.x * ey.y - ey.x * ex.y;
+        if (det == 0.0f)
+        {
+            return 0.0f;
+        }
+
+        return Trace() / det;
+    }
+
     float GetDeterminant() const
     {
         return ex.x * ey.y - ey.x * ex.y;
@@ -791,6 +807,8 @@ struct Mat3
     }
 
     Mat3 GetInverse() const;
+    float Trace() const;
+    float TraceInverse() const;
     Mat3 Scale(const Vec2& s);
     Mat3 Rotate(float z);
     Mat3 Translate(const Vec2& t);
@@ -1341,6 +1359,26 @@ inline Mat3 MulT(const Mat3& a, const Mat3& b)
     Vec3 c3{ Dot(a.ex, b.ez), Dot(a.ey, b.ez), Dot(a.ez, b.ez) };
 
     return Mat3{ c1, c2, c3 };
+}
+
+inline float Mat3::Trace() const
+{
+    return ex.x + ey.y + ez.z;
+}
+
+inline float Mat3::TraceInverse() const
+{
+    float cxx = ey.y * ez.z - ey.z * ez.y;
+    float cyy = ex.x * ez.z - ex.z * ez.x;
+    float czz = ex.x * ey.y - ex.y * ey.x;
+
+    float det = ex.x * cxx - ey.x * (ex.y * ez.z - ex.z * ez.y) + ez.x * (ex.y * ey.z - ex.z * ey.y);
+    if (det == 0.0f)
+    {
+        return 0.0f;
+    }
+
+    return (cxx + cyy + czz) / det;
 }
 
 // Mat3 functions end

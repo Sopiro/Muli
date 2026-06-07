@@ -27,7 +27,7 @@ public:
 
         RigidBody* b = world->CreateBox(size);
         b->SetPosition(length, yStart + yGap);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.05f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.05f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);
@@ -36,7 +36,7 @@ public:
 
         b = world->CreateBox(size);
         b->SetPosition(length, yStart);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.2f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.2f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);
@@ -45,7 +45,7 @@ public:
 
         b = world->CreateBox(size);
         b->SetPosition(length, yStart - yGap);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.7f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 2.0f, 0.7f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);
@@ -54,7 +54,7 @@ public:
 
         b = world->CreateBox(size);
         b->SetPosition(-length, yStart + yGap);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 1.0f, 0.2f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 1.0f, 0.2f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);
@@ -67,7 +67,7 @@ public:
 
         b = world->CreateBox(size);
         b->SetPosition(-length, yStart);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, frequency, 1.0f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, frequency, 1.0f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);
@@ -76,7 +76,7 @@ public:
 
         b = world->CreateBox(size);
         b->SetPosition(-length, yStart - yGap);
-        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 4.0f, 0.01f, b->GetMass());
+        world->CreateDistanceJoint(g, b, { 0.0f, b->GetPosition().y }, b->GetPosition(), length, 4.0f, 0.01f);
         if (constrain_linear_motion)
         {
             world->CreatePrismaticJoint(g, b, b->GetPosition(), Vec2{ 1.0f, 0.0f }, -1.0f);

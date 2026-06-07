@@ -8,7 +8,7 @@ namespace muli
 class GrabJoint : public Joint
 {
 public:
-    GrabJoint(RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio, float jointMass);
+    GrabJoint(RigidBody* body, const Vec2& anchor, const Vec2& target, float frequency, float dampingRatio);
 
     virtual void Prepare(const Timestep& step) override;
     virtual void SolveVelocityConstraints(const Timestep& step) override;

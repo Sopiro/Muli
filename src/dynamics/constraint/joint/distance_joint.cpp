@@ -34,10 +34,9 @@ DistanceJoint::DistanceJoint(
     float jointMinLength,
     float jointMaxLength,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(distance_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(distance_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , bias{ 0.0f }
     , impulseSum{ 0.0f }
     , limitState{ distance_limit_inactive }
@@ -51,8 +50,6 @@ DistanceJoint::DistanceJoint(
 
 void DistanceJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-d, -d×ra, d, d×rb] ( d = (anchorB-anchorA) / ||anchorB-anchorA|| )
     // W = (J · M^-1 · J^t)^-1
@@ -69,13 +66,18 @@ void DistanceJoint::Prepare(const Timestep& step)
     // clang-format off
     float k = bodyA->invMass + bodyB->invMass
             + bodyA->invInertia * Cross(d, ra) * Cross(d, ra)
-            + bodyB->invInertia * Cross(d, rb) * Cross(d, rb)
-            + gamma;
+            + bodyB->invInertia * Cross(d, rb) * Cross(d, rb);
     // clang-format on
 
     if (k != 0.0f)
     {
+        ComputeBetaAndGamma(1.0f / k, step.dt);
+        k += gamma;
         m = 1.0f / k;
+    }
+    else
+    {
+        ComputeBetaAndGamma(0.0f, step.dt);
     }
 
     if (minLength == maxLength)

@@ -73,8 +73,7 @@ public:
         RigidBody* bodyA,
         RigidBody* bodyB,
         float jointFrequency,
-        float jointDampingRatio,
-        float jointMass
+        float jointDampingRatio
     );
     // clang-format on
     virtual ~Joint();
@@ -89,10 +88,8 @@ public:
     void SetJointFrequency(float jointFrequency);
     float GetJointDampingRatio() const;
     void SetJointDampingRatio(float jointDampingRatio);
-    float GetJointMass() const;
-    void SetJointMass(float jointMass);
 
-    void SetParameters(float jointFrequency, float jointDampingRatio, float jointMass);
+    void SetParameters(float jointFrequency, float jointDampingRatio);
 
     bool IsSolid() const;
     Joint::Type GetType() const;
@@ -110,17 +107,15 @@ public:
 protected:
     Joint::Type type;
 
-    void ComputeBetaAndGamma(const Timestep& step);
+    void ComputeBetaAndGamma(float effectiveMass, float dt);
 
 private:
     // Following parameters are used to soften the joint
     // Frequency values less than or equal to zero make joints rigid
     // 0 < Frequency
     // 0 <= Damping ratio <= 1
-    // 0 < Mass
     float jointFrequency;
     float jointDampingRatio;
-    float jointMass;
 
     Joint* prev;
     Joint* next;
@@ -138,7 +133,7 @@ inline float Joint::GetJointFrequency() const
 
 inline void Joint::SetJointFrequency(float newJointFrequency)
 {
-    SetParameters(newJointFrequency, jointDampingRatio, jointMass);
+    SetParameters(newJointFrequency, jointDampingRatio);
 }
 
 inline float Joint::GetJointDampingRatio() const
@@ -148,17 +143,7 @@ inline float Joint::GetJointDampingRatio() const
 
 inline void Joint::SetJointDampingRatio(float newJointDampingRatio)
 {
-    SetParameters(jointFrequency, newJointDampingRatio, jointMass);
-}
-
-inline float Joint::GetJointMass() const
-{
-    return jointMass;
-}
-
-inline void Joint::SetJointMass(float newJointMass)
-{
-    SetParameters(jointFrequency, jointDampingRatio, newJointMass);
+    SetParameters(jointFrequency, newJointDampingRatio);
 }
 
 inline bool Joint::IsSolid() const

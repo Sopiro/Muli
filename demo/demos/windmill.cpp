@@ -32,7 +32,7 @@ public:
         stick->SetCollisionFilter(filter);
         windmill->SetCollisionFilter(filter);
 
-        motor = world->CreateMotorJoint(stick, windmill, windmill->GetPosition(), force, torque);
+        motor = world->CreateMotorJoint(stick, windmill, windmill->GetPosition(), force, torque, -1.0f);
     }
 
     float t = 0.0f;

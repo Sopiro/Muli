@@ -6,9 +6,9 @@ namespace muli
 // Revolute joint + Angle joint
 
 WeldJoint::WeldJoint(
-    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio, float jointMass
+    RigidBody* bodyA, RigidBody* bodyB, const Vec2& anchor, float jointFrequency, float jointDampingRatio
 )
-    : Joint(weld_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(weld_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , impulseSum{ 0.0f }
 {
     localAnchorA = MulT(bodyA->GetTransform(), anchor);
@@ -19,8 +19,6 @@ WeldJoint::WeldJoint(
 
 void WeldJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
     //     [ 0,        -1, 0,        1] // Angle
@@ -45,6 +43,8 @@ void WeldJoint::Prepare(const Timestep& step)
     k[1][2] = k[2][1];
 
     k[2][2] = bodyA->invInertia + bodyB->invInertia;
+
+    ComputeBetaAndGamma(k.TraceInverse() / 3.0f, step.dt);
 
     k[0][0] += gamma;
     k[1][1] += gamma;

@@ -10,10 +10,9 @@ MotorJoint::MotorJoint(
     float maxJointForce,
     float maxJointTorque,
     float jointFrequency,
-    float jointDampingRatio,
-    float jointMass
+    float jointDampingRatio
 )
-    : Joint(motor_joint, bodyA, bodyB, jointFrequency, jointDampingRatio, jointMass)
+    : Joint(motor_joint, bodyA, bodyB, jointFrequency, jointDampingRatio)
     , linearImpulseSum{ 0.0f }
     , angularImpulseSum{ 0.0f }
 {
@@ -30,8 +29,6 @@ MotorJoint::MotorJoint(
 
 void MotorJoint::Prepare(const Timestep& step)
 {
-    ComputeBetaAndGamma(step);
-
     // Compute Jacobian J and effective mass W
     // J = [-I, -skew(ra), I, skew(rb)] // Revolute
     //     [ 0,        -1, 0,        1] // Angle
@@ -46,6 +43,8 @@ void MotorJoint::Prepare(const Timestep& step)
     k0[1][0] = -bodyA->invInertia * ra.y * ra.x - bodyB->invInertia * rb.y * rb.x;
     k0[0][1] = k0[1][0];
     k0[1][1] = bodyA->invMass + bodyB->invMass + bodyA->invInertia * ra.x * ra.x + bodyB->invInertia * rb.x * rb.x;
+
+    ComputeBetaAndGamma(k0.TraceInverse() * 0.5f, step.dt);
 
     k0[0][0] += gamma;
     k0[1][1] += gamma;
