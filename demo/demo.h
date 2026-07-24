@@ -1,11 +1,12 @@
 #pragma once
 
-#include "builder.h"
 #include "camera.h"
 #include "game.h"
-#include "input.h"
-#include "muli/random.h"
 #include "options.h"
+
+#include "builder.h"     // IWYU pragma: keep
+#include "input.h"       // IWYU pragma: keep
+#include "muli/random.h" // IWYU pragma: keep
 
 namespace muli
 {

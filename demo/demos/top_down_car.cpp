@@ -109,7 +109,7 @@ struct Wheel
 
     void UpdateInputBrake()
     {
-        if (Input::IsKeyDown(GLFW_KEY_Q))
+        if (Input::IsKeyDown(GLFW_KEY_E))
         {
             Vec2 brakeForce = -brake * wheel->GetMass() * wheel->GetLinearVelocity();
             wheel->ApplyForce(wheel->GetPosition(), brakeForce, false);
@@ -395,7 +395,7 @@ public:
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground
         );
-        ImGui::TextColored(ImColor{ 12, 11, 14 }, "WASD and Arrows to control, Q to brake");
+        ImGui::TextColored(ImColor{ 12, 11, 14 }, "WASD and Arrows to control, E to brake");
         ImGui::End();
     }
 

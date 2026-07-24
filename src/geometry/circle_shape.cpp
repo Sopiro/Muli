@@ -10,7 +10,7 @@ Circle::Circle(float radius, const Transform& tf)
     center = tf.position;
 }
 
-inline void Circle::ComputeMass(float density, MassData* outMassData) const
+void Circle::ComputeMass(float density, MassData* outMassData) const
 {
     outMassData->mass = density * area;
     float inertia = 0.5f * radius * radius;
@@ -18,7 +18,7 @@ inline void Circle::ComputeMass(float density, MassData* outMassData) const
     outMassData->centerOfMass = center;
 }
 
-inline void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
+void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
 {
     Vec2 p = Mul(transform, center);
 
@@ -26,7 +26,7 @@ inline void Circle::ComputeAABB(const Transform& transform, AABB* outAABB) const
     outAABB->max = Vec2{ p.x + radius, p.y + radius };
 }
 
-inline bool Circle::TestPoint(const Transform& transform, const Vec2& q) const
+bool Circle::TestPoint(const Transform& transform, const Vec2& q) const
 {
     Vec2 localQ = MulT(transform, q);
     Vec2 d = center - localQ;

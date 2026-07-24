@@ -113,7 +113,7 @@ private:
     // Following parameters are used to soften the joint
     // Frequency values less than or equal to zero make joints rigid
     // 0 < Frequency
-    // 0 <= Damping ratio <= 1
+    // 0 <= Damping ratio
     float jointFrequency;
     float jointDampingRatio;
 

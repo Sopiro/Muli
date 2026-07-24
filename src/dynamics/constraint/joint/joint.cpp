@@ -27,7 +27,7 @@ void Joint::SetParameters(float newJointFrequency, float newJointDampingRatio)
     if (newJointFrequency > 0.0f)
     {
         jointFrequency = newJointFrequency;
-        jointDampingRatio = Clamp(newJointDampingRatio, 0.0f, 1.0f);
+        jointDampingRatio = Max(newJointDampingRatio, 0.0f);
     }
     else
     {

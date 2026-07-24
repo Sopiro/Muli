@@ -63,7 +63,7 @@ void Init()
     game = new Game();
 
     SetFrameRate(window->GetRefreshRate());
-    SetUpdateRate(window->GetRefreshRate());
+    SetUpdateRate(60);
 }
 
 void Terminate()
@@ -73,36 +73,45 @@ void Terminate()
 
 void MainLoop()
 {
+    using clock = std::chrono::steady_clock;
+    using duration = std::chrono::duration<float>;
+
     static float frameTime = 0;
     static float updateTime = 0;
-    static auto lastTime = std::chrono::steady_clock::now();
 
-    auto currentTime = std::chrono::steady_clock::now();
+    static auto lastTime = clock::now();
+    static auto lastFrameTime = lastTime;
 
-    std::chrono::duration<float> duration = currentTime - lastTime;
-    float elapsed = duration.count();
+    auto currentTime = clock::now();
+
+    float deltaTime = duration(currentTime - lastTime).count();
     lastTime = currentTime;
 
-    updateTime += elapsed;
-    frameTime += elapsed;
+    updateTime += deltaTime;
+    frameTime += deltaTime;
 
-    if (updateTime > targetUpdateTime)
+    if (updateTime >= targetUpdateTime)
     {
         game->FixedUpdate();
 
-        updateTime -= targetUpdateTime;
+        updateTime = Min(updateTime - targetUpdateTime, targetUpdateTime);
     }
 
-    if (frameTime > targetFrameTime)
+    if (frameTime >= targetFrameTime)
     {
+        currentTime = clock::now();
+
+        deltaTime = duration(currentTime - lastFrameTime).count();
+        lastFrameTime = currentTime;
+
+        frameTime = Min(frameTime - targetFrameTime, targetFrameTime);
+
         window->BeginFrame(clearColor);
         {
-            game->Update(frameTime);
-            game->Render();
+            game->Update(deltaTime);
+            game->Render(updateTime / targetUpdateTime);
         }
         window->EndFrame();
-
-        frameTime -= targetFrameTime;
     }
 }
 

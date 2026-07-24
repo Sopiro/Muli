@@ -2,8 +2,6 @@
 #include "demo.h"
 #include "window.h"
 
-#include <ctime>
-
 extern int32 GetFrameRate();
 extern void SetFrameRate(int32);
 
@@ -58,6 +56,21 @@ void Game::Update(float deltaTime)
 void Game::FixedUpdate()
 {
     demo->Step();
+}
+
+float Game::GetFixedDeltaTime() const
+{
+    return fixedDeltaTime;
+}
+
+void Game::SetFixedDeltaTime(float newFixedDeltaTime)
+{
+    fixedDeltaTime = newFixedDeltaTime;
+
+    if (demo)
+    {
+        demo->dt = newFixedDeltaTime;
+    }
 }
 
 void Game::UpdateInput()
@@ -241,8 +254,29 @@ void Game::UpdateUI()
     demo->UpdateUI();
 }
 
-void Game::Render()
+static Transform GetRenderTransform(const Body* body, float alpha)
 {
+    Transform transform;
+
+    if (body->GetType() != Body::static_body && !body->IsSleeping())
+    {
+        body->GetMotion().GetTransform(alpha, &transform);
+    }
+    else
+    {
+        transform = body->GetTransform();
+    }
+
+    return transform;
+};
+
+void Game::Render(float alpha)
+{
+    if (options.pause)
+    {
+        alpha = 1.0f;
+    }
+
     World& world = demo->GetWorld();
     Camera& camera = demo->GetCamera();
     Mat4 cameraMatrix = camera.GetCameraMatrix();
@@ -263,7 +297,7 @@ void Game::Render()
 
             for (Body* b = world.GetBodyList(); b; b = b->GetNext())
             {
-                const Transform& tf = b->GetTransform();
+                Transform tf = GetRenderTransform(b, alpha);
                 drawMode.rounded = UserFlag::IsEnabled(b, UserFlag::render_polygon_radius);
 
                 for (Collider* c = b->GetColliderList(); c; c = c->GetNext())
@@ -276,7 +310,7 @@ void Game::Render()
         {
             for (Body* b = world.GetBodyList(); b; b = b->GetNext())
             {
-                const Transform& tf = b->GetTransform();
+                Transform tf = GetRenderTransform(b, alpha);
                 drawMode.rounded = UserFlag::IsEnabled(b, UserFlag::render_polygon_radius);
 
                 if (b->IsSleeping())
@@ -321,7 +355,8 @@ void Game::Render()
             Body* b = j->GetBodyA();
             const GrabJoint* gj = (const GrabJoint*)j;
 
-            const Vec2& anchor = Mul(b->GetTransform(), gj->GetLocalAnchor());
+            Transform transform = GetRenderTransform(b, alpha);
+            Vec2 anchor = Mul(transform, gj->GetLocalAnchor());
             renderer.DrawPoint(anchor);
             renderer.DrawPoint(gj->GetTarget());
 
@@ -334,14 +369,16 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const RevoluteJoint* rj = (const RevoluteJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), rj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), rj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, rj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, rj->GetLocalAnchorB());
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);
 
-            renderer.DrawLine(anchorA, ba->GetPosition());
-            renderer.DrawLine(anchorB, bb->GetPosition());
+            renderer.DrawLine(anchorA, transformA.position);
+            renderer.DrawLine(anchorB, transformB.position);
         }
         break;
         case Joint::Type::distance_joint:
@@ -350,8 +387,10 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const DistanceJoint* dj = (const DistanceJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), dj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), dj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, dj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, dj->GetLocalAnchorB());
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);
@@ -368,8 +407,10 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const LineJoint* lj = (const LineJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), lj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), lj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, lj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, lj->GetLocalAnchorB());
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);
@@ -382,8 +423,10 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const PrismaticJoint* pj = (const PrismaticJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, pj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, pj->GetLocalAnchorB());
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);
@@ -397,8 +440,10 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const PulleyJoint* pj = (const PulleyJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, pj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, pj->GetLocalAnchorB());
             const Vec2& groundAnchorA = pj->GetGroundAnchorA();
             const Vec2& groundAnchorB = pj->GetGroundAnchorB();
 
@@ -418,8 +463,10 @@ void Game::Render()
             Body* bb = j->GetBodyB();
             const MotorJoint* pj = (const MotorJoint*)j;
 
-            const Vec2& anchorA = Mul(ba->GetTransform(), pj->GetLocalAnchorA());
-            const Vec2& anchorB = Mul(bb->GetTransform(), pj->GetLocalAnchorB());
+            Transform transformA = GetRenderTransform(ba, alpha);
+            Transform transformB = GetRenderTransform(bb, alpha);
+            Vec2 anchorA = Mul(transformA, pj->GetLocalAnchorA());
+            Vec2 anchorB = Mul(transformB, pj->GetLocalAnchorB());
 
             renderer.DrawPoint(anchorA);
             renderer.DrawPoint(anchorB);

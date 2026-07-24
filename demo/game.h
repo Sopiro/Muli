@@ -19,7 +19,7 @@ public:
 
     void Update(float dt);
     void FixedUpdate();
-    void Render();
+    void Render(float alpha);
 
     Vec2 GetWorldCursorPosition() const;
     DebugOptions& GetDebugOptions();
@@ -101,16 +101,6 @@ inline float Game::GetWindowScale() const
 inline void Game::SetWindowScale(float newScale)
 {
     scale = newScale;
-}
-
-inline float Game::GetFixedDeltaTime() const
-{
-    return fixedDeltaTime;
-}
-
-inline void Game::SetFixedDeltaTime(float newFixedDeltaTime)
-{
-    fixedDeltaTime = newFixedDeltaTime;
 }
 
 inline Renderer& Game::GetRenderer()

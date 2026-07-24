@@ -38,15 +38,14 @@ public:
         wheel2->Translate(0.0f, 5.0f);
 
         CollisionFilter filter;
-        filter.bit = 1 << 1;
-        filter.mask = ~(1 << 1);
+        filter.group = -1;
 
         body->SetCollisionFilter(filter);
         wheel1->SetCollisionFilter(filter);
         wheel2->SetCollisionFilter(filter);
 
-        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f);
-        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f }, 15.0f, 1.0f);
+        world->CreateLineJoint(body, wheel1, wheel1->GetPosition(), Vec2{ 0.0f, 1.0f }, 8.0f, 0.7f);
+        world->CreateLineJoint(body, wheel2, wheel2->GetPosition(), Vec2{ 0.0f, 1.0f }, 8.0f, 0.7f);
 
         float motorMaxForce = 300.0f;
         float motorMaxTorque = 0.0f;
