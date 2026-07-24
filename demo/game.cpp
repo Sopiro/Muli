@@ -2,6 +2,8 @@
 #include "demo.h"
 #include "window.h"
 
+#include <ctime>
+
 extern int32 GetFrameRate();
 extern void SetFrameRate(int32);
 
