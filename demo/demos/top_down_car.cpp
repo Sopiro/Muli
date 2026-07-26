@@ -12,8 +12,8 @@ static bool drawAxis = false;
 static float linearDamping = 0.2f;
 static float angularDamping = 2.0f;
 
-static float force = 30;
-static float torque = 10;
+static float force = 10;
+static float torque = 1;
 
 static float friction = 0.3;
 static float maxImpulse = 0.5;
@@ -38,11 +38,11 @@ struct Wheel
         CollisionFilter filter,
         float linearDamping,
         float angularDamping,
-        float _force,
-        float _friction,
-        float _maxImpulse,
-        float _brake,
-        float _drag
+        float inForce,
+        float inFriction,
+        float inMaxImpulse,
+        float inBrake,
+        float inDrag
     )
     {
         wheel = world->CreateCapsule(scale, scale, false, tf);
@@ -51,12 +51,12 @@ struct Wheel
         wheel->SetLinearDamping(linearDamping);
         wheel->SetAngularDamping(angularDamping);
 
-        force = _force;
-        friction = _friction;
-        maxImpulse = _maxImpulse;
+        force = inForce;
+        friction = inFriction;
+        maxImpulse = inMaxImpulse;
 
-        brake = _brake;
-        drag = _drag;
+        brake = inBrake;
+        drag = inDrag;
     }
 
     void Step()

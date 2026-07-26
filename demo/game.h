@@ -26,6 +26,7 @@ public:
     Renderer& GetRenderer();
 
     float GetTime() const;
+    float GetDeltaTime() const;
     void RestartDemo();
     void NextDemo();
     void PrevDemo();
@@ -73,6 +74,11 @@ inline Vec2 Game::GetWorldCursorPosition() const
 inline float Game::GetTime() const
 {
     return time;
+}
+
+inline float Game::GetDeltaTime() const
+{
+    return dt;
 }
 
 inline void Game::RestartDemo()
