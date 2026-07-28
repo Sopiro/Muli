@@ -4,7 +4,7 @@
 
 [![Build library](https://github.com/Sopiro/Muli/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Sopiro/Muli/actions/workflows/cmake-multi-platform.yml)
 
-2D Rigidbody physics engine
+2D Rigid body physics engine.
 
 ## Features
 
@@ -16,18 +16,18 @@
   - Dynamic, static, and kinematic bodies
   - Collision filtering
   - Dynamic AABB tree broadphase
-  - Accelerated raycast, shapecast, and area queries
-  - Easy-to-use collision detection and distance functions
+  - Raycast, shapecast, and area queries
 
 ### Physics Simulation
-  - Continuous physics simulation (time of impact solver and sub-stepping)
-  - PGS solver with a separate position solver
+  - Continuous physics simulation with time of impact solver
+  - PGS solver with a separate position correction (PGS NGS)
   - Stable stacking with a 2-contact LCP solver (Block solver)
-  - Efficient and persistent contact management from Box2D
+  - Persistent constraint graph
   - Constraint islanding and sleeping
   - Contact callbacks: begin, touching, end, pre-solve, post-solve, and destroy
   - Physics material: friction, restitution, and surface speed
-  - Various joints: angle, distance, grab, line, motor, prismatic, pulley, revolute, and weld
+  - Various joint types: angle, distance, grab, line, motor, prismatic, pulley, revolute, and weld
+  - Joints with limits and motors
 
 ### Others
   - Cross platform library (C++20)
